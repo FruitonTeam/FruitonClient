@@ -15,19 +15,18 @@ public class ConnectionHandler : MonoBehaviour {
     private const string URL_REGISTRATION = "prak.mff.cuni.cz:8010/api/register";
     private const string URL_LOGIN = "prak.mff.cuni.cz:8010/api/login";
     ModelSerializer mySerializer;
-    MemoryStream memoryStream;
 
     // Only for testing purposes. Will be deleted later.
     //public void Start()
     //{
-    //    Register("protobu2f", "protobuf", "proto@buf.com", true);
+    //    //Register("rytmo", "rytmo", "ry@tmo.com", true);
+    //    LoginCasual("rytmo", "rytmo", true);
 
     //}
 
     private ConnectionHandler()
     {
         mySerializer = new ModelSerializer();
-        memoryStream = new MemoryStream();
     }
 
     public static ConnectionHandler Instance
@@ -52,32 +51,56 @@ public class ConnectionHandler : MonoBehaviour {
     public void Register(string login, string password, string email, bool useProtobuf)
     {
         RegistrationForm newUser = new RegistrationForm(login, password, email);
-        mySerializer.Serialize(memoryStream, newUser);
-        byte[] binaryData = null;
+
+        byte[] binaryData = GetBinaryData(useProtobuf, newUser);
+        Dictionary<string, string> headers = GetRequestHeaders(useProtobuf);
+        
+        WWW www = new WWW(URL_REGISTRATION, binaryData, headers);
+        StartCoroutine(Post(www));
+    }
+
+    public void LoginCasual(string login, string password, bool useProtobuf)
+    {
+        LoginForm loginData = new LoginForm(login, password);
+        
+        Dictionary<string, string> headers = GetRequestHeaders(useProtobuf);
+        byte[] binaryData = GetBinaryData(useProtobuf, loginData);
+
+        WWW www = new WWW(URL_LOGIN, binaryData, headers);
+        StartCoroutine(Post(www));
+    }
+
+    private Dictionary<string, string> GetRequestHeaders(bool useProtobuf)
+    {
         Dictionary<string, string> headers = new Dictionary<string, string>();
         if (useProtobuf)
         {
-            // Use protobuf
-            binaryData = memoryStream.ToArray();
             headers.Add("Content-Type", "application/x-protobuf");
+        }
+        else
+        {
+            headers.Add("Content-Type", "application/json");
+        }
+        return headers;
+    }
+
+    private byte[] GetBinaryData(bool useProtobuf, object data)
+    {
+        byte[] binaryData = null;
+        MemoryStream memoryStream = new MemoryStream();
+        mySerializer.Serialize(memoryStream, data);
+        if (useProtobuf)
+        {
+            binaryData = memoryStream.ToArray();
         }
         else
         {
             // Use simple JSON
             string serializedMessage = System.Convert.ToBase64String(memoryStream.ToArray());
-            serializedMessage = JsonUtility.ToJson(newUser);
+            serializedMessage = JsonUtility.ToJson(data);
             binaryData = System.Text.Encoding.ASCII.GetBytes(serializedMessage.ToCharArray());
-            headers.Add("Content-Type", "application/json");
         }
-
-        WWWForm form = new WWWForm();
-        WWW www = new WWW(URL_REGISTRATION, binaryData, headers);
-        StartCoroutine(Post(www));
-    }
-
-    public void LoginCasual()
-    {
-
+        return binaryData;
     }
 
     public void LoginGoogle()
