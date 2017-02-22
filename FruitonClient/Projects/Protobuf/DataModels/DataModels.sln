@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataModels", "DataModels\DataModels.csproj", "{5BC60A4D-4E52-4FA7-B2F1-BA802CAC0E36}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerializerBuilder", "SerializerBuilder\SerializerBuilder.csproj", "{45836C1F-2115-4F8F-B753-DA29F3B1CBC9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{5BC60A4D-4E52-4FA7-B2F1-BA802CAC0E36}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5BC60A4D-4E52-4FA7-B2F1-BA802CAC0E36}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5BC60A4D-4E52-4FA7-B2F1-BA802CAC0E36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45836C1F-2115-4F8F-B753-DA29F3B1CBC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45836C1F-2115-4F8F-B753-DA29F3B1CBC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45836C1F-2115-4F8F-B753-DA29F3B1CBC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45836C1F-2115-4F8F-B753-DA29F3B1CBC9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

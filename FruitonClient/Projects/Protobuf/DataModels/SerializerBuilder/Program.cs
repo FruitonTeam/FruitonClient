@@ -1,4 +1,5 @@
-﻿using DataModels;
+﻿
+using DataModels;
 using ProtoBuf.Meta;
 
 namespace SerializerBuilder
@@ -8,7 +9,8 @@ namespace SerializerBuilder
         static void Main(string[] args)
         {
             var model = TypeModel.Create();
-            model.Add(typeof(User), true);
+            model.Add(typeof(RegistrationForm), true);
+            model.Add(typeof(LoginForm), true);
 
             model.AllowParseableTypes = true;
             model.AutoAddMissingTypes = true;

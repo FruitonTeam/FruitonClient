@@ -51,7 +51,7 @@ public class ConnectionHandler : MonoBehaviour {
     /// <param name="useProtobuf"> Determines whether protobuf encoding should be used. It is recommended to use protobuf. </param>
     public void Register(string login, string password, string email, bool useProtobuf)
     {
-        User newUser = new User(login, password, email);
+        RegistrationForm newUser = new RegistrationForm(login, password, email);
         mySerializer.Serialize(memoryStream, newUser);
         byte[] binaryData = null;
         Dictionary<string, string> headers = new Dictionary<string, string>();
