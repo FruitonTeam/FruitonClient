@@ -19,8 +19,8 @@ public class ConnectionHandler : MonoBehaviour {
     // Only for testing purposes. Will be deleted later.
     //public void Start()
     //{
-    //    //Register("rytmo", "rytmo", "ry@tmo.com", true);
-    //    LoginCasual("rytmo", "rytmo", true);
+    //    Register("rytmo222", "rytmo", "ry@tmo.com", true);
+    //    //LoginCasual("rytmo", "rytmo", true);
 
     //}
 
@@ -56,7 +56,7 @@ public class ConnectionHandler : MonoBehaviour {
         Dictionary<string, string> headers = GetRequestHeaders(useProtobuf);
         
         WWW www = new WWW(URL_REGISTRATION, binaryData, headers);
-        StartCoroutine(Post(www));
+        StartCoroutine(PostRegister(www));
     }
 
     public void LoginCasual(string login, string password, bool useProtobuf)
@@ -67,7 +67,7 @@ public class ConnectionHandler : MonoBehaviour {
         byte[] binaryData = GetBinaryData(useProtobuf, loginData);
 
         WWW www = new WWW(URL_LOGIN, binaryData, headers);
-        StartCoroutine(Post(www));
+        StartCoroutine(PostLogin(www));
     }
 
     private Dictionary<string, string> GetRequestHeaders(bool useProtobuf)
@@ -108,13 +108,23 @@ public class ConnectionHandler : MonoBehaviour {
         
     }
 
-    IEnumerator Post(WWW www)
+    IEnumerator PostRegister(WWW www)
     {
         yield return www;
 
         if (string.IsNullOrEmpty(www.error))
-            Debug.Log("Post request succeeded.");  //text of success
+            Debug.Log("[Registration] Post request succeeded.");  //text of success
         else
-            Debug.Log("Post request failed.");  //error
+            Debug.Log("[Registration] Post request failed.");  //error
+    }
+
+    IEnumerator PostLogin(WWW www)
+    {
+        yield return www;
+
+        if (string.IsNullOrEmpty(www.error))
+            Debug.Log("[Login] Post request succeeded.");  //text of success
+        else
+            Debug.Log("[Login] Post request failed.");  //error
     }
 }
