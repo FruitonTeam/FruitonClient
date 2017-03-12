@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum MenuPanel { Welcome, Login, Fraction, Main, Storage, Fridge, Pantry}
+public enum MenuPanel { Welcome, Login, Fraction, Main, Storage, Fridge, Pantry, Online, Offline, FarmersMarket}
 
 public class PanelManager : MonoBehaviour {
     public static PanelManager Instance { get; private set; }
 
-    public Dictionary<MenuPanel, GameObject> Panels = new Dictionary<MenuPanel, GameObject>();
+    public Dictionary<MenuPanel, MainMenuPanel> Panels = new Dictionary<MenuPanel, MainMenuPanel>();
     public MenuPanel CurrentPanel = MenuPanel.Welcome;
 
     // Use this for initialization
@@ -31,19 +31,36 @@ public class PanelManager : MonoBehaviour {
 
         foreach (MainMenuPanel panel in panelComponents)
         {
-            Panels.Add(panel.Name, panel.gameObject);
-            //Debug.Log(panel.Name);
-            panel.gameObject.SetActive(false);
+            if (!Panels.ContainsKey(panel.Name))
+            {
+                Panels.Add(panel.Name, panel);
+                //Debug.Log(panel.Name);
+                panel.gameObject.SetActive(false);
+            }
+            else {
+                Debug.Log("Duplicate of panel " + panel.Name);
+            }
         }
 
-        Panels[CurrentPanel].SetActive(true);
+        Panels[CurrentPanel].SetPanelActive(true);
     }
 
     public void SwitchPanels(MenuPanel panel)
     {
-        Panels[CurrentPanel].SetActive(false);
-        CurrentPanel = panel;
-        Panels[CurrentPanel].SetActive(true);
+        if (Panels.ContainsKey(panel))
+        {
+            // is it possible to close the current panel? e.x. valid login data
+            if (Panels[CurrentPanel].SetPanelActive(false)) { 
+                // is it possible to open the next panel? e.x. skipping login
+                if (Panels[panel].SetPanelActive(true))
+                {
+                    CurrentPanel = panel;
+                }
+            }
+        }
+        else {
+            Debug.Log("Scene doesn't contain " + panel);
+        }
     }
 
 }

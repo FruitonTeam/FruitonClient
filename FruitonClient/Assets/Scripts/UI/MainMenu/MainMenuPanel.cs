@@ -6,13 +6,12 @@ public class MainMenuPanel : MonoBehaviour {
 
     public MenuPanel Name;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public virtual bool SetPanelActive(bool toggle) {
+        if (toggle) {
+            gameObject.SetActive(true);
+        } else {
+            gameObject.SetActive(false);
+        }
+        return true;
+    }
 }
