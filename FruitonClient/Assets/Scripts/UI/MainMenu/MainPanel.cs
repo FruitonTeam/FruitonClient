@@ -1,0 +1,31 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class MainPanel : MainMenuPanel
+{
+    public void OnlineContinue()
+    {
+        PanelManager.Instance.SwitchPanels(MenuPanel.Online);
+    }
+    public void OfflineContinue()
+    {
+        PanelManager.Instance.SwitchPanels(MenuPanel.Offline);
+    }
+    public void FarmersMarketContinue()
+    {
+        PanelManager.Instance.SwitchPanels(MenuPanel.FarmersMarket);
+    }
+    public void StorageContinue()
+    {
+        PanelManager.Instance.SwitchPanels(MenuPanel.Storage);
+    }
+    public void FridgeContinue()
+    {
+        PanelManager.Instance.SwitchPanels(MenuPanel.Fridge);
+    }
+    public void PantryContinue()
+    {
+        PanelManager.Instance.SwitchPanels(MenuPanel.Pantry);
+    }
+}
