@@ -24,23 +24,13 @@ public class ConnectionHandler : MonoBehaviour {
     ModelSerializer mySerializer;
 
     // Only for testing purposes. Will be deleted later.
-<<<<<<< HEAD
     //public void Start()
     //{
     //    Register("rytmo222", "rytmo", "ry@tmo.com", true);
     //    //LoginCasual("rytmo", "rytmo", true);
 
     //}
-=======
-    public void Start()
-    {
-        //Register("rytmo", "rytmo", "ry@tmo.com", true);
-        //LoginCasual("rytmo", "rytmo", true);
-        //StartCoroutine(GetGoogleAccessToken("prakmff"));
-        //GooglePlayGames.PlayGamesPlatform.Activate();
-        LoginGoogle();
-    }
->>>>>>> feature/SWP-16-frontend-login-google
+
 
     private ConnectionHandler()
     {
@@ -87,7 +77,7 @@ public class ConnectionHandler : MonoBehaviour {
         Dictionary<string, string> headers = GetRequestHeaders(true);
 
         WWW www = new WWW(URL_REGISTRATION, binaryData, headers);
-        StartCoroutine(Post(www));
+        StartCoroutine(PostRegister(www));
     }
 
     public void LoginCasual(string login, string password, bool useProtobuf)
@@ -170,10 +160,15 @@ public class ConnectionHandler : MonoBehaviour {
         yield return www;
 
         if (string.IsNullOrEmpty(www.error))
-<<<<<<< HEAD
+        {
             Debug.Log("[Registration] Post request succeeded.");  //text of success
+            GameObject.Find("Text").GetComponent<Text>().text = www.text;
+        }
         else
+        {
             Debug.Log("[Registration] Post request failed.");  //error
+            GameObject.Find("Text").GetComponent<Text>().text = www.error;
+        }
     }
 
     IEnumerator PostLogin(WWW www)
@@ -181,18 +176,13 @@ public class ConnectionHandler : MonoBehaviour {
         yield return www;
 
         if (string.IsNullOrEmpty(www.error))
+        {
             Debug.Log("[Login] Post request succeeded.");  //text of success
+        }
         else
-            Debug.Log("[Login] Post request failed.");  //error
-=======
         {
             GameObject.Find("Text").GetComponent<Text>().text = "SUCESS";
-                Debug.Log("Post request succeeded.");  //text of success
-        }
-            
-        else {
-            GameObject.Find("Text").GetComponent<Text>().text = www.error;
-                Debug.Log("Post request failed.");  //error
+            Debug.Log("Post request succeeded.");  //text of success
         }
             
     }
@@ -224,7 +214,6 @@ public class ConnectionHandler : MonoBehaviour {
             Debug.Log("Post request failed.");  //error
             Debug.Log(www.error);
         }
->>>>>>> feature/SWP-16-frontend-login-google
     }
 
 }
