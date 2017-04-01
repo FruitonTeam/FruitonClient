@@ -7,51 +7,45 @@ public class LoginPanel : MainMenuPanel
 {
     public InputField LoginName;
     public InputField LoginPassword;
+    public Toggle LoginStayLoggedIn;
     public Text LoginMessageText;
 
     public enum LoginMessage { ValidUser, NotValidUser, NoConnection}
 
-    public override bool SetPanelActive(bool toggle)
-    {
-        if (toggle)
-        {
-            LoginMessageText.text = "";
-            switch (CheckLoginData())
-            {
-                case LoginMessage.ValidUser:
-                    if(GameManager.Instance.UserFraction != FractionNames.None)
-                        PanelManager.Instance.SwitchPanels(MenuPanel.Main);
-                    else
-                        PanelManager.Instance.SwitchPanels(MenuPanel.Fraction);
-                    return false;
-                case LoginMessage.NotValidUser:
-                    gameObject.SetActive(true);
-                    return true;
-                case LoginMessage.NoConnection:
-                    gameObject.SetActive(true);
-                    return true;
-            }
-        }
-        else
-        {
-            gameObject.SetActive(false);
-        }
-        return true;
-    }
+    //public override bool SetPanelActive(bool toggle)
+    //{
+    //    if (toggle)
+    //    {
+    //        LoginMessageText.text = "";
+    //        switch (CheckLoginData())
+    //        {
+    //            case LoginMessage.ValidUser:
+    //                if(GameManager.Instance.UserFraction != FractionNames.None)
+    //                    PanelManager.Instance.SwitchPanels(MenuPanel.Main);
+    //                else
+    //                    PanelManager.Instance.SwitchPanels(MenuPanel.Fraction);
+    //                return false;
+    //            case LoginMessage.NotValidUser:
+    //                gameObject.SetActive(true);
+    //                return true;
+    //            case LoginMessage.NoConnection:
+    //                gameObject.SetActive(true);
+    //                return true;
+    //        }
+    //    }
+    //    else
+    //    {
+    //        gameObject.SetActive(false);
+    //    }
+    //    return true;
+    //}
 
     // checks whether the LoginData combination is valid
     public LoginMessage CheckLoginData()
     {
-        if (this.isActiveAndEnabled)
-        {
-            //Debug.Log("Check input combination:\nName: " + LoginName.text + "  Password: " + LoginPassword.text);
-            GameManager.Instance.UserName = LoginName.text;
-            GameManager.Instance.UserPassword = LoginPassword.text;
-        }
-        else {
-            //Debug.Log("Check saved combination (from PlayerPrefs)");
-        }
-
+        GameManager gameManager = GameManager.Instance;
+        
+   
         if (!GameManager.Instance.IsUserValid)
         {
             if (GameManager.Instance.OnlineLoginDataCheck())
@@ -70,23 +64,33 @@ public class LoginPanel : MainMenuPanel
     // called after pressing Login Button
     public void LoginContinue()
     {
-        switch (CheckLoginData())
-        {
-            case LoginMessage.ValidUser:
-                if (GameManager.Instance.UserFraction != FractionNames.None)
-                    PanelManager.Instance.SwitchPanels(MenuPanel.Main);
-                else
-                    PanelManager.Instance.SwitchPanels(MenuPanel.Fraction);
-                return;
-            case LoginMessage.NotValidUser:
-                LoginMessageText.text = "Rotten bananas! Wrong Name or Password...";
-                //Debug.Log("Not valid LoginData");
-                return;
-            case LoginMessage.NoConnection:
-                LoginMessageText.text = "No internet connection, no bananas...";
-                //Debug.Log("No connection to check login data");
-                return;
-        }
+        GameManager gameManager = GameManager.Instance;
+        PanelManager panelManager = PanelManager.Instance;
+        ConnectionHandler connectionHandler = ConnectionHandler.Instance;
+
+        gameManager.StayLoggedIn = LoginStayLoggedIn.isOn;
+        string name = LoginName.text;
+        string password = LoginPassword.text;
+
+        connectionHandler.LoginCasual(name, password, true);
+
+        //switch (CheckLoginData())
+        //{
+        //    case LoginMessage.ValidUser:
+        //        if (GameManager.Instance.UserFraction != FractionNames.None)
+        //            PanelManager.Instance.SwitchPanels(MenuPanel.Main);
+        //        else
+        //            PanelManager.Instance.SwitchPanels(MenuPanel.Fraction);
+        //        return;
+        //    case LoginMessage.NotValidUser:
+        //        LoginMessageText.text = "Rotten bananas! Wrong Name or Password...";
+        //        //Debug.Log("Not valid LoginData");
+        //        return;
+        //    case LoginMessage.NoConnection:
+        //        LoginMessageText.text = "No internet connection, no bananas...";
+        //        //Debug.Log("No connection to check login data");
+        //        return;
+        //}
     }
 
     // called after pressing Registration Button

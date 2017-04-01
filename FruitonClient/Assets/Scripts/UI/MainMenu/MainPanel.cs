@@ -28,4 +28,11 @@ public class MainPanel : MainMenuPanel
     {
         PanelManager.Instance.SwitchPanels(MenuPanel.Pantry);
     }
+    public void Logout()
+    {
+        PlayerPrefs.SetString("username", "");
+        PlayerPrefs.SetString("userpassword", "");
+        PlayerPrefs.SetInt("stayloggedin", 0);
+        PanelManager.Instance.SwitchPanels(MenuPanel.Login);
+    }
 }

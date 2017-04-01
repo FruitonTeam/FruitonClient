@@ -26,8 +26,8 @@ public class ConnectionHandler : MonoBehaviour {
     // Only for testing purposes. Will be deleted later.
     //public void Start()
     //{
-    //    Register("rytmo222", "rytmo", "ry@tmo.com", true);
-    //    //LoginCasual("rytmo", "rytmo", true);
+    //    //Register("rytmo222", "rytmo", "ry@tmo.com", true);
+    //    LoginCasual("rytmo", "rytmo", true);
 
     //}
 
@@ -37,17 +37,7 @@ public class ConnectionHandler : MonoBehaviour {
         mySerializer = new ModelSerializer();
     }
 
-    public static ConnectionHandler Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = new ConnectionHandler();
-            }
-            return instance;
-        }
-    }
+    public static ConnectionHandler Instance { get; private set; }
 
     /// <summary>
     /// Sends a registration request to the server.
@@ -88,7 +78,37 @@ public class ConnectionHandler : MonoBehaviour {
         byte[] binaryData = GetBinaryData(useProtobuf, loginData);
 
         WWW www = new WWW(URL_LOGIN, binaryData, headers);
-        StartCoroutine(PostLogin(www));
+        StartCoroutine(PostLogin(www, login, password));
+    }
+
+    private void ProcessLoginResult(LoginResultData resultData)
+    {
+        bool success = resultData.success;
+        string login = resultData.login;
+        string password = resultData.password;
+        PanelManager panelManager = PanelManager.Instance;
+        GameManager gameManager = GameManager.Instance;
+        if (success)
+        {
+            gameManager.UserName = login;
+            gameManager.UserPassword = password;
+            panelManager.SwitchPanels(MenuPanel.Main);
+        }
+        else
+        {
+            // Perform offline login check
+            if (gameManager.UserName == login && gameManager.UserPassword == password)
+            {
+                // Offline check successful
+                panelManager.SwitchPanels(MenuPanel.LoginOffline);
+            }
+            else
+            {
+                // TODO: error message
+                panelManager.SwitchPanels(MenuPanel.Login);
+            }
+            
+        }
     }
 
     private Dictionary<string, string> GetRequestHeaders(bool useProtobuf)
@@ -171,20 +191,21 @@ public class ConnectionHandler : MonoBehaviour {
         }
     }
 
-    IEnumerator PostLogin(WWW www)
+    IEnumerator PostLogin(WWW www, string login, string password)
     {
         yield return www;
 
         if (string.IsNullOrEmpty(www.error))
         {
             Debug.Log("[Login] Post request succeeded.");  //text of success
+            SendMessage("ProcessLoginResult", new LoginResultData(login, password, true));
         }
         else
         {
-            GameObject.Find("Text").GetComponent<Text>().text = "SUCESS";
-            Debug.Log("Post request succeeded.");  //text of success
+            Debug.Log("[Login] Post request failed.");  //text of fail
+            SendMessage("ProcessLoginResult", new LoginResultData(login, password, false));
         }
-            
+        
     }
 
     IEnumerator GetGoogleAccessToken(string auth_code)
@@ -213,6 +234,34 @@ public class ConnectionHandler : MonoBehaviour {
         {
             Debug.Log("Post request failed.");  //error
             Debug.Log(www.error);
+        }
+    }
+
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            DontDestroyOnLoad(gameObject);
+            Instance = this;
+        }
+        else if (Instance != this)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    // Because SendMessage can only acceppt 1 argument
+    private struct LoginResultData
+    {
+        public string login;
+        public string password;
+        public bool success;
+
+        public LoginResultData(string login, string password, bool success)
+        {
+            this.login = login;
+            this.password = password;
+            this.success = success;
         }
     }
 
