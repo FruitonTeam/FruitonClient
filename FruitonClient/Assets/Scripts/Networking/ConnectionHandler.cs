@@ -23,6 +23,8 @@ public class ConnectionHandler : MonoBehaviour {
     private const string GOOGLE_TOKEN_URI = "https://accounts.google.com/o/oauth2/token";
     ModelSerializer mySerializer;
 
+    private const string PROCESS_REGISTRATION_RESULT = "ProcessRegistrationResult";
+
     // Only for testing purposes. Will be deleted later.
     //public void Start()
     //{
@@ -111,6 +113,20 @@ public class ConnectionHandler : MonoBehaviour {
         }
     }
 
+    private void ProcessRegistrationResult(bool success)
+    {
+        PanelManager panelManager = PanelManager.Instance;
+        if (success)
+        {
+            panelManager.SwitchPanels(MenuPanel.Login);
+        }
+        else
+        {
+            panelManager.SwitchPanels(MenuPanel.Register);
+        }
+        
+    }
+
     private Dictionary<string, string> GetRequestHeaders(bool useProtobuf)
     {
         Dictionary<string, string> headers = new Dictionary<string, string>();
@@ -182,12 +198,12 @@ public class ConnectionHandler : MonoBehaviour {
         if (string.IsNullOrEmpty(www.error))
         {
             Debug.Log("[Registration] Post request succeeded.");  //text of success
-            GameObject.Find("Text").GetComponent<Text>().text = www.text;
+            SendMessage(PROCESS_REGISTRATION_RESULT, true);
         }
         else
         {
             Debug.Log("[Registration] Post request failed.");  //error
-            GameObject.Find("Text").GetComponent<Text>().text = www.error;
+            SendMessage(PROCESS_REGISTRATION_RESULT, false);
         }
     }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum MenuPanel { Welcome, Login, Fraction, Main, Storage, Fridge, Pantry, Online, Offline, FarmersMarket, LoginOffline }
+public enum MenuPanel { Welcome, Login, Fraction, Main, Storage, Fridge, Pantry, Online, Offline, FarmersMarket, LoginOffline, Register }
 
 public class PanelManager : MonoBehaviour {
     public static PanelManager Instance { get; private set; }

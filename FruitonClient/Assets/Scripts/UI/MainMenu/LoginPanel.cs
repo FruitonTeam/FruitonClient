@@ -14,30 +14,33 @@ public class LoginPanel : MainMenuPanel
 
     //public override bool SetPanelActive(bool toggle)
     //{
-    //    if (toggle)
-    //    {
-    //        LoginMessageText.text = "";
-    //        switch (CheckLoginData())
-    //        {
-    //            case LoginMessage.ValidUser:
-    //                if(GameManager.Instance.UserFraction != FractionNames.None)
-    //                    PanelManager.Instance.SwitchPanels(MenuPanel.Main);
-    //                else
-    //                    PanelManager.Instance.SwitchPanels(MenuPanel.Fraction);
-    //                return false;
-    //            case LoginMessage.NotValidUser:
-    //                gameObject.SetActive(true);
-    //                return true;
-    //            case LoginMessage.NoConnection:
-    //                gameObject.SetActive(true);
-    //                return true;
-    //        }
-    //    }
-    //    else
-    //    {
-    //        gameObject.SetActive(false);
-    //    }
-    //    return true;
+    //    LoginName.text = GameManager.Instance.UserName;
+    //    gameObject.SetActive(true);
+    //    return toggle;
+    //    //if (toggle)
+    //    //{
+    //    //    LoginMessageText.text = "";
+    //    //    switch (CheckLoginData())
+    //    //    {
+    //    //        case LoginMessage.ValidUser:
+    //    //            if (GameManager.Instance.UserFraction != FractionNames.None)
+    //    //                PanelManager.Instance.SwitchPanels(MenuPanel.Main);
+    //    //            else
+    //    //                PanelManager.Instance.SwitchPanels(MenuPanel.Fraction);
+    //    //            return false;
+    //    //        case LoginMessage.NotValidUser:
+    //    //            gameObject.SetActive(true);
+    //    //            return true;
+    //    //        case LoginMessage.NoConnection:
+    //    //            gameObject.SetActive(true);
+    //    //            return true;
+    //    //    }
+    //    //}
+    //    //else
+    //    //{
+    //    //    gameObject.SetActive(false);
+    //    //}
+    //    //return true;
     //}
 
     // checks whether the LoginData combination is valid
@@ -96,8 +99,6 @@ public class LoginPanel : MainMenuPanel
     // called after pressing Registration Button
     public void RegistrationContinue()
     {
-        //--TODO--
-        
-        //PanelManager.Instance.SwitchPanels(MenuPanel.Fraction);
+        PanelManager.Instance.SwitchPanels(MenuPanel.Register);
     }
 }
