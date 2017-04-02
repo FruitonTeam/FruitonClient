@@ -97,7 +97,7 @@ public class ConnectionHandler : MonoBehaviour {
         else
         {
             // Perform offline login check
-            if (gameManager.UserName == login && gameManager.UserPassword == password)
+            if (login != "" && password != "" && gameManager.UserName == login && gameManager.UserPassword == password)
             {
                 // Offline check successful
                 panelManager.SwitchPanels(MenuPanel.LoginOffline);
