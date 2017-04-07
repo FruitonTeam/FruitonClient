@@ -6,13 +6,11 @@ public class TouchControl : MonoBehaviour {
     public GameObject board;
 
     Dictionary<int, Touch> touches;
-    float lastDistanceSquared;
     Vector3 translateDirection, translateNormal;
 
     private void Start()
     {
         touches = new Dictionary<int, Touch>();
-        lastDistanceSquared = 0;
         ComputeTranslateVectors();
     }
 
@@ -68,46 +66,39 @@ public class TouchControl : MonoBehaviour {
     {
         if (touch1.phase == TouchPhase.Began || touch2.phase == TouchPhase.Began)
         {
-            float xDif = touch1.position.x - touch2.position.x;
-            float yDif = touch1.position.y - touch2.position.y;
-            lastDistanceSquared = xDif * xDif + yDif * yDif;
-
             ComputeTranslateVectors();
 
         }
+        else if ((touch1.phase == TouchPhase.Moved && touch2.phase == TouchPhase.Stationary) ||
+            (touch2.phase == TouchPhase.Moved && touch1.phase == TouchPhase.Stationary))
+        {
+            Vector3 delta = (new Vector3(touch1.deltaPosition.x, 0, touch1.deltaPosition.y) + new Vector3(touch2.deltaPosition.x, 0, touch2.deltaPosition.y)) / 2;
+            Camera.main.transform.position -= delta.x * translateNormal + delta.z * translateDirection;
+        }
         else if (touch1.phase == TouchPhase.Moved || touch2.phase == TouchPhase.Moved)
         {
-            // TODO: Mathlib
-            float deltaDifX = touch1.deltaPosition.x - touch2.deltaPosition.x;
-            float deltaDifY = touch1.deltaPosition.y - touch2.deltaPosition.y;
-            float distanceSquaredDeltas = deltaDifX * deltaDifX + deltaDifY * deltaDifY;
 
-            float xDif = touch1.position.x - touch2.position.x;
-            float yDif = touch1.position.y - touch2.position.y;
-            float distanceSquared = xDif * xDif + yDif * yDif;
+            //if (touch1.phase == TouchPhase.Moved && touch2.phase == TouchPhase.Moved && FruitMath.GetAngleBetweenTwoPoints(touch1.deltaPosition, touch2.deltaPosition) < 45)
+            //{
 
-            if (FruitMath.GetAngleBetweenTwoPoints(touch1.deltaPosition, touch2.deltaPosition) < 45)
+            //}
+            //else
             {
-                Vector3 delta = (new Vector3(touch1.deltaPosition.x, 0, touch1.deltaPosition.y) + new Vector3(touch2.deltaPosition.x, 0, touch2.deltaPosition.y)) / 2;
-                Camera.main.transform.position -= delta.x * translateNormal + delta.z * translateDirection;
-            }
-            else
-            {
+                float distance = Vector2.Distance(touch1.position, touch2.position);
+                float lastDistance = Vector2.Distance(touch1.position - touch1.deltaPosition, touch2.position - touch2.deltaPosition);
                 float zoom;
-                zoom = 0.0001f * (lastDistanceSquared - distanceSquared);
+                zoom = 0.1f * (lastDistance - distance);
                 Camera.main.fieldOfView += zoom;
                 float fieldOfView = Camera.main.fieldOfView;
-                if (fieldOfView < 15)
-                {
-                    Camera.main.fieldOfView = 15;
-                }
-                if (fieldOfView > 150)
-                {
-                    Camera.main.fieldOfView = 150;
-                }
+                //if (fieldOfView < 15)
+                //{
+                //    Camera.main.fieldOfView = 15;
+                //}
+                //if (fieldOfView > 150)
+                //{
+                //    Camera.main.fieldOfView = 150;
+                //}
             }
-            
-            lastDistanceSquared = distanceSquared;
         }
     }
 }
