@@ -7,7 +7,12 @@ public class GridDebug : MonoBehaviour {
     public int x;
     public int y;
     public bool destroyCell = false;
-	
+
+    void Start()
+    {
+        destroyCell = false;
+    }
+
 	// Update is called once per frame
 	void Update () {
         if (destroyCell) {

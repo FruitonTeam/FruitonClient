@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum GridCellType { None, New, Scratched, Damaged }
+
 public class GridLayoutManager : MonoBehaviour {
 
     public GameObject GridCellBase;
@@ -13,8 +15,8 @@ public class GridLayoutManager : MonoBehaviour {
     public static GridLayoutManager Instance { get; private set; }
 
     private GameObject[,] SpawnedGrid;
+    private GridCellType[,] SpawnedGridType;
 
-    
     void Awake()
     {
         if (Instance == null)
@@ -38,11 +40,12 @@ public class GridLayoutManager : MonoBehaviour {
         originZ -= ((HeighCount / 2f) - .5f) * CELL_SIZE;
 
         SpawnedGrid = new GameObject[WidthCount, HeighCount];
+        SpawnedGridType = new GridCellType[WidthCount, HeighCount];
 
         for (int i = 0; i < WidthCount; i++) {
             for (int j = 0; j < HeighCount; j++) {
-
-                SpawnedGrid[i,j] = (GameObject) Instantiate(GridCellBase, new Vector3(originX + (i * CELL_SIZE), transform.position.y, originZ + (j * CELL_SIZE)), GridCellBase.transform.rotation, transform);
+                SpawnedGrid[i, j] = (GameObject) Instantiate(GridCellBase, new Vector3(originX + (i * CELL_SIZE), transform.position.y, originZ + (j * CELL_SIZE)), GridCellBase.transform.rotation, transform);
+                SpawnedGridType[i, j] = GridCellType.New;
             }
         }
 
@@ -50,11 +53,24 @@ public class GridLayoutManager : MonoBehaviour {
 	
 	// Destroy one cell of the grid
 	 public bool destroyCell (int x, int y) {
-        if (x >= 0 && x < WidthCount && y >= 0 && y < HeighCount && SpawnedGrid[x,y] != null) {
+        if (x >= 0 && x < WidthCount && y >= 0 && y < HeighCount && SpawnedGrid[x,y] != null)
+        {
+            Debug.Log("Grid Cell [" + x + ", " + y + "] is type " + SpawnedGridType[x, y]);
             Destroy(SpawnedGrid[x, y]);
             SpawnedGrid[x, y] = null;
+            SpawnedGridType[x, y] = GridCellType.None;
             return true;
         }
         return false;
 	}
+
+    // Return type of grid cell
+    public GridCellType gridCellType(int x, int y)
+    {
+        if (x >= 0 && x < WidthCount && y >= 0 && y < HeighCount)
+        {
+            return SpawnedGridType[x, y];
+        }
+        return GridCellType.None;
+    }
 }
