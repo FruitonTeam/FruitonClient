@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 //using GooglePlayGames;
 //using GooglePlayGames.BasicApi;
 
@@ -13,6 +14,7 @@ using UnityEngine.UI;
 public class ConnectionHandler : MonoBehaviour {
 
     private static ConnectionHandler instance;
+    private const string URL_CHAT = "ws://prak.mff.cuni.cz:8010/socket";
     private const string URL_REGISTRATION = "http://prak.mff.cuni.cz:8010/api/register";
     private const string URL_LOGIN = "http://prak.mff.cuni.cz:8010/api/login";
     private const string GOOGLE_ID = "827606142557-f63cu712orq80s6do9n6aa8s3eu3h7ag.apps.googleusercontent.com";
@@ -20,7 +22,7 @@ public class ConnectionHandler : MonoBehaviour {
     private const string GOOGLE_REDIRECT_URI = "https://oauth2.example.com/code";
     private const string GOOGLE_TOKEN_URI = "https://accounts.google.com/o/oauth2/token";
     private string token = null;
-    
+
 
     private const string PROCESS_REGISTRATION_RESULT = "ProcessRegistrationResult";
 
@@ -35,7 +37,7 @@ public class ConnectionHandler : MonoBehaviour {
 
     private ConnectionHandler()
     {
-        
+
     }
 
     public static ConnectionHandler Instance { get; private set; }
@@ -154,7 +156,7 @@ public class ConnectionHandler : MonoBehaviour {
         return headers;
     }
 
-  
+
 
     public void LoginGoogle()
     {
@@ -187,6 +189,32 @@ public class ConnectionHandler : MonoBehaviour {
 
     }
 
+    IEnumerator TestChat()
+    {
+        WebSocket ws = new WebSocket(new Uri("ws://echo.websocket.org"));
+        yield return StartCoroutine(ws.Connect());
+        string msg = "Hello";
+        ws.Send(GetBinaryData(new ChatMsg(msg)));
+        int i = 0;
+        while (true)
+        {
+            string reply = ws.RecvString();
+            if (reply != null)
+            {
+                Debug.Log("Received: " + reply);
+            }
+            Debug.Log("SENT");
+            ws.Send(GetBinaryData(new ChatMsg(msg + i++)));
+            if (ws.error != null)
+            {
+                Debug.LogError("Error: " + ws.error);
+                break;
+            }
+            yield return new WaitForSecondsRealtime(5);
+        }
+        ws.Close();
+    }
+
     IEnumerator PostRegister(WWW www)
     {
         yield return www;
@@ -211,7 +239,7 @@ public class ConnectionHandler : MonoBehaviour {
         {
             Debug.Log("[Login] Post request succeeded.");  //text of success
             Debug.Log("WWW text: " + www.text);
-            token = www.text;  
+            token = www.text;
             SendMessage("ProcessLoginResult", new LoginResultData(login, password, true));
         }
         else
@@ -257,6 +285,7 @@ public class ConnectionHandler : MonoBehaviour {
         {
             DontDestroyOnLoad(gameObject);
             Instance = this;
+            StartCoroutine(TestChat());
         }
         else if (Instance != this)
         {
