@@ -83,7 +83,7 @@ public class TouchControl : MonoBehaviour {
         {
             // Move the camera on a plane that is parallerl to the plane given by board and intrsects with the camera coords.
             Vector3 delta = new Vector3(touch1.deltaPosition.x, 0, touch1.deltaPosition.y) + new Vector3(touch2.deltaPosition.x, 0, touch2.deltaPosition.y);
-            Camera.main.transform.position -= delta.x * translateNormal + delta.z * translateDirection;
+            Camera.main.transform.position -= 0.01f * (delta.x * translateNormal + delta.z * translateDirection);
         }
         // Scale (pinch scale)
         else if (touch1.phase == TouchPhase.Moved || touch2.phase == TouchPhase.Moved)
