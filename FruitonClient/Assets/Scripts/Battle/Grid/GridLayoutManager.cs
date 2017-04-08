@@ -10,29 +10,51 @@ public class GridLayoutManager : MonoBehaviour {
 
     private float CELL_SIZE = 1f;
 
-    //private ArrayList<GameObject> GridCells;
+    public static GridLayoutManager Instance { get; private set; }
 
-	// Use this for initialization
-	void Start () {
+    private GameObject[,] SpawnedGrid;
+
+    
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else if (Instance != this)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    // Use this for initialization
+    void Start() {
         float originX = transform.position.x;
         float originZ = transform.position.z;
 
         CELL_SIZE = GridCellBase.GetComponent<Renderer>().bounds.size.x;
 
-        originX -= (WidthCount / 2) * CELL_SIZE;
-        originZ -= (HeighCount / 2) * CELL_SIZE;
+        originX -= ((WidthCount / 2f) - .5f) * CELL_SIZE;
+        originZ -= ((HeighCount / 2f) - .5f) * CELL_SIZE;
+
+        SpawnedGrid = new GameObject[WidthCount, HeighCount];
 
         for (int i = 0; i < WidthCount; i++) {
             for (int j = 0; j < HeighCount; j++) {
 
-                Instantiate(GridCellBase, new Vector3(originX + (i * CELL_SIZE), transform.position.y, originZ + (j * CELL_SIZE)), GridCellBase.transform.rotation, transform);
+                SpawnedGrid[i,j] = (GameObject) Instantiate(GridCellBase, new Vector3(originX + (i * CELL_SIZE), transform.position.y, originZ + (j * CELL_SIZE)), GridCellBase.transform.rotation, transform);
             }
         }
 
     }
 	
-	// Update is called once per frame
-	void Update () {
-		
+	// Destroy one cell of the grid
+	 public bool destroyCell (int x, int y) {
+        if (x >= 0 && x < WidthCount && y >= 0 && y < HeighCount && SpawnedGrid[x,y] != null) {
+            Destroy(SpawnedGrid[x, y]);
+            SpawnedGrid[x, y] = null;
+            return true;
+        }
+        return false;
 	}
 }
