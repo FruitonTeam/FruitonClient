@@ -1,5 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Xml.Serialization;
 using UnityEngine;
 
 public enum FractionNames { None, GuacamoleGuerrillas, CranberryCrusade, TzatzikiTsardom }
@@ -7,11 +10,23 @@ public enum FractionNames { None, GuacamoleGuerrillas, CranberryCrusade, Tzatzik
 public class GameManager : MonoBehaviour {
     public static GameManager Instance { get; private set; }
 
+    #region Constructor
+
+    private GameManager()
+    {
+        Initialize();
+    }
+
+    #endregion
+
     #region Fields
 
     private string userName = null;
     private string userPassword = null;
     private bool? stayLoggedIn;
+    private IEnumerable<string> myFruitonsIDs;
+    private Fruitons allFruitons;
+    private bool isInitialized = false;
 
     #endregion
 
@@ -104,6 +119,34 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    public IEnumerable<string> MyFruitonsIDs
+    {
+        get
+        {
+            return myFruitonsIDs;
+        }
+    }
+
+    public Fruitons AllFruitons
+    {
+        get
+        {
+            return allFruitons;
+        }
+    }
+
+    public bool IsInitialized
+    {
+        get
+        {
+            return isInitialized;
+        }
+        set
+        {
+            isInitialized = value;
+        }
+    }
+
     #endregion
 
 
@@ -132,6 +175,26 @@ public class GameManager : MonoBehaviour {
     public void LoginOffline()
     {
 
+    }
+
+    public void Initialize()
+    {
+        ParseFruitonsXML();
+        IsInitialized = true;
+    }
+
+    #endregion
+
+    #region Private
+
+    private void ParseFruitonsXML()
+    {
+        XmlSerializer deserializer = new XmlSerializer(typeof(Fruitons));
+        TextReader reader = new StreamReader(@"Data/FruitonsDefs.xml");
+        object obj = deserializer.Deserialize(reader);
+        allFruitons = (Fruitons)obj;
+        Debug.Log("All fruitons deserialized: " + allFruitons);
+        reader.Close();
     }
 
     #endregion

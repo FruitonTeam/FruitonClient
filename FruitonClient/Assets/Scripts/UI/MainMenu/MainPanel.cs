@@ -4,6 +4,15 @@ using UnityEngine;
 
 public class MainPanel : MainMenuPanel
 {
+    public override bool SetPanelActive(bool toggle)
+    {
+        if (toggle)
+        {
+            
+        }
+        return base.SetPanelActive(toggle);
+    }
+
     public void OnlineContinue()
     {
         PanelManager.Instance.SwitchPanels(MenuPanel.Online);

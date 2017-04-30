@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<FruitonsDefs>
+	<Fruiton id="test_apple" model="Apple_low">
+	</Fruiton>
+	<Fruiton id="test_kiwi" model="Kiwi">
+	</Fruiton>	
+	<Fruiton id="test_apple" model="Apple_low">
+	</Fruiton>
+	<Fruiton id="test_kiwi" model="Kiwi">
+	</Fruiton>	
+	<Fruiton id="test_apple" model="Apple_low">
+	</Fruiton>
+	<Fruiton id="test_kiwi" model="Kiwi">
+	</Fruiton>	
+	<Fruiton id="test_apple" model="Apple_low">
+	</Fruiton>
+	<Fruiton id="test_kiwi" model="Kiwi">
+	</Fruiton>	
+	<Fruiton id="test_apple" model="Apple_low">
+	</Fruiton>
+	<Fruiton id="test_kiwi" model="Kiwi">
+	</Fruiton>	
+	<Fruiton id="test_apple" model="Apple_low">
+	</Fruiton>
+	<Fruiton id="test_kiwi" model="Kiwi">
+	</Fruiton>
+</FruitonsDefs>

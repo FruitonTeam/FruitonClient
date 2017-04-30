@@ -1,17 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class FridgePanel : MainMenuPanel
 {
-
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public override bool SetPanelActive(bool toggle)
+    {
+        GameManager gameManager = GameManager.Instance;
+        SceneManager.LoadScene("Fridge");
+        return true;
+    }
 }
