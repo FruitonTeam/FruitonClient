@@ -19,7 +19,7 @@ public class FridgeManager : MonoBehaviour {
         Vector3 position = Fruitons.transform.position;
         foreach (Fruiton fruiton in allFruitons.FruitonList)
         {
-            fruiton.gameobject = Instantiate(Resources.Load("Fruitons/" + fruiton.Model, typeof(GameObject))) as GameObject;
+            fruiton.gameobject = Instantiate(Resources.Load("Models/" + fruiton.Model, typeof(GameObject))) as GameObject;
             GameObject fruitonObject = fruiton.gameobject;
             fruitonObject.transform.position = position;
             position.x += 300;
@@ -29,5 +29,12 @@ public class FridgeManager : MonoBehaviour {
 
     }
 
+    void Update()
+    {
+        foreach (Fruiton fruiton in GameManager.Instance.AllFruitons.FruitonList)
+        {
+            fruiton.gameobject.transform.Rotate(new Vector3(0, 50 * Time.deltaTime, 0));
+        }
+    }
 
 }

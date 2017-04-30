@@ -10,15 +10,6 @@ public enum FractionNames { None, GuacamoleGuerrillas, CranberryCrusade, Tzatzik
 public class GameManager : MonoBehaviour {
     public static GameManager Instance { get; private set; }
 
-    #region Constructor
-
-    private GameManager()
-    {
-        Initialize();
-    }
-
-    #endregion
-
     #region Fields
 
     private string userName = null;
@@ -27,7 +18,7 @@ public class GameManager : MonoBehaviour {
     private IEnumerable<string> myFruitonsIDs;
     private Fruitons allFruitons;
     private bool isInitialized = false;
-
+    private TextAsset fruitonDefs;
     #endregion
 
     #region Properties
@@ -189,8 +180,9 @@ public class GameManager : MonoBehaviour {
 
     private void ParseFruitonsXML()
     {
+        
         XmlSerializer deserializer = new XmlSerializer(typeof(Fruitons));
-        TextReader reader = new StreamReader(@"Data/FruitonsDefs.xml");
+        var reader = new System.IO.StringReader(fruitonDefs.text);
         object obj = deserializer.Deserialize(reader);
         allFruitons = (Fruitons)obj;
         Debug.Log("All fruitons deserialized: " + allFruitons);
@@ -199,12 +191,14 @@ public class GameManager : MonoBehaviour {
 
     #endregion
 
-    void Awake()
+    void Start()
     {
         if (Instance == null)
         {
             DontDestroyOnLoad(gameObject);
             Instance = this;
+            fruitonDefs = (TextAsset)Resources.Load("XML/FruitonsDefs");
+            Initialize();
         }
         else if (Instance != this)
         {
