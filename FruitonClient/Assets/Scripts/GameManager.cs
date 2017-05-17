@@ -140,10 +140,14 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    List<Salad> Salads
+    public List<Salad> Salads
     {
         get
         {
+            if (salads == null)
+            {
+                salads = new List<Salad>();
+            }
             return salads;
         }
         set

@@ -2,7 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Salad : MonoBehaviour {
+public class Salad {
+
+    private string name;
+
+    public Salad(string name)
+    {
+        this.name = name;
+        fruitonIDs = new List<string>();
+    }
 
     public Salad(List<string> ids)
     {
@@ -21,6 +29,23 @@ public class Salad : MonoBehaviour {
         {
             fruitonIDs = value;
         }
+    }
+
+    public string Name
+    {
+        get
+        {
+            return name;
+        }
+        set
+        {
+            name = value;
+        }
+    }
+
+    public void Add(string fruitonID)
+    {
+        fruitonIDs.Add(fruitonID);
     }
     
 }
