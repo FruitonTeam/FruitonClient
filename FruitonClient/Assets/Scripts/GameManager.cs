@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml.Serialization;
 using UnityEngine;
 
@@ -19,6 +20,7 @@ public class GameManager : MonoBehaviour {
     private Fruitons allFruitons;
     private bool isInitialized = false;
     private TextAsset fruitonDefs;
+    private List<Salad> salads;
     #endregion
 
     #region Properties
@@ -138,6 +140,18 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    List<Salad> Salads
+    {
+        get
+        {
+            return salads;
+        }
+        set
+        {
+            salads = value; 
+        }
+    }
+
     #endregion
 
 
@@ -187,6 +201,23 @@ public class GameManager : MonoBehaviour {
         allFruitons = (Fruitons)obj;
         Debug.Log("All fruitons deserialized: " + allFruitons);
         reader.Close();
+    }
+
+    private void SerializeBinary(object toBeSerialized, string filename)
+    {
+        FileStream stream = File.Create(filename);
+        var formatter = new BinaryFormatter();
+        formatter.Serialize(stream, toBeSerialized);
+        stream.Close();
+    }
+
+    private  T DeserializeBinary<T>(string filename)
+    {
+        FileStream stream = File.OpenRead(filename);
+        var formatter = new BinaryFormatter();
+        T deserialized = (T)formatter.Deserialize(stream);
+        stream.Close();
+        return deserialized;
     }
 
     #endregion

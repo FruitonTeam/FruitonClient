@@ -21,6 +21,7 @@ public class ConnectionHandler : MonoBehaviour {
     private const string GOOGLE_CLIENT_SECRET = "NyYlQJICuxYX3AnzChou2X8i";
     private const string GOOGLE_REDIRECT_URI = "https://oauth2.example.com/code";
     private const string GOOGLE_TOKEN_URI = "https://accounts.google.com/o/oauth2/token";
+    private string token;
     ModelSerializer mySerializer;
 
     private const string PROCESS_REGISTRATION_RESULT = "ProcessRegistrationResult";
@@ -214,6 +215,8 @@ public class ConnectionHandler : MonoBehaviour {
         if (string.IsNullOrEmpty(www.error))
         {
             Debug.Log("[Login] Post request succeeded.");  //text of success
+            Debug.Log("WWW text: " + www.text);
+            token = www.text;  
             SendMessage("ProcessLoginResult", new LoginResultData(login, password, true));
         }
         else
