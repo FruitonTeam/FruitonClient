@@ -1,13 +1,15 @@
-﻿using System.Collections;
+﻿using DataModels;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class FridgeManager : MonoBehaviour {
+public class FridgeManager : MonoBehaviour
+{
 
     public Camera FruitonCamera;
     public GameObject Fruitons;
-    public GameObject AddSalad;
+    public GameObject AddSaladButton;
     public GameObject Salads;
     public GameObject Highlight;
     public GameObject CurrentSaladObject;
@@ -15,11 +17,13 @@ public class FridgeManager : MonoBehaviour {
     Dictionary<GameObject, Salad> saladDictionary;
     Vector3 currentSaladTranslation;
     Vector3 defaultCurrentSaladPosition;
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
+        saladDictionary = new Dictionary<GameObject, Salad>();
         InitializeAllFruitons();
         InitializeSalads();
-        saladDictionary = new Dictionary<GameObject, Salad>();
+
         currentSaladTranslation = Vector3.zero;
         currentSalad = null;
         defaultCurrentSaladPosition = CurrentSaladObject.transform.position;
@@ -27,6 +31,12 @@ public class FridgeManager : MonoBehaviour {
 
     private void InitializeSalads()
     {
+        GameManager gameManager = GameManager.Instance;
+        foreach (Salad salad in gameManager.Salads.salads)
+        {
+            AddSalad(salad);
+        }
+
 
     }
 
@@ -54,7 +64,7 @@ public class FridgeManager : MonoBehaviour {
             position.x += 50;
             fruitonObject.transform.parent = Fruitons.transform;
             //fruitonObject.ChangeLayerRecursively("3DUI");
-            
+
         }
     }
 
@@ -89,7 +99,7 @@ public class FridgeManager : MonoBehaviour {
         if (Physics.Raycast(ray, out hit))
         {
             string hitName = hit.transform.name;
-            if (hitName == AddSalad.name || hitName == "Salad" || hitName == "Panel_Salads" || hitName == "Highlight" || IsInSaladPanel(hitName))
+            if (hitName == AddSaladButton.name || hitName == "Salad" || hitName == "Panel_Salads" || hitName == "Highlight" || IsInSaladPanel(hitName))
             {
                 Salads.transform.position += new Vector3(25 * scroll, 0, 0);
             }
@@ -101,7 +111,7 @@ public class FridgeManager : MonoBehaviour {
             {
                 CurrentSaladObject.transform.position += new Vector3(25 * scroll, 0, 0);
             }
-                
+
         }
     }
 
@@ -124,70 +134,37 @@ public class FridgeManager : MonoBehaviour {
 
         if (Physics.Raycast(ray, out hit))
         {
-            if (hit.transform.name == AddSalad.name)
+            // Add a new Salad
+            if (hit.transform.name == AddSaladButton.name)
             {
-                GameManager gameManager = GameManager.Instance;
-                GameObject saladObject = Instantiate(Resources.Load("Models/Salad", typeof(GameObject))) as GameObject;
-                saladObject.transform.position = AddSalad.transform.position;
-                saladObject.transform.parent = Salads.transform;
-                saladObject.name = "Salad";
-                AddSalad.transform.position += new Vector3(50, 0, 0);
-
-                GameObject signCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                saladObject.AddComponent<SphereCollider>();
-                SphereCollider collider = saladObject.GetComponent<SphereCollider>();
-                collider.radius = 1;
-                signCube.transform.position = saladObject.transform.position - new Vector3(0,15,20);
-                signCube.transform.localScale = new Vector3(30,10,0.01f);
-                signCube.GetComponent<Renderer>().material.color = new Color(0.2f, 0.3f, 0.1f);
-                signCube.transform.parent = saladObject.transform;
-                signCube.name = "Salad_Cube";
-                
-
-                GameObject text3D = new GameObject("Sign");
-                TextMesh mesh = text3D.AddComponent<TextMesh>();
-                mesh.text = "New Salad" + gameManager.Salads.Count;
-                mesh.anchor = TextAnchor.MiddleCenter;
-                mesh.fontSize = 300;
-                mesh.characterSize = 0.18f;
-                text3D.transform.position = signCube.transform.position;
-                text3D.transform.parent = signCube.transform;
-                text3D.name = "Salad_3DText";
-                Salad newSalad = new Salad(mesh.text);
-                gameManager.Salads.Add(newSalad);
-
-                saladDictionary.Add(saladObject, newSalad);
+                AddSalad(null);
 
             }
             // Switch to another Salad
             else if (hit.transform.name == "Salad")
             {
                 currentSaladTranslation = Vector3.zero;
-                CurrentSaladObject.transform.position = defaultCurrentSaladPosition;                
+                CurrentSaladObject.transform.position = defaultCurrentSaladPosition;
                 ClearCurrentSalad();
                 Vector3 hitPosition = hit.transform.position;
                 Highlight.transform.position = new Vector3(hitPosition.x, hitPosition.y - 1, 120);
                 Highlight.transform.parent = hit.transform;
                 currentSalad = saladDictionary[hit.collider.gameObject];
-                foreach (string fruitonID in currentSalad.FruitonIDs)
+                foreach (string fruitonID in currentSalad.fruitonIDs)
                 {
                     GameObject saladMember = Instantiate(Resources.Load("Models/" + fruitonID, typeof(GameObject))) as GameObject;
                     saladMember.name = "CurrentSalad_" + fruitonID;
                     saladMember.transform.position = defaultCurrentSaladPosition + currentSaladTranslation;
                     currentSaladTranslation.x += 50;
                     saladMember.transform.parent = CurrentSaladObject.transform;
-                }                
+                }
             }
             // Pick a new Fruiton in Salad.
             else if (currentSalad != null && HitsChildOf(Fruitons, hit.transform.name))
             {
-                GameObject saladMember = Instantiate(hit.collider.gameObject) as GameObject;
-                saladMember.name = "CurrentSalad_" + saladMember.name;
-                saladMember.transform.position = CurrentSaladObject.transform.position + currentSaladTranslation;
-                currentSaladTranslation.x += 50;
-                saladMember.transform.parent = CurrentSaladObject.transform;
-                currentSalad.Add(hit.transform.name);
+                AddSaladMember(hit.collider.gameObject);
             }
+            // Remove a Fruiton from the current salad.
             else if (IsInCurrentSalad(hit.transform.name))
             {
                 GameObject toBeDestroyed = hit.transform.gameObject;
@@ -202,9 +179,63 @@ public class FridgeManager : MonoBehaviour {
                 }
                 currentSaladTranslation -= new Vector3(50, 0, 0);
             }
+            ProtoSerializer.Instance.SerializeSalads();
         }
     }
-    
+
+    private void AddSaladMember(GameObject pattern)
+    {
+        GameObject saladMember = Instantiate(pattern) as GameObject;
+        saladMember.name = "CurrentSalad_" + saladMember.name;
+        saladMember.transform.position = CurrentSaladObject.transform.position + currentSaladTranslation;
+        currentSaladTranslation.x += 50;
+        saladMember.transform.parent = CurrentSaladObject.transform;
+        currentSalad.Add(pattern.name);
+    }
+
+    private void AddSalad(Salad salad)
+    {
+        GameManager gameManager = GameManager.Instance;
+        GameObject saladObject = Instantiate(Resources.Load("Models/Salad", typeof(GameObject))) as GameObject;
+        saladObject.transform.position = AddSaladButton.transform.position;
+        saladObject.transform.parent = Salads.transform;
+        saladObject.name = "Salad";
+        AddSaladButton.transform.position += new Vector3(50, 0, 0);
+
+        GameObject signCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        saladObject.AddComponent<SphereCollider>();
+        SphereCollider collider = saladObject.GetComponent<SphereCollider>();
+        collider.radius = 1;
+        signCube.transform.position = saladObject.transform.position - new Vector3(0, 15, 20);
+        signCube.transform.localScale = new Vector3(30, 10, 0.01f);
+        signCube.GetComponent<Renderer>().material.color = new Color(0.2f, 0.3f, 0.1f);
+        signCube.transform.parent = saladObject.transform;
+        signCube.name = "Salad_Cube";
+
+        GameObject text3D = new GameObject("Sign");
+        TextMesh mesh = text3D.AddComponent<TextMesh>();
+
+        mesh.anchor = TextAnchor.MiddleCenter;
+        mesh.fontSize = 300;
+        mesh.characterSize = 0.18f;
+        text3D.transform.position = signCube.transform.position;
+        text3D.transform.parent = signCube.transform;
+        text3D.name = "Salad_3DText";
+        Salad newSalad;
+        if (salad == null)
+        {
+            mesh.text = "New Salad" + gameManager.Salads.Count;
+            newSalad = new Salad(mesh.text);
+            gameManager.Salads.Add(newSalad);
+        }
+        else
+        {
+            newSalad = salad;
+            mesh.text = salad.name;
+        }
+        saladDictionary.Add(saladObject, newSalad);
+    }
+
     private bool IsInCurrentSalad(string name)
     {
         string[] splitName = name.Split('_');

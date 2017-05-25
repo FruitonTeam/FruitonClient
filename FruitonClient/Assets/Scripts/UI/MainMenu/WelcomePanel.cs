@@ -7,6 +7,10 @@ public class WelcomePanel : MainMenuPanel {
     public void WelcomeContinue()
     {
         GameManager gameManager = GameManager.Instance;
+        if (ConnectionHandler.Instance.IsLogged())
+        {
+            PanelManager.Instance.SwitchPanels(MenuPanel.Main);
+        }
         if (gameManager.HasRememberedUser())
         {
             ConnectionHandler.Instance.LoginCasual(gameManager.UserName, gameManager.UserPassword, true);

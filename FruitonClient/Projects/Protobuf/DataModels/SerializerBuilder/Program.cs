@@ -11,6 +11,8 @@ namespace SerializerBuilder
             var model = TypeModel.Create();
             model.Add(typeof(RegistrationForm), true);
             model.Add(typeof(LoginForm), true);
+            model.Add(typeof(Salad), true);
+            model.Add(typeof(SaladList), true);
 
             model.AllowParseableTypes = true;
             model.AutoAddMissingTypes = true;

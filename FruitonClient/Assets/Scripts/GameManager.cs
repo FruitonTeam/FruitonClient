@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DataModels;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -20,7 +21,7 @@ public class GameManager : MonoBehaviour {
     private Fruitons allFruitons;
     private bool isInitialized = false;
     private TextAsset fruitonDefs;
-    private List<Salad> salads;
+    private SaladList salads;
     #endregion
 
     #region Properties
@@ -140,13 +141,13 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    public List<Salad> Salads
+    public SaladList Salads
     {
         get
         {
             if (salads == null)
             {
-                salads = new List<Salad>();
+                salads = new SaladList();
             }
             return salads;
         }
@@ -188,6 +189,8 @@ public class GameManager : MonoBehaviour {
 
     public void Initialize()
     {
+        fruitonDefs = (TextAsset)Resources.Load("FruitonsDefs", typeof(TextAsset));
+        ProtoSerializer.Instance.DeserializeSalads();
         ParseFruitonsXML();
         IsInitialized = true;
     }
@@ -232,7 +235,7 @@ public class GameManager : MonoBehaviour {
         {
             DontDestroyOnLoad(gameObject);
             Instance = this;
-            fruitonDefs = (TextAsset)Resources.Load("XML/FruitonsDefs");
+
             Initialize();
         }
         else if (Instance != this)

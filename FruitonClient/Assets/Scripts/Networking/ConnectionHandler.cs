@@ -6,6 +6,7 @@ using DataModels;
 using System.IO;
 using ProtoBuf;
 using UnityEngine.UI;
+using System;
 //using GooglePlayGames;
 //using GooglePlayGames.BasicApi;
 
@@ -21,8 +22,8 @@ public class ConnectionHandler : MonoBehaviour {
     private const string GOOGLE_CLIENT_SECRET = "NyYlQJICuxYX3AnzChou2X8i";
     private const string GOOGLE_REDIRECT_URI = "https://oauth2.example.com/code";
     private const string GOOGLE_TOKEN_URI = "https://accounts.google.com/o/oauth2/token";
-    private string token;
-    ModelSerializer mySerializer;
+    private string token = null;
+    
 
     private const string PROCESS_REGISTRATION_RESULT = "ProcessRegistrationResult";
 
@@ -37,7 +38,7 @@ public class ConnectionHandler : MonoBehaviour {
 
     private ConnectionHandler()
     {
-        mySerializer = new ModelSerializer();
+        
     }
 
     public static ConnectionHandler Instance { get; private set; }
@@ -53,7 +54,7 @@ public class ConnectionHandler : MonoBehaviour {
     {
         RegistrationForm newUser = new RegistrationForm(login, password, email);
 
-        byte[] binaryData = GetBinaryData(useProtobuf, newUser);
+        byte[] binaryData = ProtoSerializer.Instance.GetBinaryData(newUser, useProtobuf);
         Dictionary<string, string> headers = GetRequestHeaders(useProtobuf);
         
         WWW www = new WWW(URL_REGISTRATION, binaryData, headers);
@@ -63,10 +64,10 @@ public class ConnectionHandler : MonoBehaviour {
     //To be deleted
     public void TestRegister()
     {
-        GameObject.Find("Text").GetComponent<Text>().text = "Clicked" + Random.value;
+        GameObject.Find("Text").GetComponent<Text>().text = "Clicked" + UnityEngine.Random.value;
         RegistrationForm newUser = new RegistrationForm("android", "randomhhd", "randosdm@random.com");
 
-        byte[] binaryData = GetBinaryData(true, newUser);
+        byte[] binaryData = ProtoSerializer.Instance.GetBinaryData(newUser);
         Dictionary<string, string> headers = GetRequestHeaders(true);
 
         WWW www = new WWW(URL_REGISTRATION, binaryData, headers);
@@ -78,7 +79,7 @@ public class ConnectionHandler : MonoBehaviour {
         LoginForm loginData = new LoginForm(login, password);
         
         Dictionary<string, string> headers = GetRequestHeaders(useProtobuf);
-        byte[] binaryData = GetBinaryData(useProtobuf, loginData);
+        byte[] binaryData = ProtoSerializer.Instance.GetBinaryData(loginData, useProtobuf);
 
         WWW www = new WWW(URL_LOGIN, binaryData, headers);
         StartCoroutine(PostLogin(www, login, password));
@@ -142,24 +143,7 @@ public class ConnectionHandler : MonoBehaviour {
         return headers;
     }
 
-    private byte[] GetBinaryData(bool useProtobuf, object data)
-    {
-        byte[] binaryData = null;
-        MemoryStream memoryStream = new MemoryStream();
-        mySerializer.Serialize(memoryStream, data);
-        if (useProtobuf)
-        {
-            binaryData = memoryStream.ToArray();
-        }
-        else
-        {
-            // Use simple JSON
-            string serializedMessage = System.Convert.ToBase64String(memoryStream.ToArray());
-            serializedMessage = JsonUtility.ToJson(data);
-            binaryData = System.Text.Encoding.ASCII.GetBytes(serializedMessage.ToCharArray());
-        }
-        return binaryData;
-    }
+  
 
     public void LoginGoogle()
     {
@@ -267,6 +251,11 @@ public class ConnectionHandler : MonoBehaviour {
         {
             Destroy(gameObject);
         }
+    }
+
+    public bool IsLogged()
+    {
+        return token != null;
     }
 
     // Because SendMessage can only acceppt 1 argument
