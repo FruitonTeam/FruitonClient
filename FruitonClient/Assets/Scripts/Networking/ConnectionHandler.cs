@@ -1,12 +1,9 @@
-﻿using System.Collections;
+﻿using Google.Protobuf;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Networking;
-using DataModels;
 using System.IO;
-using ProtoBuf;
+using UnityEngine;
 using UnityEngine.UI;
-using System;
 //using GooglePlayGames;
 //using GooglePlayGames.BasicApi;
 
@@ -52,9 +49,14 @@ public class ConnectionHandler : MonoBehaviour {
     /// <param name="useProtobuf"> Determines whether protobuf encoding should be used. It is recommended to use protobuf. </param>
     public void Register(string login, string password, string email, bool useProtobuf)
     {
-        RegistrationForm newUser = new RegistrationForm(login, password, email);
+        var newUser = new RegistrationData();
+        newUser.Login = login;
+        newUser.Password = password;
+        newUser.Email = email;
 
-        byte[] binaryData = ProtoSerializer.Instance.GetBinaryData(newUser, useProtobuf);
+        var binaryData = new byte[newUser.CalculateSize()];
+        var stream = new CodedOutputStream(binaryData);
+        newUser.WriteTo(stream);
         Dictionary<string, string> headers = GetRequestHeaders(useProtobuf);
         
         WWW www = new WWW(URL_REGISTRATION, binaryData, headers);
@@ -65,9 +67,14 @@ public class ConnectionHandler : MonoBehaviour {
     public void TestRegister()
     {
         GameObject.Find("Text").GetComponent<Text>().text = "Clicked" + UnityEngine.Random.value;
-        RegistrationForm newUser = new RegistrationForm("android", "randomhhd", "randosdm@random.com");
+        RegistrationData newUser = new RegistrationData();
+        newUser.Login = "android";
+        newUser.Password = "randomhd";
+        newUser.Email = "randosdm@random.com";
 
-        byte[] binaryData = ProtoSerializer.Instance.GetBinaryData(newUser);
+        var binaryData = new byte[newUser.CalculateSize()];
+        var stream = new CodedOutputStream(binaryData);
+        newUser.WriteTo(stream);
         Dictionary<string, string> headers = GetRequestHeaders(true);
 
         WWW www = new WWW(URL_REGISTRATION, binaryData, headers);
@@ -76,10 +83,14 @@ public class ConnectionHandler : MonoBehaviour {
 
     public void LoginCasual(string login, string password, bool useProtobuf)
     {
-        LoginForm loginData = new LoginForm(login, password);
-        
+        LoginData loginData = new LoginData();
+        loginData.Login = login;
+        loginData.Password = password;
+
+        var binaryData = new byte[loginData.CalculateSize()];
+        var stream = new CodedOutputStream(binaryData);
+        loginData.WriteTo(stream);
         Dictionary<string, string> headers = GetRequestHeaders(useProtobuf);
-        byte[] binaryData = ProtoSerializer.Instance.GetBinaryData(loginData, useProtobuf);
 
         WWW www = new WWW(URL_LOGIN, binaryData, headers);
         StartCoroutine(PostLogin(www, login, password));
