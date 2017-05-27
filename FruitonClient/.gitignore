@@ -1,3 +1,8 @@
+# =================== #
+# Generated protobufs #
+# =================== #
+Assets/Scripts/Protobufs*
+
 # =============== #
 # Unity generated #
 # =============== #
