@@ -25,7 +25,7 @@ e.g. `SETX FRUITON_PROTOBUFS C:/Users/Username/Documents/Fruiton/Protobufs`
 
 Compiling .proto files
 --------------
-###Windows
+### Windows
 1. Make sure the enviroment variable `FRUITON_PROTOBUFS` is pointing to the folder with your .proto files and
 that they are up to date.
 2. Run the `build.bat` script found in the root folder.
