@@ -15,7 +15,7 @@ SET kernel_dest=FruitonClient\Assets\Scripts\Kernel\Generated
 
 IF NOT EXIST %kernel_dest% mkdir %kernel_dest%
 
-haxe -cs %kernel_dest% -cp %FRUITON_KERNEL% Kernel.hx
+haxe -D no-compilation -cs %kernel_dest% -cp %FRUITON_KERNEL% Kernel.hx
 
 IF NOT DEFINED FRUITON_PROTOBUFS (
     echo Enviroment variable FRUITON_PROTOBUFS is not defined!
