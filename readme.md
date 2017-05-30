@@ -15,17 +15,26 @@ Prerequisites:
     that is in your `PATH` enviroment variable (recommended if you're also planning to work on the game server)
     or move it to the project root folder, as the build script is located there
 - [.proto files (Protobuf Definitions)](http://prak.mff.cuni.cz:7990/projects/FRUIT/repos/protobufs)
-    - Git url: [`http://prak.mff.cuni.cz:7990/scm/fruit/protobufs.git`](http://jopez@prak.mff.cuni.cz:7990/scm/fruit/protobufs.git)
+    - Git url: [`http://prak.mff.cuni.cz:7990/scm/fruit/protobufs.git`](http://prak.mff.cuni.cz:7990/scm/fruit/protobufs.git)
+- [Haxe 3.4.2](https://haxe.org/download/)
+    - Direct Links:
+        [Windows](https://haxe.org/download/file/3.4.2/haxe-3.4.2-win.exe/),
+        [OS X](https://haxe.org/download/file/3.4.2/haxe-3.4.2-osx-installer.pkg/)
+- [Fruiton Haxe Kernel](http://prak.mff.cuni.cz:7990/projects/FRUIT/repos/kernel/browse)
+    - Git url: [`http://prak.mff.cuni.cz:7990/scm/fruit/kernel.git`](http://prak.mff.cuni.cz:7990/scm/fruit/kernel.git)
 - Enviroment Variables
     - `FRUITON_PROTOBUFS` - set this variable to absolute path of the folder containing .proto files
+    - `FRUITON_KERNEL` - set this variable to absolute path of the folder containing Fruiton Haxe Kernel
 
 
 Note: On Windows enviroment variables can be set using the command `SETX`,
 e.g. `SETX FRUITON_PROTOBUFS C:/Users/Username/Documents/Fruiton/Protobufs`
 
-Compiling .proto files
+Compiling .proto files and Haxe Kernel
 --------------
-### Windows
+#### Windows
 1. Make sure the enviroment variable `FRUITON_PROTOBUFS` is pointing to the folder with your .proto files and
 that they are up to date.
-2. Run the `build.bat` script found in the root folder.
+2. Make sure the enviroment variable `FRUITON_KERNEL` is pointing to the folder with your Fruiton Haxe Kernel
+project and that it is up to date.
+3. Run the `build.bat` script found in the root folder.

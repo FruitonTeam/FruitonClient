@@ -3,6 +3,11 @@
 # =================== #
 Assets/Scripts/Protobufs*
 
+# =================== #
+# Generated Haxe #
+# =================== #
+Assets/Scripts/Kernel/Generated*
+
 # =============== #
 # Unity generated #
 # =============== #
