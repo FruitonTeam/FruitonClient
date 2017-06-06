@@ -5,6 +5,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using Cz.Cuni.Mff.Fruiton.Dto;
 //using GooglePlayGames;
 //using GooglePlayGames.BasicApi;
 
@@ -89,10 +90,8 @@ public class ConnectionHandler : MonoBehaviour {
         loginData.Login = login;
         loginData.Password = password;
 
-        var binaryData = new byte[loginData.CalculateSize()];
-        var stream = new CodedOutputStream(binaryData);
-        loginData.WriteTo(stream);
         Dictionary<string, string> headers = GetRequestHeaders(useProtobuf);
+        var binaryData = getBinaryData(loginData);
 
         WWW www = new WWW(URL_LOGIN, binaryData, headers);
         StartCoroutine(PostLogin(www, login, password));
@@ -157,7 +156,6 @@ public class ConnectionHandler : MonoBehaviour {
     }
 
 
-
     public void LoginGoogle()
     {
 
@@ -191,10 +189,16 @@ public class ConnectionHandler : MonoBehaviour {
 
     IEnumerator TestChat()
     {
-        WebSocket ws = new WebSocket(new Uri("ws://echo.websocket.org"));
+        var baseMessage = "Hello";
+        var chatMessage = new ChatMsg();
+        chatMessage.Msg = baseMessage;
+        chatMessage.Recipient = "Paľko";
+
+        // test server that echoes every received message
+        //WebSocket ws = new WebSocket(new Uri("ws://echo.websocket.org"));
+        WebSocket ws = new WebSocket(new Uri(URL_CHAT));
         yield return StartCoroutine(ws.Connect());
-        string msg = "Hello";
-        ws.Send(GetBinaryData(new ChatMsg(msg)));
+        ws.Send(getBinaryData(chatMessage));
         int i = 0;
         while (true)
         {
@@ -204,7 +208,8 @@ public class ConnectionHandler : MonoBehaviour {
                 Debug.Log("Received: " + reply);
             }
             Debug.Log("SENT");
-            ws.Send(GetBinaryData(new ChatMsg(msg + i++)));
+            chatMessage.Msg = baseMessage + i;
+            ws.Send(getBinaryData(chatMessage));
             if (ws.error != null)
             {
                 Debug.LogError("Error: " + ws.error);
@@ -313,4 +318,12 @@ public class ConnectionHandler : MonoBehaviour {
         }
     }
 
+    private byte[] getBinaryData(IMessage protobuf)
+    {
+        var binaryData = new byte[protobuf.CalculateSize()];
+        var stream = new CodedOutputStream(binaryData);
+        protobuf.WriteTo(stream);
+
+        return binaryData;
+    }
 }
