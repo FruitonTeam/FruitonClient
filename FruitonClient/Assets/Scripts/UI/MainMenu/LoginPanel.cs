@@ -44,7 +44,7 @@ public class LoginPanel : MainMenuPanel
         string name = LoginName.text;
         string password = LoginPassword.text;
 
-        connectionHandler.LoginCasual(name, password, true);
+        connectionHandler.LoginBasic(name, password, true);
 
     }
 

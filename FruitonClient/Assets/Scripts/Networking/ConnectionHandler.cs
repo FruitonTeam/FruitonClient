@@ -16,8 +16,7 @@ public class ConnectionHandler : MonoBehaviour {
 
     private static ConnectionHandler instance;
     private const string URL_CHAT = "ws://prak.mff.cuni.cz:8050/fruiton/socket";
-    private const string URL_REGISTRATION = "http://prak.mff.cuni.cz:8050/fruiton/api/register";
-    private const string URL_LOGIN = "http://prak.mff.cuni.cz:8050/fruiton/api/login";
+    private const string URL_API = "http://prak.mff.cuni.cz:8050/fruiton/api/";
     private const string GOOGLE_ID = "827606142557-f63cu712orq80s6do9n6aa8s3eu3h7ag.apps.googleusercontent.com";
     private const string GOOGLE_CLIENT_SECRET = "NyYlQJICuxYX3AnzChou2X8i";
     private const string GOOGLE_REDIRECT_URI = "https://oauth2.example.com/code";
@@ -62,29 +61,11 @@ public class ConnectionHandler : MonoBehaviour {
         newUser.WriteTo(stream);
         Dictionary<string, string> headers = GetRequestHeaders(useProtobuf);
         
-        WWW www = new WWW(URL_REGISTRATION, binaryData, headers);
+        WWW www = new WWW(URL_API+"register", binaryData, headers);
         StartCoroutine(PostRegister(www));
     }
 
-    //To be deleted
-    public void TestRegister()
-    {
-        GameObject.Find("Text").GetComponent<Text>().text = "Clicked" + UnityEngine.Random.value;
-        RegistrationData newUser = new RegistrationData();
-        newUser.Login = "android";
-        newUser.Password = "randomhd";
-        newUser.Email = "randosdm@random.com";
-
-        var binaryData = new byte[newUser.CalculateSize()];
-        var stream = new CodedOutputStream(binaryData);
-        newUser.WriteTo(stream);
-        Dictionary<string, string> headers = GetRequestHeaders(true);
-
-        WWW www = new WWW(URL_REGISTRATION, binaryData, headers);
-        StartCoroutine(PostRegister(www));
-    }
-
-    public void LoginCasual(string login, string password, bool useProtobuf)
+    public void LoginBasic(string login, string password, bool useProtobuf)
     {
         LoginData loginData = new LoginData();
         loginData.Login = login;
@@ -93,7 +74,7 @@ public class ConnectionHandler : MonoBehaviour {
         Dictionary<string, string> headers = GetRequestHeaders(useProtobuf);
         var binaryData = getBinaryData(loginData);
 
-        WWW www = new WWW(URL_LOGIN, binaryData, headers);
+        WWW www = new WWW(URL_API+"login", binaryData, headers);
         StartCoroutine(PostLogin(www, login, password));
     }
 

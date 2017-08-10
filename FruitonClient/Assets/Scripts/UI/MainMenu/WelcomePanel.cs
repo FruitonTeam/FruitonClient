@@ -13,7 +13,7 @@ public class WelcomePanel : MainMenuPanel {
         }
         if (gameManager.HasRememberedUser())
         {
-            ConnectionHandler.Instance.LoginCasual(gameManager.UserName, gameManager.UserPassword, true);
+            ConnectionHandler.Instance.LoginBasic(gameManager.UserName, gameManager.UserPassword, true);
         }
         else
         {
