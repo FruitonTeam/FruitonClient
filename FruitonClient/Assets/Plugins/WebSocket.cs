@@ -11,10 +11,12 @@ using System.Runtime.InteropServices;
 public class WebSocket
 {
 	private Uri mUrl;
+    private string loginToken;
 
-	public WebSocket(Uri url)
+	public WebSocket(Uri url, string loginToken)
 	{
 		mUrl = url;
+        this.loginToken = loginToken;
 
 		string protocol = mUrl.Scheme;
 		if (!protocol.Equals("ws") && !protocol.Equals("wss"))
@@ -108,10 +110,12 @@ public class WebSocket
 	public IEnumerator Connect()
 	{
 		m_Socket = new WebSocketSharp.WebSocket(mUrl.ToString());
+        m_Socket.SetLoginToken(loginToken);
 		m_Socket.OnMessage += (sender, e) => m_Messages.Enqueue (e.RawData);
 		m_Socket.OnOpen += (sender, e) => m_IsConnected = true;
 		m_Socket.OnError += (sender, e) => m_Error = e.Message;
 		m_Socket.ConnectAsync();
+        
 		while (!m_IsConnected && m_Error == null)
 			yield return 0;
 	}

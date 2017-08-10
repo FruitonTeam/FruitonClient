@@ -15,14 +15,14 @@ using Cz.Cuni.Mff.Fruiton.Dto;
 public class ConnectionHandler : MonoBehaviour {
 
     private static ConnectionHandler instance;
-    private const string URL_CHAT = "ws://prak.mff.cuni.cz:8010/socket";
-    private const string URL_REGISTRATION = "http://prak.mff.cuni.cz:8010/api/register";
-    private const string URL_LOGIN = "http://prak.mff.cuni.cz:8010/api/login";
+    private const string URL_CHAT = "ws://prak.mff.cuni.cz:8050/fruiton/socket";
+    private const string URL_REGISTRATION = "http://prak.mff.cuni.cz:8050/fruiton/api/register";
+    private const string URL_LOGIN = "http://prak.mff.cuni.cz:8050/fruiton/api/login";
     private const string GOOGLE_ID = "827606142557-f63cu712orq80s6do9n6aa8s3eu3h7ag.apps.googleusercontent.com";
     private const string GOOGLE_CLIENT_SECRET = "NyYlQJICuxYX3AnzChou2X8i";
     private const string GOOGLE_REDIRECT_URI = "https://oauth2.example.com/code";
     private const string GOOGLE_TOKEN_URI = "https://accounts.google.com/o/oauth2/token";
-    private string token = null;
+    private string loginToken = null;
 
 
     private const string PROCESS_REGISTRATION_RESULT = "ProcessRegistrationResult";
@@ -195,24 +195,26 @@ public class ConnectionHandler : MonoBehaviour {
         chatMessage.Recipient = "Paľko";
 
         // test server that echoes every received message
-        //WebSocket ws = new WebSocket(new Uri("ws://echo.websocket.org"));
-        WebSocket ws = new WebSocket(new Uri(URL_CHAT));
+        //WebSocket ws = new WebSocket(new Uri("ws://echo.websocket.org"), loginToken);
+        WebSocket ws = new WebSocket(new Uri(URL_CHAT), loginToken);
         yield return StartCoroutine(ws.Connect());
         ws.Send(getBinaryData(chatMessage));
+        Debug.Log("WS Sent: '" + chatMessage + "'");
         int i = 0;
         while (true)
         {
             string reply = ws.RecvString();
             if (reply != null)
             {
-                Debug.Log("Received: " + reply);
+                Debug.Log("WS Received: '" + reply + "'");
             }
-            Debug.Log("SENT");
             chatMessage.Msg = baseMessage + i;
+            i++;
             ws.Send(getBinaryData(chatMessage));
+            Debug.Log("WS Sent: '" + chatMessage + "'");
             if (ws.error != null)
             {
-                Debug.LogError("Error: " + ws.error);
+                Debug.LogError("WS Error: '" + ws.error+"'");
                 break;
             }
             yield return new WaitForSecondsRealtime(5);
@@ -244,8 +246,9 @@ public class ConnectionHandler : MonoBehaviour {
         {
             Debug.Log("[Login] Post request succeeded.");  //text of success
             Debug.Log("WWW text: " + www.text);
-            token = www.text;
+            loginToken = www.text;
             SendMessage("ProcessLoginResult", new LoginResultData(login, password, true));
+            StartCoroutine(TestChat());
         }
         else
         {
@@ -290,7 +293,6 @@ public class ConnectionHandler : MonoBehaviour {
         {
             DontDestroyOnLoad(gameObject);
             Instance = this;
-            StartCoroutine(TestChat());
         }
         else if (Instance != this)
         {
@@ -300,7 +302,7 @@ public class ConnectionHandler : MonoBehaviour {
 
     public bool IsLogged()
     {
-        return token != null;
+        return loginToken != null;
     }
 
     // Because SendMessage can only acceppt 1 argument
