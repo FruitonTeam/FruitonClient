@@ -1,85 +1,23 @@
 <?xml version="1.0" ?>
 <FruitonsDefs>
-	<Fruiton>
-		<id>1</id>
-		<model>Apple_red</model>
-		<hp>10</hp>
-		<damage>5</damage>
-		<abilities>
-			<ability>AppleBall</ability>
-			<ability>Suicide</ability>
-		</abilities>
+	<Fruiton id="test_apple_red" model="Apple_red">
 	</Fruiton>
-	<Fruiton>
-		<id>2</id>
-		<model>Kiwi</model>
-		<hp>10</hp>
-		<damage>5</damage>
-		<abilities>
-		</abilities>
+	<Fruiton id="test_kiwi" model="Kiwi">
 	</Fruiton>	
-	<Fruiton>
-		<id>3</id>
-		<model>BlueCube</model>
-		<hp>10</hp>
-		<damage>5</damage>
-		<abilities>
-		</abilities>
+	<Fruiton id="test_blue_cube" model="BlueCube">
 	</Fruiton>	
-	<Fruiton>
-		<id>4</id>
-		<model>RedCube</model>
-		<hp>10</hp>
-		<damage>5</damage>
-		<abilities>
-		</abilities>
+	<Fruiton id="test_red_cube" model="RedCube">
 	</Fruiton>		
-	<Fruiton>
-		<id>5</id>
-		<model>GreenCube</model>
-		<hp>10</hp>
-		<damage>5</damage>
-		<abilities>
-		</abilities>
+	<Fruiton id="test_green_cube" model="GreenCube">
 	</Fruiton>	
-	<Fruiton>
-		<id>6</id>
-		<model>OrangeCube</model>
-		<hp>10</hp>
-		<damage>5</damage>
-		<abilities>
-		</abilities>
+	<Fruiton id="test_orange_cube" model="OrangeCube">
 	</Fruiton>		
-	<Fruiton>
-		<id>7</id>
-		<model>BlackCube</model>
-		<hp>10</hp>
-		<damage>5</damage>
-		<abilities>
-		</abilities>
+	<Fruiton id="test_black_cube" model="BlackCube">
 	</Fruiton>	
-	<Fruiton>
-		<id>8</id>
-		<model>MagentaCube</model>
-		<hp>10</hp>
-		<damage>5</damage>
-		<abilities>
-		</abilities>
+	<Fruiton id="test_magenta_cube" model="MagentaCube">
 	</Fruiton>		
-	<Fruiton>
-		<id>9</id>
-		<model>CyanCube</model>
-		<hp>10</hp>
-		<damage>5</damage>
-		<abilities>
-		</abilities>
+	<Fruiton id="test_cyan_cube" model="CyanCube">
 	</Fruiton>	
-	<Fruiton>
-		<id>10</id>
-		<model>YellowCube</model>
-		<hp>10</hp>
-		<damage>5</damage>
-		<abilities>
-		</abilities>
+	<Fruiton id="test_yellow_cube" model="YellowCube">
 	</Fruiton>	
 </FruitonsDefs>
