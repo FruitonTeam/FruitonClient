@@ -21,7 +21,7 @@ public class ConnectionHandler : MonoBehaviour {
     private const string GOOGLE_CLIENT_SECRET = "NyYlQJICuxYX3AnzChou2X8i";
     private const string GOOGLE_REDIRECT_URI = "https://oauth2.example.com/code";
     private const string GOOGLE_TOKEN_URI = "https://accounts.google.com/o/oauth2/token";
-    private string loginToken = null;
+    private string _loginToken = null;
 
 
     private const string PROCESS_REGISTRATION_RESULT = "ProcessRegistrationResult";
@@ -51,30 +51,34 @@ public class ConnectionHandler : MonoBehaviour {
     /// <param name="useProtobuf"> Determines whether protobuf encoding should be used. It is recommended to use protobuf. </param>
     public void Register(string login, string password, string email, bool useProtobuf)
     {
-        var newUser = new RegistrationData();
-        newUser.Login = login;
-        newUser.Password = password;
-        newUser.Email = email;
+        var newUser = new RegistrationData
+        {
+            Login = login,
+            Password = password,
+            Email = email
+        };
 
         var binaryData = new byte[newUser.CalculateSize()];
         var stream = new CodedOutputStream(binaryData);
         newUser.WriteTo(stream);
-        Dictionary<string, string> headers = GetRequestHeaders(useProtobuf);
+        var headers = GetRequestHeaders(useProtobuf);
         
-        WWW www = new WWW(URL_API+"register", binaryData, headers);
+        var www = new WWW(URL_API+"register", binaryData, headers);
         StartCoroutine(PostRegister(www));
     }
 
     public void LoginBasic(string login, string password, bool useProtobuf)
     {
-        LoginData loginData = new LoginData();
-        loginData.Login = login;
-        loginData.Password = password;
+        var loginData = new LoginData
+        {
+            Login = login,
+            Password = password
+        };
 
-        Dictionary<string, string> headers = GetRequestHeaders(useProtobuf);
+        var headers = GetRequestHeaders(useProtobuf);
         var binaryData = getBinaryData(loginData);
 
-        WWW www = new WWW(URL_API+"login", binaryData, headers);
+        var www = new WWW(URL_API+"login", binaryData, headers);
         StartCoroutine(PostLogin(www, login, password));
     }
 
@@ -136,7 +140,6 @@ public class ConnectionHandler : MonoBehaviour {
         return headers;
     }
 
-
     public void LoginGoogle()
     {
 
@@ -168,31 +171,37 @@ public class ConnectionHandler : MonoBehaviour {
 
     }
 
-    IEnumerator TestChat()
+    private IEnumerator TestChat()
     {
         var baseMessage = "Hello";
-        var chatMessage = new ChatMsg();
-        chatMessage.Msg = baseMessage;
-        chatMessage.Recipient = "Paľko";
+        var chatMessage = new ChatMsg
+        {
+            Msg = baseMessage,
+            Recipient = "Paľko"
+        };
+        var wsMessage = new WrapperMessage
+        {
+            ChatMsg = chatMessage
+        };
 
         // test server that echoes every received message
-        //WebSocket ws = new WebSocket(new Uri("ws://echo.websocket.org"), loginToken);
-        WebSocket ws = new WebSocket(new Uri(URL_CHAT), loginToken);
+        //WebSocket ws = new WebSocket(new Uri("ws://echo.websocket.org"), _loginToken);
+        var ws = new WebSocket(new Uri(URL_CHAT), _loginToken);
         yield return StartCoroutine(ws.Connect());
-        ws.Send(getBinaryData(chatMessage));
-        Debug.Log("WS Sent: '" + chatMessage + "'");
-        int i = 0;
+        ws.Send(getBinaryData(wsMessage));
+        Debug.Log("WS Sent: '" + wsMessage + "'");
+        var i = 0;
         while (true)
         {
-            string reply = ws.RecvString();
+            var reply = ws.RecvString();
             if (reply != null)
             {
                 Debug.Log("WS Received: '" + reply + "'");
             }
             chatMessage.Msg = baseMessage + i;
             i++;
-            ws.Send(getBinaryData(chatMessage));
-            Debug.Log("WS Sent: '" + chatMessage + "'");
+            ws.Send(getBinaryData(wsMessage));
+            Debug.Log("WS Sent: '" + wsMessage + "'");
             if (ws.error != null)
             {
                 Debug.LogError("WS Error: '" + ws.error+"'");
@@ -227,7 +236,7 @@ public class ConnectionHandler : MonoBehaviour {
         {
             Debug.Log("[Login] Post request succeeded.");  //text of success
             Debug.Log("WWW text: " + www.text);
-            loginToken = www.text;
+            _loginToken = www.text;
             SendMessage("ProcessLoginResult", new LoginResultData(login, password, true));
             StartCoroutine(TestChat());
         }
@@ -283,7 +292,7 @@ public class ConnectionHandler : MonoBehaviour {
 
     public bool IsLogged()
     {
-        return loginToken != null;
+        return _loginToken != null;
     }
 
     // Because SendMessage can only acceppt 1 argument
