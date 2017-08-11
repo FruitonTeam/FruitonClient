@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
+using Cz.Cuni.Mff.Fruiton.Dto;
 //using GooglePlayGames;
 //using GooglePlayGames.BasicApi;
 
@@ -13,14 +15,14 @@ using UnityEngine.UI;
 public class ConnectionHandler : MonoBehaviour {
 
     private static ConnectionHandler instance;
-    private const string URL_REGISTRATION = "http://prak.mff.cuni.cz:8010/api/register";
-    private const string URL_LOGIN = "http://prak.mff.cuni.cz:8010/api/login";
+    private const string URL_CHAT = "ws://prak.mff.cuni.cz:8050/fruiton/socket";
+    private const string URL_API = "http://prak.mff.cuni.cz:8050/fruiton/api/";
     private const string GOOGLE_ID = "827606142557-f63cu712orq80s6do9n6aa8s3eu3h7ag.apps.googleusercontent.com";
     private const string GOOGLE_CLIENT_SECRET = "NyYlQJICuxYX3AnzChou2X8i";
     private const string GOOGLE_REDIRECT_URI = "https://oauth2.example.com/code";
     private const string GOOGLE_TOKEN_URI = "https://accounts.google.com/o/oauth2/token";
-    private string token = null;
-    
+    private string _loginToken = null;
+
 
     private const string PROCESS_REGISTRATION_RESULT = "ProcessRegistrationResult";
 
@@ -35,7 +37,7 @@ public class ConnectionHandler : MonoBehaviour {
 
     private ConnectionHandler()
     {
-        
+
     }
 
     public static ConnectionHandler Instance { get; private set; }
@@ -49,50 +51,34 @@ public class ConnectionHandler : MonoBehaviour {
     /// <param name="useProtobuf"> Determines whether protobuf encoding should be used. It is recommended to use protobuf. </param>
     public void Register(string login, string password, string email, bool useProtobuf)
     {
-        var newUser = new RegistrationData();
-        newUser.Login = login;
-        newUser.Password = password;
-        newUser.Email = email;
+        var newUser = new RegistrationData
+        {
+            Login = login,
+            Password = password,
+            Email = email
+        };
 
         var binaryData = new byte[newUser.CalculateSize()];
         var stream = new CodedOutputStream(binaryData);
         newUser.WriteTo(stream);
-        Dictionary<string, string> headers = GetRequestHeaders(useProtobuf);
+        var headers = GetRequestHeaders(useProtobuf);
         
-        WWW www = new WWW(URL_REGISTRATION, binaryData, headers);
+        var www = new WWW(URL_API+"register", binaryData, headers);
         StartCoroutine(PostRegister(www));
     }
 
-    //To be deleted
-    public void TestRegister()
+    public void LoginBasic(string login, string password, bool useProtobuf)
     {
-        GameObject.Find("Text").GetComponent<Text>().text = "Clicked" + UnityEngine.Random.value;
-        RegistrationData newUser = new RegistrationData();
-        newUser.Login = "android";
-        newUser.Password = "randomhd";
-        newUser.Email = "randosdm@random.com";
+        var loginData = new LoginData
+        {
+            Login = login,
+            Password = password
+        };
 
-        var binaryData = new byte[newUser.CalculateSize()];
-        var stream = new CodedOutputStream(binaryData);
-        newUser.WriteTo(stream);
-        Dictionary<string, string> headers = GetRequestHeaders(true);
+        var headers = GetRequestHeaders(useProtobuf);
+        var binaryData = getBinaryData(loginData);
 
-        WWW www = new WWW(URL_REGISTRATION, binaryData, headers);
-        StartCoroutine(PostRegister(www));
-    }
-
-    public void LoginCasual(string login, string password, bool useProtobuf)
-    {
-        LoginData loginData = new LoginData();
-        loginData.Login = login;
-        loginData.Password = password;
-
-        var binaryData = new byte[loginData.CalculateSize()];
-        var stream = new CodedOutputStream(binaryData);
-        loginData.WriteTo(stream);
-        Dictionary<string, string> headers = GetRequestHeaders(useProtobuf);
-
-        WWW www = new WWW(URL_LOGIN, binaryData, headers);
+        var www = new WWW(URL_API+"login", binaryData, headers);
         StartCoroutine(PostLogin(www, login, password));
     }
 
@@ -154,8 +140,6 @@ public class ConnectionHandler : MonoBehaviour {
         return headers;
     }
 
-  
-
     public void LoginGoogle()
     {
 
@@ -187,6 +171,47 @@ public class ConnectionHandler : MonoBehaviour {
 
     }
 
+    private IEnumerator TestChat()
+    {
+        var baseMessage = "Hello";
+        var chatMessage = new ChatMsg
+        {
+            Msg = baseMessage,
+            Recipient = "Paľko"
+        };
+        var wsMessage = new WrapperMessage
+        {
+            ChatMsg = chatMessage
+        };
+
+        // test server that echoes every received message
+        //WebSocket ws = new WebSocket(new Uri("ws://echo.websocket.org"), _loginToken);
+        var ws = new WebSocket(new Uri(URL_CHAT), _loginToken);
+        yield return StartCoroutine(ws.Connect());
+        ws.Send(getBinaryData(wsMessage));
+        Debug.Log("WS Sent: '" + wsMessage + "'");
+        var i = 0;
+        while (true)
+        {
+            var reply = ws.RecvString();
+            if (reply != null)
+            {
+                Debug.Log("WS Received: '" + reply + "'");
+            }
+            chatMessage.Msg = baseMessage + i;
+            i++;
+            ws.Send(getBinaryData(wsMessage));
+            Debug.Log("WS Sent: '" + wsMessage + "'");
+            if (ws.error != null)
+            {
+                Debug.LogError("WS Error: '" + ws.error+"'");
+                break;
+            }
+            yield return new WaitForSecondsRealtime(5);
+        }
+        ws.Close();
+    }
+
     IEnumerator PostRegister(WWW www)
     {
         yield return www;
@@ -211,8 +236,9 @@ public class ConnectionHandler : MonoBehaviour {
         {
             Debug.Log("[Login] Post request succeeded.");  //text of success
             Debug.Log("WWW text: " + www.text);
-            token = www.text;  
+            _loginToken = www.text;
             SendMessage("ProcessLoginResult", new LoginResultData(login, password, true));
+            StartCoroutine(TestChat());
         }
         else
         {
@@ -266,7 +292,7 @@ public class ConnectionHandler : MonoBehaviour {
 
     public bool IsLogged()
     {
-        return token != null;
+        return _loginToken != null;
     }
 
     // Because SendMessage can only acceppt 1 argument
@@ -284,4 +310,12 @@ public class ConnectionHandler : MonoBehaviour {
         }
     }
 
+    private byte[] getBinaryData(IMessage protobuf)
+    {
+        var binaryData = new byte[protobuf.CalculateSize()];
+        var stream = new CodedOutputStream(binaryData);
+        protobuf.WriteTo(stream);
+
+        return binaryData;
+    }
 }

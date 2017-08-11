@@ -67,6 +67,18 @@ namespace DataModels
     }
 
     [ProtoContract]
+    public class ChatMsg
+    {
+        [ProtoMember(1)]
+        public string msg;
+
+        public ChatMsg(string msg)
+        {
+            this.msg = msg;
+        }
+    }
+
+    [ProtoContract]
     public class RegistrationForm
     {
         [ProtoMember(1)]
