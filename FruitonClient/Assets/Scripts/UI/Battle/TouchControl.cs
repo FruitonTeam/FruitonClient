@@ -34,7 +34,7 @@ public class TouchControl : MonoBehaviour {
     }  
 
     #region All platforms methods
-        private void rotateBoardAroundCenter(Vector2 startScreenPosition, Vector2 endScreenPosition)
+        private void RotateBoardAroundCenter(Vector2 startScreenPosition, Vector2 endScreenPosition)
         {
             // the center of the board
             Vector2 center = Camera.main.WorldToScreenPoint(board.transform.position);
@@ -95,7 +95,7 @@ public class TouchControl : MonoBehaviour {
         // Rotations of the screen
         if (touch.phase == TouchPhase.Moved)
         {
-            rotateBoardAroundCenter(touch.position, touch.position - touch.deltaPosition);
+            RotateBoardAroundCenter(touch.position, touch.position - touch.deltaPosition);
         }
 
     }
@@ -172,7 +172,7 @@ public class TouchControl : MonoBehaviour {
                     }
                     else
                     {
-                        rotateBoardAroundCenter(endPoint, startPointRight.Value);
+                        RotateBoardAroundCenter(endPoint, startPointRight.Value);
                     }
                 }
                 startPointRight = endPoint;
