@@ -5,17 +5,20 @@ using UnityEngine;
 
 public class TouchControl : MonoBehaviour {
 
-
     #region All platforms fields
+
     public GameObject board;
     /// <summary> Y axis of the plane on which camera movec dring translation. </summary>
     Vector3 translateDirection;
     /// <summary> X axis of the plane on which camera movec dring translation. </summary>
     Vector3 translateNormal;
+
     #endregion
 
     #region Windows fields
-    Vector3? startPointRight = null;
+
+    Vector3? startPointRight;
+
     #endregion
 
 
@@ -25,27 +28,28 @@ public class TouchControl : MonoBehaviour {
     }
 
 	// Update is called once per frame
-	void Update () {
-        #if UNITY_ANDROID && !UNITY_EDITOR
+	private void Update () {
+    #if UNITY_ANDROID && !UNITY_EDITOR
             UpdateAndroid();
-        #elif UNITY_EDITOR || UNITY_STANDALONE_WIN
-            UpdateWindows();
+    #elif UNITY_EDITOR || UNITY_STANDALONE
+        UpdateWindows();
         #endif
     }  
 
     #region All platforms methods
+
         private void RotateBoardAroundCenter(Vector2 startScreenPosition, Vector2 endScreenPosition)
         {
-            // the center of the board
+            // The center of the board
             Vector2 center = Camera.main.WorldToScreenPoint(board.transform.position);
-            // angle between previous and current finger position
+            // The angle between previous and current finger position
             float angle = FruitMath.GetAngleBetweenTwoPoints(startScreenPosition - center, endScreenPosition  - center);
             transform.RotateAround(new Vector3(0, 0, 0), Vector3.down, 0.5f * angle);
         }
 
+        // Move the camera on a plane that is parallel to the plane given by board and intrsects with the camera coords.
         private void TranslateBoard(Vector3 delta)
         {
-            // Move the camera on a plane that is parallerl to the plane given by board and intrsects with the camera coords.
             Camera.main.transform.position -= 0.01f * (delta.x * translateNormal + delta.z * translateDirection);
         }
 
@@ -54,7 +58,6 @@ public class TouchControl : MonoBehaviour {
         /// </summary>
         private void ComputeTranslateVectors()
         {
-            Plane planeXZ = new Plane(Vector3.up, Vector3.zero);
             Vector3 center;
             FruitMath.LinePlaneIntersection(out center, Camera.main.transform.position, Camera.main.transform.forward, Vector3.up, Vector3.zero);
             center.y = 0;
@@ -65,10 +68,12 @@ public class TouchControl : MonoBehaviour {
             translateNormal = new Vector3(translateDirection.z, 0, -translateDirection.x);
             Debug.Log("New translate normal: " + translateNormal + " and translate direction: " + translateDirection);
         }
+
     #endregion
 
     #region Android methods
-    void UpdateAndroid()
+
+    private void UpdateAndroid()
     {
         Touch[] myTouches = Input.touches;
         switch (Input.touchCount)
@@ -126,13 +131,14 @@ public class TouchControl : MonoBehaviour {
             // Scale according to the delta of finger distances. 
             zoom = 0.1f * (lastDistance - distance);
             Camera.main.fieldOfView += zoom;
-            float fieldOfView = Camera.main.fieldOfView;
         }
     }
+
     #endregion
 
     #region Windows methods
-    void UpdateWindows()
+
+    private void UpdateWindows()
     {
         // ZOOM
         float mouseWheel = Input.GetAxis("Mouse ScrollWheel");
@@ -183,5 +189,6 @@ public class TouchControl : MonoBehaviour {
             }
         }
     }
+
     #endregion
 }
