@@ -11,24 +11,23 @@ namespace UI
 
 		public delegate void OnSelectedHandler (ListItemBase item);
 
-		public OnSelectedHandler onSelected;
+		public OnSelectedHandler OnSelected;
 
 		public void Selected(bool clear = false)
 		{
-			if (onSelected != null)
+			if (OnSelected != null)
 			{
-				onSelected(this);
+				OnSelected(this);
 
 				if (clear)
 				{
-					onSelected = null;
+					OnSelected = null;
 				}
 			}
 		}
 		
 		[SerializeField]
-		private RectTransform _rectTransform;
-
+		RectTransform rectTransform;
 
 		public int Index
 		{
@@ -40,12 +39,12 @@ namespace UI
 		{
 			get
 			{
-				return _rectTransform.sizeDelta;
+				return rectTransform.sizeDelta;
 			}
 
 			set
 			{
-				_rectTransform.sizeDelta = value;
+				rectTransform.sizeDelta = value;
 			}
 		}
 
@@ -53,12 +52,12 @@ namespace UI
 		{
 			get 
 			{
-				return _rectTransform.anchoredPosition;
+				return rectTransform.anchoredPosition;
 			}
 
 			set
 			{
-				_rectTransform.anchoredPosition = value;
+				rectTransform.anchoredPosition = value;
 			}
 		}
 	}	

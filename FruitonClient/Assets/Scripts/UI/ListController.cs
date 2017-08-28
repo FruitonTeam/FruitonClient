@@ -8,40 +8,40 @@ namespace UI
     {
         public RecyclableList RecyclableList;
 
-        private int _selectedIndex;
+        int selectedIndex;
 
-        private ListItemBase _selectedItem;
+        ListItemBase selectedItem;
 
-        private OnItemSelectedListener _listener;
+        OnItemSelectedListener listener;
 
         protected List<T> Data = new List<T>();
 
         protected void Init()
         {
-            RecyclableList.onItemLoaded = HandleOnItemLoadedHandler;
-            RecyclableList.onItemSelected = HandleOnItemSelectedHandler;
+            RecyclableList.OnItemLoaded = HandleOnItemLoadedHandler;
+            RecyclableList.OnItemSelected = HandleOnItemSelectedHandler;
         }
 
         protected void HandleOnItemSelectedHandler(ListItemBase item)
         {
-            if (_selectedItem != null)
+            if (selectedItem != null)
             {
-                _selectedItem.Select(false);
+                selectedItem.Select(false);
             }
 
-            _selectedItem = (FriendListItem) item;
-            _selectedItem.Select(true);
+            selectedItem = (FriendListItem) item;
+            selectedItem.Select(true);
 
-            _selectedIndex = _selectedItem.Index;
+            selectedIndex = selectedItem.Index;
 
-            _listener.OnItemSelected(_selectedIndex);
+            listener.OnItemSelected(selectedIndex);
         }
 
         protected void HandleOnItemLoadedHandler(ListItemBase item)
         {
-            if (item == _selectedItem)
+            if (item == selectedItem)
             {
-                _selectedItem.Select(_selectedIndex == _selectedItem.Index);
+                selectedItem.Select(selectedIndex == selectedItem.Index);
             }
 
             item.OnLoad(Data[item.Index]);
@@ -49,7 +49,7 @@ namespace UI
 
         public void SetOnItemSelectedListener(OnItemSelectedListener listener)
         {
-            _listener = listener;
+            this.listener = listener;
         }
     }
 }
