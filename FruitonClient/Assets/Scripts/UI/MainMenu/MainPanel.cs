@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MainPanel : MainMenuPanel
 {
@@ -43,5 +44,10 @@ public class MainPanel : MainMenuPanel
         PlayerPrefs.SetString("userpassword", "");
         PlayerPrefs.SetInt("stayloggedin", 0);
         PanelManager.Instance.SwitchPanels(MenuPanel.Login);
+    }
+
+    public void ChangeToChatScene() 
+    {
+        SceneManager.LoadScene("ChatScene");
     }
 }

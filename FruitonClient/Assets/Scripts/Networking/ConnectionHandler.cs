@@ -1,11 +1,11 @@
 ﻿using Google.Protobuf;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
-using UnityEngine.UI;
 using System;
 using Cz.Cuni.Mff.Fruiton.Dto;
+using Networking;
+
 //using GooglePlayGames;
 //using GooglePlayGames.BasicApi;
 
@@ -23,17 +23,12 @@ public class ConnectionHandler : MonoBehaviour {
     private const string GOOGLE_TOKEN_URI = "https://accounts.google.com/o/oauth2/token";
     private string _loginToken = null;
 
+    private WebSocket ws;
 
     private const string PROCESS_REGISTRATION_RESULT = "ProcessRegistrationResult";
 
-    // Only for testing purposes. Will be deleted later.
-    //public void Start()
-    //{
-    //    //Register("rytmo222", "rytmo", "ry@tmo.com", true);
-    //    LoginCasual("rytmo", "rytmo", true);
-
-    //}
-
+    private Dictionary<WrapperMessage.MsgOneofCase, List<IOnMessageListener>> listeners = 
+        new Dictionary<WrapperMessage.MsgOneofCase, List<IOnMessageListener>>();
 
     private ConnectionHandler()
     {
@@ -82,6 +77,14 @@ public class ConnectionHandler : MonoBehaviour {
         StartCoroutine(PostLogin(www, login, password));
     }
 
+    public void SendWebsocketMessage(IMessage message) 
+    {
+        if (ws != null) 
+        {
+            ws.Send(getBinaryData(message));
+        }
+    }
+
     private void ProcessLoginResult(LoginResultData resultData)
     {
         bool success = resultData.success;
@@ -91,6 +94,9 @@ public class ConnectionHandler : MonoBehaviour {
         GameManager gameManager = GameManager.Instance;
         if (success)
         {
+            ws = new WebSocket(new Uri(URL_CHAT), _loginToken);
+            StartCoroutine(ws.Connect());
+
             gameManager.UserName = login;
             gameManager.UserPassword = password;
             panelManager.SwitchPanels(MenuPanel.Main);
@@ -168,48 +174,6 @@ public class ConnectionHandler : MonoBehaviour {
         //    }
         //    );
         //});
-
-    }
-
-    private IEnumerator TestChat()
-    {
-        var baseMessage = "Hello";
-        var chatMessage = new ChatMsg
-        {
-            Msg = baseMessage,
-            Recipient = "Paľko"
-        };
-        var wsMessage = new WrapperMessage
-        {
-            ChatMsg = chatMessage
-        };
-
-        // test server that echoes every received message
-        //WebSocket ws = new WebSocket(new Uri("ws://echo.websocket.org"), _loginToken);
-        var ws = new WebSocket(new Uri(URL_CHAT), _loginToken);
-        yield return StartCoroutine(ws.Connect());
-        ws.Send(getBinaryData(wsMessage));
-        Debug.Log("WS Sent: '" + wsMessage + "'");
-        var i = 0;
-        while (true)
-        {
-            var reply = ws.RecvString();
-            if (reply != null)
-            {
-                Debug.Log("WS Received: '" + reply + "'");
-            }
-            chatMessage.Msg = baseMessage + i;
-            i++;
-            ws.Send(getBinaryData(wsMessage));
-            Debug.Log("WS Sent: '" + wsMessage + "'");
-            if (ws.error != null)
-            {
-                Debug.LogError("WS Error: '" + ws.error+"'");
-                break;
-            }
-            yield return new WaitForSecondsRealtime(5);
-        }
-        ws.Close();
     }
 
     IEnumerator PostRegister(WWW www)
@@ -238,7 +202,6 @@ public class ConnectionHandler : MonoBehaviour {
             Debug.Log("WWW text: " + www.text);
             _loginToken = www.text;
             SendMessage("ProcessLoginResult", new LoginResultData(login, password, true));
-            StartCoroutine(TestChat());
         }
         else
         {
@@ -274,6 +237,17 @@ public class ConnectionHandler : MonoBehaviour {
         {
             Debug.Log("Post request failed.");  //error
             Debug.Log(www.error);
+        }
+    }
+
+    public IEnumerator Post(string query, Action<string> success, Action<string> error) {
+        var www = new WWW(URL_API + query);
+        yield return www;
+
+        if (string.IsNullOrEmpty(www.error)) {
+            success.Invoke(www.text);
+        } else {
+            error.Invoke(www.error);
         }
     }
 
@@ -318,4 +292,40 @@ public class ConnectionHandler : MonoBehaviour {
 
         return binaryData;
     }
+
+    void Update() 
+    {
+        if (ws != null) {
+            byte[] message = ws.Recv ();
+            while (message != null) { // process every received message
+                OnMessage (message);
+                message = ws.Recv ();
+            }
+        }
+    }
+
+    public void OnMessage(byte[] message) {
+        WrapperMessage wrapperMsg = WrapperMessage.Parser.ParseFrom (message);
+        Debug.Log ("received msg : " + wrapperMsg);
+
+        if (listeners.ContainsKey (wrapperMsg.MsgCase)) {
+            foreach(IOnMessageListener listener in listeners[wrapperMsg.MsgCase]) {
+                listener.OnMessage (wrapperMsg);
+            }
+        }
+    }
+
+    public void RegisterListener(WrapperMessage.MsgOneofCase msgCase, IOnMessageListener listener) {
+        if (!listeners.ContainsKey (msgCase)) {
+            listeners [msgCase] = new List<IOnMessageListener> ();
+        }
+        listeners [msgCase].Add (listener);
+    }
+
+    public void UnregisterListener(WrapperMessage.MsgOneofCase msgCase, IOnMessageListener listener) {
+        if (listeners.ContainsKey (msgCase)) {
+            listeners [msgCase].Remove (listener);
+        }
+    }
+
 }
