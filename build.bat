@@ -11,11 +11,15 @@ IF NOT DEFINED FRUITON_KERNEL (
     exit /b
 )
 
-SET kernel_dest=FruitonClient\Assets\Scripts\Kernel\Generated
+SET client_dir="%CD%"
+SET kernel_dest=%client_dir%\FruitonClient\Assets\Scripts\Kernel\Generated
 
 IF NOT EXIST %kernel_dest% mkdir %kernel_dest%
 
-haxe -D no-compilation -cs %kernel_dest% -cp %FRUITON_KERNEL% fruiton.kernel.Kernel
+CD %FRUITON_KERNEL%
+haxe --macro include('fruiton',true,['fruiton.fruitDb.models']) -D no-compilation -cs %kernel_dest% -cp %FRUITON_KERNEL% fruiton.kernel.Kernel
+
+xcopy /i /y /s %FRUITON_KERNEL%\resources %kernel_dest%\resources
 
 IF NOT DEFINED FRUITON_PROTOBUFS (
     echo Enviroment variable FRUITON_PROTOBUFS is not defined!
