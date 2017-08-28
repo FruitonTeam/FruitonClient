@@ -205,7 +205,7 @@ namespace UI
 
             float position = index * (dimension + spacing) + dimension / 2;
 
-            RectTransform rectTransform = instance.GetComponent<RectTransform>();
+            var rectTransform = instance.GetComponent<RectTransform>();
 
             switch (scrollOrientation)
             {
@@ -241,7 +241,6 @@ namespace UI
             if (lastPosition == -1)
             {
                 lastPosition = GetContentPosition();
-
                 return;
             }
 
@@ -259,15 +258,11 @@ namespace UI
                 switch (direction)
                 {
                     case ScrollDirection.NEXT:
-
                         NextItem();
-
                         break;
 
                     case ScrollDirection.PREVIOUS:
-
                         PreviousItem();
-
                         break;
                 }
 
@@ -288,7 +283,6 @@ namespace UI
             if (itemsToRecycleBefore >= (itemsList.Count - itemsVisible) / 2 && lastItemIndex < itemsTotal - 1)
             {
                 lastItemIndex++;
-
                 RecycleItem(ScrollDirection.NEXT);
             }
             else
@@ -303,7 +297,6 @@ namespace UI
             if (itemsToRecycleAfter >= (itemsList.Count - itemsVisible) / 2 && lastItemIndex > itemsList.Count - 1)
             {
                 RecycleItem(ScrollDirection.PREVIOUS);
-
                 lastItemIndex--;
             }
             else

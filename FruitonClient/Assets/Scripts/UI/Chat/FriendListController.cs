@@ -3,10 +3,10 @@ using System.Linq;
 
 namespace UI.Chat
 {
-    public class FriendListController : ListController<FriendListItem.FriendItemData> {
-    
+    public class FriendListController : ListController<FriendListItem.FriendItemData>
+    {
         public ListItemBase ListItem;
-    
+
         void Start()
         {
             Init();
@@ -15,7 +15,8 @@ namespace UI.Chat
             RecyclableList.gameObject.SetActive(true);
         }
 
-        public void AddItem(string friendName) {
+        public void AddItem(string friendName)
+        {
             var itemData = new FriendListItem.FriendItemData
             {
                 Name = friendName,
@@ -23,7 +24,7 @@ namespace UI.Chat
             };
 
             Data.Add(itemData);
-        
+
             RecyclableList.AddItem(ListItem);
         }
 
@@ -37,20 +38,17 @@ namespace UI.Chat
             return Data.Select(friendData => friendData.Name).ToList();
         }
 
-        public void IncrementUnreadCount(string friend) {
-            foreach (FriendListItem.FriendItemData friendData in Data) {
+        public void IncrementUnreadCount(string friend)
+        {
+            foreach (FriendListItem.FriendItemData friendData in Data)
+            {
                 if (friendData.Name.Equals(friend))
                 {
                     friendData.UnreadMessages++;
+                    break;
                 }
-                break;
             }
-            NotifyDataChanged();
-        }
-
-        public void NotifyDataChanged() {
             RecyclableList.NotifyDataChanged();
         }
-
     }
 }

@@ -13,29 +13,28 @@ namespace Networking
     /// <summary>
     /// Singleton used for handling a connection with the server.
     /// </summary>
-    public class ConnectionHandler : MonoBehaviour {
-
+    public class ConnectionHandler : MonoBehaviour
+    {
         const string URL_CHAT = "ws://prak.mff.cuni.cz:8050/fruiton/socket";
         const string URL_API = "http://prak.mff.cuni.cz:8050/fruiton/api/";
         const string GOOGLE_ID = "827606142557-f63cu712orq80s6do9n6aa8s3eu3h7ag.apps.googleusercontent.com";
         const string GOOGLE_CLIENT_SECRET = "NyYlQJICuxYX3AnzChou2X8i";
         const string GOOGLE_REDIRECT_URI = "https://oauth2.example.com/code";
         const string GOOGLE_TOKEN_URI = "https://accounts.google.com/o/oauth2/token";
-        
-        static ConnectionHandler instance; 
-        
+
+        static ConnectionHandler instance;
+
         string loginToken;
 
         WebSocket webSocket;
 
         private const string PROCESS_REGISTRATION_RESULT = "ProcessRegistrationResult";
 
-        Dictionary<WrapperMessage.MsgOneofCase, List<IOnMessageListener>> listeners = 
+        Dictionary<WrapperMessage.MsgOneofCase, List<IOnMessageListener>> listeners =
             new Dictionary<WrapperMessage.MsgOneofCase, List<IOnMessageListener>>();
 
         private ConnectionHandler()
         {
-
         }
 
         public static ConnectionHandler Instance { get; private set; }
@@ -60,7 +59,7 @@ namespace Networking
             var stream = new CodedOutputStream(binaryData);
             newUser.WriteTo(stream);
             var headers = GetRequestHeaders(useProtobuf);
-        
+
             var www = new WWW(URL_API + "register", binaryData, headers);
             StartCoroutine(PostRegister(www));
         }
@@ -76,11 +75,11 @@ namespace Networking
             var headers = GetRequestHeaders(useProtobuf);
             var binaryData = getBinaryData(loginData);
 
-            var www = new WWW(URL_API+"login", binaryData, headers);
+            var www = new WWW(URL_API + "login", binaryData, headers);
             StartCoroutine(PostLogin(www, login, password));
         }
 
-        public void SendWebsocketMessage(IMessage message) 
+        public void SendWebsocketMessage(IMessage message)
         {
             if (!IsLogged())
             {
@@ -108,7 +107,8 @@ namespace Networking
             else
             {
                 // Perform offline login check
-                if (login != "" && password != "" && gameManager.UserName == login && gameManager.UserPassword == password)
+                if (login != "" && password != "" && gameManager.UserName == login 
+                    && gameManager.UserPassword == password)
                 {
                     // Offline check successful
                     panelManager.SwitchPanels(MenuPanel.LoginOffline);
@@ -118,7 +118,6 @@ namespace Networking
                     // TODO: error message
                     panelManager.SwitchPanels(MenuPanel.Login);
                 }
-            
             }
         }
 
@@ -133,7 +132,6 @@ namespace Networking
             {
                 panelManager.SwitchPanels(MenuPanel.Register);
             }
-        
         }
 
         Dictionary<string, string> GetRequestHeaders(bool useProtobuf)
@@ -152,7 +150,6 @@ namespace Networking
 
         public void LoginGoogle()
         {
-
             //Social.localUser.Authenticate((bool success) => {
             //    if (success)
             //    {
@@ -186,12 +183,12 @@ namespace Networking
 
             if (string.IsNullOrEmpty(www.error))
             {
-                Debug.Log("[Registration] Post request succeeded.");  //text of success
+                Debug.Log("[Registration] Post request succeeded."); // text of success
                 SendMessage(PROCESS_REGISTRATION_RESULT, true);
             }
             else
             {
-                Debug.Log("[Registration] Post request failed.");  //error
+                Debug.Log("[Registration] Post request failed."); // error
                 SendMessage(PROCESS_REGISTRATION_RESULT, false);
             }
         }
@@ -202,17 +199,16 @@ namespace Networking
 
             if (string.IsNullOrEmpty(www.error))
             {
-                Debug.Log("[Login] Post request succeeded.");  //text of success
+                Debug.Log("[Login] Post request succeeded."); // text of success
                 Debug.Log("WWW text: " + www.text);
                 loginToken = www.text;
                 SendMessage("ProcessLoginResult", new LoginResultData(login, password, true));
             }
             else
             {
-                Debug.Log("[Login] Post request failed.");  //text of fail
+                Debug.Log("[Login] Post request failed."); // text of fail
                 SendMessage("ProcessLoginResult", new LoginResultData(login, password, false));
             }
-        
         }
 
         IEnumerator GetGoogleAccessToken(string auth_code)
@@ -234,23 +230,27 @@ namespace Networking
             yield return www;
             if (string.IsNullOrEmpty(www.error))
             {
-                Debug.Log("Post request succeeded.");  //text of success
+                Debug.Log("Post request succeeded."); //text of success
                 Debug.Log(www.text);
             }
             else
             {
-                Debug.Log("Post request failed.");  //error
+                Debug.Log("Post request failed."); //error
                 Debug.Log(www.error);
             }
         }
 
-        public IEnumerator Post(string query, Action<string> success, Action<string> error) {
+        public IEnumerator Post(string query, Action<string> success, Action<string> error)
+        {
             var www = new WWW(URL_API + query);
             yield return www;
 
-            if (string.IsNullOrEmpty(www.error)) {
+            if (string.IsNullOrEmpty(www.error))
+            {
                 success.Invoke(www.text);
-            } else {
+            }
+            else
+            {
                 error.Invoke(www.error);
             }
         }
@@ -282,7 +282,7 @@ namespace Networking
             return binaryData;
         }
 
-        void Update() 
+        void Update()
         {
             if (!IsLogged())
             {
@@ -290,39 +290,44 @@ namespace Networking
             }
 
             byte[] message = webSocket.Recv();
-            while (message != null) { // process every received message
-               OnMessage(message);
-               message = webSocket.Recv();
+            while (message != null) // process every received message
+            {
+                OnMessage(message);
+                message = webSocket.Recv();
             }
         }
 
-        void OnMessage(byte[] message) 
+        void OnMessage(byte[] message)
         {
             var wrapperMsg = WrapperMessage.Parser.ParseFrom(message);
             Debug.Log("Received message: " + wrapperMsg);
 
-            if (listeners.ContainsKey(wrapperMsg.MsgCase)) {
-                foreach (IOnMessageListener listener in listeners[wrapperMsg.MsgCase]) {
+            if (listeners.ContainsKey(wrapperMsg.MsgCase))
+            {
+                foreach (IOnMessageListener listener in listeners[wrapperMsg.MsgCase])
+                {
                     listener.OnMessage(wrapperMsg);
                 }
             }
         }
 
-        public void RegisterListener(WrapperMessage.MsgOneofCase msgCase, IOnMessageListener listener) 
+        public void RegisterListener(WrapperMessage.MsgOneofCase msgCase, IOnMessageListener listener)
         {
-            if (!listeners.ContainsKey(msgCase)) {
-                listeners [msgCase] = new List<IOnMessageListener>();
+            if (!listeners.ContainsKey(msgCase))
+            {
+                listeners[msgCase] = new List<IOnMessageListener>();
             }
-            listeners [msgCase].Add(listener);
+            listeners[msgCase].Add(listener);
         }
 
-        public void UnregisterListener(WrapperMessage.MsgOneofCase msgCase, IOnMessageListener listener) 
+        public void UnregisterListener(WrapperMessage.MsgOneofCase msgCase, IOnMessageListener listener)
         {
-            if (listeners.ContainsKey(msgCase)) {
-                listeners [msgCase].Remove(listener);
+            if (listeners.ContainsKey(msgCase))
+            {
+                listeners[msgCase].Remove(listener);
             }
         }
-        
+
         // Because SendMessage can only accept 1 argument
         struct LoginResultData
         {
@@ -337,6 +342,5 @@ namespace Networking
                 this.success = success;
             }
         }
-
     }
 }

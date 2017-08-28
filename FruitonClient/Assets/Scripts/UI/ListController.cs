@@ -12,7 +12,7 @@ namespace UI
 
         ListItemBase selectedItem;
 
-        OnItemSelectedListener listener;
+        IOnItemSelectedListener listener;
 
         protected List<T> Data = new List<T>();
 
@@ -47,7 +47,7 @@ namespace UI
             item.OnLoad(Data[item.Index]);
         }
 
-        public void SetOnItemSelectedListener(OnItemSelectedListener listener)
+        public void SetOnItemSelectedListener(IOnItemSelectedListener listener)
         {
             this.listener = listener;
         }

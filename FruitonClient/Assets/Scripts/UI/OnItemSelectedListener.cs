@@ -1,9 +1,10 @@
-﻿using System;
+﻿namespace UI
+{
+    public interface IOnItemSelectedListener
+    {
 
- public interface OnItemSelectedListener
- {
+        void OnItemSelected(int index);
 
-    void OnItemSelected(int index);
-
- }
+    }
+}
 

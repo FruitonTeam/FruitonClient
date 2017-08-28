@@ -2,63 +2,45 @@
 
 namespace UI
 {
-	public abstract class ListItemBase : MonoBehaviour
-	{
+    public abstract class ListItemBase : MonoBehaviour
+    {
+        public abstract void Select(bool selected);
 
-		public abstract void Select(bool selected);
+        public abstract void OnLoad(object data);
 
-		public abstract void OnLoad(object data);
+        public delegate void OnSelectedHandler(ListItemBase item);
 
-		public delegate void OnSelectedHandler (ListItemBase item);
+        public OnSelectedHandler OnSelected;
 
-		public OnSelectedHandler OnSelected;
+        public void Selected(bool clear = false)
+        {
+            if (OnSelected != null)
+            {
+                OnSelected(this);
 
-		public void Selected(bool clear = false)
-		{
-			if (OnSelected != null)
-			{
-				OnSelected(this);
+                if (clear)
+                {
+                    OnSelected = null;
+                }
+            }
+        }
 
-				if (clear)
-				{
-					OnSelected = null;
-				}
-			}
-		}
-		
-		[SerializeField]
-		RectTransform rectTransform;
+        [SerializeField] RectTransform rectTransform;
 
-		public int Index
-		{
-			get;
-			set;
-		}
+        public int Index { get; set; }
 
-		public Vector2 Size
-		{
-			get
-			{
-				return rectTransform.sizeDelta;
-			}
+        public Vector2 Size
+        {
+            get { return rectTransform.sizeDelta; }
 
-			set
-			{
-				rectTransform.sizeDelta = value;
-			}
-		}
+            set { rectTransform.sizeDelta = value; }
+        }
 
-		public Vector2 Position
-		{
-			get 
-			{
-				return rectTransform.anchoredPosition;
-			}
+        public Vector2 Position
+        {
+            get { return rectTransform.anchoredPosition; }
 
-			set
-			{
-				rectTransform.anchoredPosition = value;
-			}
-		}
-	}	
+            set { rectTransform.anchoredPosition = value; }
+        }
+    }
 }

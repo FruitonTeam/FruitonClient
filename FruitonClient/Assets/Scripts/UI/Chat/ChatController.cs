@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace UI.Chat
 {
-    public class ChatController : MonoBehaviour, OnItemSelectedListener, IOnMessageListener
+    public class ChatController : MonoBehaviour, IOnItemSelectedListener, IOnMessageListener
     {
     
         public Text ChatText;
@@ -131,12 +131,12 @@ namespace UI.Chat
                 friendMessages[oldName] = ChatText.text;
             }
 
-            string name = FriendListController.GetFriend(index);
-            FriendName.text = name;
+            string friendName = FriendListController.GetFriend(index);
+            FriendName.text = friendName;
 
-            if (friendMessages.ContainsKey(name))
+            if (friendMessages.ContainsKey(friendName))
             {
-                ChatText.text = friendMessages[name];
+                ChatText.text = friendMessages[friendName];
             }
             else
             {

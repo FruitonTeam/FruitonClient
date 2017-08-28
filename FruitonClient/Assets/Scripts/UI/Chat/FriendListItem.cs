@@ -3,8 +3,8 @@ using UnityEngine.UI;
 
 namespace UI.Chat
 {
-    public class FriendListItem : ListItemBase {
-
+    public class FriendListItem : ListItemBase
+    {
         public class FriendItemData
         {
             public string Name;
@@ -15,22 +15,28 @@ namespace UI.Chat
         public Text FriendName;
         public Text UnreadCount;
 
+        public Color Color;
+        public Color SelectedColor;
+
         public override void Select(bool selected)
         {
-            if (selected) {
-                Background.color = new Color (0.95f, 1f, 1f);
+            if (selected)
+            {
+                Background.color = SelectedColor;
                 UnreadCount.text = "0";
-            } else {
-                Background.color = new Color (1f, 1f, 0.95f);
+            }
+            else
+            {
+                Background.color = Color;
             }
         }
 
         public override void OnLoad(object data)
         {
-            FriendItemData itemData = (FriendItemData) data;
+            var itemData = (FriendItemData) data;
             FriendName.text = itemData.Name;
+            Background.color = Color;
             UnreadCount.text = itemData.UnreadMessages.ToString();
         }
-
     }
 }
