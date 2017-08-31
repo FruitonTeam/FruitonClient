@@ -1,21 +1,20 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class FridgePanel : MainMenuPanel
+namespace UI.MainMenu
 {
-    public override bool SetPanelActive(bool toggle)
+    public class FridgePanel : MainMenuPanel
     {
-        if (toggle)
+        public override bool SetPanelActive(bool toggle)
         {
-            Debug.Log("Initializing game manager");
-            //GameManager gameManager = GameManager.Instance;
-            Debug.Log("Game manager initialized, fridge will be loaded");
-            SceneManager.LoadScene("Fridge");
-            //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 2);
-            Debug.Log("Fridge loaded");
+            if (toggle)
+            {
+                Debug.Log("Initializing game manager");
+                Debug.Log("Game manager initialized, fridge will be loaded");
+                SceneManager.LoadScene(Scenes.FRIDGE);
+                Debug.Log("Fridge loaded");
+            }
+            return true;
         }
-        return true;
     }
 }
