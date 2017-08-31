@@ -21,6 +21,7 @@ haxe --macro include('fruiton',true,['fruiton.fruitDb.models']) -D no-compilatio
 
 xcopy /i /y /s %FRUITON_KERNEL%\resources %kernel_dest%\resources
 
+CD %client_dir%
 IF NOT DEFINED FRUITON_PROTOBUFS (
     echo Enviroment variable FRUITON_PROTOBUFS is not defined!
     echo Please set its value to the abolute path of the folder containing .proto files.
