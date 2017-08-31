@@ -1,4 +1,5 @@
-﻿using DataModels;
+﻿using Cz.Cuni.Mff.Fruiton.Dto;
+using Google.Protobuf;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -30,23 +31,12 @@ public class ProtoSerializer : MonoBehaviour {
     private ModelSerializer mySerializer;
     #endregion
 
-    public byte[] GetBinaryData(object data, bool useProtobuf = true)
+    public byte[] GetBinaryData(IMessage protobuf)
     {
-        byte[] binaryData = null;
-        MemoryStream memoryStream = new MemoryStream();
-        mySerializer.Serialize(memoryStream, data);
-        if (useProtobuf)
-        {
-            binaryData = memoryStream.ToArray();
-            Debug.Log("SERIALIZED: " + binaryData.ToString());
-        }
-        else
-        {
-            // Use simple JSON
-            string serializedMessage = System.Convert.ToBase64String(memoryStream.ToArray());
-            serializedMessage = JsonUtility.ToJson(data);
-            binaryData = System.Text.Encoding.ASCII.GetBytes(serializedMessage.ToCharArray());
-        }
+        var binaryData = new byte[protobuf.CalculateSize()];
+        var stream = new CodedOutputStream(binaryData);
+        protobuf.WriteTo(stream);
+
         return binaryData;
     }
 
@@ -69,14 +59,18 @@ public class ProtoSerializer : MonoBehaviour {
 
     public void DeserializeSalads()
     {
+        Debug.Log("Trying to load Salads.");
         if (System.IO.File.Exists(Application.persistentDataPath + "/Salads.dat"))
         {
             MemoryStream memoryStream = new MemoryStream();
             GameManager gameManager = GameManager.Instance;
             FileStream file = File.Open(Application.persistentDataPath + "/Salads.dat", FileMode.Open);
-            SaladList salads = (SaladList)mySerializer.Deserialize(file, null, typeof(SaladList));
+            //SaladList salads = (SaladList)mySerializer.Deserialize(file, null, typeof(SaladList));
+            
+            SaladList salads = SaladList.Parser.ParseFrom(file);
             gameManager.Salads = salads;
             file.Close();
+            Debug.Log("Salads loaded.");
         }
         
     }

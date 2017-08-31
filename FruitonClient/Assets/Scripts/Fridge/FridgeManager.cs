@@ -1,43 +1,82 @@
-﻿using DataModels;
+﻿
+using Cz.Cuni.Mff.Fruiton.Dto;
+using fruiton.fruitDb;
+using fruiton.fruitDb.factories;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using KFruiton = fruiton.kernel.Fruiton;
+using System;
+using fruiton.kernel.fruitonTeam;
+using Google.Protobuf.Collections;
 
 public class FridgeManager : MonoBehaviour
 {
-
     public Camera FruitonCamera;
+    public GameObject FruitonsWrapper;
+    public GameObject CurrentSaladWrapper;
     public GameObject Fruitons;
     public GameObject AddSaladButton;
     public GameObject Salads;
     public GameObject Highlight;
     public GameObject CurrentSaladObject;
-    private Salad currentSalad;
-    Dictionary<GameObject, Salad> saladDictionary;
-    Vector3 currentSaladTranslation;
-    Vector3 defaultCurrentSaladPosition;
+
+    private Salad CurrentSalad;
+    /// <summary> KEYS: Salad GameObjects. VALUES: Salads. </summary>
+    private Dictionary<GameObject, Salad> saladDictionary;
+    /// <summary> KEYS: Fruitons' GameObjects. VALUES: Fruitons' IDs. </summary>
+    private Dictionary<GameObject, int> fruitonDictionary;
+    /// <summary> Current translations of the potentially new Fruitons in the current Salad for each type respectively. </summary>
+    private Vector3[] currentSaladTranslations;
+    /// <summary> Default translations of the potentially new Fruitons in the current Salad for each type respectively. </summary>
+    private Vector3[] defaultCurrentSaladTranslations;
+    private Vector3 defaultCurrentSaladPosition;
+    private Vector3 defaultCurrenSaladWrapperPosition;
+    /// <summary> Counts of the fruitons in a valid salad for each type respectively. </summary>
+    private readonly int[] typesCounts = { 1, 3, 4 };
     // Use this for initialization
     void Start()
     {
         saladDictionary = new Dictionary<GameObject, Salad>();
+        fruitonDictionary = new Dictionary<GameObject, int>();
         InitializeAllFruitons();
         InitializeSalads();
+        InitializeCurrentSalad();
+    }
 
-        currentSaladTranslation = Vector3.zero;
-        currentSalad = null;
+    private void InitializeCurrentSalad()
+    {
+        currentSaladTranslations = new Vector3[typesCounts.Length];
+        defaultCurrentSaladTranslations = new Vector3[currentSaladTranslations.Length];
+        CurrentSalad = null;
         defaultCurrentSaladPosition = CurrentSaladObject.transform.position;
+        defaultCurrenSaladWrapperPosition = CurrentSaladWrapper.transform.position;
+        Vector3 highlightTranslation = Vector3.zero;
+        // Pass through all types to place the corresponding spots.
+        for (int i = 0; i < typesCounts.Length; i++)
+        {
+            defaultCurrentSaladTranslations[i] = highlightTranslation;
+            currentSaladTranslations[i] = highlightTranslation;
+            int type = i + 1;
+            for (int j = 0; j < typesCounts[i]; j++)
+            {
+                GameObject highlight = Instantiate(Resources.Load("Prefabs/Fridge/HighlightType" + type, typeof(GameObject))) as GameObject;
+                highlight.transform.position = defaultCurrentSaladPosition + highlightTranslation;
+                highlightTranslation.x += 50;
+                highlight.transform.parent = CurrentSaladWrapper.transform;
+                highlight.name = "currentSaladHighlight";
+            }
+        }
     }
 
     private void InitializeSalads()
     {
         GameManager gameManager = GameManager.Instance;
-        foreach (Salad salad in gameManager.Salads.salads)
+        foreach (Salad salad in gameManager.Salads.Salads)
         {
             AddSalad(salad);
         }
-
-
     }
 
     private void InitializeAllFruitons()
@@ -47,32 +86,37 @@ public class FridgeManager : MonoBehaviour
         {
             Debug.Log("Waiting for game manager to initialize");
         }
-        Fruitons allFruitons = gameManager.AllFruitons;
+        IEnumerable<ClientFruiton> allFruitons = gameManager.AllFruitons;
         Vector3 position = Fruitons.transform.position;
-        foreach (Fruiton fruiton in allFruitons.FruitonList)
+        foreach (ClientFruiton fruiton in allFruitons)
         {
-            fruiton.gameobject = Instantiate(Resources.Load("Models/" + fruiton.Model, typeof(GameObject))) as GameObject;
-            GameObject fruitonObject = fruiton.gameobject;
-            fruitonObject.name = fruiton.Model;
-            if (fruitonObject.GetComponent<Collider>() == null)
-            {
-                SphereCollider collider = fruitonObject.AddComponent<SphereCollider>();
-                collider.radius = 15 * fruitonObject.transform.localScale.x;
-            }
-
-            fruitonObject.transform.position = position;
+            Debug.Log("Loading 3D model for: " + fruiton.KernelFruiton.model);
+            fruiton.FruitonObject = InstantiateFridgeFruiton(fruiton.KernelFruiton, position);
+            fruitonDictionary.Add(fruiton.FruitonObject, fruiton.KernelFruiton.id);
+            GameObject fruitonObject = fruiton.FruitonObject;
             position.x += 50;
             fruitonObject.transform.parent = Fruitons.transform;
-            //fruitonObject.ChangeLayerRecursively("3DUI");
 
         }
     }
 
+    private GameObject InstantiateFridgeFruiton(KFruiton kernelFruiton, Vector3 position)
+    {
+        GameObject result = Instantiate(Resources.Load("Models/" + kernelFruiton.model, typeof(GameObject))) as GameObject;
+        result.name = kernelFruiton.model;
+        result.transform.position = position;
+        AddCollider(result);
+        GameObject highlight = Instantiate(Resources.Load("Prefabs/Fridge/HighlightType" + kernelFruiton.type, typeof(GameObject))) as GameObject;
+        highlight.transform.position = new Vector3(position.x, position.y - 1, 120);
+        highlight.transform.parent = FruitonsWrapper.transform;
+        return result;
+    }
+
     void Update()
     {
-        foreach (Fruiton fruiton in GameManager.Instance.AllFruitons.FruitonList)
+        foreach (ClientFruiton fruiton in GameManager.Instance.AllFruitons)
         {
-            fruiton.gameobject.transform.Rotate(new Vector3(0, 50 * Time.deltaTime, 0));
+            fruiton.FruitonObject.transform.Rotate(new Vector3(0, 50 * Time.deltaTime, 0));
         }
 
         foreach (Transform child in CurrentSaladObject.transform)
@@ -84,16 +128,51 @@ public class FridgeManager : MonoBehaviour
         {
             LeftButtonUpLogic();
         }
-        float scroll = Input.GetAxis("Mouse ScrollWheel");
+
+        float scroll = 0;
+        Ray ray = new Ray();
+#if UNITY_ANDROID
+        Touch[] myTouches = Input.touches;
+        switch (Input.touchCount)
+        {
+            case 1:
+                {
+                    Touch touch = myTouches[0];
+                    if (touch.phase == TouchPhase.Moved)
+                    {
+                        ray = Camera.main.ScreenPointToRay(touch.position);
+                    }
+                    scroll = touch.deltaPosition.x/40;
+                }
+                break;
+        }
+#endif
+
+#if UNITY_STANDALONE || UNITY_EDITOR
+
+        scroll = Input.GetAxis("Mouse ScrollWheel");
+        ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+#endif
         if (scroll != 0)
         {
-            ScrollLogic(scroll);
+            ScrollLogic(scroll, ray);
+        }
+
+
+    }
+
+    private void AddCollider(GameObject fruitonObject)
+    {
+        if (fruitonObject.GetComponent<Collider>() == null)
+        {
+            SphereCollider collider = fruitonObject.AddComponent<SphereCollider>();
+            collider.radius = 15 * fruitonObject.transform.localScale.x;
         }
     }
 
-    private void ScrollLogic(float scroll)
+    private void ScrollLogic(float scroll, Ray ray)
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        //TODO: Add scroll elasticity.
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit))
@@ -101,15 +180,15 @@ public class FridgeManager : MonoBehaviour
             string hitName = hit.transform.name;
             if (hitName == AddSaladButton.name || hitName == "Salad" || hitName == "Panel_Salads" || hitName == "Highlight" || IsInSaladPanel(hitName))
             {
-                Salads.transform.position += new Vector3(25 * scroll, 0, 0);
+                Salads.transform.position += new Vector3(50 * scroll, 0, 0);
             }
-            else if (hitName == "Panel_AllFruitons" || HitsChildOf(Fruitons, hitName))
+            else if (hitName == "Panel_AllFruitons" || HitsChildOf(Fruitons, hitName) || HitsChildOf(FruitonsWrapper, hitName))
             {
-                Fruitons.transform.position += new Vector3(25 * scroll, 0, 0);
+                FruitonsWrapper.transform.position += new Vector3(50 * scroll, 0, 0);
             }
-            else if (hitName == "Panel_CurrentSalad" || IsInCurrentSalad(hitName))
+            else if (hitName == "Panel_CurrentSalad" || IsInCurrentSalad(hitName) || HitsChildOf(CurrentSaladWrapper, hitName))
             {
-                CurrentSaladObject.transform.position += new Vector3(25 * scroll, 0, 0);
+                CurrentSaladWrapper.transform.position += new Vector3(50 * scroll, 0, 0);
             }
 
         }
@@ -138,29 +217,35 @@ public class FridgeManager : MonoBehaviour
             if (hit.transform.name == AddSaladButton.name)
             {
                 AddSalad(null);
-
             }
             // Switch to another Salad
             else if (hit.transform.name == "Salad")
             {
-                currentSaladTranslation = Vector3.zero;
-                CurrentSaladObject.transform.position = defaultCurrentSaladPosition;
+                for (int i = 0; i < currentSaladTranslations.Length; i++)
+                {
+                    currentSaladTranslations[i] = defaultCurrentSaladTranslations[i];
+                }
+                CurrentSaladWrapper.transform.position = defaultCurrenSaladWrapperPosition;
                 ClearCurrentSalad();
                 Vector3 hitPosition = hit.transform.position;
                 Highlight.transform.position = new Vector3(hitPosition.x, hitPosition.y - 1, 120);
                 Highlight.transform.parent = hit.transform;
-                currentSalad = saladDictionary[hit.collider.gameObject];
-                foreach (string fruitonID in currentSalad.fruitonIDs)
+                CurrentSalad = saladDictionary[hit.collider.gameObject];
+                FruitonDatabase fruitonDatabase = GameManager.Instance.FruitonDatabase;
+                foreach (int fruitonID in CurrentSalad.FruitonIDs)
                 {
-                    GameObject saladMember = Instantiate(Resources.Load("Models/" + fruitonID, typeof(GameObject))) as GameObject;
+                    KFruiton kernelFruiton = FruitonFactory.makeFruiton(fruitonID, fruitonDatabase);
+                    GameObject saladMember = Instantiate(Resources.Load("Models/" + kernelFruiton.model, typeof(GameObject))) as GameObject;
+                    fruitonDictionary.Add(saladMember, kernelFruiton.id);
+                    AddCollider(saladMember);
                     saladMember.name = "CurrentSalad_" + fruitonID;
-                    saladMember.transform.position = defaultCurrentSaladPosition + currentSaladTranslation;
-                    currentSaladTranslation.x += 50;
+                    saladMember.transform.position = defaultCurrentSaladPosition + currentSaladTranslations[kernelFruiton.type-1];
+                    currentSaladTranslations[kernelFruiton.type - 1].x += 50;
                     saladMember.transform.parent = CurrentSaladObject.transform;
                 }
             }
             // Pick a new Fruiton in Salad.
-            else if (currentSalad != null && HitsChildOf(Fruitons, hit.transform.name))
+            else if (CurrentSalad != null && HitsChildOf(Fruitons, hit.transform.name))
             {
                 AddSaladMember(hit.collider.gameObject);
             }
@@ -168,29 +253,51 @@ public class FridgeManager : MonoBehaviour
             else if (IsInCurrentSalad(hit.transform.name))
             {
                 GameObject toBeDestroyed = hit.transform.gameObject;
+                int id = fruitonDictionary[toBeDestroyed];
+                CurrentSalad.FruitonIDs.Remove(id);
                 Vector3 destroyedPosition = toBeDestroyed.transform.position;
                 Destroy(toBeDestroyed);
+                KFruiton kernelFruiton = FruitonFactory.makeFruiton(id, GameManager.Instance.FruitonDatabase);
                 foreach (Transform child in CurrentSaladObject.transform)
                 {
-                    if (child.transform.position.x > destroyedPosition.x)
+                    int childId = fruitonDictionary[child.gameObject];
+                    KFruiton kernelChild = FruitonFactory.makeFruiton(childId, GameManager.Instance.FruitonDatabase);
+                    if (kernelChild.type == kernelFruiton.type && child.transform.position.x > destroyedPosition.x)
                     {
                         child.transform.position -= new Vector3(50, 0, 0);
                     }
                 }
-                currentSaladTranslation -= new Vector3(50, 0, 0);
+                currentSaladTranslations[kernelFruiton.type - 1] -= new Vector3(50, 0, 0);
             }
             ProtoSerializer.Instance.SerializeSalads();
+            
         }
     }
 
     private void AddSaladMember(GameObject pattern)
     {
-        GameObject saladMember = Instantiate(pattern) as GameObject;
-        saladMember.name = "CurrentSalad_" + saladMember.name;
-        saladMember.transform.position = CurrentSaladObject.transform.position + currentSaladTranslation;
-        currentSaladTranslation.x += 50;
-        saladMember.transform.parent = CurrentSaladObject.transform;
-        currentSalad.Add(pattern.name);
+        RepeatedField<int> fruitonIDsCopy = CurrentSalad.FruitonIDs.CopyRepeatedField<int>();
+        fruitonIDsCopy.Add(fruitonDictionary[pattern]);
+        int[] fruitonIDsCopyArray = new int[fruitonIDsCopy.Count];
+        fruitonIDsCopy.CopyTo(fruitonIDsCopyArray, 0);
+        ValidationMessage validationMessage = FruitonTeamValidator.validateFruitonTeam(new Array<int>(fruitonIDsCopyArray), GameManager.Instance.FruitonDatabase, true);
+        if (validationMessage.success)
+        {
+            GameObject saladMember = Instantiate(pattern) as GameObject;
+            saladMember.transform.parent = CurrentSaladObject.transform;
+            fruitonDictionary.Add(saladMember, fruitonDictionary[pattern]);
+            CurrentSalad.FruitonIDs.Add(fruitonDictionary[saladMember]);
+            int id = fruitonDictionary[saladMember];
+            KFruiton kernelFruiton = FruitonFactory.makeFruiton(id, GameManager.Instance.FruitonDatabase);
+            saladMember.name = "CurrentSalad_" + saladMember.name;
+            saladMember.transform.position = CurrentSaladObject.transform.position + currentSaladTranslations[kernelFruiton.type - 1];
+            currentSaladTranslations[kernelFruiton.type - 1].x += 50;
+        } else
+        {
+            // TODO: Notify the user (His choice would cause invalid salad.) 
+        }
+        
+
     }
 
     private void AddSalad(Salad salad)
@@ -224,14 +331,15 @@ public class FridgeManager : MonoBehaviour
         Salad newSalad;
         if (salad == null)
         {
-            mesh.text = "New Salad" + gameManager.Salads.Count;
-            newSalad = new Salad(mesh.text);
-            gameManager.Salads.Add(newSalad);
+            mesh.text = "New Salad" + gameManager.Salads.Salads.Count;
+            newSalad = new Salad();
+            newSalad.Name = mesh.text;
+            gameManager.Salads.Salads.Add(newSalad);
         }
         else
         {
             newSalad = salad;
-            mesh.text = salad.name;
+            mesh.text = salad.Name;
         }
         saladDictionary.Add(saladObject, newSalad);
     }

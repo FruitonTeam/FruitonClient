@@ -223,7 +223,7 @@ public class ConnectionHandler : MonoBehaviour {
         }
         else
         {
-            Debug.Log("[Registration] Post request failed.");  //error
+            Debug.Log("[Registration] Post request failed: " + www.error);  //error
             SendMessage(PROCESS_REGISTRATION_RESULT, false);
         }
     }

@@ -1,4 +1,7 @@
-﻿using DataModels;
+﻿using Cz.Cuni.Mff.Fruiton.Dto;
+using fruiton.fruitDb;
+using fruiton.fruitDb.factories;
+using fruiton.kernel;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,10 +21,11 @@ public class GameManager : MonoBehaviour {
     private string userPassword = null;
     private bool? stayLoggedIn;
     private IEnumerable<string> myFruitonsIDs;
-    private Fruitons allFruitons;
+    private IEnumerable<ClientFruiton> allKernelFruitons;
     private bool isInitialized = false;
-    private TextAsset fruitonDefs;
     private SaladList salads;
+    private FruitonDatabase fruitonDatabase;
+
     #endregion
 
     #region Properties
@@ -121,11 +125,11 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    public Fruitons AllFruitons
+    public IEnumerable<ClientFruiton> AllFruitons
     {
         get
         {
-            return allFruitons;
+            return allKernelFruitons;
         }
     }
 
@@ -153,7 +157,23 @@ public class GameManager : MonoBehaviour {
         }
         set
         {
+            if (salads == null)
+            {
+                salads = new SaladList();
+            }
             salads = value; 
+        }
+    }
+
+    public FruitonDatabase FruitonDatabase
+    {
+        get
+        {
+            return fruitonDatabase;
+        }
+        set
+        {
+            fruitonDatabase = value;
         }
     }
 
@@ -189,26 +209,17 @@ public class GameManager : MonoBehaviour {
 
     public void Initialize()
     {
-        fruitonDefs = (TextAsset)Resources.Load("FruitonsDefs", typeof(TextAsset));
+        Debug.Log("Initializing Game Manager");
         ProtoSerializer.Instance.DeserializeSalads();
-        ParseFruitonsXML();
+        fruitonDatabase = new FruitonDatabase(Resources.Load<TextAsset>("FruitonDb").text);
+        //fruitonDatabase = new FruitonDatabase(Application.dataPath + "/Scripts/Kernel/Generated/resources/FruitonDb.json");
+        allKernelFruitons = ClientFruitonFactory.LoadClientFruitons();
         IsInitialized = true;
     }
 
     #endregion
 
     #region Private
-
-    private void ParseFruitonsXML()
-    {
-        
-        XmlSerializer deserializer = new XmlSerializer(typeof(Fruitons));
-        var reader = new System.IO.StringReader(fruitonDefs.text);
-        object obj = deserializer.Deserialize(reader);
-        allFruitons = (Fruitons)obj;
-        Debug.Log("All fruitons deserialized: " + allFruitons);
-        reader.Close();
-    }
 
     private void SerializeBinary(object toBeSerialized, string filename)
     {
