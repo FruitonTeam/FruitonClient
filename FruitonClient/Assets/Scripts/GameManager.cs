@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour {
     private IEnumerable<string> myFruitonsIDs;
     private IEnumerable<ClientFruiton> allKernelFruitons;
     private bool isInitialized = false;
-    private SaladList salads;
+    private FruitonTeamList fruitonTeamList;
     private FruitonDatabase fruitonDatabase;
 
     #endregion
@@ -145,23 +145,23 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    public SaladList Salads
+    public FruitonTeamList FruitonTeamList
     {
         get
         {
-            if (salads == null)
+            if (fruitonTeamList == null)
             {
-                salads = new SaladList();
+                fruitonTeamList = new FruitonTeamList();
             }
-            return salads;
+            return fruitonTeamList;
         }
         set
         {
-            if (salads == null)
+            if (fruitonTeamList == null)
             {
-                salads = new SaladList();
+                fruitonTeamList = new FruitonTeamList();
             }
-            salads = value; 
+            fruitonTeamList = value; 
         }
     }
 
@@ -210,7 +210,7 @@ public class GameManager : MonoBehaviour {
     public void Initialize()
     {
         Debug.Log("Initializing Game Manager");
-        ProtoSerializer.Instance.DeserializeSalads();
+        ProtoSerializer.Instance.DeserializeFruitonTeams();
         fruitonDatabase = new FruitonDatabase(Resources.Load<TextAsset>("FruitonDb").text);
         //fruitonDatabase = new FruitonDatabase(Application.dataPath + "/Scripts/Kernel/Generated/resources/FruitonDb.json");
         allKernelFruitons = ClientFruitonFactory.LoadClientFruitons();

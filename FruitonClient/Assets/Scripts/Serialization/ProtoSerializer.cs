@@ -29,6 +29,8 @@ public class ProtoSerializer : MonoBehaviour {
 
     #region Fields
     private ModelSerializer mySerializer;
+    // Use this in the following way: Application.persistentDataPath + PERSISTENCE_PATH
+    private const string PERSISTENCE_PATH = "/FruitonTeams.dat";
     #endregion
 
     public byte[] GetBinaryData(IMessage protobuf)
@@ -40,12 +42,12 @@ public class ProtoSerializer : MonoBehaviour {
         return binaryData;
     }
 
-    public void SerializeSalads()
+    public void SerializeFruitonTeams()
     {
         GameManager gameManager = GameManager.Instance;
-        byte[] binaryData = GetBinaryData(gameManager.Salads);
+        byte[] binaryData = GetBinaryData(gameManager.FruitonTeamList);
         Debug.Log("Application persistence data path: " + Application.persistentDataPath);
-        FileStream file = File.Create(Application.persistentDataPath + "/Salads.dat");
+        FileStream file = File.Create(Application.persistentDataPath + PERSISTENCE_PATH);
         if (gameManager.StayLoggedIn)
         {
             file.Write(binaryData, 0, binaryData.Length);
@@ -57,20 +59,19 @@ public class ProtoSerializer : MonoBehaviour {
         file.Close();
     }
 
-    public void DeserializeSalads()
+    public void DeserializeFruitonTeams()
     {
-        Debug.Log("Trying to load Salads.");
-        if (System.IO.File.Exists(Application.persistentDataPath + "/Salads.dat"))
+        Debug.Log("Trying to load Fruiton Teams.");
+        if (System.IO.File.Exists(Application.persistentDataPath + PERSISTENCE_PATH))
         {
             MemoryStream memoryStream = new MemoryStream();
             GameManager gameManager = GameManager.Instance;
-            FileStream file = File.Open(Application.persistentDataPath + "/Salads.dat", FileMode.Open);
-            //SaladList salads = (SaladList)mySerializer.Deserialize(file, null, typeof(SaladList));
+            FileStream file = File.Open(Application.persistentDataPath + PERSISTENCE_PATH, FileMode.Open);
             
-            SaladList salads = SaladList.Parser.ParseFrom(file);
-            gameManager.Salads = salads;
+            FruitonTeamList fruitonTeamList = FruitonTeamList.Parser.ParseFrom(file);
+            gameManager.FruitonTeamList = fruitonTeamList;
             file.Close();
-            Debug.Log("Salads loaded.");
+            Debug.Log("Fruiton Teams loaded.");
         }
         
     }

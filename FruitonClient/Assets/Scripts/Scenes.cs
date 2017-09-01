@@ -3,7 +3,7 @@
 
     public const string CHAT_SCENE = "ChatScene";
     public const string MAIN_MENU = "MainMenu";
-    public const string FRIDGE = "Fridge";
+    public const string TEAMS_MANAGEMENT_SCENE = "TeamsManagementScene";
     
     private Scenes() {
         

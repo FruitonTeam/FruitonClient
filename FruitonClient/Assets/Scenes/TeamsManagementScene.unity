@@ -228,7 +228,7 @@ GameObject:
   - component: {fileID: 193470480}
   - component: {fileID: 193470479}
   m_Layer: 0
-  m_Name: Salads
+  m_Name: FruitonTeams
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -275,7 +275,7 @@ GameObject:
   - component: {fileID: 204427816}
   - component: {fileID: 204427815}
   m_Layer: 0
-  m_Name: CurrentSalad
+  m_Name: CurrentFruitonTeam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -323,7 +323,7 @@ GameObject:
   - component: {fileID: 278700252}
   - component: {fileID: 278700251}
   m_Layer: 0
-  m_Name: Panel_Salads
+  m_Name: Panel_FruitonTeams
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -501,7 +501,7 @@ GameObject:
   - component: {fileID: 631186300}
   - component: {fileID: 631186299}
   m_Layer: 0
-  m_Name: AddSalad
+  m_Name: AddFruitonTeam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -958,12 +958,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FruitonCamera: {fileID: 0}
   FruitonsWrapper: {fileID: 395178271}
-  CurrentSaladWrapper: {fileID: 2021969990}
+  CurrentFruitonTeamWrapper: {fileID: 2021969990}
   Fruitons: {fileID: 1083486748}
-  AddSaladButton: {fileID: 631186298}
-  Salads: {fileID: 193470478}
+  AddFruitonTeamButton: {fileID: 631186298}
+  FruitonTeams: {fileID: 193470478}
   Highlight: {fileID: 712026199}
-  CurrentSaladObject: {fileID: 204427814}
+  CurrentFruitonTeamObject: {fileID: 204427814}
+  PanelAllFruitons: {fileID: 50354467}
+  PanelCurrenFruitonTeams: {fileID: 1737820343}
+  PanelFruitonTeams: {fileID: 278700250}
 --- !u!1 &1500268432
 GameObject:
   m_ObjectHideFlags: 0
@@ -1109,7 +1112,7 @@ GameObject:
   - component: {fileID: 1737820345}
   - component: {fileID: 1737820344}
   m_Layer: 0
-  m_Name: Panel_CurrentSalad
+  m_Name: Panel_CurrentFruitonTeam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1187,7 +1190,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2021969991}
   m_Layer: 0
-  m_Name: CurrentSaladWrapper
+  m_Name: CurrentFruitonTeamWrapper
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
