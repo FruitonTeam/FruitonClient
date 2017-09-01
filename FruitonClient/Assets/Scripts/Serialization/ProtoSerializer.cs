@@ -17,7 +17,6 @@ public class ProtoSerializer : MonoBehaviour {
         {
             DontDestroyOnLoad(gameObject);
             Instance = this;
-            mySerializer = new ModelSerializer();
         }
         else if (Instance != this)
         {
@@ -28,7 +27,6 @@ public class ProtoSerializer : MonoBehaviour {
     #endregion
 
     #region Fields
-    private ModelSerializer mySerializer;
     // Use this in the following way: Application.persistentDataPath + PERSISTENCE_PATH
     private const string PERSISTENCE_PATH = "/FruitonTeams.dat";
     #endregion
