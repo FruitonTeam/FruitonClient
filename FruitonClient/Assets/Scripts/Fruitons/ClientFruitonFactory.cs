@@ -7,7 +7,7 @@ using UnityEngine;
 
 public static class ClientFruitonFactory {
 
-    public static IEnumerable<ClientFruiton> LoadClientFruitons()
+    public static IEnumerable<ClientFruiton> CreateClientFruitons()
     {
         Debug.Log("Loading ALL fruitons.");
         FruitonDatabase fruitonDatabase = GameManager.Instance.FruitonDatabase;

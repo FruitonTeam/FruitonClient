@@ -213,7 +213,7 @@ public class GameManager : MonoBehaviour {
         ProtoSerializer.Instance.DeserializeFruitonTeams();
         fruitonDatabase = new FruitonDatabase(Resources.Load<TextAsset>("FruitonDb").text);
         //fruitonDatabase = new FruitonDatabase(Application.dataPath + "/Scripts/Kernel/Generated/resources/FruitonDb.json");
-        allKernelFruitons = ClientFruitonFactory.LoadClientFruitons();
+        allKernelFruitons = ClientFruitonFactory.CreateClientFruitons();
         IsInitialized = true;
     }
 
