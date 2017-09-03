@@ -6,7 +6,7 @@ public static class KernelCastExtensions {
 
     public static List<T> ToList<T>(this Array<T> array)
     {
-        var list = new List<T>();
+        var list = new List<T>(array.length);
         for (int i = 0; i < array.length; i++)
         {
             list.Add(array[i]);
@@ -18,7 +18,7 @@ public static class KernelCastExtensions {
         where TIn : class
         where TOut : TIn
     {
-        var list = new List<TOut>();
+        var list = new List<TOut>(array.length);
         for (int i = 0; i < array.length; i++)
         {
             list.Add((TOut)array[i]);
