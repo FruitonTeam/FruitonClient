@@ -286,8 +286,8 @@ public class FridgeManager : MonoBehaviour
         fruitonIDsCopy.Add(fruitonDictionary[pattern]);
         int[] fruitonIDsCopyArray = new int[fruitonIDsCopy.Count];
         fruitonIDsCopy.CopyTo(fruitonIDsCopyArray, 0);
-        ValidationMessage validationMessage = FruitonTeamValidator.validateFruitonTeam(new Array<int>(fruitonIDsCopyArray), GameManager.Instance.FruitonDatabase, true);
-        if (validationMessage.success)
+        ValidationResult validationResult = FruitonTeamValidator.validateFruitonTeam(new Array<int>(fruitonIDsCopyArray), GameManager.Instance.FruitonDatabase);
+        if (validationResult.valid)
         {
             GameObject fruitonTeamMember = Instantiate(pattern) as GameObject;
             fruitonTeamMember.transform.parent = CurrentFruitonTeamObject.transform;
