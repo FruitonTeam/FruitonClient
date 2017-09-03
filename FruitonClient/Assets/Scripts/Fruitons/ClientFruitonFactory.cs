@@ -11,7 +11,7 @@ public static class ClientFruitonFactory {
     {
         Debug.Log("Loading ALL fruitons.");
         FruitonDatabase fruitonDatabase = GameManager.Instance.FruitonDatabase;
-        System.Collections.Generic.List<ClientFruiton> result = new List<ClientFruiton>();
+        var result = new List<ClientFruiton>();
         foreach (int key in fruitonDatabase.fruitonDb._keys)
         {
             // This check is here because Haxe IntMap may also contain invalid key-value pairs, which can be recognised by the fact that their key is 0. 

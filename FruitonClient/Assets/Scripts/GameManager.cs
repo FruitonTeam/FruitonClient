@@ -20,9 +20,9 @@ public class GameManager : MonoBehaviour {
     private string userName = null;
     private string userPassword = null;
     private bool? stayLoggedIn;
-    private IEnumerable<string> myFruitonsIDs;
-    private IEnumerable<ClientFruiton> allKernelFruitons;
+    private IEnumerable<ClientFruiton> allFruitons;
     private bool isInitialized = false;
+    /// <summary> The list of the Fruiton Teams of the current user. </summary>
     private FruitonTeamList fruitonTeamList;
     private FruitonDatabase fruitonDatabase;
 
@@ -117,19 +117,11 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    public IEnumerable<string> MyFruitonsIDs
-    {
-        get
-        {
-            return myFruitonsIDs;
-        }
-    }
-
     public IEnumerable<ClientFruiton> AllFruitons
     {
         get
         {
-            return allKernelFruitons;
+            return allFruitons;
         }
     }
 
@@ -157,10 +149,6 @@ public class GameManager : MonoBehaviour {
         }
         set
         {
-            if (fruitonTeamList == null)
-            {
-                fruitonTeamList = new FruitonTeamList();
-            }
             fruitonTeamList = value; 
         }
     }
@@ -213,7 +201,7 @@ public class GameManager : MonoBehaviour {
         ProtoSerializer.Instance.DeserializeFruitonTeams();
         fruitonDatabase = new FruitonDatabase(Resources.Load<TextAsset>("FruitonDb").text);
         //fruitonDatabase = new FruitonDatabase(Application.dataPath + "/Scripts/Kernel/Generated/resources/FruitonDb.json");
-        allKernelFruitons = ClientFruitonFactory.CreateClientFruitons();
+        allFruitons = ClientFruitonFactory.CreateClientFruitons();
         IsInitialized = true;
     }
 

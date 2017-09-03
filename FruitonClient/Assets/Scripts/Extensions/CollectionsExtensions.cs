@@ -5,12 +5,8 @@ using UnityEngine;
 
 public static class CollectionsExtensions {
 
-    public static RepeatedField<T> CopyRepeatedField<T>(this RepeatedField<T> pattern)
+    public static RepeatedField<T> Copy<T>(this RepeatedField<T> pattern)
     {
-        if (pattern == null)
-        {
-            return null;
-        }
         RepeatedField<T> result = new RepeatedField<T>();
         foreach(T item in pattern)
         {

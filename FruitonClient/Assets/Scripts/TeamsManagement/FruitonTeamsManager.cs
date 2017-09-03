@@ -11,7 +11,7 @@ using System;
 using fruiton.kernel.fruitonTeam;
 using Google.Protobuf.Collections;
 
-public class FridgeManager : MonoBehaviour
+public class FruitonTeamsManager : MonoBehaviour
 {
     public Camera FruitonCamera;
     public GameObject FruitonsWrapper;
@@ -282,7 +282,7 @@ public class FridgeManager : MonoBehaviour
 
     private void AddFruitonTeamMember(GameObject pattern)
     {
-        RepeatedField<int> fruitonIDsCopy = currentFruitonTeam.FruitonIDs.CopyRepeatedField<int>();
+        RepeatedField<int> fruitonIDsCopy = currentFruitonTeam.FruitonIDs.Copy<int>();
         fruitonIDsCopy.Add(fruitonDictionary[pattern]);
         int[] fruitonIDsCopyArray = new int[fruitonIDsCopy.Count];
         fruitonIDsCopy.CopyTo(fruitonIDsCopyArray, 0);
