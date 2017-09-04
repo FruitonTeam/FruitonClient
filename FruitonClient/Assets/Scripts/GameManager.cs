@@ -20,11 +20,8 @@ public class GameManager : MonoBehaviour {
     private string userName = null;
     private string userPassword = null;
     private bool? stayLoggedIn;
-    private IEnumerable<ClientFruiton> allFruitons;
-    private bool isInitialized = false;
     /// <summary> The list of the Fruiton Teams of the current user. </summary>
     private FruitonTeamList fruitonTeamList;
-    private FruitonDatabase fruitonDatabase;
 
     #endregion
 
@@ -117,25 +114,9 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    public IEnumerable<ClientFruiton> AllFruitons
-    {
-        get
-        {
-            return allFruitons;
-        }
-    }
+    public IEnumerable<ClientFruiton> AllFruitons { get; private set; }
 
-    public bool IsInitialized
-    {
-        get
-        {
-            return isInitialized;
-        }
-        set
-        {
-            isInitialized = value;
-        }
-    }
+    public bool IsInitialized { get; set; }
 
     public FruitonTeamList FruitonTeamList
     {
@@ -153,17 +134,7 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    public FruitonDatabase FruitonDatabase
-    {
-        get
-        {
-            return fruitonDatabase;
-        }
-        set
-        {
-            fruitonDatabase = value;
-        }
-    }
+    public FruitonDatabase FruitonDatabase { get; set; }
 
     #endregion
 
@@ -199,9 +170,9 @@ public class GameManager : MonoBehaviour {
     {
         Debug.Log("Initializing Game Manager");
         ProtoSerializer.Instance.DeserializeFruitonTeams();
-        fruitonDatabase = new FruitonDatabase(Resources.Load<TextAsset>("FruitonDb").text);
+        FruitonDatabase = new FruitonDatabase(Resources.Load<TextAsset>("FruitonDb").text);
         //fruitonDatabase = new FruitonDatabase(Application.dataPath + "/Scripts/Kernel/Generated/resources/FruitonDb.json");
-        allFruitons = ClientFruitonFactory.CreateClientFruitons();
+        AllFruitons = ClientFruitonFactory.CreateClientFruitons();
         IsInitialized = true;
     }
 

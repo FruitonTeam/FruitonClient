@@ -3,32 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ClientFruiton{
-    private Fruiton kernelFruiton;
-    private GameObject fruitonObject;
+public class ClientFruiton {
 
-    public Fruiton KernelFruiton
-    {
-        get
-        {
-            return kernelFruiton;
-        }
-    }
+    public Fruiton KernelFruiton { get; private set;}
 
-    public GameObject FruitonObject
-    {
-        get
-        {
-            return fruitonObject;
-        }
-        set
-        {
-            fruitonObject = value;
-        }
-    }
+    public GameObject FruitonObject { get; set; }
 
     public ClientFruiton(Fruiton kernelFruiton)
     {
-        this.kernelFruiton = kernelFruiton;
+        KernelFruiton = kernelFruiton;
     }
 }
