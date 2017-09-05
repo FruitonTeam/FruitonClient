@@ -1,4 +1,7 @@
-﻿using DataModels;
+﻿using Cz.Cuni.Mff.Fruiton.Dto;
+using fruiton.fruitDb;
+using fruiton.fruitDb.factories;
+using fruiton.kernel;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,11 +20,9 @@ public class GameManager : MonoBehaviour {
     private string userName = null;
     private string userPassword = null;
     private bool? stayLoggedIn;
-    private IEnumerable<string> myFruitonsIDs;
-    private Fruitons allFruitons;
-    private bool isInitialized = false;
-    private TextAsset fruitonDefs;
-    private SaladList salads;
+    /// <summary> The list of the Fruiton Teams of the current user. </summary>
+    private FruitonTeamList fruitonTeamList;
+
     #endregion
 
     #region Properties
@@ -113,49 +114,27 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    public IEnumerable<string> MyFruitonsIDs
-    {
-        get
-        {
-            return myFruitonsIDs;
-        }
-    }
+    public IEnumerable<ClientFruiton> AllFruitons { get; private set; }
 
-    public Fruitons AllFruitons
-    {
-        get
-        {
-            return allFruitons;
-        }
-    }
+    public bool IsInitialized { get; set; }
 
-    public bool IsInitialized
+    public FruitonTeamList FruitonTeamList
     {
         get
         {
-            return isInitialized;
-        }
-        set
-        {
-            isInitialized = value;
-        }
-    }
-
-    public SaladList Salads
-    {
-        get
-        {
-            if (salads == null)
+            if (fruitonTeamList == null)
             {
-                salads = new SaladList();
+                fruitonTeamList = new FruitonTeamList();
             }
-            return salads;
+            return fruitonTeamList;
         }
         set
         {
-            salads = value; 
+            fruitonTeamList = value; 
         }
     }
+
+    public FruitonDatabase FruitonDatabase { get; set; }
 
     #endregion
 
@@ -189,26 +168,17 @@ public class GameManager : MonoBehaviour {
 
     public void Initialize()
     {
-        fruitonDefs = (TextAsset)Resources.Load("FruitonsDefs", typeof(TextAsset));
-        ProtoSerializer.Instance.DeserializeSalads();
-        ParseFruitonsXML();
+        Debug.Log("Initializing Game Manager");
+        ProtoSerializer.Instance.DeserializeFruitonTeams();
+        FruitonDatabase = new FruitonDatabase(Resources.Load<TextAsset>("FruitonDb").text);
+        //fruitonDatabase = new FruitonDatabase(Application.dataPath + "/Scripts/Kernel/Generated/resources/FruitonDb.json");
+        AllFruitons = ClientFruitonFactory.CreateClientFruitons();
         IsInitialized = true;
     }
 
     #endregion
 
     #region Private
-
-    private void ParseFruitonsXML()
-    {
-        
-        XmlSerializer deserializer = new XmlSerializer(typeof(Fruitons));
-        var reader = new System.IO.StringReader(fruitonDefs.text);
-        object obj = deserializer.Deserialize(reader);
-        allFruitons = (Fruitons)obj;
-        Debug.Log("All fruitons deserialized: " + allFruitons);
-        reader.Close();
-    }
 
     private void SerializeBinary(object toBeSerialized, string filename)
     {

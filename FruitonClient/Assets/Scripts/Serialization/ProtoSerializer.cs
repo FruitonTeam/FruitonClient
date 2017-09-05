@@ -1,4 +1,5 @@
-﻿using DataModels;
+﻿using Cz.Cuni.Mff.Fruiton.Dto;
+using Google.Protobuf;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -16,7 +17,6 @@ public class ProtoSerializer : MonoBehaviour {
         {
             DontDestroyOnLoad(gameObject);
             Instance = this;
-            mySerializer = new ModelSerializer();
         }
         else if (Instance != this)
         {
@@ -27,35 +27,25 @@ public class ProtoSerializer : MonoBehaviour {
     #endregion
 
     #region Fields
-    private ModelSerializer mySerializer;
+    // Use this in the following way: Application.persistentDataPath + PERSISTENCE_PATH
+    private const string PERSISTENCE_PATH = "/FruitonTeams.dat";
     #endregion
 
-    public byte[] GetBinaryData(object data, bool useProtobuf = true)
+    public byte[] GetBinaryData(IMessage protobuf)
     {
-        byte[] binaryData = null;
-        MemoryStream memoryStream = new MemoryStream();
-        mySerializer.Serialize(memoryStream, data);
-        if (useProtobuf)
-        {
-            binaryData = memoryStream.ToArray();
-            Debug.Log("SERIALIZED: " + binaryData.ToString());
-        }
-        else
-        {
-            // Use simple JSON
-            string serializedMessage = System.Convert.ToBase64String(memoryStream.ToArray());
-            serializedMessage = JsonUtility.ToJson(data);
-            binaryData = System.Text.Encoding.ASCII.GetBytes(serializedMessage.ToCharArray());
-        }
+        var binaryData = new byte[protobuf.CalculateSize()];
+        var stream = new CodedOutputStream(binaryData);
+        protobuf.WriteTo(stream);
+
         return binaryData;
     }
 
-    public void SerializeSalads()
+    public void SerializeFruitonTeams()
     {
         GameManager gameManager = GameManager.Instance;
-        byte[] binaryData = GetBinaryData(gameManager.Salads);
+        byte[] binaryData = GetBinaryData(gameManager.FruitonTeamList);
         Debug.Log("Application persistence data path: " + Application.persistentDataPath);
-        FileStream file = File.Create(Application.persistentDataPath + "/Salads.dat");
+        FileStream file = File.Create(Application.persistentDataPath + PERSISTENCE_PATH);
         if (gameManager.StayLoggedIn)
         {
             file.Write(binaryData, 0, binaryData.Length);
@@ -67,16 +57,19 @@ public class ProtoSerializer : MonoBehaviour {
         file.Close();
     }
 
-    public void DeserializeSalads()
+    public void DeserializeFruitonTeams()
     {
-        if (System.IO.File.Exists(Application.persistentDataPath + "/Salads.dat"))
+        Debug.Log("Trying to load Fruiton Teams.");
+        if (System.IO.File.Exists(Application.persistentDataPath + PERSISTENCE_PATH))
         {
             MemoryStream memoryStream = new MemoryStream();
             GameManager gameManager = GameManager.Instance;
-            FileStream file = File.Open(Application.persistentDataPath + "/Salads.dat", FileMode.Open);
-            SaladList salads = (SaladList)mySerializer.Deserialize(file, null, typeof(SaladList));
-            gameManager.Salads = salads;
+            FileStream file = File.Open(Application.persistentDataPath + PERSISTENCE_PATH, FileMode.Open);
+            
+            FruitonTeamList fruitonTeamList = FruitonTeamList.Parser.ParseFrom(file);
+            gameManager.FruitonTeamList = fruitonTeamList;
             file.Close();
+            Debug.Log("Fruiton Teams loaded.");
         }
         
     }

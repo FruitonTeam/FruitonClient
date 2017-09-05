@@ -8,16 +8,16 @@ public class Fruitons
 {
     public Fruitons()
     {
-        FruitonList = new List<Fruiton>();
+        FruitonList = new List<ClientFruiton>();
     }
 
     [XmlElement("Fruiton")]
-    public List<Fruiton> FruitonList { get; set; }
+    public List<ClientFruiton> FruitonList { get; set; }
 
     public override string ToString()
     {
         string result = "";
-        foreach(Fruiton fruiton in FruitonList)
+        foreach(ClientFruiton fruiton in FruitonList)
         {
             result += fruiton.ToString();
         }
@@ -25,21 +25,21 @@ public class Fruitons
     }
 }
 
-public class Fruiton {
-    public Fruiton() { }
+//public class ClientFruiton {
+//    public ClientFruiton() { }
 
-    [XmlAttribute("id")]
-    public string Id { get; set; }
-    [XmlAttribute("model")]
-    public string Model { get; set; }
-    [XmlIgnore]
-    public GameObject gameobject;
+//    [XmlAttribute("id")]
+//    public string Id { get; set; }
+//    [XmlAttribute("model")]
+//    public string Model { get; set; }
+//    [XmlIgnore]
+//    public GameObject gameobject;
 
-    public override string ToString()
-    {
-        return "[id=" + Id + ", model=" + Model + "]";
-    }    
-}
+//    public override string ToString()
+//    {
+//        return "[id=" + Id + ", model=" + Model + "]";
+//    }    
+//}
 
 
 

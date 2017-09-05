@@ -172,6 +172,52 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &64801655
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4726278560306190, guid: 227e4b26bf5ed764fbe461db9203f7c9, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -198.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4726278560306190, guid: 227e4b26bf5ed764fbe461db9203f7c9, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: -50.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4726278560306190, guid: 227e4b26bf5ed764fbe461db9203f7c9, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 120.46863
+      objectReference: {fileID: 0}
+    - target: {fileID: 4726278560306190, guid: 227e4b26bf5ed764fbe461db9203f7c9, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4726278560306190, guid: 227e4b26bf5ed764fbe461db9203f7c9, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4726278560306190, guid: 227e4b26bf5ed764fbe461db9203f7c9, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4726278560306190, guid: 227e4b26bf5ed764fbe461db9203f7c9, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4726278560306190, guid: 227e4b26bf5ed764fbe461db9203f7c9, type: 2}
+      propertyPath: m_RootOrder
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1400019793332410, guid: 227e4b26bf5ed764fbe461db9203f7c9, type: 2}
+      propertyPath: m_Name
+      value: Highlight
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 227e4b26bf5ed764fbe461db9203f7c9, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &193470478
 GameObject:
   m_ObjectHideFlags: 0
@@ -182,7 +228,7 @@ GameObject:
   - component: {fileID: 193470480}
   - component: {fileID: 193470479}
   m_Layer: 0
-  m_Name: Salads
+  m_Name: FruitonTeams
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -212,7 +258,7 @@ RectTransform:
   m_Children:
   - {fileID: 631186302}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -229,7 +275,7 @@ GameObject:
   - component: {fileID: 204427816}
   - component: {fileID: 204427815}
   m_Layer: 0
-  m_Name: CurrentSalad
+  m_Name: CurrentFruitonTeam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -254,15 +300,15 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 204427814}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 100}
+  m_LocalPosition: {x: 0, y: 0, z: 107.49338}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_Father: {fileID: 2021969991}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -104.1, y: 0}
+  m_AnchoredPosition: {x: -64.63299, y: 6.7312536}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &278700250
@@ -277,7 +323,7 @@ GameObject:
   - component: {fileID: 278700252}
   - component: {fileID: 278700251}
   m_Layer: 0
-  m_Name: Panel_Salads
+  m_Name: Panel_FruitonTeams
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -346,6 +392,40 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &395178271
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 395178272}
+  m_Layer: 0
+  m_Name: FruitonsWrapper
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &395178272
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 395178271}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 100}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 1083486750}
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -104.100006, y: 49.409996}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &461396273
 GameObject:
   m_ObjectHideFlags: 0
@@ -421,7 +501,7 @@ GameObject:
   - component: {fileID: 631186300}
   - component: {fileID: 631186299}
   m_Layer: 0
-  m_Name: AddSalad
+  m_Name: AddFruitonTeam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -493,8 +573,9 @@ Transform:
 --- !u!1 &712026199
 GameObject:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabParentObject: {fileID: 1400019793332410, guid: 227e4b26bf5ed764fbe461db9203f7c9,
+    type: 2}
+  m_PrefabInternal: {fileID: 64801655}
   serializedVersion: 5
   m_Component:
   - component: {fileID: 712026203}
@@ -511,8 +592,9 @@ GameObject:
 --- !u!23 &712026200
 MeshRenderer:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabParentObject: {fileID: 23833338339606098, guid: 227e4b26bf5ed764fbe461db9203f7c9,
+    type: 2}
+  m_PrefabInternal: {fileID: 64801655}
   m_GameObject: {fileID: 712026199}
   m_Enabled: 1
   m_CastShadows: 1
@@ -521,7 +603,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 5957feccf811ec649918cedadf416be8, type: 2}
+  - {fileID: 2100000, guid: 1112f421ac62542479fd43bbac6dbcc4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -542,8 +624,9 @@ MeshRenderer:
 --- !u!135 &712026201
 SphereCollider:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabParentObject: {fileID: 135026217892350006, guid: 227e4b26bf5ed764fbe461db9203f7c9,
+    type: 2}
+  m_PrefabInternal: {fileID: 64801655}
   m_GameObject: {fileID: 712026199}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
@@ -554,22 +637,24 @@ SphereCollider:
 --- !u!33 &712026202
 MeshFilter:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabParentObject: {fileID: 33207708684697052, guid: 227e4b26bf5ed764fbe461db9203f7c9,
+    type: 2}
+  m_PrefabInternal: {fileID: 64801655}
   m_GameObject: {fileID: 712026199}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!4 &712026203
 Transform:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabParentObject: {fileID: 4726278560306190, guid: 227e4b26bf5ed764fbe461db9203f7c9,
+    type: 2}
+  m_PrefabInternal: {fileID: 64801655}
   m_GameObject: {fileID: 712026199}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -198.7, y: -50.2, z: 120.46863}
   m_LocalScale: {x: 40, y: 40, z: 5}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1076045019
 GameObject:
@@ -657,7 +742,7 @@ RectTransform:
   m_Children:
   - {fileID: 1500268433}
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -699,15 +784,15 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1083486748}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 100}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_Father: {fileID: 395178272}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -104.1, y: 49.41}
+  m_AnchoredPosition: {x: 0.0000076293945, y: 0.0000076293945}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1332672256
@@ -770,7 +855,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1436549884
 GameObject:
@@ -872,11 +957,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FruitonCamera: {fileID: 0}
+  FruitonsWrapper: {fileID: 395178271}
+  CurrentFruitonTeamWrapper: {fileID: 2021969990}
   Fruitons: {fileID: 1083486748}
-  AddSaladButton: {fileID: 631186298}
-  Salads: {fileID: 193470478}
+  AddFruitonTeamButton: {fileID: 631186298}
+  FruitonTeams: {fileID: 193470478}
   Highlight: {fileID: 712026199}
-  CurrentSaladObject: {fileID: 204427814}
+  CurrentFruitonTeamObject: {fileID: 204427814}
+  PanelAllFruitons: {fileID: 50354467}
+  PanelCurrenFruitonTeams: {fileID: 1737820343}
+  PanelFruitonTeams: {fileID: 278700250}
 --- !u!1 &1500268432
 GameObject:
   m_ObjectHideFlags: 0
@@ -1022,7 +1112,7 @@ GameObject:
   - component: {fileID: 1737820345}
   - component: {fileID: 1737820344}
   m_Layer: 0
-  m_Name: Panel_CurrentSalad
+  m_Name: Panel_CurrentFruitonTeam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1090,4 +1180,33 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2021969990
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 2021969991}
+  m_Layer: 0
+  m_Name: CurrentFruitonTeamWrapper
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2021969991
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2021969990}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -39.467003, y: -6.7312536, z: -7.493381}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 204427816}
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
