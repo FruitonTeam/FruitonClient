@@ -27,7 +27,7 @@ namespace UI.MainMenu
 
         public void TeamManagementContinue()
         {
-            Scenes.Load(Scenes.TEAMS_MANAGEMENT_SCENE, "teamManagementState", bool.TrueString);
+            Scenes.Load(Scenes.TEAMS_MANAGEMENT_SCENE, FruitonTeamsManager.TEAM_MANAGEMENT_STATE, bool.TrueString);
         }
 
         public void PantryContinue()

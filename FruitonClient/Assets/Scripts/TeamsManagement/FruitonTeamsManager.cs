@@ -42,13 +42,15 @@ public class FruitonTeamsManager : MonoBehaviour
     private readonly int[] typesCounts = { 1, 3, 4 };
     private bool teamManagementState;
 
+    public const string TEAM_MANAGEMENT_STATE = "teamManagementState";
+
 
     // Use this for initialization
     void Start()
     {
         fruitonTeamsDictionary = new Dictionary<GameObject, FruitonTeam>();
         fruitonDictionary = new Dictionary<GameObject, int>();
-        teamManagementState = bool.Parse(Scenes.getParam("teamManagementState"));
+        teamManagementState = bool.Parse(Scenes.GetParam(TEAM_MANAGEMENT_STATE));
         if (teamManagementState)
         {
             ButtonPlay.SetActive(false);

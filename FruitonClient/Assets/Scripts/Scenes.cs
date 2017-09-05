@@ -8,39 +8,25 @@ public class Scenes
     public const string TEAMS_MANAGEMENT_SCENE = "TeamsManagementScene";
     public const string BATTLE_SCENE = "BattleScene";
 
-    private static Dictionary<string, string> parameters;
+    private static Dictionary<string, string> Parameters { get; set; }
 
     public static void Load(string sceneName, Dictionary<string, string> parameters = null)
     {
-        Scenes.parameters = parameters;
+        Parameters = parameters;
         SceneManager.LoadScene(sceneName);
     }
 
     public static void Load(string sceneName, string paramKey, string paramValue)
     {
-        Scenes.parameters = new Dictionary<string, string>();
-        Scenes.parameters.Add(paramKey, paramValue);
+        Parameters = new Dictionary<string, string>();
+        Parameters.Add(paramKey, paramValue);
         SceneManager.LoadScene(sceneName);
     }
 
-    public static Dictionary<string, string> getSceneParameters()
+    public static string GetParam(string paramKey)
     {
-        return parameters;
-    }
-
-    public static string getParam(string paramKey)
-    {
-        if (parameters == null) return "";
-        return parameters[paramKey];
-    }
-
-    public static void setParam(string paramKey, string paramValue)
-    {
-        if (parameters == null)
-        {
-            Scenes.parameters = new Dictionary<string, string>();
-        }
-        Scenes.parameters.Add(paramKey, paramValue);
+        if (Parameters == null) return "";
+        return Parameters[paramKey];
     }
 
     private Scenes()
