@@ -73,4 +73,9 @@ public class GridLayoutManager : MonoBehaviour {
         }
         return GridCellType.None;
     }
+
+    public Vector3 GetCellPosition(int x, int y)
+    {
+        return SpawnedGrid[x, y].transform.position;
+    }
 }

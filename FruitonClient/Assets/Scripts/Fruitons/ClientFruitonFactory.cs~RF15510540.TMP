@@ -30,9 +30,6 @@ public static class ClientFruitonFactory {
         foreach (int id in teamIDs)
         {
             Fruiton kernelFruiton = FruitonFactory.makeFruiton(id, fruitonDatabase);
-            ClientFruiton clientFruiton = new ClientFruiton(kernelFruiton);
-            clientFruiton.FruitonObject = UnityEngine.Object.Instantiate(Resources.Load("Models/Battle/" + kernelFruiton.model, typeof(GameObject))) as GameObject;
-            result.Add(clientFruiton);
         }
         return result;
     }

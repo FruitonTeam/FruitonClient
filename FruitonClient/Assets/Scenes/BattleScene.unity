@@ -91,48 +91,6 @@ NavMeshSettings:
     cellSize: 0.16666667
     accuratePlacement: 0
   m_NavMeshData: {fileID: 0}
---- !u!1001 &75764611
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4627532249830230, guid: cff8a234f33076e44abaf5461f656062, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4627532249830230, guid: cff8a234f33076e44abaf5461f656062, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4627532249830230, guid: cff8a234f33076e44abaf5461f656062, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4627532249830230, guid: cff8a234f33076e44abaf5461f656062, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4627532249830230, guid: cff8a234f33076e44abaf5461f656062, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4627532249830230, guid: cff8a234f33076e44abaf5461f656062, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4627532249830230, guid: cff8a234f33076e44abaf5461f656062, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4627532249830230, guid: cff8a234f33076e44abaf5461f656062, type: 2}
-      propertyPath: m_RootOrder
-      value: 3
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: cff8a234f33076e44abaf5461f656062, type: 2}
-  m_IsPrefabParent: 0
 --- !u!1 &243974065
 GameObject:
   m_ObjectHideFlags: 0
@@ -189,13 +147,13 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 243974065}
-  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
+  m_LocalRotation: {x: 0.6830127, y: -0.18301266, z: 0.18301266, w: 0.6830127}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: -30, z: 0}
 --- !u!1001 &356510501
 Prefab:
   m_ObjectHideFlags: 0
@@ -326,7 +284,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GridCellBase: {fileID: 1147005310333816, guid: 1568bd8ac6ccd3449976f1acf14c1d4f,
     type: 2}
-  WidthCount: 10
+  WidthCount: 9
   HeighCount: 10
 --- !u!4 &1206884551
 Transform:
@@ -339,7 +297,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1206884552
 MonoBehaviour:
@@ -367,8 +325,8 @@ GameObject:
   - component: {fileID: 1561653480}
   - component: {fileID: 1561653479}
   - component: {fileID: 1561653478}
-  - component: {fileID: 1561653484}
   - component: {fileID: 1561653483}
+  - component: {fileID: 1561653484}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -415,7 +373,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 61
+  field of view: 40
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -437,13 +395,13 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1561653477}
-  m_LocalRotation: {x: 0.30577835, y: 0, z: 0, w: 0.9521028}
-  m_LocalPosition: {x: 0, y: 13.74, z: -17.4}
+  m_LocalRotation: {x: 0.40912685, y: 0, z: 0, w: 0.9124775}
+  m_LocalPosition: {x: 0, y: 17.37, z: -17.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 35.61, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 48.3, y: 0, z: 0}
 --- !u!114 &1561653483
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -464,6 +422,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1561653477}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 15f60a6d93a32a14e9fa9dd46bd4106a, type: 3}
+  m_Script: {fileID: 11500000, guid: cf02a14c1198faa45ac47024451fa653, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

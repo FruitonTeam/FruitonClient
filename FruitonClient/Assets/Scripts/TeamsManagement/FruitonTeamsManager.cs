@@ -39,7 +39,7 @@ public class FruitonTeamsManager : MonoBehaviour
     private Vector3 defaultCurrentFruitonTeamPosition;
     private Vector3 defaultCurrenFruitonTeamWrapperPosition;
     /// <summary> Counts of the fruitons in a valid Fruiton Team for each type respectively. </summary>
-    private readonly int[] typesCounts = { 1, 3, 4 };
+    private readonly int[] typesCounts = { 1, 4, 5 };
     private bool teamManagementState;
 
     public const string TEAM_MANAGEMENT_STATE = "teamManagementState";
@@ -134,7 +134,7 @@ public class FruitonTeamsManager : MonoBehaviour
 
     private GameObject InstantiateFridgeFruiton(KFruiton kernelFruiton, Vector3 position)
     {
-        GameObject result = Instantiate(Resources.Load("Models/" + kernelFruiton.model, typeof(GameObject))) as GameObject;
+        GameObject result = Instantiate(Resources.Load("Models/TeamManagement/" + kernelFruiton.model, typeof(GameObject))) as GameObject;
         result.name = kernelFruiton.model;
         result.transform.position = position;
         AddCollider(result);
@@ -277,7 +277,7 @@ public class FruitonTeamsManager : MonoBehaviour
                 foreach (int fruitonID in currentFruitonTeam.FruitonIDs)
                 {
                     KFruiton kernelFruiton = FruitonFactory.makeFruiton(fruitonID, fruitonDatabase);
-                    GameObject fruitonTeamMember = Instantiate(Resources.Load("Models/" + kernelFruiton.model, typeof(GameObject))) as GameObject;
+                    GameObject fruitonTeamMember = Instantiate(Resources.Load("Models/TeamManagement/" + kernelFruiton.model, typeof(GameObject))) as GameObject;
                     fruitonDictionary.Add(fruitonTeamMember, kernelFruiton.id);
                     AddCollider(fruitonTeamMember);
                     fruitonTeamMember.name = "CurrentFruitonTeam_" + fruitonID;
@@ -345,7 +345,7 @@ public class FruitonTeamsManager : MonoBehaviour
     private void AddFruitonTeam(FruitonTeam fruitonTeam)
     {
         GameManager gameManager = GameManager.Instance;
-        GameObject fruitonTeamObject = Instantiate(Resources.Load("Models/FruitonTeam", typeof(GameObject))) as GameObject;
+        GameObject fruitonTeamObject = Instantiate(Resources.Load("Models/TeamManagement/FruitonTeam", typeof(GameObject))) as GameObject;
         fruitonTeamObject.transform.position = AddFruitonTeamButton.transform.position;
         fruitonTeamObject.transform.parent = FruitonTeams.transform;
         fruitonTeamObject.name = "FruitonTeam";
