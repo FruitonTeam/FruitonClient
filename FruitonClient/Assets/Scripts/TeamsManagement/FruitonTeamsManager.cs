@@ -10,6 +10,7 @@ using KFruiton = fruiton.kernel.Fruiton;
 using System;
 using fruiton.kernel.fruitonTeam;
 using Google.Protobuf.Collections;
+using UnityEngine.SceneManagement;
 
 public class FruitonTeamsManager : MonoBehaviour
 {
@@ -47,8 +48,7 @@ public class FruitonTeamsManager : MonoBehaviour
     {
         fruitonTeamsDictionary = new Dictionary<GameObject, FruitonTeam>();
         fruitonDictionary = new Dictionary<GameObject, int>();
-        GameState gameState = GameManager.Instance.GameState;
-        teamManagementState = gameState == GameState.TEAM_MANAGEMENT;
+        teamManagementState = bool.Parse(Scenes.getParam("teamManagementState"));
         if (teamManagementState)
         {
             ButtonPlay.SetActive(false);

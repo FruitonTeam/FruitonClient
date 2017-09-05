@@ -32,8 +32,6 @@ public class GameManager : MonoBehaviour {
     /// </summary>
     public FruitonTeam CurrentFruitonTeam { get; set; }
 
-    public GameState GameState { get; set; }
-
     public bool StayLoggedIn
     {
         get
@@ -175,7 +173,6 @@ public class GameManager : MonoBehaviour {
 
     public void Initialize()
     {
-        GameState = GameState.MENU;
         Debug.Log("Initializing Game Manager");
         ProtoSerializer.Instance.DeserializeFruitonTeams();
         FruitonDatabase = new FruitonDatabase(Resources.Load<TextAsset>("FruitonDb").text);

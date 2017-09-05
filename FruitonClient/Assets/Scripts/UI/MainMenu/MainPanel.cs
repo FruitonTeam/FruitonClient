@@ -27,8 +27,7 @@ namespace UI.MainMenu
 
         public void TeamManagementContinue()
         {
-            GameManager.Instance.GameState = GameState.TEAM_MANAGEMENT;
-            SceneManager.LoadScene(Scenes.TEAMS_MANAGEMENT_SCENE);
+            Scenes.Load(Scenes.TEAMS_MANAGEMENT_SCENE, "teamManagementState", bool.TrueString);
         }
 
         public void PantryContinue()
@@ -38,20 +37,19 @@ namespace UI.MainMenu
 
         public void TeamSelectionContinue()
         {
-            GameManager.Instance.GameState = GameState.TEAM_SELECTION;
-            SceneManager.LoadScene(Scenes.TEAMS_MANAGEMENT_SCENE);
+            Scenes.Load(Scenes.TEAMS_MANAGEMENT_SCENE, "teamManagementState", bool.FalseString);
         }
 
         public void ChangeToChatScene()
         {
-            SceneManager.LoadScene(Scenes.CHAT_SCENE);
+            Scenes.Load(Scenes.CHAT_SCENE);
         }
 
         public void LoadBattle()
         {
             if (GameManager.Instance.CurrentFruitonTeam != null)
             {
-                SceneManager.LoadScene(Scenes.BATTLE_SCENE);
+                Scenes.Load(Scenes.BATTLE_SCENE);
             }
         }
 
