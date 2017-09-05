@@ -11,7 +11,7 @@ namespace UI.MainMenu
             {
                 Debug.Log("Initializing game manager");
                 Debug.Log("Game manager initialized, fridge will be loaded");
-                SceneManager.LoadScene(Scenes.TEAMS_MANAGEMENT_SCENE);
+                Scenes.Load(Scenes.TEAMS_MANAGEMENT_SCENE);
                 Debug.Log("Fridge loaded");
             }
             return true;

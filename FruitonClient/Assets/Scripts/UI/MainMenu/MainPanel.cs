@@ -9,26 +9,50 @@ namespace UI.MainMenu
         {
             PanelManager.Instance.SwitchPanels(MenuPanel.Online);
         }
+
         public void OfflineContinue()
         {
             PanelManager.Instance.SwitchPanels(MenuPanel.Offline);
         }
+
         public void FarmersMarketContinue()
         {
             PanelManager.Instance.SwitchPanels(MenuPanel.FarmersMarket);
         }
+
         public void StorageContinue()
         {
             PanelManager.Instance.SwitchPanels(MenuPanel.Storage);
         }
-        public void FridgeContinue()
+
+        public void TeamManagementContinue()
         {
-            PanelManager.Instance.SwitchPanels(MenuPanel.Fridge);
+            Scenes.Load(Scenes.TEAMS_MANAGEMENT_SCENE, FruitonTeamsManager.TEAM_MANAGEMENT_STATE, bool.TrueString);
         }
+
         public void PantryContinue()
         {
             PanelManager.Instance.SwitchPanels(MenuPanel.Pantry);
         }
+
+        public void TeamSelectionContinue()
+        {
+            Scenes.Load(Scenes.TEAMS_MANAGEMENT_SCENE, "teamManagementState", bool.FalseString);
+        }
+
+        public void ChangeToChatScene()
+        {
+            Scenes.Load(Scenes.CHAT_SCENE);
+        }
+
+        public void LoadBattle()
+        {
+            if (GameManager.Instance.CurrentFruitonTeam != null)
+            {
+                Scenes.Load(Scenes.BATTLE_SCENE);
+            }
+        }
+
         public void Logout()
         {
             PlayerPrefs.SetString("username", "");
@@ -37,9 +61,6 @@ namespace UI.MainMenu
             PanelManager.Instance.SwitchPanels(MenuPanel.Login);
         }
 
-        public void ChangeToChatScene() 
-        {
-            SceneManager.LoadScene(Scenes.CHAT_SCENE);
-        }
+
     }
 }

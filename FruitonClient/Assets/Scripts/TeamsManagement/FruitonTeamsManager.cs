@@ -10,6 +10,7 @@ using KFruiton = fruiton.kernel.Fruiton;
 using System;
 using fruiton.kernel.fruitonTeam;
 using Google.Protobuf.Collections;
+using UnityEngine.SceneManagement;
 
 public class FruitonTeamsManager : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class FruitonTeamsManager : MonoBehaviour
     public GameObject PanelAllFruitons;
     public GameObject PanelCurrenFruitonTeams;
     public GameObject PanelFruitonTeams;
+    public GameObject ButtonPlay;
     
     private FruitonTeam currentFruitonTeam;
     /// <summary> KEYS: FruitonTeam GameObjects. VALUES: FruitonTeams. </summary>
@@ -38,13 +40,30 @@ public class FruitonTeamsManager : MonoBehaviour
     private Vector3 defaultCurrenFruitonTeamWrapperPosition;
     /// <summary> Counts of the fruitons in a valid Fruiton Team for each type respectively. </summary>
     private readonly int[] typesCounts = { 1, 3, 4 };
+    private bool teamManagementState;
+
+    public const string TEAM_MANAGEMENT_STATE = "teamManagementState";
+
+
     // Use this for initialization
     void Start()
     {
         fruitonTeamsDictionary = new Dictionary<GameObject, FruitonTeam>();
         fruitonDictionary = new Dictionary<GameObject, int>();
-        InitializeAllFruitons();
-        InitializeFruitonTeams();
+        teamManagementState = bool.Parse(Scenes.GetParam(TEAM_MANAGEMENT_STATE));
+        if (teamManagementState)
+        {
+            ButtonPlay.SetActive(false);
+            InitializeAllFruitons();
+        } 
+        else
+        {
+            PanelFruitonTeams.transform.position = PanelCurrenFruitonTeams.transform.position;
+            PanelCurrenFruitonTeams.transform.position = PanelAllFruitons.transform.position;
+            PanelAllFruitons.SetActive(false);
+            AddFruitonTeamButton.SetActive(false);
+        }
+        InitializeFruitonTeams(teamManagementState);
         InitializeCurrentFruitonTeam();
     }
 
@@ -73,13 +92,23 @@ public class FruitonTeamsManager : MonoBehaviour
         }
     }
 
-    private void InitializeFruitonTeams()
+    private void InitializeFruitonTeams(bool includeIncomplete)
     {
         GameManager gameManager = GameManager.Instance;
         foreach (FruitonTeam fruitonTeam in gameManager.FruitonTeamList.FruitonTeams)
         {
-            AddFruitonTeam(fruitonTeam);
+            if (includeIncomplete || IsTeamComplete(fruitonTeam))
+            {
+                AddFruitonTeam(fruitonTeam);
+            }
         }
+    }
+
+    private bool IsTeamComplete(FruitonTeam fruitonTeam)
+    {
+        int[] fruitonIDsArray = new int[fruitonTeam.FruitonIDs.Count];
+        fruitonTeam.FruitonIDs.CopyTo(fruitonIDsArray, 0);
+        return FruitonTeamValidator.validateFruitonTeam(new Array<int>(fruitonIDsArray), GameManager.Instance.FruitonDatabase).complete;
     }
 
     private void InitializeAllFruitons()
@@ -117,9 +146,12 @@ public class FruitonTeamsManager : MonoBehaviour
 
     void Update()
     {
-        foreach (ClientFruiton fruiton in GameManager.Instance.AllFruitons)
+        if (teamManagementState)
         {
-            fruiton.FruitonObject.transform.Rotate(new Vector3(0, 50 * Time.deltaTime, 0));
+            foreach (ClientFruiton fruiton in GameManager.Instance.AllFruitons)
+            {
+                fruiton.FruitonObject.transform.Rotate(new Vector3(0, 50 * Time.deltaTime, 0));
+            }
         }
 
         foreach (Transform child in CurrentFruitonTeamObject.transform)
@@ -237,6 +269,10 @@ public class FruitonTeamsManager : MonoBehaviour
                 Highlight.transform.position = new Vector3(hitPosition.x, hitPosition.y - 1, 120);
                 Highlight.transform.parent = hit.transform;
                 currentFruitonTeam = fruitonTeamsDictionary[hit.collider.gameObject];
+                if (!teamManagementState)
+                {
+                    GameManager.Instance.CurrentFruitonTeam = currentFruitonTeam;
+                }
                 FruitonDatabase fruitonDatabase = GameManager.Instance.FruitonDatabase;
                 foreach (int fruitonID in currentFruitonTeam.FruitonIDs)
                 {
@@ -256,7 +292,7 @@ public class FruitonTeamsManager : MonoBehaviour
                 AddFruitonTeamMember(hit.collider.gameObject);
             }
             // Remove a Fruiton from the current Fruiton Team.
-            else if (HitsChildOf(CurrentFruitonTeamObject, HitObject))
+            else if (teamManagementState && HitsChildOf(CurrentFruitonTeamObject, HitObject))
             {
                 GameObject toBeDestroyed = hit.transform.gameObject;
                 int id = fruitonDictionary[toBeDestroyed];

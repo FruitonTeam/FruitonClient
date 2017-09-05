@@ -27,6 +27,11 @@ public class GameManager : MonoBehaviour {
 
     #region Properties
 
+    /// <summary>
+    /// Gets or sets the current fruiton team. (To be used in the battle.)
+    /// </summary>
+    public FruitonTeam CurrentFruitonTeam { get; set; }
+
     public bool StayLoggedIn
     {
         get

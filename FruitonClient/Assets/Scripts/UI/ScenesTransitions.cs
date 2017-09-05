@@ -7,7 +7,7 @@ namespace UI
 
         public void LoadMainMenu()
         {
-            SceneManager.LoadScene(Scenes.MAIN_MENU);
+            Scenes.Load(Scenes.MAIN_MENU);
         }
     }
 }
