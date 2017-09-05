@@ -2869,7 +2869,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8d956713851dc04e8666b495f24a2b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Name: 0
 --- !u!1 &903168260
 GameObject:
   m_ObjectHideFlags: 0
@@ -4490,7 +4489,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 519963042}
-        m_MethodName: FridgeContinue
+        m_MethodName: TeamManagementContinue
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

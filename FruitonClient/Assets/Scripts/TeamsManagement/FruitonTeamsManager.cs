@@ -24,6 +24,7 @@ public class FruitonTeamsManager : MonoBehaviour
     public GameObject PanelAllFruitons;
     public GameObject PanelCurrenFruitonTeams;
     public GameObject PanelFruitonTeams;
+    public GameObject ButtonPlay;
     
     private FruitonTeam currentFruitonTeam;
     /// <summary> KEYS: FruitonTeam GameObjects. VALUES: FruitonTeams. </summary>
@@ -50,6 +51,7 @@ public class FruitonTeamsManager : MonoBehaviour
         teamManagementState = gameState == GameState.TEAM_MANAGEMENT;
         if (teamManagementState)
         {
+            ButtonPlay.SetActive(false);
             InitializeAllFruitons();
         } 
         else

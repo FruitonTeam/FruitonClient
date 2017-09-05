@@ -1178,6 +1178,7 @@ MonoBehaviour:
   PanelAllFruitons: {fileID: 50354467}
   PanelCurrenFruitonTeams: {fileID: 1737820343}
   PanelFruitonTeams: {fileID: 278700250}
+  ButtonPlay: {fileID: 391970075}
 --- !u!1 &1500268432
 GameObject:
   m_ObjectHideFlags: 0

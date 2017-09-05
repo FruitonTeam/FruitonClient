@@ -25,7 +25,7 @@ namespace UI.MainMenu
             PanelManager.Instance.SwitchPanels(MenuPanel.Storage);
         }
 
-        public void FridgeContinue()
+        public void TeamManagementContinue()
         {
             GameManager.Instance.GameState = GameState.TEAM_MANAGEMENT;
             SceneManager.LoadScene(Scenes.TEAMS_MANAGEMENT_SCENE);
