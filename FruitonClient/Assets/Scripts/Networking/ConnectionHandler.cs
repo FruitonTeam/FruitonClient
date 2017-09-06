@@ -13,7 +13,7 @@ namespace Networking
     /// <summary>
     /// Singleton used for handling a connection with the server.
     /// </summary>
-    public class ConnectionHandler : MonoBehaviour
+    public class ConnectionHandler : MonoBehaviour, IOnMessageListener
     {
         const string URL_CHAT = "ws://prak.mff.cuni.cz:8050/fruiton/socket";
         const string URL_API = "http://prak.mff.cuni.cz:8050/fruiton/api/";
@@ -30,8 +30,8 @@ namespace Networking
 
         private const string PROCESS_REGISTRATION_RESULT = "ProcessRegistrationResult";
 
-        Dictionary<WrapperMessage.MsgOneofCase, List<IOnMessageListener>> listeners =
-            new Dictionary<WrapperMessage.MsgOneofCase, List<IOnMessageListener>>();
+        Dictionary<WrapperMessage.MessageOneofCase, List<IOnMessageListener>> listeners =
+            new Dictionary<WrapperMessage.MessageOneofCase, List<IOnMessageListener>>();
 
         private ConnectionHandler()
         {
@@ -268,6 +268,11 @@ namespace Networking
             }
         }
 
+        void Start()
+        {
+            RegisterListener(WrapperMessage.MessageOneofCase.ErrorMessage, this);
+        }
+
         public bool IsLogged()
         {
             return loginToken != null;
@@ -302,16 +307,16 @@ namespace Networking
             var wrapperMsg = WrapperMessage.Parser.ParseFrom(message);
             Debug.Log("Received message: " + wrapperMsg);
 
-            if (listeners.ContainsKey(wrapperMsg.MsgCase))
+            if (listeners.ContainsKey(wrapperMsg.MessageCase))
             {
-                foreach (IOnMessageListener listener in listeners[wrapperMsg.MsgCase])
+                foreach (IOnMessageListener listener in listeners[wrapperMsg.MessageCase])
                 {
                     listener.OnMessage(wrapperMsg);
                 }
             }
         }
 
-        public void RegisterListener(WrapperMessage.MsgOneofCase msgCase, IOnMessageListener listener)
+        public void RegisterListener(WrapperMessage.MessageOneofCase msgCase, IOnMessageListener listener)
         {
             if (!listeners.ContainsKey(msgCase))
             {
@@ -320,12 +325,17 @@ namespace Networking
             listeners[msgCase].Add(listener);
         }
 
-        public void UnregisterListener(WrapperMessage.MsgOneofCase msgCase, IOnMessageListener listener)
+        public void UnregisterListener(WrapperMessage.MessageOneofCase msgCase, IOnMessageListener listener)
         {
             if (listeners.ContainsKey(msgCase))
             {
                 listeners[msgCase].Remove(listener);
             }
+        }
+        
+        public void OnMessage(WrapperMessage message)
+        {
+            Debug.LogError(message.ErrorMessage.Message);
         }
 
         // Because SendMessage can only accept 1 argument
