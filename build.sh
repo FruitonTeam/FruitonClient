@@ -2,7 +2,11 @@
 
 mkdir -p ${KERNEL_DEST}
 
-haxe -D no-compilation -cs ${KERNEL_DEST} -cp ${KERNEL_LOC} fruiton.kernel.Kernel
+cd ${KERNEL_LOC}
+
+haxe --macro include\(\'fruiton\'\,true\,\[\'fruiton.fruitDb.models\'\]\) -D no-compilation -cs ${KERNEL_DEST} -cp ${KERNEL_LOC} fruiton.kernel.Kernel
+
+cp -r ${KERNEL_LOC}/resources ${KERNEL_DEST}/resources
 
 mkdir -p ${PROTO_DEST}
 

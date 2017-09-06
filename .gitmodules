@@ -1,0 +1,3 @@
+[submodule "FruitonClient/Assets/Plugins/websocket-sharp"]
+	path = FruitonClient/Assets/Plugins/websocket-sharp
+	url = https://github.com/sta/websocket-sharp
