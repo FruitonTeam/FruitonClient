@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class BattleManager : MonoBehaviour {
 
-    private ClientFruiton[,] grid;
+    private GameObject[,] grid;
     private GridLayoutManager gridLayoutManager;
     private GameManager gameManager;
 
@@ -14,26 +14,26 @@ public class BattleManager : MonoBehaviour {
     {
         gridLayoutManager = GridLayoutManager.Instance;
         gameManager = GameManager.Instance;
-        grid = new ClientFruiton[gridLayoutManager.WidthCount, gridLayoutManager.HeighCount];
-        IEnumerable<ClientFruiton> currentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs);
+        grid = new GameObject[gridLayoutManager.WidthCount, gridLayoutManager.HeighCount];
+        IEnumerable<GameObject> currentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs);
         // TODO: This is just temporary offline solution. It is needed to obtain opponent team from server.
-        IEnumerable<ClientFruiton> opponentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs);
+        IEnumerable<GameObject> opponentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs);
         InitializeTeam(currentTeam, true);
         InitializeTeam(opponentTeam, false);
     }
 
-    private void InitializeTeam(IEnumerable<ClientFruiton> currentTeam, bool down)
+    private void InitializeTeam(IEnumerable<GameObject> currentTeam, bool down)
     {
         int majorRow = down ? 0 : gridLayoutManager.HeighCount - 1;
         int minorRow = down ? 1 : majorRow - 1;
         int majorCounter = 2;
         int minorCounter = 2;
         int i = 0, j = 0;
-        foreach (ClientFruiton clientFruiton in currentTeam)
+        foreach (GameObject clientFruiton in currentTeam)
         {
-            clientFruiton.FruitonObject.AddComponent<BoxCollider>();
+            clientFruiton.gameObject.AddComponent<BoxCollider>();
 
-            switch (clientFruiton.KernelFruiton.type)
+            switch (clientFruiton.GetComponent<ClientFruiton>().KernelFruiton.type)
             {
                 case 1:
                     {
@@ -58,7 +58,26 @@ public class BattleManager : MonoBehaviour {
             }
             grid[i, j] = clientFruiton;
             Vector3 cellPosition = gridLayoutManager.GetCellPosition(i, j);
-            clientFruiton.FruitonObject.transform.position = cellPosition + new Vector3(0, clientFruiton.FruitonObject.transform.lossyScale.y, 0);
+            clientFruiton.transform.position = cellPosition + new Vector3(0, clientFruiton.transform.lossyScale.y, 0);
+        }
+    }
+
+    private void Update()
+    {
+        if (Input.GetMouseButtonUp(0))
+        {
+            LeftButtonUpLogic();
+        }
+    }
+
+    private void LeftButtonUpLogic()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            GameObject HitObject = hit.transform.gameObject;
         }
     }
 }
