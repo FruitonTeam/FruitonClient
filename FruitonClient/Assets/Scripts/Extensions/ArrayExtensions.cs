@@ -9,7 +9,7 @@ public static class ArrayExtensions {
         for (int i = 0; i < array.GetLength(0); i++)
             for (int j = 0; j < array.GetLength(1); j++)
             {
-                if (array[i,j].Equals(item))
+                if (item.Equals(array[i, j]))
                 {
                     return Tuple.New(i, j);
                 }

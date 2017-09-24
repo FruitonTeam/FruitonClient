@@ -78,4 +78,17 @@ public class GridLayoutManager : MonoBehaviour {
     {
         return SpawnedGrid[x, y].transform.position;
     }
+
+    public void HighlightCell(int x, int y)
+    {
+        SpawnedGrid[x, y].GetComponent<Renderer>().material.color = Color.blue;
+    }
+
+    public void ResetHighlights()
+    {
+        foreach (var cell in SpawnedGrid)
+        {
+            cell.GetComponent<Renderer>().material.color = Color.white;
+        }
+    }
 }
