@@ -38,7 +38,7 @@ namespace UI.Chat
         {
             if (ConnectionHandler.Instance.IsLogged())
             {
-                ConnectionHandler.Instance.RegisterListener(WrapperMessage.MsgOneofCase.ChatMessage, this);
+                ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.ChatMessage, this);
             }
         }
 
@@ -46,7 +46,7 @@ namespace UI.Chat
         {
             if (ConnectionHandler.Instance.IsLogged())
             {
-                ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MsgOneofCase.ChatMessage, this);
+                ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.ChatMessage, this);
             }
         }
 
