@@ -13,10 +13,12 @@ using KAction = fruiton.kernel.actions.Action;
 using KVector2 = fruiton.dataStructures.Point;
 using fruiton.kernel.events;
 using UnityEngine.UI;
+using System;
 
 public class BattleManager : MonoBehaviour {
 
     public Button EndTurnButton;
+    public Text TimeCounter;
 
     private GameObject[,] grid;
     private GridLayoutManager gridLayoutManager;
@@ -26,6 +28,9 @@ public class BattleManager : MonoBehaviour {
     private Kernel kernel;
 
     private List<MoveAction> availableMoveActions;
+    private List<AttackAction> availableAttackActions;
+
+    private DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
     private void Start()
     {
@@ -49,29 +54,6 @@ public class BattleManager : MonoBehaviour {
         {
             fruitons.push(fruiton.GetComponent<ClientFruiton>().KernelFruiton);
         }
-
-
-
-        //var kingMovement = new Array<object>();
-        //kingMovement.push(new MoveGenerator(new RangeTargetPattern(null, 0, 1)));
-        //var rookMovement = new Array<object>();
-        //rookMovement.push(new MoveGenerator(new LineTargetPattern(new KVector2(0, 1), 0, 16)));
-        //rookMovement.push(new MoveGenerator(new LineTargetPattern(new KVector2(0, -1), 0, 16)));
-        //rookMovement.push(new MoveGenerator(new LineTargetPattern(new KVector2(1, 0), 0, 16)));
-        //rookMovement.push(new MoveGenerator(new LineTargetPattern(new KVector2(-1, 0), 0, 16)));
-        //var attacks = new Array<object>();
-        //attacks.push(new AttackGenerator(new RangeTargetPattern(new KVector2(0, 0), 0, 1), 6));
-
-        //var fruitons = new Array<object>();
-        //// P1
-        //fruitons.push(new KFruiton(1, new KVector2(0, 1), me, 10, "", kingMovement, attacks, 1));
-        //fruitons.push(new KFruiton(2, new KVector2(1, 1), me, 10, "", kingMovement, attacks, 1));
-        //fruitons.push(new KFruiton(3, new KVector2(0, 2), me, 10, "", kingMovement, attacks, 1));
-        //fruitons.push(new KFruiton(4, new KVector2(3, 5), me, 10, "", kingMovement, attacks, 1));
-        //fruitons.push(new KFruiton(5, new KVector2(0, 5), me, 10, "", rookMovement, attacks, 1));
-        //// P2
-        //fruitons.push(new KFruiton(6, new KVector2(0, 7), opponent, 10, "", rookMovement, attacks, 1));
-        //fruitons.push(new KFruiton(7, new KVector2(2, 3), opponent, 10, "", kingMovement, attacks, 1));
         kernel = new Kernel(me, opponent, fruitons);
     }
 
@@ -121,6 +103,15 @@ public class BattleManager : MonoBehaviour {
 
     private void Update()
     {
+        
+        int currentEpochTime = (int)(DateTime.UtcNow - epochStart).TotalSeconds;
+        int timeLeft = (int)(kernel.currentState.turnState.endTime - currentEpochTime);
+        if (timeLeft <= 0)
+        {
+            EndTurn();
+            return;
+        }
+        TimeCounter.text = (timeLeft).ToString();
         if (Input.GetMouseButtonUp(0))
         {
             LeftButtonUpLogic();
@@ -229,6 +220,7 @@ public class BattleManager : MonoBehaviour {
 
     public void EndTurn()
     {
+        gridLayoutManager.ResetHighlights();
         EndTurnAction endTurnAction = new EndTurnAction(new EndTurnActionContext());
         kernel.performAction(endTurnAction);
         Debug.Log("End turn.");
