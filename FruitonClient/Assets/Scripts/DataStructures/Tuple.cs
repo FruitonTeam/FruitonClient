@@ -15,6 +15,10 @@ public class Tuple<T1, T2>
         First = first;
         Second = second;
     }
+    public override string ToString()
+    {
+        return "First = " + First + " Second = " + Second;
+    }
 }
 
 public static class Tuple
