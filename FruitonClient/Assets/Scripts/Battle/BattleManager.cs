@@ -24,7 +24,6 @@ public class BattleManager : MonoBehaviour {
     private GridLayoutManager gridLayoutManager;
     private GameManager gameManager;
     private Player me, opponent;
-    private GameState gameState;
     private Kernel kernel;
 
     private List<MoveAction> availableMoveActions;
@@ -127,41 +126,70 @@ public class BattleManager : MonoBehaviour {
         {
             GameObject HitObject = hit.transform.gameObject;
             if (grid.Contains(HitObject)) {
-                var indices = grid.GetIndices(HitObject);
-                var allActions = kernel.getAllValidActionsFrom(indices).CastToList<Action>();
-                var moveActionsUncasted = allActions.FindAll(x => (x.GetType() == typeof(MoveAction)));
-                availableMoveActions = moveActionsUncasted.ConvertAll<MoveAction>(x => (MoveAction)x);
-                Debug.Log("actions: " + availableMoveActions);
                 gridLayoutManager.ResetHighlights();
-                var kernelFruiton = kernel.currentState.field.get(indices).fruiton;
-                foreach (Action action in availableMoveActions)
+                var indices = grid.GetIndices(HitObject);
+                if (availableAttackActions != null)
                 {
-                    if (action != null)
+                    var performedActions = availableAttackActions.FindAll(x => ((AttackActionContext)x.actionContext).target.equalsTo(indices));
+                    if (performedActions.Count != 0)
                     {
-                        VisualizeAction(action, kernelFruiton);
-                    }
+                        var performedAction = performedActions[0];
+                        PerformAction(performedAction);
+                    } 
                 }
+                availableMoveActions = VisualizeActionsOfType<MoveAction>(indices);
+                availableAttackActions = VisualizeActionsOfType<AttackAction>(indices);
+
             } else if (gridLayoutManager.ContainsTile(HitObject))
             {
                 KVector2 tileIndices = gridLayoutManager.GetIndicesOfTile(HitObject);
                 Debug.Log(tileIndices);
-                if (availableMoveActions == null)
+                Action performedAction = null;
+                if (availableMoveActions != null)
                 {
-                    return;
+                    var performedActions = availableMoveActions.FindAll(x => ((MoveActionContext)x.actionContext).target.equalsTo(tileIndices));
+                    if (performedActions.Count != 0)
+                        performedAction = performedActions[0];
                 }
-                var performedActions = availableMoveActions.FindAll(x => ((MoveActionContext)x.actionContext).target.equalsTo(tileIndices));
-                if (performedActions == null || performedActions.Count == 0)
+                if (availableAttackActions != null && performedAction == null)
                 {
-                    return;
+                    var performedActions = availableAttackActions.FindAll(x => ((AttackActionContext)x.actionContext).target.equalsTo(tileIndices));
+                    if (performedActions.Count != 0)
+                        performedAction = performedActions[0];
                 }
-                var performedAction = performedActions[0];
-                var events = kernel.performAction(performedAction).CastToList<KEvent>();
-                foreach (var item in events)
+                if (performedAction != null)
                 {
-                    ProcessEvent(item);
+                    PerformAction(performedAction);
                 }
             }
         }
+    }
+
+    private void PerformAction(Action performedAction)
+    {
+        var events = kernel.performAction(performedAction).CastToList<KEvent>();
+        foreach (var item in events)
+        {
+            ProcessEvent(item);
+        }
+        return;
+    }
+
+    private List<T> VisualizeActionsOfType<T>(KVector2 indices) where T:Action
+    {
+        var allActions = kernel.getAllValidActionsFrom(indices).CastToList<Action>();
+        var moveActionsUncasted = allActions.FindAll(x => (x.GetType() == typeof(T)));
+        var result = moveActionsUncasted.ConvertAll<T>(x => (T)x);
+        Debug.Log("actions: " + availableMoveActions);
+        var kernelFruiton = kernel.currentState.field.get(indices).fruiton;
+        foreach (Action action in result)
+        {
+            if (action != null)
+            {
+                VisualizeAction(action, kernelFruiton);
+            }
+        }
+        return result;
     }
 
     private void ProcessEvent(KEvent kEvent)
@@ -170,6 +198,26 @@ public class BattleManager : MonoBehaviour {
         if (eventType == typeof(MoveEvent))
         {
             ProcessMoveEvent((MoveEvent) kEvent);
+        } 
+        else if (eventType == typeof(AttackEvent))
+        {
+            ProcessAttackEvent((AttackEvent) kEvent);
+        }
+    }
+
+    private void ProcessAttackEvent(AttackEvent kEvent)
+    {
+        var damagedPosition = kEvent.target;
+        var damaged = grid[damagedPosition.x, damagedPosition.y];
+        var textComponent = damaged.transform.FindChild(ClientFruitonFactory.TAGS).FindChild(ClientFruitonFactory.HEALTH).GetComponentInChildren<TextMesh>();
+        string currentHealthStr = textComponent.text;
+        int currentHealth = int.Parse(currentHealthStr);
+        int newHealth = currentHealth - kEvent.damage;
+        textComponent.text = newHealth.ToString();
+        if (newHealth <= 0)
+        {
+            Destroy(damaged);
+            grid[damagedPosition.x, damagedPosition.y] = null;
         }
     }
 
@@ -194,6 +242,11 @@ public class BattleManager : MonoBehaviour {
             Debug.Log("Highlight x=" + target.x + " y=" + target.y);
             gridLayoutManager.HighlightCell(target.x, target.y, Color.blue);
             VisualizePossibleAttacks(target, kernelFruiton);
+        } else if (action is AttackAction)
+        {
+            var attackAction = (AttackAction)action;
+            var target = ((AttackActionContext)(attackAction.actionContext)).target;
+            gridLayoutManager.HighlightCell(target.x, target.y, Color.red);
         }
     }
 
@@ -211,7 +264,7 @@ public class BattleManager : MonoBehaviour {
                     var potentialTarget = kernel.currentState.field.get(target).fruiton;
                     if (potentialTarget != null && potentialTarget.owner.id != kernel.currentState.activePlayerIdx)
                     {
-                        gridLayoutManager.HighlightCell(target.x, target.y, Color.red);
+                        gridLayoutManager.HighlightCell(target.x, target.y, Color.yellow);
                     }
                 }
             }
