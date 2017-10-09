@@ -20,7 +20,9 @@ public class BattleManager : MonoBehaviour {
     public Button EndTurnButton;
     public Text TimeCounter;
 
+    /// <summary> Client fruitons stored at their position. </summary>
     private GameObject[,] grid;
+    /// <summary> For handling grid tiles. </summary>
     private GridLayoutManager gridLayoutManager;
     private GameManager gameManager;
     private Player me, opponent;
@@ -58,8 +60,8 @@ public class BattleManager : MonoBehaviour {
 
     private void InitializeTeam(IEnumerable<GameObject> currentTeam, Player player)
     {
-        int majorRow = player.id == 0 ? 0 : gridLayoutManager.HeighCount - 1;
-        int minorRow = player.id == 0 ? 1 : majorRow - 1;
+        int majorRow = player.id == me.id ? 0 : gridLayoutManager.HeighCount - 1;
+        int minorRow = player.id == me.id ? 1 : majorRow - 1;
         int majorCounter = 2;
         int minorCounter = 2;
         int i = 0, j = 0;
@@ -67,7 +69,6 @@ public class BattleManager : MonoBehaviour {
         {
             var kernelFruiton = clientFruiton.GetComponent<ClientFruiton>().KernelFruiton;
             kernelFruiton.owner = player;
-            
             clientFruiton.gameObject.AddComponent<BoxCollider>();
 
             switch (kernelFruiton.type)
@@ -94,7 +95,7 @@ public class BattleManager : MonoBehaviour {
                     break;
             }
             grid[i, j] = clientFruiton;
-            kernelFruiton.position = new fruiton.dataStructures.Point(i, j);
+            kernelFruiton.position = new KVector2(i, j);
             Vector3 cellPosition = gridLayoutManager.GetCellPosition(i, j);
             clientFruiton.transform.position = cellPosition + new Vector3(0, clientFruiton.transform.lossyScale.y, 0);
         }
@@ -102,7 +103,15 @@ public class BattleManager : MonoBehaviour {
 
     private void Update()
     {
-        
+        UpdateTimer();
+        if (Input.GetMouseButtonUp(0))
+        {
+            LeftButtonUpLogic();
+        }
+    }
+
+    private void UpdateTimer()
+    {
         int currentEpochTime = (int)(DateTime.UtcNow - epochStart).TotalSeconds;
         int timeLeft = (int)(kernel.currentState.turnState.endTime - currentEpochTime);
         if (timeLeft <= 0)
@@ -111,10 +120,6 @@ public class BattleManager : MonoBehaviour {
             return;
         }
         TimeCounter.text = (timeLeft).ToString();
-        if (Input.GetMouseButtonUp(0))
-        {
-            LeftButtonUpLogic();
-        }
     }
 
     private void LeftButtonUpLogic()
@@ -125,11 +130,13 @@ public class BattleManager : MonoBehaviour {
         if (Physics.Raycast(ray, out hit))
         {
             GameObject HitObject = hit.transform.gameObject;
+            // Player clicked on a fruiton.
             if (grid.Contains(HitObject)) {
                 gridLayoutManager.ResetHighlights();
                 var indices = grid.GetIndices(HitObject);
                 if (availableAttackActions != null)
                 {
+                    // Find the action where the target is the clicked fruiton and perform it (if such action exists).
                     var performedActions = availableAttackActions.FindAll(x => ((AttackActionContext)x.actionContext).target.equalsTo(indices));
                     if (performedActions.Count != 0)
                     {
@@ -140,7 +147,9 @@ public class BattleManager : MonoBehaviour {
                 availableMoveActions = VisualizeActionsOfType<MoveAction>(indices);
                 availableAttackActions = VisualizeActionsOfType<AttackAction>(indices);
 
-            } else if (gridLayoutManager.ContainsTile(HitObject))
+            }
+            // A tile was clicked.
+            else if (gridLayoutManager.ContainsTile(HitObject))
             {
                 KVector2 tileIndices = gridLayoutManager.GetIndicesOfTile(HitObject);
                 Debug.Log(tileIndices);
