@@ -31,7 +31,7 @@ public class BattleManager : MonoBehaviour {
     private List<MoveAction> availableMoveActions;
     private List<AttackAction> availableAttackActions;
 
-    private DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    private readonly DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
     private void Start()
     {
@@ -93,6 +93,10 @@ public class BattleManager : MonoBehaviour {
                         --minorCounter;
                     }
                     break;
+                default:
+                    {
+                        throw new UndefinedFruitonTypeException();
+                    }
             }
             grid[i, j] = clientFruiton;
             kernelFruiton.position = new KVector2(i, j);
@@ -206,12 +210,24 @@ public class BattleManager : MonoBehaviour {
         System.Type eventType = kEvent.GetType();
         if (eventType == typeof(MoveEvent))
         {
-            ProcessMoveEvent((MoveEvent) kEvent);
+            ProcessMoveEvent((MoveEvent)kEvent);
         } 
         else if (eventType == typeof(AttackEvent))
         {
-            ProcessAttackEvent((AttackEvent) kEvent);
+            ProcessAttackEvent((AttackEvent)kEvent);
+        } 
+        else if (eventType == typeof(DeathEvent))
+        {
+            ProcessDeathEvent((DeathEvent)kEvent);
         }
+    }
+
+    private void ProcessDeathEvent(DeathEvent kEvent)
+    {
+        var killedPos = kEvent.target;
+        var killed = grid[killedPos.x, killedPos.y];
+        Destroy(killed);
+        grid[killedPos.x, killedPos.y] = null;
     }
 
     private void ProcessAttackEvent(AttackEvent kEvent)
@@ -223,11 +239,6 @@ public class BattleManager : MonoBehaviour {
         int currentHealth = int.Parse(currentHealthStr);
         int newHealth = currentHealth - kEvent.damage;
         textComponent.text = newHealth.ToString();
-        if (newHealth <= 0)
-        {
-            Destroy(damaged);
-            grid[damagedPosition.x, damagedPosition.y] = null;
-        }
     }
 
     private void ProcessMoveEvent(MoveEvent moveEvent)
