@@ -14,6 +14,7 @@ using KVector2 = fruiton.dataStructures.Point;
 using fruiton.kernel.events;
 using UnityEngine.UI;
 using System;
+using System.Linq;
 
 public class BattleManager : MonoBehaviour {
 
@@ -185,24 +186,19 @@ public class BattleManager : MonoBehaviour {
         {
             ProcessEvent(item);
         }
-        return;
     }
 
     private List<T> VisualizeActionsOfType<T>(KVector2 indices) where T:Action
     {
         var allActions = kernel.getAllValidActionsFrom(indices).CastToList<Action>();
-        var moveActionsUncasted = allActions.FindAll(x => (x.GetType() == typeof(T)));
-        var result = moveActionsUncasted.ConvertAll<T>(x => (T)x);
+        var result = allActions.OfType<T>();
         Debug.Log("actions: " + availableMoveActions);
         var kernelFruiton = kernel.currentState.field.get(indices).fruiton;
-        foreach (Action action in result)
+        foreach (T action in result)
         {
-            if (action != null)
-            {
-                VisualizeAction(action, kernelFruiton);
-            }
+            VisualizeAction(action, kernelFruiton);
         }
-        return result;
+        return result.ToList()  ;
     }
 
     private void ProcessEvent(KEvent kEvent)
@@ -234,11 +230,7 @@ public class BattleManager : MonoBehaviour {
     {
         var damagedPosition = kEvent.target;
         var damaged = grid[damagedPosition.x, damagedPosition.y];
-        var textComponent = damaged.transform.FindChild(ClientFruitonFactory.TAGS).FindChild(ClientFruitonFactory.HEALTH).GetComponentInChildren<TextMesh>();
-        string currentHealthStr = textComponent.text;
-        int currentHealth = int.Parse(currentHealthStr);
-        int newHealth = currentHealth - kEvent.damage;
-        textComponent.text = newHealth.ToString();
+        damaged.GetComponent<ClientFruiton>().TakeDamage(kEvent.damage);
     }
 
     private void ProcessMoveEvent(MoveEvent moveEvent)
@@ -255,14 +247,16 @@ public class BattleManager : MonoBehaviour {
 
     private void VisualizeAction(Action action, KFruiton kernelFruiton)
     {
-        if (action is MoveAction)
+        var type = action.GetType();
+        if (type == typeof(MoveAction))
         {
             var moveAction = (MoveAction)action;
             var target = ((MoveActionContext)(moveAction.actionContext)).target;
             Debug.Log("Highlight x=" + target.x + " y=" + target.y);
             gridLayoutManager.HighlightCell(target.x, target.y, Color.blue);
             VisualizePossibleAttacks(target, kernelFruiton);
-        } else if (action is AttackAction)
+        }
+        else if (type == typeof(AttackAction))
         {
             var attackAction = (AttackAction)action;
             var target = ((AttackActionContext)(attackAction.actionContext)).target;
