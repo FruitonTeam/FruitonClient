@@ -9,6 +9,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml.Serialization;
 using UnityEngine;
+using KFruiton = fruiton.kernel.Fruiton;
 
 public enum FractionNames { None, GuacamoleGuerrillas, CranberryCrusade, TzatzikiTsardom }
 
@@ -119,7 +120,7 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    public IEnumerable<ClientFruiton> AllFruitons { get; private set; }
+    public IEnumerable<KFruiton> AllFruitons { get; private set; }
 
     public bool IsInitialized { get; set; }
 
@@ -177,7 +178,8 @@ public class GameManager : MonoBehaviour {
         ProtoSerializer.Instance.DeserializeFruitonTeams();
         FruitonDatabase = new FruitonDatabase(Resources.Load<TextAsset>("FruitonDb").text);
         //fruitonDatabase = new FruitonDatabase(Application.dataPath + "/Scripts/Kernel/Generated/resources/FruitonDb.json");
-        AllFruitons = ClientFruitonFactory.CreateClientFruitons();
+        AllFruitons = ClientFruitonFactory.CreateAllKernelFruitons();
+        
         IsInitialized = true;
     }
 

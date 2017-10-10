@@ -20,7 +20,14 @@ public class FruitMath : MonoBehaviour {
 
     public static float GetAngleBetweenTwoPoints(Vector2 point1, Vector2 point2)
     {
-        return GetAngleFromXAxis(point2) - GetAngleFromXAxis(point1);
+        float result = (GetAngleFromXAxis(point2) - GetAngleFromXAxis(point1));
+        if (point1.x > 0 && point2.x > 0)
+        {
+            if (point1.y > 0 && point2.y < 0) result -= 360;
+            else if (point1.y < 0 && point2.y > 0) result += 360;
+        }
+
+        return result;
     }
 
     //Get the intersection between a line and a plane. 

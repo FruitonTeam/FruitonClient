@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using KVector2 = fruiton.dataStructures.Point;
+
 public enum GridCellType { None, New, Scratched, Damaged }
 
 public class GridLayoutManager : MonoBehaviour {
@@ -72,5 +74,33 @@ public class GridLayoutManager : MonoBehaviour {
             return SpawnedGridType[x, y];
         }
         return GridCellType.None;
+    }
+
+    public Vector3 GetCellPosition(int x, int y)
+    {
+        return SpawnedGrid[x, y].transform.position;
+    }
+
+    public void HighlightCell(int x, int y, Color color)
+    {
+        SpawnedGrid[x, y].GetComponent<Renderer>().material.color = color;
+    }
+
+    public void ResetHighlights()
+    {
+        foreach (var cell in SpawnedGrid)
+        {
+            cell.GetComponent<Renderer>().material.color = Color.white;
+        }
+    }
+
+    public bool ContainsTile(GameObject gameObject)
+    {
+        return SpawnedGrid.Contains(gameObject);
+    }
+
+    public KVector2 GetIndicesOfTile(GameObject tile)
+    {
+        return SpawnedGrid.GetIndices(tile);
     }
 }

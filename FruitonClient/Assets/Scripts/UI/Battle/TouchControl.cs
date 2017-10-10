@@ -44,6 +44,7 @@ public class TouchControl : MonoBehaviour {
             Vector2 center = Camera.main.WorldToScreenPoint(board.transform.position);
             // The angle between previous and current finger position
             float angle = FruitMath.GetAngleBetweenTwoPoints(startScreenPosition - center, endScreenPosition  - center);
+            Debug.Log("Computed angle: " + angle + " point1 = " + (startScreenPosition - center) + " point2 = " + (endScreenPosition - center));
             transform.RotateAround(new Vector3(0, 0, 0), Vector3.down, 0.5f * angle);
         }
 
