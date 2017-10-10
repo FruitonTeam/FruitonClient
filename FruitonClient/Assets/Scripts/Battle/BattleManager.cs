@@ -71,22 +71,22 @@ public class BattleManager : MonoBehaviour {
             kernelFruiton.owner = player;
             clientFruiton.gameObject.AddComponent<BoxCollider>();
 
-            switch (kernelFruiton.type)
+            switch ((FruitonType) kernelFruiton.type)
             {
-                case 1:
+                case FruitonType.KING:
                     {
                         i = gridLayoutManager.WidthCount / 2;
                         j = majorRow;
                     }
                     break;
-                case 2:
+                case FruitonType.MAJOR:
                     {
                         i = gridLayoutManager.WidthCount / 2 - majorCounter;
                         j = majorRow;
                         if (--majorCounter == 0) --majorCounter;
                     }
                     break;
-                case 3:
+                case FruitonType.MINOR:
                     {
                         i = gridLayoutManager.WidthCount / 2 - minorCounter;
                         j = minorRow;
