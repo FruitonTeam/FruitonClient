@@ -13,13 +13,12 @@ IF NOT DEFINED FRUITON_KERNEL (
 
 SET client_dir="%CD%"
 SET kernel_dest=%client_dir%\FruitonClient\Assets\Scripts\Kernel\Generated
+SET unity_resources_folder=%client_dir%\FruitonClient\Assets\Resources
 
-IF NOT EXIST %kernel_dest% mkdir %kernel_dest%
-
-CD %FRUITON_KERNEL%
+CD "%FRUITON_KERNEL%"
 haxe --macro include('fruiton',true,['fruiton.fruitDb.models']) -D no-compilation -cs %kernel_dest% -cp %FRUITON_KERNEL% fruiton.kernel.Kernel
 
-xcopy /i /y /s %FRUITON_KERNEL%\resources %kernel_dest%\resources
+xcopy /i /y /s "%FRUITON_KERNEL%"\resources %unity_resources_folder%
 
 CD %client_dir%
 IF NOT DEFINED FRUITON_PROTOBUFS (
