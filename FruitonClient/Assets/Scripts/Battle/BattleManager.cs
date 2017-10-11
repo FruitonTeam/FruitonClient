@@ -269,7 +269,7 @@ public class BattleManager : MonoBehaviour {
         var attackGenerators = kernelFruiton.attackGenerators.CastToList<AttackGenerator>();
         foreach (var attackGenerator in attackGenerators)
         {
-            var attacks = attackGenerator.getAttacks(potentialPosition).CastToList<AttackAction>();
+            var attacks = attackGenerator.getAttacks(potentialPosition, kernelFruiton.damage).CastToList<AttackAction>();
             foreach (var attack in attacks)
             {
                 var target = ((AttackActionContext)attack.actionContext).target;

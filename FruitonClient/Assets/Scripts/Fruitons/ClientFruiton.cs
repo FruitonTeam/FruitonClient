@@ -34,7 +34,7 @@ public class ClientFruiton : MonoBehaviour {
                 case DAMAGE:
                     {
                         damageTag = child.GetComponentInChildren<TextMesh>();
-                        damageTag.text = ((AttackGenerator)KernelFruiton.attackGenerators[0]).damage.ToString();
+                        damageTag.text = KernelFruiton.damage.ToString();
                     }
                     break;
             }
