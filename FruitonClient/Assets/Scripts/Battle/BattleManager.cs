@@ -15,11 +15,15 @@ using fruiton.kernel.events;
 using UnityEngine.UI;
 using System;
 using System.Linq;
+using Networking;
+using Cz.Cuni.Mff.Fruiton.Dto;
+using Google.Protobuf.Collections;
 
-public class BattleManager : MonoBehaviour {
+public class BattleManager : MonoBehaviour, IOnMessageListener {
 
     public Button EndTurnButton;
     public Text TimeCounter;
+    public GameObject Panel_LoadingGame;
 
     /// <summary> Client fruitons stored at their position. </summary>
     private GameObject[,] grid;
@@ -32,6 +36,9 @@ public class BattleManager : MonoBehaviour {
     private List<MoveAction> availableMoveActions;
     private List<AttackAction> availableAttackActions;
 
+    // Both, mine and opponents'.
+    private Array<object> fruitons;
+
     private readonly DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
     private void Start()
@@ -42,25 +49,45 @@ public class BattleManager : MonoBehaviour {
         gameManager = GameManager.Instance;
         grid = new GameObject[gridLayoutManager.WidthCount, gridLayoutManager.HeighCount];
         IEnumerable<GameObject> currentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs);
-        // TODO: This is just temporary offline solution. It is needed to obtain opponent team from server.
-        IEnumerable<GameObject> opponentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs);
-        var fruitons = new Array<object>();
         InitializeTeam(currentTeam, me);
-        InitializeTeam(opponentTeam, opponent);
-
+        
+        fruitons = new Array<object>();
         foreach (var fruiton in currentTeam)
         {
             fruitons.push(fruiton.GetComponent<ClientFruiton>().KernelFruiton);
         }
-        foreach (var fruiton in opponentTeam)
+        FindGame();
+    }
+
+    private void FindGame()
+    {
+        var connectionHandler = ConnectionHandler.Instance;
+        var gameManager = GameManager.Instance;
+        FindGame findGameMessage = new FindGame
         {
-            fruitons.push(fruiton.GetComponent<ClientFruiton>().KernelFruiton);
-        }
-        kernel = new Kernel(me, opponent, fruitons);
+            Team = gameManager.CurrentFruitonTeam
+        };
+        var wrapperMessage = new WrapperMessage
+        {
+            FindGame = findGameMessage
+        };
+        connectionHandler.SendWebsocketMessage(wrapperMessage);
+    }
+
+    private void SendReadyMessage()
+    {
+        var connectionHandler = ConnectionHandler.Instance;
+        PlayerReady playerReadyMessage = new PlayerReady();
+        var wrapperMessage = new WrapperMessage
+        {
+            PlayerReady = playerReadyMessage
+        };
+        connectionHandler.SendWebsocketMessage(wrapperMessage);
     }
 
     private void InitializeTeam(IEnumerable<GameObject> currentTeam, Player player)
     {
+        var positions = new RepeatedField<Position>();
         int majorRow = player.id == me.id ? 0 : gridLayoutManager.HeighCount - 1;
         int minorRow = player.id == me.id ? 1 : majorRow - 1;
         int majorCounter = 2;
@@ -99,6 +126,7 @@ public class BattleManager : MonoBehaviour {
                         throw new UndefinedFruitonTypeException();
                     }
             }
+            GameManager.Instance.CurrentFruitonTeam.Positions.Add(new Position { X = i, Y = j });
             grid[i, j] = clientFruiton;
             kernelFruiton.position = new KVector2(i, j);
             Vector3 cellPosition = gridLayoutManager.GetCellPosition(i, j);
@@ -108,6 +136,10 @@ public class BattleManager : MonoBehaviour {
 
     private void Update()
     {
+        if (kernel == null)
+        {
+            return;
+        }
         UpdateTimer();
         if (Input.GetMouseButtonUp(0))
         {
@@ -293,5 +325,58 @@ public class BattleManager : MonoBehaviour {
         Debug.Log("End turn.");
         var oldPos = EndTurnButton.transform.localPosition;
         EndTurnButton.transform.localPosition = new Vector3(oldPos.x, -oldPos.y, oldPos.z);
+    }
+
+    public void OnMessage(WrapperMessage message)
+    {
+        switch (message.MessageCase)
+        {
+            case WrapperMessage.MessageOneofCase.GameReady:
+                {
+                    ProcessMessage(message.GameReady);
+                } break;
+            case WrapperMessage.MessageOneofCase.GameStarts:
+                {
+                    ProcessMessage(message.GameStarts);
+                } break;
+        }
+    }
+
+    private void ProcessMessage(GameReady gameReadyMessage)
+    {
+        Debug.Log("RECEIVED WEBSOCKET MSG: gameReadyMessage");
+        IEnumerable<GameObject> opponentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameReadyMessage.OpponentTeam.FruitonIDs);
+        InitializeTeam(opponentTeam, opponent);
+        foreach (var fruiton in opponentTeam)
+        {
+            fruitons.push(fruiton.GetComponent<ClientFruiton>().KernelFruiton);
+        }
+        kernel = new Kernel(me, opponent, fruitons);
+        SendReadyMessage();
+    }
+
+    private void ProcessMessage(GameStarts gameStartsMessage)
+    {
+        Debug.Log("RECEIVED WEBSOCKET MSG: gameStartsMessage");
+        kernel.startGame();
+        Panel_LoadingGame.SetActive(false);
+    }
+
+    void OnEnable()
+    {
+        if (ConnectionHandler.Instance.IsLogged())
+        {
+            ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.GameReady, this);
+            ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.GameStarts, this);
+        }
+    }
+
+    void OnDisable()
+    {
+        if (ConnectionHandler.Instance.IsLogged())
+        {
+            ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.GameReady, this);
+            ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.GameStarts, this);
+        }
     }
 }

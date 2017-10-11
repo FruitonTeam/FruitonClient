@@ -11,6 +11,7 @@ using System;
 using fruiton.kernel.fruitonTeam;
 using Google.Protobuf.Collections;
 using UnityEngine.SceneManagement;
+using Networking;
 
 public class FruitonTeamsManager : MonoBehaviour
 {
@@ -146,7 +147,7 @@ public class FruitonTeamsManager : MonoBehaviour
         return result;
     }
 
-    void Update()
+    private void Update()
     {
         if (teamManagementState)
         {
@@ -394,5 +395,10 @@ public class FruitonTeamsManager : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
+    }
+
+    public void FindGame()
+    {
+        
     }
 }
