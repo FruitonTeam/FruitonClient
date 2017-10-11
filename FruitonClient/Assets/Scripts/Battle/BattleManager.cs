@@ -4,6 +4,7 @@ using fruiton.kernel.targetPatterns;
 using System.Collections.Generic;
 using UnityEngine;
 
+using ProtoAction = Cz.Cuni.Mff.Fruiton.Dto.Action;
 using Action = fruiton.kernel.actions.Action;
 using Event = fruiton.kernel.events.Event;
 using KEvent = fruiton.kernel.events.Event;
@@ -18,6 +19,8 @@ using System.Linq;
 using Networking;
 using Cz.Cuni.Mff.Fruiton.Dto;
 using Google.Protobuf.Collections;
+using fruiton.fruitDb.factories;
+using fruiton.fruitDb;
 
 public class BattleManager : MonoBehaviour, IOnMessageListener {
 
@@ -43,19 +46,13 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
 
     private void Start()
     {
-        me = new Player(0);
-        opponent = new Player(1);
+
         gridLayoutManager = GridLayoutManager.Instance;
         gameManager = GameManager.Instance;
         grid = new GameObject[gridLayoutManager.WidthCount, gridLayoutManager.HeighCount];
-        IEnumerable<GameObject> currentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs);
-        InitializeTeam(currentTeam, me);
         
-        fruitons = new Array<object>();
-        foreach (var fruiton in currentTeam)
-        {
-            fruitons.push(fruiton.GetComponent<ClientFruiton>().KernelFruiton);
-        }
+        setPositionsOfFruitons();
+
         FindGame();
     }
 
@@ -85,8 +82,9 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
         connectionHandler.SendWebsocketMessage(wrapperMessage);
     }
 
-    private void InitializeTeam(IEnumerable<GameObject> currentTeam, Player player)
+    private void InitializeTeam(IEnumerable<GameObject> currentTeam, Player player, RepeatedField<Position> fruitonsPositions = null)
     {
+        int counter = 0;
         var positions = new RepeatedField<Position>();
         int majorRow = player.id == me.id ? 0 : gridLayoutManager.HeighCount - 1;
         int minorRow = player.id == me.id ? 1 : majorRow - 1;
@@ -98,8 +96,34 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
             var kernelFruiton = clientFruiton.GetComponent<ClientFruiton>().KernelFruiton;
             kernelFruiton.owner = player;
             clientFruiton.gameObject.AddComponent<BoxCollider>();
+            if (fruitonsPositions != null)
+            {
+                var currentPosition = fruitonsPositions[counter];
+                i = currentPosition.X;
+                j = currentPosition.Y;
+                counter++;
+            }
+            
+            
+            grid[i, j] = clientFruiton;
+            kernelFruiton.position = new KVector2(i, j);
+            Vector3 cellPosition = gridLayoutManager.GetCellPosition(i, j);
+            clientFruiton.transform.position = cellPosition + new Vector3(0, clientFruiton.transform.lossyScale.y, 0);
+        }
+    }
 
-            switch ((FruitonType) kernelFruiton.type)
+    private void setPositionsOfFruitons()
+    {
+        int i = 0, j = 0;
+        int majorRow = 0;
+        int minorRow = 1;
+        int majorCounter = 2;
+        int minorCounter = 2;
+        FruitonDatabase fruitonDatabase = GameManager.Instance.FruitonDatabase;
+        foreach (var id in GameManager.Instance.CurrentFruitonTeam.FruitonIDs)
+        {
+            var kernelFruiton = FruitonFactory.makeFruiton(id, fruitonDatabase);
+            switch ((FruitonType)kernelFruiton.type)
             {
                 case FruitonType.KING:
                     {
@@ -127,11 +151,8 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
                     }
             }
             GameManager.Instance.CurrentFruitonTeam.Positions.Add(new Position { X = i, Y = j });
-            grid[i, j] = clientFruiton;
-            kernelFruiton.position = new KVector2(i, j);
-            Vector3 cellPosition = gridLayoutManager.GetCellPosition(i, j);
-            clientFruiton.transform.position = cellPosition + new Vector3(0, clientFruiton.transform.lossyScale.y, 0);
         }
+        
     }
 
     private void Update()
@@ -141,10 +162,14 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
             return;
         }
         UpdateTimer();
-        if (Input.GetMouseButtonUp(0))
+        if (kernel.currentState.get_activePlayer().id == me.id)
         {
-            LeftButtonUpLogic();
+            if (Input.GetMouseButtonUp(0))
+            {
+                LeftButtonUpLogic();
+            }
         }
+
     }
 
     private void UpdateTimer()
@@ -153,7 +178,7 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
         int timeLeft = (int)(kernel.currentState.turnState.endTime - currentEpochTime);
         if (timeLeft <= 0)
         {
-            EndTurn();
+            PerformAction(new EndTurnAction(new EndTurnActionContext()));
             return;
         }
         TimeCounter.text = (timeLeft).ToString();
@@ -190,7 +215,7 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
             {
                 KVector2 tileIndices = gridLayoutManager.GetIndicesOfTile(HitObject);
                 Debug.Log(tileIndices);
-                Action performedAction = null;
+                TargetableAction performedAction = null;
                 if (availableMoveActions != null)
                 {
                     var performedActions = availableMoveActions.FindAll(x => ((MoveActionContext)x.actionContext).target.equalsTo(tileIndices));
@@ -211,7 +236,28 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
         }
     }
 
-    private void PerformAction(Action performedAction)
+    private void PerformAction(EndTurnAction performedAction)
+    {
+        var actionMessage = new ProtoAction { From = null, To = null, Id = performedAction.getId() };
+        var wrapperMessage = new WrapperMessage { Action = actionMessage };
+        ConnectionHandler.Instance.SendWebsocketMessage(wrapperMessage);
+        EndTurn(performedAction);
+        PerformActionLocally(performedAction);
+    }
+
+    private void PerformAction(TargetableAction performedAction)
+    {
+        var castedToAction = (Action)performedAction;
+        var context = performedAction.getContext();
+
+        var actionMessage = new ProtoAction { From = context.source.ToPosition(), To = context.target.ToPosition(), Id = castedToAction.getId() };
+        var wrapperMessage = new WrapperMessage { Action = actionMessage };
+        ConnectionHandler.Instance.SendWebsocketMessage(wrapperMessage);
+
+        PerformActionLocally(castedToAction);
+    }
+
+    private void PerformActionLocally(Action performedAction)
     {
         var events = kernel.performAction(performedAction).CastToList<KEvent>();
         foreach (var item in events)
@@ -301,7 +347,7 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
         var attackGenerators = kernelFruiton.attackGenerators.CastToList<AttackGenerator>();
         foreach (var attackGenerator in attackGenerators)
         {
-            var attacks = attackGenerator.getAttacks(potentialPosition).CastToList<AttackAction>();
+            var attacks = attackGenerator.getAttacks(potentialPosition, kernelFruiton.damage).CastToList<AttackAction>();
             foreach (var attack in attacks)
             {
                 var target = ((AttackActionContext)attack.actionContext).target;
@@ -317,10 +363,9 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
         }
     }
 
-    public void EndTurn()
+    public void EndTurn(EndTurnAction endTurnAction)
     {
         gridLayoutManager.ResetHighlights();
-        EndTurnAction endTurnAction = new EndTurnAction(new EndTurnActionContext());
         kernel.performAction(endTurnAction);
         Debug.Log("End turn.");
         var oldPos = EndTurnButton.transform.localPosition;
@@ -339,19 +384,71 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
                 {
                     ProcessMessage(message.GameStarts);
                 } break;
+            case WrapperMessage.MessageOneofCase.Action:
+                {
+                    ProcessMessage(message.Action);
+                } break;
         }
+    }
+
+    private void ProcessMessage(ProtoAction protoAction)
+    {
+        if (protoAction.Id == EndTurnAction.ID)
+        {
+            EndTurn(new EndTurnAction(new EndTurnActionContext()));
+        }
+        else if (protoAction.Id == MoveAction.ID)
+        {
+            PerformOpponentAction<MoveAction>(protoAction);
+        } 
+        else if (protoAction.Id == AttackAction.ID)
+        {
+            PerformOpponentAction<AttackAction>(protoAction);
+        }
+    }
+
+    private void PerformOpponentAction<ActionType>(ProtoAction protoAction) where ActionType : Action, TargetableAction
+    {
+        var from = protoAction.From.ToKernelPosition();
+        var to = protoAction.To.ToKernelPosition();
+        var allValidActionsFrom = kernel.getAllValidActionsFrom(from).CastToList<Action>().OfType<ActionType>();
+        var performedAction = allValidActionsFrom.ToList().Find(x => (x.getContext()).target.equalsTo(to));
+        PerformActionLocally(performedAction);
     }
 
     private void ProcessMessage(GameReady gameReadyMessage)
     {
+        me = new Player(0);
+        opponent = new Player(1);
         Debug.Log("RECEIVED WEBSOCKET MSG: gameReadyMessage");
+        Debug.Log("Opponent positions: " + gameReadyMessage.OpponentTeam.FruitonIDs);
         IEnumerable<GameObject> opponentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameReadyMessage.OpponentTeam.FruitonIDs);
-        InitializeTeam(opponentTeam, opponent);
+        IEnumerable<GameObject> currentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs);
+        InitializeTeam(opponentTeam, opponent, gameReadyMessage.OpponentTeam.Positions);
+
+        fruitons = new Array<object>();
+        foreach (var fruiton in currentTeam)
+        {
+            fruitons.push(fruiton.GetComponent<ClientFruiton>().KernelFruiton);
+        }
         foreach (var fruiton in opponentTeam)
         {
             fruitons.push(fruiton.GetComponent<ClientFruiton>().KernelFruiton);
         }
-        kernel = new Kernel(me, opponent, fruitons);
+
+        if (gameReadyMessage.StartsFirst)
+        {
+            InitializeTeam(currentTeam, me, GameManager.Instance.CurrentFruitonTeam.Positions);
+            kernel = new Kernel(me, opponent, fruitons);
+        }
+        else
+        {
+            var width = gridLayoutManager.WidthCount;
+            var height = gridLayoutManager.HeighCount;
+            var flippedPositions = BattleHelper.FlipCoordinates(GameManager.Instance.CurrentFruitonTeam.Positions, width, height);
+            InitializeTeam(currentTeam, me, flippedPositions);
+            kernel = new Kernel(opponent, me, fruitons);
+        }
         SendReadyMessage();
     }
 
@@ -368,6 +465,7 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
         {
             ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.GameReady, this);
             ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.GameStarts, this);
+            ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.Action, this);
         }
     }
 
@@ -377,6 +475,7 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
         {
             ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.GameReady, this);
             ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.GameStarts, this);
+            ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.Action, this);
         }
     }
 }

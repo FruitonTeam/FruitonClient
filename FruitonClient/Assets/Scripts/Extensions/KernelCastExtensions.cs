@@ -1,6 +1,9 @@
-﻿using System.Collections;
+﻿using Cz.Cuni.Mff.Fruiton.Dto;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+using KVector2 = fruiton.dataStructures.Point;
 
 public static class KernelCastExtensions {
 
@@ -29,5 +32,15 @@ public static class KernelCastExtensions {
     public static List<TOut> CastToList<TOut>(this Array<object> array)
     {
         return array.CastToList<TOut, object>();
+    }
+
+    public static Position ToPosition(this KVector2 kernelPoint)
+    {
+        return new Position { X = kernelPoint.x, Y = kernelPoint.y };
+    }
+
+    public static KVector2 ToKernelPosition(this Position protoPosition)
+    {
+        return new KVector2(protoPosition.X, protoPosition.Y);
     }
 }
