@@ -16,7 +16,7 @@ SET kernel_dest=%client_dir%\FruitonClient\Assets\Scripts\Kernel\Generated
 SET unity_resources_folder=%client_dir%\FruitonClient\Assets\Resources
 
 CD "%FRUITON_KERNEL%"
-haxe --macro include('fruiton',true,['fruiton.fruitDb.models']) -D no-compilation -cs %kernel_dest% -cp %FRUITON_KERNEL% fruiton.kernel.Kernel
+haxe --macro include('fruiton',true,['fruiton.fruitDb.models']) -D no-compilation -D no-root -cs %kernel_dest% -cp %FRUITON_KERNEL% fruiton.kernel.Kernel
 
 xcopy /i /y /s "%FRUITON_KERNEL%"\resources %unity_resources_folder%
 
