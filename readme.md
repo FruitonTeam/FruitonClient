@@ -26,6 +26,7 @@ Prerequisites:
     - `FRUITON_PROTOBUFS` - set this variable to absolute path of the folder containing .proto files
     - `FRUITON_KERNEL` - set this variable to absolute path of the folder containing Fruiton Haxe Kernel
 
+**Note** that this repository also contains a submodule. After you clone it make sure to init and update this submodule. For more info [see wiki](http://prak.mff.cuni.cz:8020/mediawiki/index.php/Git_tips).
 
 Note: On Windows enviroment variables can be set using the command `SETX`,
 e.g. `SETX FRUITON_PROTOBUFS C:/Users/Username/Documents/Fruiton/Protobufs`
