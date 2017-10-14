@@ -44,7 +44,6 @@ public class ProtoSerializer : MonoBehaviour {
     {
         GameManager gameManager = GameManager.Instance;
         byte[] binaryData = GetBinaryData(gameManager.FruitonTeamList);
-        Debug.Log("Application persistence data path: " + Application.persistentDataPath);
         FileStream file = File.Create(Application.persistentDataPath + PERSISTENCE_PATH);
         if (gameManager.StayLoggedIn)
         {

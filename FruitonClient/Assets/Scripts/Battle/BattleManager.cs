@@ -44,6 +44,11 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
 
     private readonly DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
+    private const string OPPONENTS_TURN = "Opponent's turn";
+    private const string END_TURN = "End turn";
+
+    private bool startFirst;
+
     private void Start()
     {
 
@@ -354,7 +359,7 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
                 if (kernel.currentState.field.exists(target))
                 {
                     var potentialTarget = kernel.currentState.field.get(target).fruiton;
-                    if (potentialTarget != null && potentialTarget.owner.id != kernel.currentState.activePlayerIdx)
+                    if (potentialTarget != null && potentialTarget.owner.id != kernel.currentState.get_activePlayer().id)
                     {
                         gridLayoutManager.HighlightCell(target.x, target.y, Color.yellow);
                     }
@@ -363,11 +368,18 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
         }
     }
 
-    public void EndTurn(EndTurnAction endTurnAction)
+    public void EndTurn()
     {
+        DisableEndTurnButton();
+        var action = new EndTurnAction(new EndTurnActionContext());
+        PerformAction(action);
+        EndTurn(action);
+    }
+
+    public void EndTurn(EndTurnAction endTurnAction)
+    { 
         gridLayoutManager.ResetHighlights();
         kernel.performAction(endTurnAction);
-        Debug.Log("End turn.");
         var oldPos = EndTurnButton.transform.localPosition;
         EndTurnButton.transform.localPosition = new Vector3(oldPos.x, -oldPos.y, oldPos.z);
     }
@@ -395,7 +407,8 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
     {
         if (protoAction.Id == EndTurnAction.ID)
         {
-            EndTurn(new EndTurnAction(new EndTurnActionContext()));
+            EnableEndTurnButton();
+            PerformActionLocally(new EndTurnAction(new EndTurnActionContext()));
         }
         else if (protoAction.Id == MoveAction.ID)
         {
@@ -435,28 +448,60 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
         {
             fruitons.push(fruiton.GetComponent<ClientFruiton>().KernelFruiton);
         }
-
-        if (gameReadyMessage.StartsFirst)
+        startFirst = gameReadyMessage.StartsFirst;
+        if (startFirst)
         {
             InitializeTeam(currentTeam, me, GameManager.Instance.CurrentFruitonTeam.Positions);
             kernel = new Kernel(me, opponent, fruitons);
         }
         else
         {
+ 
             var width = gridLayoutManager.WidthCount;
             var height = gridLayoutManager.HeighCount;
             var flippedPositions = BattleHelper.FlipCoordinates(GameManager.Instance.CurrentFruitonTeam.Positions, width, height);
             InitializeTeam(currentTeam, me, flippedPositions);
             kernel = new Kernel(opponent, me, fruitons);
+            DisableEndTurnButton();
+
+            
         }
         SendReadyMessage();
     }
 
     private void ProcessMessage(GameStarts gameStartsMessage)
     {
+        if (!startFirst)
+        {
+            foreach (var fruiton in grid)
+            {
+                if (fruiton != null)
+                {
+                    fruiton.transform.Rotate(0, 180, 0);
+                }
+            }
+            var oldPosition = Camera.main.transform.position;
+            //Camera.main.transform.Rotate(0, 180, 0);
+            Camera.main.transform.position = new Vector3(oldPosition.x, oldPosition.y, -oldPosition.z);
+            var oldEulerAngles = Camera.main.transform.eulerAngles;
+            Camera.main.transform.eulerAngles = new Vector3(oldEulerAngles.x, oldEulerAngles.y + 180, oldEulerAngles.z);
+        }
+
         Debug.Log("RECEIVED WEBSOCKET MSG: gameStartsMessage");
         kernel.startGame();
         Panel_LoadingGame.SetActive(false);
+    }
+
+    private void EnableEndTurnButton()
+    {
+        EndTurnButton.enabled = true;
+        EndTurnButton.GetComponentInChildren<Text>().text = END_TURN;
+    }
+
+    private void DisableEndTurnButton()
+    {
+        EndTurnButton.enabled = false;
+        EndTurnButton.GetComponentInChildren<Text>().text = OPPONENTS_TURN;
     }
 
     void OnEnable()

@@ -1262,8 +1262,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 9, y: -0.5}
-  m_SizeDelta: {x: -28, y: -3}
+  m_AnchoredPosition: {x: -64.68, y: -0.5}
+  m_SizeDelta: {x: 134.64, y: -3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &301993924
 MonoBehaviour:
@@ -2355,7 +2355,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 17, y: -8.4}
+  m_AnchoredPosition: {x: 82.8, y: -7.4}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &696999752
@@ -5655,6 +5655,7 @@ MonoBehaviour:
   LoginPassword: {fileID: 1281550039}
   LoginStayLoggedIn: {fileID: 696999752}
   LoginMessageText: {fileID: 162907950}
+  LoginButton: {fileID: 1358491884}
 --- !u!1 &1706404530
 GameObject:
   m_ObjectHideFlags: 0
