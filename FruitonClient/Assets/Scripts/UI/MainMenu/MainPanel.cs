@@ -1,10 +1,12 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace UI.MainMenu
 {
     public class MainPanel : MainMenuPanel
     {
+
         public void OnlineContinue()
         {
             PanelManager.Instance.SwitchPanels(MenuPanel.Online);
@@ -35,9 +37,22 @@ namespace UI.MainMenu
             PanelManager.Instance.SwitchPanels(MenuPanel.Pantry);
         }
 
-        public void TeamSelectionContinue()
+        public void TeamSelectionContinueOnline()
         {
-            Scenes.Load(Scenes.TEAMS_MANAGEMENT_SCENE, "teamManagementState", bool.FalseString);
+            TeamSelectionContinue(true);
+        }
+
+        public void TeamSelectionContinueOffline()
+        {
+            TeamSelectionContinue(false);
+        }
+
+        private void TeamSelectionContinue(bool online)
+        {
+            var parameters = new Dictionary<string, string>();
+            parameters.Add(Scenes.TEAM_MANAGEMENT_STATE, bool.FalseString);
+            parameters.Add(Scenes.ONLINE, online.ToString());
+            Scenes.Load(Scenes.TEAMS_MANAGEMENT_SCENE, parameters);
         }
 
         public void ChangeToChatScene()
@@ -49,7 +64,7 @@ namespace UI.MainMenu
         {
             if (GameManager.Instance.CurrentFruitonTeam != null)
             {
-                Scenes.Load(Scenes.BATTLE_SCENE);
+                Scenes.Load(Scenes.BATTLE_SCENE, Scenes.ONLINE, Scenes.GetParam(Scenes.ONLINE));
             }
         }
 

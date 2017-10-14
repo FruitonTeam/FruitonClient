@@ -51,7 +51,7 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
 
     private void Start()
     {
-
+        Panel_LoadingGame.SetActive(true);
         gridLayoutManager = GridLayoutManager.Instance;
         gameManager = GameManager.Instance;
         grid = new GameObject[gridLayoutManager.WidthCount, gridLayoutManager.HeighCount];
