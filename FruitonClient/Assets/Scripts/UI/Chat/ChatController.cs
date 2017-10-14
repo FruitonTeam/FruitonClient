@@ -8,7 +8,6 @@ namespace UI.Chat
 {
     public class ChatController : MonoBehaviour, IOnItemSelectedListener, IOnMessageListener
     {
-    
         public Text ChatText;
         public InputField MessageInput;
 
@@ -113,6 +112,13 @@ namespace UI.Chat
             {
                 if (exists)
                 {
+                    PlayerHelper.GetAvatar(friendToAdd,
+                        texture => { FriendListController.SetAvatar(friendToAdd, texture); },
+                        error =>
+                        {
+                            Debug.LogWarning("Could not get avatar for user " + friendToAdd +
+                                             ". Default avatar will be used.");
+                        });
                     FriendListController.AddItem(friendToAdd);
                     friendMessages[friendToAdd] = "";
                 }

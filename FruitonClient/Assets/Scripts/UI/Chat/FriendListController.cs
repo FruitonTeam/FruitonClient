@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace UI.Chat
 {
@@ -45,6 +46,19 @@ namespace UI.Chat
                 if (friendData.Name.Equals(friend))
                 {
                     friendData.UnreadMessages++;
+                    break;
+                }
+            }
+            RecyclableList.NotifyDataChanged();
+        }
+
+        public void SetAvatar(string friend, Texture avatar)
+        {
+            foreach (FriendListItem.FriendItemData friendData in Data)
+            {
+                if (friendData.Name.Equals(friend))
+                {
+                    friendData.Avatar = avatar;
                     break;
                 }
             }

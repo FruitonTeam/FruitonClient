@@ -524,6 +524,7 @@ MonoBehaviour:
   Background: {fileID: 1426999311}
   FriendName: {fileID: 1972297899}
   UnreadCount: {fileID: 2012979139}
+  Avatar: {fileID: 418590073}
   Color: {r: 0.9773446, g: 0.99264705, b: 0.7152898, a: 1}
   SelectedColor: {r: 0.63235295, g: 0.7718053, b: 1, a: 1}
 --- !u!1 &418590071

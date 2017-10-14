@@ -9,11 +9,14 @@ namespace UI.Chat
         {
             public string Name;
             public int UnreadMessages;
+            public Texture Avatar;
         }
 
         public Image Background;
         public Text FriendName;
         public Text UnreadCount;
+
+        public RawImage Avatar;
 
         public Color Color;
         public Color SelectedColor;
@@ -37,6 +40,10 @@ namespace UI.Chat
             FriendName.text = itemData.Name;
             Background.color = Color;
             UnreadCount.text = itemData.UnreadMessages.ToString();
+            if (itemData.Avatar != null)
+            {
+                Avatar.texture = itemData.Avatar;
+            }
         }
     }
 }
