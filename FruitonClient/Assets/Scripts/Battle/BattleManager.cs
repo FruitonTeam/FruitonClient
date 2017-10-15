@@ -15,6 +15,7 @@ using fruiton.kernel.events;
 using UnityEngine.UI;
 using System;
 using System.Linq;
+using haxe.root;
 
 public class BattleManager : MonoBehaviour {
 
