@@ -8,6 +8,9 @@ public class Scenes
     public const string TEAMS_MANAGEMENT_SCENE = "TeamsManagementScene";
     public const string BATTLE_SCENE = "BattleScene";
 
+    public const string TEAM_MANAGEMENT_STATE = "teamManagementState";
+    public const string ONLINE = "online";
+
     private static Dictionary<string, string> Parameters { get; set; }
 
     public static void Load(string sceneName, Dictionary<string, string> parameters = null)

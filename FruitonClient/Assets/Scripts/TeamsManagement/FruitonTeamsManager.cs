@@ -12,6 +12,7 @@ using fruiton.kernel.fruitonTeam;
 using Google.Protobuf.Collections;
 using haxe.root;
 using UnityEngine.SceneManagement;
+using Networking;
 
 public class FruitonTeamsManager : MonoBehaviour
 {
@@ -147,7 +148,7 @@ public class FruitonTeamsManager : MonoBehaviour
         return result;
     }
 
-    void Update()
+    private void Update()
     {
         if (teamManagementState)
         {
@@ -337,6 +338,7 @@ public class FruitonTeamsManager : MonoBehaviour
             fruitonTeamMember.name = "CurrentFruitonTeam_" + fruitonTeamMember.name;
             fruitonTeamMember.transform.position = CurrentFruitonTeamObject.transform.position + currentFruitonTeamTranslations[kernelFruiton.type - 1];
             currentFruitonTeamTranslations[kernelFruiton.type - 1].x += 50;
+            fruitonTeamMember.GetComponent<ClientFruiton>().KernelFruiton = kernelFruiton;
         } else
         {
             // TODO: Notify the user (His choice would cause invalid Fruiton Team.) 
@@ -395,5 +397,10 @@ public class FruitonTeamsManager : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
+    }
+
+    public void FindGame()
+    {
+        
     }
 }

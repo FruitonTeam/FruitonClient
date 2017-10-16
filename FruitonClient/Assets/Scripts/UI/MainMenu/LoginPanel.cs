@@ -10,8 +10,35 @@ public class LoginPanel : MainMenuPanel
     public InputField LoginPassword;
     public Toggle LoginStayLoggedIn;
     public Text LoginMessageText;
+    public Button LoginButton;
+
+    private Selectable SelectedInputField;
 
     public enum LoginMessage { ValidUser, NotValidUser, NoConnection}
+
+    private void Start()
+    {
+        SelectedInputField = LoginName;
+        SelectedInputField.Select();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            
+            if (SelectedInputField == LoginButton)
+            {
+                SelectedInputField = LoginName;
+            }
+            else
+            {
+                SelectedInputField = SelectedInputField.FindSelectableOnDown();
+            }
+            SelectedInputField.Select();
+        }
+        return;
+    }
 
     // checks whether the LoginData combination is valid
     public LoginMessage CheckLoginData()
