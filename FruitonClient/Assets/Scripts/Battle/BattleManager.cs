@@ -39,15 +39,12 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
     private List<MoveAction> availableMoveActions;
     private List<AttackAction> availableAttackActions;
 
-    // Both, mine and opponents'.
-    private Array<object> fruitons;
-
     private readonly DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-    private const string OPPONENTS_TURN = "Opponent's turn";
-    private const string END_TURN = "End turn";
+    private static readonly string OPPONENTS_TURN = "Opponent's turn";
+    private static readonly string END_TURN = "End turn";
 
-    private bool startFirst;
+    private bool isFirstPlayer;
 
     private void Start()
     {
@@ -56,7 +53,7 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
         gameManager = GameManager.Instance;
         grid = new GameObject[gridLayoutManager.WidthCount, gridLayoutManager.HeighCount];
         
-        setPositionsOfFruitons();
+        SetPositionsOfCurrentFruitonTeam();
 
         FindGame();
     }
@@ -64,7 +61,6 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
     private void FindGame()
     {
         var connectionHandler = ConnectionHandler.Instance;
-        var gameManager = GameManager.Instance;
         FindGame findGameMessage = new FindGame
         {
             Team = gameManager.CurrentFruitonTeam
@@ -79,7 +75,7 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
     private void SendReadyMessage()
     {
         var connectionHandler = ConnectionHandler.Instance;
-        PlayerReady playerReadyMessage = new PlayerReady();
+        var playerReadyMessage = new PlayerReady();
         var wrapperMessage = new WrapperMessage
         {
             PlayerReady = playerReadyMessage
@@ -90,11 +86,6 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
     private void InitializeTeam(IEnumerable<GameObject> currentTeam, Player player, RepeatedField<Position> fruitonsPositions = null)
     {
         int counter = 0;
-        var positions = new RepeatedField<Position>();
-        int majorRow = player.id == me.id ? 0 : gridLayoutManager.HeighCount - 1;
-        int minorRow = player.id == me.id ? 1 : majorRow - 1;
-        int majorCounter = 2;
-        int minorCounter = 2;
         int i = 0, j = 0;
         foreach (GameObject clientFruiton in currentTeam)
         {
@@ -108,8 +99,6 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
                 j = currentPosition.Y;
                 counter++;
             }
-            
-            
             grid[i, j] = clientFruiton;
             kernelFruiton.position = new KVector2(i, j);
             Vector3 cellPosition = gridLayoutManager.GetCellPosition(i, j);
@@ -117,9 +106,9 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
         }
     }
 
-    private void setPositionsOfFruitons()
+    private void SetPositionsOfCurrentFruitonTeam()
     {
-        int i = 0, j = 0;
+        int i, j;
         int majorRow = 0;
         int minorRow = 1;
         int majorCounter = 2;
@@ -420,12 +409,16 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
         }
     }
 
-    private void PerformOpponentAction<ActionType>(ProtoAction protoAction) where ActionType : Action, TargetableAction
+    private void PerformOpponentAction<TTargetableAction>(ProtoAction protoAction) where TTargetableAction : Action, TargetableAction
     {
-        var from = protoAction.From.ToKernelPosition();
-        var to = protoAction.To.ToKernelPosition();
-        var allValidActionsFrom = kernel.getAllValidActionsFrom(from).CastToList<Action>().OfType<ActionType>();
-        var performedAction = allValidActionsFrom.ToList().Find(x => (x.getContext()).target.equalsTo(to));
+        KVector2 from = protoAction.From.ToKernelPosition();
+        KVector2 to = protoAction.To.ToKernelPosition();
+        IEnumerable<TTargetableAction> allValidActionsFrom = kernel.getAllValidActionsFrom(from).CastToList<Action>().OfType<TTargetableAction>();
+        TTargetableAction performedAction = allValidActionsFrom.SingleOrDefault(x => (x.getContext()).target.equalsTo(to));
+        if (performedAction == null)
+        {
+            Debug.Log("Server-Client desync detected.");
+        }
         PerformActionLocally(performedAction);
     }
 
@@ -439,7 +432,7 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
         IEnumerable<GameObject> currentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs);
         InitializeTeam(opponentTeam, opponent, gameReadyMessage.OpponentTeam.Positions);
 
-        fruitons = new Array<object>();
+        var fruitons = new Array<object>();
         foreach (var fruiton in currentTeam)
         {
             fruitons.push(fruiton.GetComponent<ClientFruiton>().KernelFruiton);
@@ -448,30 +441,27 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
         {
             fruitons.push(fruiton.GetComponent<ClientFruiton>().KernelFruiton);
         }
-        startFirst = gameReadyMessage.StartsFirst;
-        if (startFirst)
+        isFirstPlayer = gameReadyMessage.StartsFirst;
+        if (isFirstPlayer)
         {
             InitializeTeam(currentTeam, me, GameManager.Instance.CurrentFruitonTeam.Positions);
             kernel = new Kernel(me, opponent, fruitons);
         }
         else
         {
- 
             var width = gridLayoutManager.WidthCount;
             var height = gridLayoutManager.HeighCount;
             var flippedPositions = BattleHelper.FlipCoordinates(GameManager.Instance.CurrentFruitonTeam.Positions, width, height);
             InitializeTeam(currentTeam, me, flippedPositions);
             kernel = new Kernel(opponent, me, fruitons);
             DisableEndTurnButton();
-
-            
         }
         SendReadyMessage();
     }
 
     private void ProcessMessage(GameStarts gameStartsMessage)
     {
-        if (!startFirst)
+        if (!isFirstPlayer)
         {
             foreach (var fruiton in grid)
             {
