@@ -21,6 +21,7 @@ using Cz.Cuni.Mff.Fruiton.Dto;
 using Google.Protobuf.Collections;
 using fruiton.fruitDb.factories;
 using fruiton.fruitDb;
+using haxe.root;
 
 public class BattleManager : MonoBehaviour, IOnMessageListener {
 
@@ -366,7 +367,9 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
     }
 
     public void EndTurn(EndTurnAction endTurnAction)
-    { 
+    {
+        availableAttackActions.Clear();
+        availableMoveActions.Clear();
         gridLayoutManager.ResetHighlights();
         kernel.performAction(endTurnAction);
         var oldPos = EndTurnButton.transform.localPosition;
