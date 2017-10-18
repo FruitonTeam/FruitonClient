@@ -291,7 +291,7 @@ public class OfflineBattleManager : MonoBehaviour
     public void EndTurn()
     {
         gridLayoutManager.ResetHighlights();
-        EndTurnAction endTurnAction = new EndTurnAction(new EndTurnActionContext());
+        var endTurnAction = EndTurnAction.createNew();
         kernel.performAction(endTurnAction);
         Debug.Log("End turn.");
         var oldPos = EndTurnButton.transform.localPosition;

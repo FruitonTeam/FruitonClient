@@ -173,7 +173,7 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
         int timeLeft = (int)(kernel.currentState.turnState.endTime - currentEpochTime);
         if (timeLeft <= 0)
         {
-            PerformAction(new EndTurnAction(new EndTurnActionContext()));
+            PerformAction(EndTurnAction.createNew());
             return;
         }
         TimeCounter.text = (timeLeft).ToString();
@@ -361,7 +361,7 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
     public void EndTurn()
     {
         DisableEndTurnButton();
-        var action = new EndTurnAction(new EndTurnActionContext());
+        var action = EndTurnAction.createNew();
         PerformAction(action);
         EndTurn(action);
     }
@@ -400,7 +400,7 @@ public class BattleManager : MonoBehaviour, IOnMessageListener {
         if (protoAction.Id == EndTurnAction.ID)
         {
             EnableEndTurnButton();
-            PerformActionLocally(new EndTurnAction(new EndTurnActionContext()));
+            PerformActionLocally(EndTurnAction.createNew());
         }
         else if (protoAction.Id == MoveAction.ID)
         {
