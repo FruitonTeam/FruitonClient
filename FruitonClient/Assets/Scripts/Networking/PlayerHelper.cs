@@ -14,13 +14,13 @@ namespace Networking
             ConnectionHandler.Instance.StartCoroutine(
                 ConnectionHandler.Instance.Post(
                     "player/exists?login=" + player,
-                    s => success.Invoke("true".Equals(s)),
+                    result => success(result == "true"),
                     error
                 )
             );
         }
 
-        public static Texture GetAvatar(string player, Action<Texture> success, Action<string> error)
+        public static void GetAvatar(string player, Action<Texture> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
                 ConnectionHandler.Instance.Post(
@@ -34,7 +34,6 @@ namespace Networking
                     error
                 )
             );
-            return null;
         }
 
     }
