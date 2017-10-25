@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using KFruiton = fruiton.kernel.Fruiton;
 using KVector2 = fruiton.dataStructures.Point;
 using System.Linq;
+using System;
 
 public class LocalPlayer : ClientPlayerBase
 {
@@ -18,7 +19,7 @@ public class LocalPlayer : ClientPlayerBase
     private List<AttackAction> availableAttackActions;
     
 
-    public LocalPlayer(Kernel kernel, GameObject[,] grid, BattleManager battleManager) : base(kernel, battleManager)
+    public LocalPlayer(GameObject[,] grid, BattleViewer battleManager) : base(battleManager)
     {
         this.grid = grid;
         this.gridLayoutManager = GridLayoutManager.Instance;
@@ -144,5 +145,10 @@ public class LocalPlayer : ClientPlayerBase
         gridLayoutManager.ResetHighlights();
         var oldPos = EndTurnButton.transform.localPosition;
         EndTurnButton.transform.localPosition = new Vector3(oldPos.x, -oldPos.y, oldPos.z);
+    }
+
+    public override void ProcessOpponentAction(fruiton.kernel.actions.Action action)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -1,18 +1,19 @@
 ﻿using fruiton.kernel;
+using fruiton.kernel.actions;
 using UnityEngine;
 
 public abstract class ClientPlayerBase : MonoBehaviour
 {
     public Player KernelPlayer;
-    protected Kernel kernel;
-    protected BattleManager battleManager;
+    protected Battle battle;
     
     public bool IsActive { get; set; }
     public int ID { get { return KernelPlayer.id; } }
 
-    public ClientPlayerBase(Kernel kernel, BattleManager battleManager)
+    public ClientPlayerBase(Battle battle)
     {
-        this.kernel = kernel;
-        this.battleManager = battleManager;
+        this.battle = battle;
     }
+
+    public abstract void ProcessOpponentAction(Action action);
 }

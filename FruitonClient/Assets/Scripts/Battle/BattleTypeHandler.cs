@@ -12,8 +12,8 @@ public class BattleTypeHandler : MonoBehaviour
         bool online = Scenes.GetParam(Scenes.ONLINE) == bool.TrueString;
         if (online)
         {
-            Camera.main.GetComponent<BattleManager>().enabled = true;
-            EndTurnButton.onClick.AddListener(() => Camera.main.GetComponent<BattleManager>().EndTurn());
+            Camera.main.GetComponent<BattleViewer>().enabled = true;
+            EndTurnButton.onClick.AddListener(() => Camera.main.GetComponent<BattleViewer>().EndTurn());
         }
         else
         {

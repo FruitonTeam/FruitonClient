@@ -33,6 +33,8 @@ public class GameManager : MonoBehaviour {
     /// </summary>
     public FruitonTeam CurrentFruitonTeam { get; set; }
 
+    public Battle CurrentBattle { get; set; }
+
     public bool StayLoggedIn
     {
         get

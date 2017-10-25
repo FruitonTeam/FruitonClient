@@ -14,7 +14,7 @@ public class OnlineOpponent : ClientPlayerBase, IOnMessageListener
 {
     private Action nextAction;
 
-    public OnlineOpponent(Kernel kernel, BattleManager battleManager) : base(kernel, battleManager)
+    public OnlineOpponent(Battle battle) : base(battle)
     {
     }
 
@@ -45,16 +45,12 @@ public class OnlineOpponent : ClientPlayerBase, IOnMessageListener
     {
         if (protoAction.Id == EndTurnAction.ID)
         {
-            battleManager.PerformAction(new EndTurnAction(new EndTurnActionContext()));
+            battle.PerformAction(new EndTurnAction(new EndTurnActionContext()));
         }
-        else if (protoAction.Id == MoveAction.ID)
+        else if (protoAction.Id == MoveAction.ID || protoAction.Id == AttackAction.ID)
         {
-            NextAction = GetTargetableAction<MoveAction>(protoAction);
+            battle.PerformAction(GetTargetableAction<MoveAction>(protoAction));
 
-        }
-        else if (protoAction.Id == AttackAction.ID)
-        {
-            NextAction = GetTargetableAction<AttackAction>(protoAction);
         }
     }
 
@@ -65,5 +61,12 @@ public class OnlineOpponent : ClientPlayerBase, IOnMessageListener
         IEnumerable<TTargetableAction> allValidActionsFrom = kernel.getAllValidActionsFrom(from).CastToList<fruiton.kernel.actions.Action>().OfType<TTargetableAction>();
         TTargetableAction performedAction = allValidActionsFrom.SingleOrDefault(x => (x.getContext()).target.equalsTo(to));
         return performedAction;
+    }
+
+    public override void ProcessOpponentAction(EndTurnAction action)
+    {
+        var actionMessage = new ProtoAction { From = null, To = null, Id = action.getId() };
+        var wrapperMessage = new WrapperMessage { Action = actionMessage };
+        ConnectionHandler.Instance.SendWebsocketMessage(wrapperMessage);
     }
 }

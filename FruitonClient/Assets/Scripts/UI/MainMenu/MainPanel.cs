@@ -64,6 +64,7 @@ namespace UI.MainMenu
         {
             if (GameManager.Instance.CurrentFruitonTeam != null)
             {
+                GameManager.Instance.CurrentBattle = new OnlineBattle();
                 Scenes.Load(Scenes.BATTLE_SCENE, Scenes.ONLINE, Scenes.GetParam(Scenes.ONLINE));
             }
         }
