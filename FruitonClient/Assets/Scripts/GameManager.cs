@@ -181,6 +181,7 @@ public class GameManager : MonoBehaviour {
         FruitonDatabase = new FruitonDatabase(Resources.Load<TextAsset>("FruitonDb").text);
         //fruitonDatabase = new FruitonDatabase(Application.dataPath + "/Scripts/Kernel/Generated/resources/FruitonDb.json");
         AllFruitons = ClientFruitonFactory.CreateAllKernelFruitons();
+        AvailableFruitons = new List<int>();
         
         IsInitialized = true;
     }

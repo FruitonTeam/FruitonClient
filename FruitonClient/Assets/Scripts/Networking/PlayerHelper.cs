@@ -43,6 +43,7 @@ namespace Networking
                     jsonString =>
                     {
                         var fruitons = JsonConvert.DeserializeObject<List<int>>(jsonString);
+                        GameManager.Instance.AvailableFruitons = fruitons;
                         success(fruitons);
                     },
                     error

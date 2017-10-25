@@ -116,6 +116,7 @@ public class FruitonTeamsManager : MonoBehaviour
 
     private void InitializeAllFruitons()
     {
+        PlayerHelper.GetAvailableFruitons(GameManager.Instance.UserName, UpdateAvailableFruitons, Debug.Log);
         List<GameObject> fruitons = new List<GameObject>();
         GameManager gameManager = GameManager.Instance;
         while (!gameManager.IsInitialized)
@@ -132,20 +133,40 @@ public class FruitonTeamsManager : MonoBehaviour
             position.x += 50;
             fruitonObject.transform.parent = Fruitons.transform;
             fruitons.Add(fruitonObject);
+            if (!gameManager.AvailableFruitons.Contains(fruiton.id))
+            {
+                fruitonObject.SetActive(false);
+            }
         }
         allClientFruitons = fruitons;
     }
 
     private GameObject InstantiateFridgeFruiton(KFruiton kernelFruiton, Vector3 position)
     {
-        GameObject result = Instantiate(Resources.Load("Models/TeamManagement/" + kernelFruiton.model, typeof(GameObject))) as GameObject;
+        var result = Instantiate(Resources.Load("Models/TeamManagement/" + kernelFruiton.model, typeof(GameObject))) as GameObject;
         result.name = kernelFruiton.model;
         result.transform.position = position;
         AddCollider(result);
-        GameObject highlight = Instantiate(Resources.Load("Prefabs/Fridge/HighlightType" + kernelFruiton.type, typeof(GameObject))) as GameObject;
+        var highlight = Instantiate(Resources.Load("Prefabs/Fridge/HighlightType" + kernelFruiton.type, typeof(GameObject))) as GameObject;
         highlight.transform.position = new Vector3(position.x, position.y - 1, 120);
         highlight.transform.parent = FruitonsWrapper.transform;
         return result;
+    }
+
+    private void UpdateAvailableFruitons(List<int> fruitons)
+    {
+        foreach (GameObject fruitonObject in allClientFruitons)
+        {
+            KFruiton fruiton = fruitonObject.GetComponent<ClientFruiton>().KernelFruiton;
+            if (!fruitons.Contains(fruiton.id))
+            {
+                fruitonObject.SetActive(false);
+            }
+            else
+            {
+                fruitonObject.SetActive(true);
+            }
+        }
     }
 
     private void Update()

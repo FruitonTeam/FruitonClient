@@ -29,7 +29,6 @@ namespace UI.MainMenu
 
         public void TeamManagementContinue()
         {
-            Networking.PlayerHelper.GetAvailableFruitons(GameManager.Instance.UserName, x => GameManager.Instance.AvailableFruitons = x, Debug.Log);
             Scenes.Load(Scenes.TEAMS_MANAGEMENT_SCENE, FruitonTeamsManager.TEAM_MANAGEMENT_STATE, bool.TrueString);
         }
 
