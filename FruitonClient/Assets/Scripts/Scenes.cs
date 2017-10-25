@@ -11,6 +11,9 @@ public class Scenes
     public const string TEAM_MANAGEMENT_STATE = "teamManagementState";
     public const string ONLINE = "online";
 
+    public const string BATTLE_TYPE = "battleType";
+    public const string ONLINE_BATTLE = "onlineBattle";
+
     private static Dictionary<string, string> Parameters { get; set; }
 
     public static void Load(string sceneName, Dictionary<string, string> parameters = null)

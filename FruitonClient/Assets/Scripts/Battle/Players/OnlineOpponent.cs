@@ -12,13 +12,8 @@ using System.Linq;
 
 public class OnlineOpponent : ClientPlayerBase, IOnMessageListener
 {
-    private Action nextAction;
 
-    public OnlineOpponent(Battle battle) : base(battle)
-    {
-    }
-
-    void OnEnable()
+    public OnlineOpponent(Player kernelPlayer, Battle battle) : base(kernelPlayer, battle)
     {
         if (ConnectionHandler.Instance.IsLogged())
         {
@@ -26,13 +21,6 @@ public class OnlineOpponent : ClientPlayerBase, IOnMessageListener
         }
     }
 
-    void OnDisable()
-    {
-        if (ConnectionHandler.Instance.IsLogged())
-        {
-            ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.Action, this);
-        }
-    }
 
     public void OnMessage(WrapperMessage message)
     {
@@ -43,29 +31,24 @@ public class OnlineOpponent : ClientPlayerBase, IOnMessageListener
 
     private void ProcessMessage(ProtoAction protoAction)
     {
-        if (protoAction.Id == EndTurnAction.ID)
-        {
-            battle.PerformAction(new EndTurnAction(new EndTurnActionContext()));
-        }
-        else if (protoAction.Id == MoveAction.ID || protoAction.Id == AttackAction.ID)
-        {
-            battle.PerformAction(GetTargetableAction<MoveAction>(protoAction));
-
-        }
-    }
-
-    private TTargetableAction GetTargetableAction<TTargetableAction>(ProtoAction protoAction) where TTargetableAction : Action, TargetableAction
-    {
-        KVector2 from = protoAction.From.ToKernelPosition();
-        KVector2 to = protoAction.To.ToKernelPosition();
-        IEnumerable<TTargetableAction> allValidActionsFrom = kernel.getAllValidActionsFrom(from).CastToList<fruiton.kernel.actions.Action>().OfType<TTargetableAction>();
-        TTargetableAction performedAction = allValidActionsFrom.SingleOrDefault(x => (x.getContext()).target.equalsTo(to));
-        return performedAction;
+        battle.PerformAction(protoAction.From.ToKernelPosition(), protoAction.To.ToKernelPosition(), protoAction.Id);
     }
 
     public override void ProcessOpponentAction(EndTurnAction action)
     {
-        var actionMessage = new ProtoAction { From = null, To = null, Id = action.getId() };
+        Position position = new Position { X = -1, Y = -1 };
+        var actionMessage = new ProtoAction { From = position, To = position, Id = action.getId() };
+        var wrapperMessage = new WrapperMessage { Action = actionMessage };
+        ConnectionHandler.Instance.SendWebsocketMessage(wrapperMessage);
+    }
+
+    public override void ProcessOpponentAction(TargetableAction action)
+    {
+        var actionMessage = new ProtoAction {
+            From = action.getContext().source.ToPosition(),
+            To = action.getContext().target.ToPosition(),
+            Id = ((Action)action).getId()
+        };
         var wrapperMessage = new WrapperMessage { Action = actionMessage };
         ConnectionHandler.Instance.SendWebsocketMessage(wrapperMessage);
     }
