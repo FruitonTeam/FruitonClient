@@ -142,6 +142,8 @@ public class GameManager : MonoBehaviour {
 
     public FruitonDatabase FruitonDatabase { get; set; }
 
+    public List<int> AvailableFruitons { get; set; }
+
     #endregion
 
 

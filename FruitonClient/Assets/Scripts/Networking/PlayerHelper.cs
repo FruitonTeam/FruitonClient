@@ -1,14 +1,13 @@
 ﻿using System;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json;
 
 namespace Networking
 {
-    public class PlayerHelper
+    public static class PlayerHelper
     {
-        private PlayerHelper()
-        {
-        }
-
         public static void Exists(string player, Action<bool> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
@@ -27,7 +26,7 @@ namespace Networking
                     "player/avatar?login=" + player,
                     base64 =>
                     {
-                        Texture2D avatarTexture = new Texture2D(0, 0);
+                        var avatarTexture = new Texture2D(0, 0);
                         avatarTexture.LoadImage(Convert.FromBase64String(base64));
                         success(avatarTexture);
                     },
@@ -36,5 +35,19 @@ namespace Networking
             );
         }
 
+        public static void GetAvailableFruitons(string player, Action<List<int>> success, Action<string> error)
+        {
+            ConnectionHandler.Instance.StartCoroutine(
+                ConnectionHandler.Instance.Post(
+                    "player/availableFruitons?login=" + player,
+                    jsonString =>
+                    {
+                        var fruitons = JsonConvert.DeserializeObject<List<int>>(jsonString);
+                        success(fruitons);
+                    },
+                    error
+                )
+            );
+        }
     }
 }
