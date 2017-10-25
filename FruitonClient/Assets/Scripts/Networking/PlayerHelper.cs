@@ -11,7 +11,7 @@ namespace Networking
         public static void Exists(string player, Action<bool> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
-                ConnectionHandler.Instance.Post(
+                ConnectionHandler.Instance.Get(
                     "player/exists?login=" + player,
                     result => success(result == "true"),
                     error
@@ -22,7 +22,7 @@ namespace Networking
         public static void GetAvatar(string player, Action<Texture> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
-                ConnectionHandler.Instance.Post(
+                ConnectionHandler.Instance.Get(
                     "player/avatar?login=" + player,
                     base64 =>
                     {
@@ -38,7 +38,7 @@ namespace Networking
         public static void GetAvailableFruitons(string player, Action<List<int>> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
-                ConnectionHandler.Instance.Post(
+                ConnectionHandler.Instance.Get(
                     "player/availableFruitons?login=" + player,
                     jsonString =>
                     {

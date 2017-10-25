@@ -240,7 +240,7 @@ namespace Networking
             }
         }
 
-        public IEnumerator Post(string query, Action<string> success, Action<string> error)
+        public IEnumerator Get(string query, Action<string> success, Action<string> error)
         {
             var www = new WWW(URL_API + query);
             yield return www;
