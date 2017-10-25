@@ -142,6 +142,8 @@ public class GameManager : MonoBehaviour {
 
     public FruitonDatabase FruitonDatabase { get; set; }
 
+    public List<int> AvailableFruitons { get; set; }
+
     #endregion
 
 
@@ -175,10 +177,11 @@ public class GameManager : MonoBehaviour {
     public void Initialize()
     {
         Debug.Log("Initializing Game Manager");
-        ProtoSerializer.Instance.DeserializeFruitonTeams();
+        Serializer.DeserializeFruitonTeams();
         FruitonDatabase = new FruitonDatabase(Resources.Load<TextAsset>("FruitonDb").text);
         //fruitonDatabase = new FruitonDatabase(Application.dataPath + "/Scripts/Kernel/Generated/resources/FruitonDb.json");
         AllFruitons = ClientFruitonFactory.CreateAllKernelFruitons();
+        AvailableFruitons = Serializer.LoadAvailableFruitons();
         
         IsInitialized = true;
     }
@@ -206,7 +209,7 @@ public class GameManager : MonoBehaviour {
 
     #endregion
 
-    void Start()
+    void Awake()
     {
         if (Instance == null)
         {

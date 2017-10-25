@@ -1,18 +1,17 @@
 ﻿using System;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json;
 
 namespace Networking
 {
-    public class PlayerHelper
+    public static class PlayerHelper
     {
-        private PlayerHelper()
-        {
-        }
-
         public static void Exists(string player, Action<bool> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
-                ConnectionHandler.Instance.Post(
+                ConnectionHandler.Instance.Get(
                     "player/exists?login=" + player,
                     result => success(result == "true"),
                     error
@@ -23,11 +22,11 @@ namespace Networking
         public static void GetAvatar(string player, Action<Texture> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
-                ConnectionHandler.Instance.Post(
+                ConnectionHandler.Instance.Get(
                     "player/avatar?login=" + player,
                     base64 =>
                     {
-                        Texture2D avatarTexture = new Texture2D(0, 0);
+                        var avatarTexture = new Texture2D(0, 0);
                         avatarTexture.LoadImage(Convert.FromBase64String(base64));
                         success(avatarTexture);
                     },
@@ -36,5 +35,20 @@ namespace Networking
             );
         }
 
+        public static void GetAvailableFruitons(string player, Action<List<int>> success, Action<string> error)
+        {
+            ConnectionHandler.Instance.StartCoroutine(
+                ConnectionHandler.Instance.Get(
+                    "player/availableFruitons?login=" + player,
+                    jsonString =>
+                    {
+                        var fruitons = JsonConvert.DeserializeObject<List<int>>(jsonString);
+                        GameManager.Instance.AvailableFruitons = fruitons;
+                        success(fruitons);
+                    },
+                    error
+                )
+            );
+        }
     }
 }
