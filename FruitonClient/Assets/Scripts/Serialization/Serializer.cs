@@ -39,7 +39,7 @@ public static class Serializer {
                     JsonSerializer js = JsonSerializer.CreateDefault();
                     var fruitons = js.Deserialize<List<int>>(jr);
 
-                    if (fruitons == null) // File empty of contents corrupted
+                    if (fruitons == null) // File empty or contents corrupted
                     {
                         return Constants.DEFAULT_AVAILABLE_FRUITONS;
                     }
