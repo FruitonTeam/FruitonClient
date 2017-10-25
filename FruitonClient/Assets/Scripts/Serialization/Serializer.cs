@@ -36,8 +36,13 @@ public static class Serializer {
             {
                 using (JsonReader jr = new JsonTextReader(sr))
                 {
-                    var js = JsonSerializer.CreateDefault();
+                    JsonSerializer js = JsonSerializer.CreateDefault();
                     var fruitons = js.Deserialize<List<int>>(jr);
+
+                    if (fruitons == null) // File empty of contents corrupted
+                    {
+                        return Constants.DEFAULT_AVAILABLE_FRUITONS;
+                    }
                     return fruitons;
                 }
             }
@@ -64,10 +69,7 @@ public static class Serializer {
             {
                 file.Write(binaryData, 0, binaryData.Length);
             }
-            else
-            {
-                file.SetLength(0);
-            }
+            // Else save empty file
         }
     }
 

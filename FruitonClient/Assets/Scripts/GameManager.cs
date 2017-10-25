@@ -209,7 +209,7 @@ public class GameManager : MonoBehaviour {
 
     #endregion
 
-    void Start()
+    void Awake()
     {
         if (Instance == null)
         {
