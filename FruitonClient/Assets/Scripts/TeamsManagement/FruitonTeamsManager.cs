@@ -155,6 +155,7 @@ public class FruitonTeamsManager : MonoBehaviour
 
     private void UpdateAvailableFruitons(List<int> fruitons)
     {
+        Serializer.SaveAvailableFruitons(fruitons);
         foreach (GameObject fruitonObject in allClientFruitons)
         {
             KFruiton fruiton = fruitonObject.GetComponent<ClientFruiton>().KernelFruiton;
@@ -336,7 +337,7 @@ public class FruitonTeamsManager : MonoBehaviour
                 }
                 currentFruitonTeamTranslations[kernelFruiton.type - 1] -= new Vector3(50, 0, 0);
             }
-            ProtoSerializer.Instance.SerializeFruitonTeams();
+            Serializer.SerializeFruitonTeams();
             
         }
     }
