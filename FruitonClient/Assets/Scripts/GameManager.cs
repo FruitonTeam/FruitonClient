@@ -33,8 +33,6 @@ public class GameManager : MonoBehaviour {
     /// </summary>
     public FruitonTeam CurrentFruitonTeam { get; set; }
 
-    public Battle CurrentBattle { get; set; }
-
     public bool StayLoggedIn
     {
         get
@@ -144,6 +142,8 @@ public class GameManager : MonoBehaviour {
 
     public FruitonDatabase FruitonDatabase { get; set; }
 
+    public List<int> AvailableFruitons { get; set; }
+
     #endregion
 
 
@@ -176,10 +176,12 @@ public class GameManager : MonoBehaviour {
 
     public void Initialize()
     {
-        ProtoSerializer.Instance.DeserializeFruitonTeams();
+        Debug.Log("Initializing Game Manager");
+        Serializer.DeserializeFruitonTeams();
         FruitonDatabase = new FruitonDatabase(Resources.Load<TextAsset>("FruitonDb").text);
         //fruitonDatabase = new FruitonDatabase(Application.dataPath + "/Scripts/Kernel/Generated/resources/FruitonDb.json");
         AllFruitons = ClientFruitonFactory.CreateAllKernelFruitons();
+        AvailableFruitons = Serializer.LoadAvailableFruitons();
         
         IsInitialized = true;
     }
@@ -207,7 +209,7 @@ public class GameManager : MonoBehaviour {
 
     #endregion
 
-    void Start()
+    void Awake()
     {
         if (Instance == null)
         {
