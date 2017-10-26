@@ -950,8 +950,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EndTurnButton: {fileID: 1345862657}
+  PanelLoadingGame: {fileID: 707422766}
   TimeCounter: {fileID: 2139659783}
-  Panel_LoadingGame: {fileID: 707422766}
 --- !u!1 &2139659781
 GameObject:
   m_ObjectHideFlags: 0

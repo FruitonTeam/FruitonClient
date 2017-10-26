@@ -1,24 +1,17 @@
-﻿using Networking;
-using System;
-using Cz.Cuni.Mff.Fruiton.Dto;
-using ProtoAction = Cz.Cuni.Mff.Fruiton.Dto.Action;
-using KVector2 = fruiton.dataStructures.Point;
-using Action = fruiton.kernel.actions.Action;
-using fruiton.kernel.actions;
+﻿using Cz.Cuni.Mff.Fruiton.Dto;
 using fruiton.kernel;
+using fruiton.kernel.actions;
+using Networking;
 using UnityEngine.Assertions;
-using System.Collections.Generic;
-using System.Linq;
+using Action = fruiton.kernel.actions.Action;
+using ProtoAction = Cz.Cuni.Mff.Fruiton.Dto.Action;
 
-public class OnlineOpponent : ClientPlayerBase, IOnMessageListener
+public class OnlinePlayer : ClientPlayerBase, IOnMessageListener
 {
-
-    public OnlineOpponent(Player kernelPlayer, Battle battle) : base(kernelPlayer, battle)
+    public OnlinePlayer(Player kernelPlayer, Battle battle) : base(kernelPlayer, battle)
     {
         if (ConnectionHandler.Instance.IsLogged())
-        {
             ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.Action, this);
-        }
     }
 
 
@@ -36,20 +29,21 @@ public class OnlineOpponent : ClientPlayerBase, IOnMessageListener
 
     public override void ProcessOpponentAction(EndTurnAction action)
     {
-        Position position = new Position { X = -1, Y = -1 };
-        var actionMessage = new ProtoAction { From = position, To = position, Id = action.getId() };
-        var wrapperMessage = new WrapperMessage { Action = actionMessage };
+        var position = new Position {X = -1, Y = -1};
+        var actionMessage = new ProtoAction {From = position, To = position, Id = action.getId()};
+        var wrapperMessage = new WrapperMessage {Action = actionMessage};
         ConnectionHandler.Instance.SendWebsocketMessage(wrapperMessage);
     }
 
     public override void ProcessOpponentAction(TargetableAction action)
     {
-        var actionMessage = new ProtoAction {
+        var actionMessage = new ProtoAction
+        {
             From = action.getContext().source.ToPosition(),
             To = action.getContext().target.ToPosition(),
-            Id = ((Action)action).getId()
+            Id = ((Action) action).getId()
         };
-        var wrapperMessage = new WrapperMessage { Action = actionMessage };
+        var wrapperMessage = new WrapperMessage {Action = actionMessage};
         ConnectionHandler.Instance.SendWebsocketMessage(wrapperMessage);
     }
 }

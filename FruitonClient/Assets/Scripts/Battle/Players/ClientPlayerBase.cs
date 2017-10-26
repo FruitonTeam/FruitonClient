@@ -1,21 +1,19 @@
 ﻿using fruiton.kernel;
 using fruiton.kernel.actions;
-using UnityEngine;
 
 public abstract class ClientPlayerBase
 {
-    public Player KernelPlayer;
-    
-    public bool IsActive { get; set; }
-    public int ID { get { return KernelPlayer.id; } }
-
     protected Battle battle;
 
-    public ClientPlayerBase(Player kernelPlayer, Battle battle)
+    protected ClientPlayerBase(Player kernelPlayer, Battle battle)
     {
-        KernelPlayer = kernelPlayer;
+        ID = kernelPlayer.id;
         this.battle = battle;
     }
+
+    public bool IsActive { get; set; }
+
+    public int ID { get; private set; }
 
     public abstract void ProcessOpponentAction(EndTurnAction action);
     public abstract void ProcessOpponentAction(TargetableAction action);
