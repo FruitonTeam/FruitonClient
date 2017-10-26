@@ -67,7 +67,6 @@ public class TouchControl : MonoBehaviour {
             camera.y = 0;
             translateDirection = (center - camera).normalized;
             translateNormal = new Vector3(translateDirection.z, 0, -translateDirection.x);
-            Debug.Log("New translate normal: " + translateNormal + " and translate direction: " + translateDirection);
         }
 
     #endregion
