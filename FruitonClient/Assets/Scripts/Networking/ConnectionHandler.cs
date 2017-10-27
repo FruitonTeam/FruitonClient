@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using Cz.Cuni.Mff.Fruiton.Dto;
 using Google.Protobuf;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
-
-//using GooglePlayGames;
-//using GooglePlayGames.BasicApi;
 
 namespace Networking
 {
@@ -17,11 +16,23 @@ namespace Networking
     {
         const string URL_CHAT = "ws://prak.mff.cuni.cz:8050/fruiton/socket";
         const string URL_API = "http://prak.mff.cuni.cz:8050/fruiton/api/";
+        
         const string GOOGLE_ID = "827606142557-f63cu712orq80s6do9n6aa8s3eu3h7ag.apps.googleusercontent.com";
         const string GOOGLE_CLIENT_SECRET = "NyYlQJICuxYX3AnzChou2X8i";
-        const string GOOGLE_REDIRECT_URI = "https://oauth2.example.com/code";
-        const string GOOGLE_TOKEN_URI = "https://accounts.google.com/o/oauth2/token";
 
+        const int GOOGLE_REDIRECT_PORT = 9999;
+        
+        readonly string GOOGLE_REDIRECT_URI = "http://127.0.0.1:" + GOOGLE_REDIRECT_PORT;
+        const string GOOGLE_TOKEN_URI = "https://www.googleapis.com/oauth2/v4/token";
+        
+        /// <summary>
+        /// Dummy password for google users.
+        /// </summary>
+        const string GOOGLE_PASSWORD = "google_pwd";
+        
+        static string googleLoginSuccessHtml;
+        static string googleLoginErrorHtml;
+        
         static ConnectionHandler instance;
 
         string loginToken;
@@ -150,31 +161,84 @@ namespace Networking
 
         public void LoginGoogle()
         {
-            //Social.localUser.Authenticate((bool success) => {
-            //    if (success)
-            //    {
-            //        Debug.Log("Google success");
-            //        Debug.Log(Social.localUser.id);
-            //        Debug.Log(Social.localUser.userName);
-            //    }
-            //    else
-            //    {
-            //        Debug.Log("Google failed");
-            //    }
-            //});
+            using (var listener = new HttpListener())
+            {
+                listener.Prefixes.Add("http://*:" + GOOGLE_REDIRECT_PORT + "/");
+                listener.Start();
+               
+                Application.OpenURL(
+                    "https://accounts.google.com/o/oauth2/v2/auth" 
+                    + "?client_id=" + GOOGLE_ID
+                    + "&redirect_uri=" + GOOGLE_REDIRECT_URI
+                    + "&response_type=code"
+                    + "&scope=email%20profile"
+                );
+                
+                HttpListenerContext context = listener.GetContext();
 
+                string error = context.Request.QueryString["error"];
+                string code = context.Request.QueryString["code"];
 
-            //Debug.Log("GetAuthCode");
+                string responseString;
+                if (!string.IsNullOrEmpty(code))
+                {
+                    responseString = googleLoginSuccessHtml;
+                    StartCoroutine(GetGoogleAccessToken(code));
+                }
+                else if (!string.IsNullOrEmpty(error))
+                {
+                    responseString = string.Format(googleLoginErrorHtml, error);
+                }
+                else
+                {
+                    throw new InvalidOperationException("Google login did not return success nor error");
+                }
 
-            //Social.localUser.Authenticate((bool success) =>
-            //{
-            //    PlayGamesPlatform.Instance.GetServerAuthCode((CommonStatusCodes status, string code) =>
-            //    {
-            //        Debug.Log("Status: " + status.ToString());
-            //        Debug.Log("Code: " + code);
-            //    }
-            //    );
-            //});
+                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
+                
+                HttpListenerResponse response = context.Response;
+                response.ContentLength64 = buffer.Length;
+                using (System.IO.Stream output = response.OutputStream)
+                {
+                    output.Write(buffer, 0, buffer.Length);
+                }
+            }
+        }
+        
+        IEnumerator GetGoogleAccessToken(string authCode)
+        {
+            WWWForm form = new WWWForm();
+
+            Dictionary<string, string> headers = new Dictionary<string, string>();
+
+            headers.Add("Host", "www.googleapis.com");
+            headers.Add("Content-Type", "application/x-www-form-urlencoded");
+            form.AddField("code", authCode + "&");
+            form.AddField("client_id", GOOGLE_ID);
+            form.AddField("client_secret", GOOGLE_CLIENT_SECRET);
+            form.AddField("redirect_uri", GOOGLE_REDIRECT_URI);
+            form.AddField("grant_type", "authorization_code");
+            
+            var www = new WWW(GOOGLE_TOKEN_URI, form.data, headers);
+            yield return www;
+            if (!string.IsNullOrEmpty(www.text))
+            {
+                Debug.Log(www.text);
+                string idToken = JToken.Parse(www.text)["id_token"].Value<String>();
+                StartCoroutine(Get("loginGoogle?idToken=" + idToken,
+                    googleLoginResultJson =>
+                    {
+                        var googleLoginResult = JToken.Parse(googleLoginResultJson);
+                        loginToken = googleLoginResult["token"].Value<String>();
+                        string login = googleLoginResult["login"].Value<String>();
+                        ProcessLoginResult(new LoginResultData(login, GOOGLE_PASSWORD, true));
+                    }, 
+                    Debug.LogError));
+            }
+            else
+            {
+                Debug.Log("Could not login using google on our server " + www.error);
+            }
         }
 
         IEnumerator PostRegister(WWW www)
@@ -211,35 +275,6 @@ namespace Networking
             }
         }
 
-        IEnumerator GetGoogleAccessToken(string auth_code)
-        {
-            WWWForm form = new WWWForm();
-
-            Dictionary<string, string> headers = new Dictionary<string, string>();
-
-            headers.Add("Host", "www.googleapis.com");
-            headers.Add("Content-Type", "application/x-www-form-urlencoded");
-            form.AddField("code", auth_code + "&");
-            form.AddField("client_id", GOOGLE_ID);
-            form.AddField("client_secret", GOOGLE_CLIENT_SECRET);
-            form.AddField("redirect_uri", GOOGLE_REDIRECT_URI);
-            form.AddField("grant_type", "authorization_code");
-            byte[] rawData = form.data;
-
-            var www = new WWW(GOOGLE_TOKEN_URI, rawData, headers);
-            yield return www;
-            if (string.IsNullOrEmpty(www.error))
-            {
-                Debug.Log("Post request succeeded."); //text of success
-                Debug.Log(www.text);
-            }
-            else
-            {
-                Debug.Log("Post request failed."); //error
-                Debug.Log(www.error);
-            }
-        }
-
         public IEnumerator Get(string query, Action<string> success, Action<string> error)
         {
             var www = new WWW(URL_API + query);
@@ -271,6 +306,9 @@ namespace Networking
         void Start()
         {
             RegisterListener(WrapperMessage.MessageOneofCase.ErrorMessage, this);
+            
+            googleLoginSuccessHtml = Resources.Load<TextAsset>("google_login_success").text;
+            googleLoginErrorHtml = Resources.Load<TextAsset>("google_login_error").text;
         }
 
         public bool IsLogged()

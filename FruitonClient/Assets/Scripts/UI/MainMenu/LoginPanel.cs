@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Networking;
+﻿using Networking;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -59,7 +57,10 @@ public class LoginPanel : MainMenuPanel
         return LoginMessage.ValidUser;
     }
 
-    
+    public void LoginGoogle()
+    {
+        ConnectionHandler.Instance.LoginGoogle();
+    }
 
     // called after pressing Login Button
     public void LoginContinue()
