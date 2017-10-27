@@ -11,6 +11,7 @@ public class WelcomePanel : MainMenuPanel {
         if (ConnectionHandler.Instance.IsLogged())
         {
             PanelManager.Instance.SwitchPanels(MenuPanel.Main);
+            return;
         }
         if (gameManager.HasRememberedUser())
         {
