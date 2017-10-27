@@ -162,20 +162,27 @@ namespace Networking
 
         public void LoginGoogle()
         {
-            using (var listener = new HttpListener())
-            {
-                listener.Prefixes.Add("http://*:" + GOOGLE_REDIRECT_PORT + "/");
-                listener.Start();
+            var listener = new HttpListener();
+            
+            listener.Prefixes.Add("http://*:" + GOOGLE_REDIRECT_PORT + "/");
+            listener.Start();
                
-                Application.OpenURL(
-                    "https://accounts.google.com/o/oauth2/v2/auth" 
-                    + "?client_id=" + GOOGLE_ID
-                    + "&redirect_uri=" + GOOGLE_REDIRECT_URI
-                    + "&response_type=code"
-                    + "&scope=email%20profile"
-                );
-                
-                HttpListenerContext context = listener.GetContext();
+            Application.OpenURL(
+                "https://accounts.google.com/o/oauth2/v2/auth" 
+                + "?client_id=" + GOOGLE_ID
+                + "&redirect_uri=" + GOOGLE_REDIRECT_URI
+                + "&response_type=code"
+                + "&scope=email%20profile"
+            );
+
+            listener.BeginGetContext(ProcessGoogleResult, listener);
+        }
+
+        private void ProcessGoogleResult(IAsyncResult result)
+        {
+            using (var listener = (HttpListener) result.AsyncState)
+            {
+                HttpListenerContext context = listener.EndGetContext(result);
 
                 string error = context.Request.QueryString["error"];
                 string code = context.Request.QueryString["code"];
@@ -184,7 +191,7 @@ namespace Networking
                 if (!string.IsNullOrEmpty(code))
                 {
                     responseString = googleLoginSuccessHtml;
-                    StartCoroutine(GetGoogleAccessToken(code));
+                    TaskManager.Instance.RunOnMainThread(() => StartCoroutine(GetGoogleAccessToken(code)));
                 }
                 else if (!string.IsNullOrEmpty(error))
                 {
@@ -196,7 +203,7 @@ namespace Networking
                 }
 
                 byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
-                
+
                 HttpListenerResponse response = context.Response;
                 response.ContentLength64 = buffer.Length;
                 using (System.IO.Stream output = response.OutputStream)
@@ -205,7 +212,7 @@ namespace Networking
                 }
             }
         }
-        
+
         private IEnumerator GetGoogleAccessToken(string authCode)
         {
             var form = new WWWForm();
