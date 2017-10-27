@@ -1,15 +1,24 @@
 #!/bin/bash
 
+# Kernel
+echo "Compiling kernel..."
+KERNEL_DEST=$FRUITON_CLIENT_LOC/FruitonClient/Assets/Scripts/Kernel/Generated
 mkdir -p ${KERNEL_DEST}
+
+UNITY_RESOURCES_LOC=$FRUITON_CLIENT_LOC/FruitonClient/Assets/Resources
+mkdir -p ${UNITY_RESOURCES_LOC}
 
 cd ${KERNEL_LOC}
 
-haxe --macro include\(\'fruiton\'\,true\,\[\'fruiton.fruitDb.models\'\,\'fruiton.macro\'\]\) -D no-compilation -cs ${KERNEL_DEST} -cp ${KERNEL_LOC} fruiton.kernel.Kernel
+haxe --macro include\(\'fruiton\'\,true\,\[\'fruiton.fruitDb.models\'\,\'fruiton.macro\'\]\) -D no-compilation -D no-root -cs ${KERNEL_DEST} -cp ${KERNEL_LOC} fruiton.kernel.Kernel
 
-cp -r ${KERNEL_LOC}/resources ${KERNEL_DEST}/resources
+cp -r ${KERNEL_LOC}/resources/* ${UNITY_RESOURCES_LOC}
 
+
+# Protobufs
+echo "Compiling protobufs..."
 mkdir -p ${PROTO_DEST}
 
 for proto_file in ${PROTO_LOC}/*.proto; do
-	protoc --csharp_out=${PROTO_DEST} --proto_path=${PROTO_LOC} ${proto_file}
+    protoc --csharp_out=${PROTO_DEST} --proto_path=${PROTO_LOC} ${proto_file}
 done
