@@ -8,15 +8,15 @@ namespace Networking
 {
     public class WebSocket
     {
-        private const string XAuthTokenHeaderKey = "x-auth-token";
+        private readonly string XAuthTokenHeaderKey = "x-auth-token";
 
         private Uri url;
         private string loginToken;
 
-        WebSocketSharp.WebSocket socket;
-        Queue<byte[]> messages = new Queue<byte[]>();
-        bool isConnected;
-        string error;
+        private WebSocketSharp.WebSocket socket;
+        private Queue<byte[]> messages = new Queue<byte[]>();
+        private bool isConnected;
+        private string error;
 
         public WebSocket(Uri url, string loginToken)
         {
@@ -85,5 +85,11 @@ namespace Networking
         {
             socket.Close();
         }
+
+        public bool IsAlive()
+        {
+            return socket.IsAlive;
+        }
+        
     }
 }
