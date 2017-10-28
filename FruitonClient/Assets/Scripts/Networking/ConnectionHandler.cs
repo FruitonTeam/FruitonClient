@@ -185,7 +185,11 @@ namespace Networking
                 string code = context.Request.QueryString["code"];
 
                 string responseString;
-                if (!string.IsNullOrEmpty(code))
+                if (IsLogged()) // user logged in by ordinary means sooner
+                {
+                    responseString = string.Format(googleLoginErrorHtml, "You are already logged in.");
+                } 
+                else if (!string.IsNullOrEmpty(code))
                 {
                     responseString = googleLoginSuccessHtml;
                     TaskManager.Instance.RunOnMainThread(() => StartCoroutine(GetGoogleAccessToken(code)));

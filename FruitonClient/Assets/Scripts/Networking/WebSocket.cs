@@ -25,7 +25,9 @@ namespace Networking
 
             string protocol = this.url.Scheme;
             if (!protocol.Equals("ws") && !protocol.Equals("wss"))
+            {
                 throw new ArgumentException("Unsupported protocol: " + protocol);
+            }
         }
 
         public IEnumerator Connect()
