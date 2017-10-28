@@ -10,7 +10,8 @@ public class TaskManager : MonoBehaviour
 
     public void RunOnMainThread(Action action)
     {
-        lock (taskQueue) {
+        lock (taskQueue) 
+        {
             taskQueue.Enqueue(action);
         }
     }
@@ -21,7 +22,6 @@ public class TaskManager : MonoBehaviour
         {
             DontDestroyOnLoad(gameObject);
             Instance = this;
-
         }
         else if (Instance != this)
         {
@@ -31,8 +31,10 @@ public class TaskManager : MonoBehaviour
 
     private void Update()
     {
-        lock (taskQueue) {
-            while (taskQueue.Count > 0) {
+        lock (taskQueue) 
+        {
+            while (taskQueue.Count > 0) 
+            {
                 taskQueue.Dequeue().Invoke();
             }
         }

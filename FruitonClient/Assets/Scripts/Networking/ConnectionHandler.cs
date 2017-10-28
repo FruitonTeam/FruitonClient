@@ -34,8 +34,6 @@ namespace Networking
         private static string googleLoginSuccessHtml;
         private static string googleLoginErrorHtml;
         
-        private static ConnectionHandler instance;
-
         private string loginToken;
 
         private WebSocket webSocket;
@@ -217,10 +215,12 @@ namespace Networking
         {
             var form = new WWWForm();
 
-            Dictionary<string, string> headers = new Dictionary<string, string>();
+            var headers = new Dictionary<string, string>
+            {
+                {"Host", "www.googleapis.com"},
+                {"Content-Type", "application/x-www-form-urlencoded"}
+            };
 
-            headers.Add("Host", "www.googleapis.com");
-            headers.Add("Content-Type", "application/x-www-form-urlencoded");
             form.AddField("code", authCode + "&");
             form.AddField("client_id", GOOGLE_ID);
             form.AddField("client_secret", GOOGLE_CLIENT_SECRET);
