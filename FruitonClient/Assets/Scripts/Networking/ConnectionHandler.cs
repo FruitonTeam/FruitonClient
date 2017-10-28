@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
+using System.Text;
 using Cz.Cuni.Mff.Fruiton.Dto;
 using Google.Protobuf;
 using Newtonsoft.Json.Linq;
@@ -200,11 +202,11 @@ namespace Networking
                     throw new InvalidOperationException("Google login did not return success nor error");
                 }
 
-                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
+                byte[] buffer = Encoding.UTF8.GetBytes(responseString);
 
                 HttpListenerResponse response = context.Response;
                 response.ContentLength64 = buffer.Length;
-                using (System.IO.Stream output = response.OutputStream)
+                using (Stream output = response.OutputStream)
                 {
                     output.Write(buffer, 0, buffer.Length);
                 }
