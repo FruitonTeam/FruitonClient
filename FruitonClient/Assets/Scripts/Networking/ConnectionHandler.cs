@@ -36,11 +36,7 @@ namespace Networking
         private static string googleLoginSuccessHtml;
         private static string googleLoginErrorHtml;
         
-        private string loginToken;
-
         private WebSocket webSocket;
-
-        private static readonly string PROCESS_REGISTRATION_RESULT = "ProcessRegistrationResult";
 
         private Dictionary<WrapperMessage.MessageOneofCase, List<IOnMessageListener>> listeners =
             new Dictionary<WrapperMessage.MessageOneofCase, List<IOnMessageListener>>();
@@ -100,16 +96,17 @@ namespace Networking
             webSocket.Send(getBinaryData(message));
         }
 
-        private void ProcessLoginResult(LoginResultData resultData)
+        private void ProcessLoginResult(string login, string password, string token)
         {
-            bool success = resultData.success;
-            string login = resultData.login;
-            string password = resultData.password;
+            if (IsLogged())
+            {
+                throw new InvalidOperationException("User is already logged in");
+            }
             var panelManager = PanelManager.Instance;
             var gameManager = GameManager.Instance;
-            if (success)
+            if (!string.IsNullOrEmpty(token))
             {
-                webSocket = new WebSocket(new Uri(URL_CHAT), loginToken);
+                webSocket = new WebSocket(new Uri(URL_CHAT), token);
                 StartCoroutine(webSocket.Connect());
 
                 gameManager.UserName = login;
@@ -188,7 +185,11 @@ namespace Networking
                 string code = context.Request.QueryString["code"];
 
                 string responseString;
-                if (!string.IsNullOrEmpty(code))
+                if (IsLogged()) // user logged in by ordinary means sooner
+                {
+                    responseString = string.Format(googleLoginErrorHtml, "You are already logged in.");
+                } 
+                else if (!string.IsNullOrEmpty(code))
                 {
                     responseString = googleLoginSuccessHtml;
                     TaskManager.Instance.RunOnMainThread(() => StartCoroutine(GetGoogleAccessToken(code)));
@@ -239,9 +240,9 @@ namespace Networking
                     googleLoginResultJson =>
                     {
                         var googleLoginResult = JToken.Parse(googleLoginResultJson);
-                        loginToken = googleLoginResult["token"].Value<string>();
+                        string token = googleLoginResult["token"].Value<string>();
                         string login = googleLoginResult["login"].Value<string>();
-                        ProcessLoginResult(new LoginResultData(login, GOOGLE_PASSWORD, true));
+                        ProcessLoginResult(login, GOOGLE_PASSWORD, token);
                     }, 
                     Debug.LogError));
             }
@@ -255,15 +256,15 @@ namespace Networking
         {
             yield return www;
 
-            if (string.IsNullOrEmpty(www.error))
+            if (string.IsNullOrEmpty(www.error)) // success
             {
-                Debug.Log("[Registration] Post request succeeded."); // text of success
-                SendMessage(PROCESS_REGISTRATION_RESULT, true);
+                Debug.Log("[Registration] Post request succeeded.");
+                ProcessRegistrationResult(true);
             }
-            else
+            else // error
             {
-                Debug.Log("[Registration] Post request failed."); // error
-                SendMessage(PROCESS_REGISTRATION_RESULT, false);
+                Debug.Log("[Registration] Post request failed.");
+                ProcessRegistrationResult(false);
             }
         }
 
@@ -271,17 +272,15 @@ namespace Networking
         {
             yield return www;
 
-            if (string.IsNullOrEmpty(www.error))
+            if (string.IsNullOrEmpty(www.error)) // success
             {
-                Debug.Log("[Login] Post request succeeded."); // text of success
-                Debug.Log("WWW text: " + www.text);
-                loginToken = www.text;
-                SendMessage("ProcessLoginResult", new LoginResultData(login, password, true));
+                Debug.Log("[Login] Post request succeeded. Token: " + www.text);
+                ProcessLoginResult(login, password, www.text);
             }
-            else
+            else // error
             {
-                Debug.Log("[Login] Post request failed."); // text of fail
-                SendMessage("ProcessLoginResult", new LoginResultData(login, password, false));
+                Debug.Log("[Login] Post request failed. Message: " + www.error);
+                ProcessLoginResult(login, password, null);
             }
         }
 
@@ -323,7 +322,28 @@ namespace Networking
 
         public bool IsLogged()
         {
-            return loginToken != null;
+            return webSocket != null;
+        }
+
+        public bool IsConnectionAlive()
+        {
+            return webSocket.IsAlive();
+        }
+        
+        public void Disconnect()
+        {
+            webSocket.Close();
+        }
+
+        public void Logout()
+        {
+            webSocket.Close();
+            webSocket = null;
+        }
+
+        public void Reconnect()
+        {
+            // TODO: implement
         }
 
         private byte[] getBinaryData(IMessage protobuf)
@@ -386,19 +406,5 @@ namespace Networking
             Debug.LogError(message.ErrorMessage.Message);
         }
 
-        // Because SendMessage can only accept 1 argument
-        private struct LoginResultData
-        {
-            public string login;
-            public string password;
-            public bool success;
-
-            public LoginResultData(string login, string password, bool success)
-            {
-                this.login = login;
-                this.password = password;
-                this.success = success;
-            }
-        }
     }
 }

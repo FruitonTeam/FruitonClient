@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using Networking;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace UI.MainMenu
 {
@@ -70,12 +70,12 @@ namespace UI.MainMenu
 
         public void Logout()
         {
+            ConnectionHandler.Instance.Logout();
             PlayerPrefs.SetString("username", "");
             PlayerPrefs.SetString("userpassword", "");
             PlayerPrefs.SetInt("stayloggedin", 0);
             PanelManager.Instance.SwitchPanels(MenuPanel.Login);
         }
-
 
     }
 }
