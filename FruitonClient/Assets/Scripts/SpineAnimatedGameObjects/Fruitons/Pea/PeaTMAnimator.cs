@@ -19,7 +19,7 @@ public class PeaTMAnimator : MonoBehaviour
     // 4 - starRingOff/starRingTwirl                                            // after taking damage star ring appears around its head
     // 5 - startWalk/walk/scratchMustache/wideStandGetGuns/fire/takeDamage      // usual animations
 
-    private static readonly int USUAL_T = 5;
+    private static readonly int USUAL_TRACK = 5;
 
     private static readonly System.Random rnd = new System.Random();
 
@@ -35,7 +35,7 @@ public class PeaTMAnimator : MonoBehaviour
 
     private void FinishCurrentAnim()
     {
-        skeletonAnim.AnimationState.SetEmptyAnimation(USUAL_T, 0);
+        skeletonAnim.AnimationState.SetEmptyAnimation(USUAL_TRACK, 0);
     }
 
     private void AddNextRandomAnim()
@@ -67,31 +67,31 @@ public class PeaTMAnimator : MonoBehaviour
 
     private void StartWalking()
     {
-        Debug.Log("Doing StartWalking");
-        skeletonAnim.AnimationState.AddAnimation(USUAL_T, "startWalk", false, 0);
-        skeletonAnim.AnimationState.AddAnimation(USUAL_T, "walk", true, 0);
+        //Debug.Log("Doing StartWalking");
+        skeletonAnim.AnimationState.AddAnimation(USUAL_TRACK, "startWalk", false, 0);
+        skeletonAnim.AnimationState.AddAnimation(USUAL_TRACK, "walk", true, 0);
     }
 
     private void TakeDamageIdle()
     {
-        Debug.Log("Doing TakeDamageIdle");
-        skeletonAnim.AnimationState.AddAnimation(USUAL_T, "takeDamage", false, 0);
-        skeletonAnim.AnimationState.AddAnimation(USUAL_T, "takeDamage", false, 3);
+        //Debug.Log("Doing TakeDamageIdle");
+        skeletonAnim.AnimationState.AddAnimation(USUAL_TRACK, "takeDamage", false, 0);
+        skeletonAnim.AnimationState.AddAnimation(USUAL_TRACK, "takeDamage", false, 3);
     }
 
     private void StandIdle()
     {
-        Debug.Log("Doing StandIdle");
-        skeletonAnim.AnimationState.AddAnimation(USUAL_T, "scratchMustache", false, 0);
-        skeletonAnim.AnimationState.AddAnimation(USUAL_T, "scratchMustache", false, 4);
+        //Debug.Log("Doing StandIdle");
+        skeletonAnim.AnimationState.AddAnimation(USUAL_TRACK, "scratchMustache", false, 0);
+        skeletonAnim.AnimationState.AddAnimation(USUAL_TRACK, "scratchMustache", false, 4);
     }
 
     private void Attack()
     {
-        Debug.Log("Doing Attack");
-        skeletonAnim.AnimationState.AddAnimation(USUAL_T, "wideStandGetGuns", false, 0);
-        skeletonAnim.AnimationState.AddAnimation(USUAL_T, "fire", false, 0);
-        skeletonAnim.AnimationState.AddEmptyAnimation(USUAL_T, 0, 0);
+        //Debug.Log("Doing Attack");
+        skeletonAnim.AnimationState.AddAnimation(USUAL_TRACK, "wideStandGetGuns", false, 0);
+        skeletonAnim.AnimationState.AddAnimation(USUAL_TRACK, "fire", false, 0);
+        skeletonAnim.AnimationState.AddEmptyAnimation(USUAL_TRACK, 0, 0);
         // TODO Move weapons back so they do not float
     }
 
@@ -144,7 +144,7 @@ public class PeaTMAnimator : MonoBehaviour
         skeletonAnim.AnimationState.ClearTrack(2);
         skeletonAnim.AnimationState.ClearTrack(3);
         skeletonAnim.AnimationState.SetAnimation(4, "starRingOff", true);
-        skeletonAnim.AnimationState.ClearTrack(USUAL_T);
+        skeletonAnim.AnimationState.ClearTrack(USUAL_TRACK);
     }
 
     private void StartTeamManagementIdle()
@@ -169,7 +169,7 @@ public class PeaTMAnimator : MonoBehaviour
         currentAnimTime += Time.deltaTime;
         if (currentAnimTime > AnimSwitchTime)
         {
-            Debug.Log("Changing anim");
+            //Debug.Log("Changing anim");
             currentAnimTime -= AnimSwitchTime;
             FinishCurrentAnim();
             AddNextRandomAnim();
