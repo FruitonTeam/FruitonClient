@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml.Serialization;
+using Networking;
 using UnityEngine;
 using KFruiton = fruiton.kernel.Fruiton;
 
@@ -18,8 +19,8 @@ public class GameManager : MonoBehaviour {
 
     #region Fields
 
-    private string userName = null;
-    private string userPassword = null;
+    private string userName;
+    private string userPassword;
     private bool? stayLoggedIn;
     /// <summary> The list of the Fruiton Teams of the current user. </summary>
     private FruitonTeamList fruitonTeamList;
@@ -122,8 +123,6 @@ public class GameManager : MonoBehaviour {
 
     public IEnumerable<KFruiton> AllFruitons { get; private set; }
 
-    public bool IsInitialized { get; set; }
-
     public FruitonTeamList FruitonTeamList
     {
         get
@@ -176,14 +175,16 @@ public class GameManager : MonoBehaviour {
 
     public void Initialize()
     {
-        Debug.Log("Initializing Game Manager");
         Serializer.DeserializeFruitonTeams();
         FruitonDatabase = new FruitonDatabase(Resources.Load<TextAsset>("FruitonDb").text);
-        //fruitonDatabase = new FruitonDatabase(Application.dataPath + "/Scripts/Kernel/Generated/resources/FruitonDb.json");
         AllFruitons = ClientFruitonFactory.CreateAllKernelFruitons();
         AvailableFruitons = Serializer.LoadAvailableFruitons();
-        
-        IsInitialized = true;
+
+        PlayerHelper.GetAllFruitonTeams(ints =>
+        {
+            fruitonTeamList = ints;
+        },
+        Debug.Log);
     }
 
     #endregion
@@ -215,8 +216,6 @@ public class GameManager : MonoBehaviour {
         {
             DontDestroyOnLoad(gameObject);
             Instance = this;
-
-            Initialize();
         }
         else if (Instance != this)
         {

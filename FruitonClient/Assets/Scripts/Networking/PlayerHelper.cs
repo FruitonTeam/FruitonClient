@@ -2,6 +2,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using Cz.Cuni.Mff.Fruiton.Dto;
 using Newtonsoft.Json;
 
 namespace Networking
@@ -35,11 +37,11 @@ namespace Networking
             );
         }
 
-        public static void GetAvailableFruitons(string player, Action<List<int>> success, Action<string> error)
+        public static void GetAvailableFruitons(Action<List<int>> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
                 ConnectionHandler.Instance.Get(
-                    "player/availableFruitons?login=" + player,
+                    "player/availableFruitons?login=" + GameManager.Instance.UserName,
                     jsonString =>
                     {
                         var fruitons = JsonConvert.DeserializeObject<List<int>>(jsonString);
@@ -47,6 +49,36 @@ namespace Networking
                         success(fruitons);
                     },
                     error
+                )
+            );
+        }
+
+        public static void GetAllFruitonTeams(Action<FruitonTeamList> success, Action<string> error)
+        {
+            ConnectionHandler.Instance.StartCoroutine(
+                ConnectionHandler.Instance.Get(
+                    "getAllFruitonTeams?login=" + GameManager.Instance.UserName,
+                    protobufString =>
+                    {
+                        byte[] protoMessage = Encoding.ASCII.GetBytes(protobufString);
+                        FruitonTeamList fruitomTeamList = FruitonTeamList.Parser.ParseFrom(protoMessage);
+                        success(fruitomTeamList);
+                    },
+                    error
+                    )
+            );
+        }
+
+        public static void UploadFruitonTeam(FruitonTeam fruitonTeam, Action<string> success, Action<string> error)
+        {
+            byte[] body = Serializer.GetBinaryData(fruitonTeam);
+            ConnectionHandler.Instance.StartCoroutine(
+                ConnectionHandler.Instance.Post(
+                    "addFruitonTeam?login=" + GameManager.Instance.UserName,
+                    success,
+                    error,
+                    body,
+                    ConnectionHandler.Instance.GetRequestHeaders(true)
                 )
             );
         }

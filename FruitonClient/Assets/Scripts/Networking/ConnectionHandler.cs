@@ -81,7 +81,7 @@ namespace Networking
             };
 
             var headers = GetRequestHeaders(useProtobuf);
-            var binaryData = getBinaryData(loginData);
+            var binaryData = GetBinaryData(loginData);
 
             var www = new WWW(URL_API + "login", binaryData, headers);
             StartCoroutine(PostLogin(www, login, password));
@@ -93,7 +93,7 @@ namespace Networking
             {
                 return;
             }
-            webSocket.Send(getBinaryData(message));
+            webSocket.Send(GetBinaryData(message));
         }
 
         private void ProcessLoginResult(string login, string password, string token)
@@ -112,6 +112,7 @@ namespace Networking
                 gameManager.UserName = login;
                 gameManager.UserPassword = password;
                 panelManager.SwitchPanels(MenuPanel.Main);
+                gameManager.Initialize();
             }
             else
             {
@@ -121,6 +122,7 @@ namespace Networking
                 {
                     // Offline check successful
                     panelManager.SwitchPanels(MenuPanel.LoginOffline);
+                    gameManager.Initialize();
                 }
                 else
                 {
@@ -143,7 +145,7 @@ namespace Networking
             }
         }
 
-        private Dictionary<string, string> GetRequestHeaders(bool useProtobuf)
+        public Dictionary<string, string> GetRequestHeaders(bool useProtobuf)
         {
             Dictionary<string, string> headers = new Dictionary<string, string>();
             if (useProtobuf)
@@ -299,6 +301,21 @@ namespace Networking
             }
         }
 
+        public IEnumerator Post(string query, Action<string> success, Action<string> error, byte[] body = null, Dictionary<string, string> headers = null)
+        {
+            var www = new WWW(URL_API + query, body, headers);
+            yield return www;
+
+            if (string.IsNullOrEmpty(www.error))
+            {
+                success.Invoke(www.text);
+            }
+            else
+            {
+                error.Invoke(www.error);
+            }
+        }
+
         private void Awake()
         {
             if (Instance == null)
@@ -346,7 +363,7 @@ namespace Networking
             // TODO: implement
         }
 
-        private byte[] getBinaryData(IMessage protobuf)
+        private byte[] GetBinaryData(IMessage protobuf)
         {
             var binaryData = new byte[protobuf.CalculateSize()];
             var stream = new CodedOutputStream(binaryData);
