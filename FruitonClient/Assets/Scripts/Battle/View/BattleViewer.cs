@@ -38,8 +38,6 @@ public class BattleViewer : MonoBehaviour
         gridLayoutManager = GridLayoutManager.Instance;
         Grid = new GameObject[gridLayoutManager.WidthCount, gridLayoutManager.HeighCount];
 
-        SetPositionsOfFruitonTeam(GameManager.Instance.CurrentFruitonTeam);
-
         var online = Scenes.GetParam(Scenes.ONLINE) == bool.TrueString;
         Debug.Log("playing online = " + online);
         if (online)
@@ -117,47 +115,7 @@ public class BattleViewer : MonoBehaviour
         }
     }
 
-    public void SetPositionsOfFruitonTeam(FruitonTeam fruitonTeam)
-    {
-        int i, j;
-        var majorRow = 0;
-        var minorRow = 1;
-        var majorCounter = 2;
-        var minorCounter = 2;
-        var fruitonDatabase = GameManager.Instance.FruitonDatabase;
-        foreach (var id in fruitonTeam.FruitonIDs)
-        {
-            var kernelFruiton = FruitonFactory.makeFruiton(id, fruitonDatabase);
-            switch ((FruitonType) kernelFruiton.type)
-            {
-                case FruitonType.KING:
-                {
-                    i = gridLayoutManager.WidthCount / 2;
-                    j = majorRow;
-                }
-                    break;
-                case FruitonType.MAJOR:
-                {
-                    i = gridLayoutManager.WidthCount / 2 - majorCounter;
-                    j = majorRow;
-                    if (--majorCounter == 0) --majorCounter;
-                }
-                    break;
-                case FruitonType.MINOR:
-                {
-                    i = gridLayoutManager.WidthCount / 2 - minorCounter;
-                    j = minorRow;
-                    --minorCounter;
-                }
-                    break;
-                default:
-                {
-                    throw new UndefinedFruitonTypeException();
-                }
-            }
-            GameManager.Instance.CurrentFruitonTeam.Positions.Add(new Position {X = i, Y = j});
-        }
-    }
+
 
 
     private void UpdateTimer()

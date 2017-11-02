@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using KFruiton = fruiton.kernel.Fruiton;
 using System;
+using fruiton.kernel;
 using fruiton.kernel.fruitonTeam;
 using Google.Protobuf.Collections;
 using haxe.root;
@@ -116,13 +117,13 @@ public class FruitonTeamsManager : MonoBehaviour
 
     private void InitializeAllFruitons()
     {
-        PlayerHelper.GetAvailableFruitons(GameManager.Instance.UserName, UpdateAvailableFruitons, Debug.Log);
+        PlayerHelper.GetAvailableFruitons(UpdateAvailableFruitons, Debug.Log);
         List<GameObject> fruitons = new List<GameObject>();
         GameManager gameManager = GameManager.Instance;
-        while (!gameManager.IsInitialized)
-        {
-            Debug.Log("Waiting for game manager to initialize");
-        }
+        //while (!gameManager.IsInitialized)
+        //{
+        //    Debug.Log("Waiting for game manager to initialize");
+        //}
         IEnumerable<KFruiton> allFruitons = gameManager.AllFruitons;
         Vector3 position = Fruitons.transform.position;
         foreach (KFruiton fruiton in allFruitons)
@@ -337,6 +338,11 @@ public class FruitonTeamsManager : MonoBehaviour
                 }
                 currentFruitonTeamTranslations[kernelFruiton.type - 1] -= new Vector3(50, 0, 0);
             }
+            if (currentFruitonTeam != null)
+            {
+                SetPositionsOfFruitonTeam(currentFruitonTeam);
+                PlayerHelper.UploadFruitonTeam(currentFruitonTeam, Debug.Log, Debug.Log);
+            }
             Serializer.SerializeFruitonTeams();
             
         }
@@ -351,7 +357,7 @@ public class FruitonTeamsManager : MonoBehaviour
         ValidationResult validationResult = FruitonTeamValidator.validateFruitonTeam(new Array<int>(fruitonIDsCopyArray), GameManager.Instance.FruitonDatabase);
         if (validationResult.valid)
         {
-            GameObject fruitonTeamMember = Instantiate(pattern) as GameObject;
+            GameObject fruitonTeamMember = Instantiate(pattern);
             fruitonTeamMember.transform.parent = CurrentFruitonTeamObject.transform;
             fruitonDictionary.Add(fruitonTeamMember, fruitonDictionary[pattern]);
             currentFruitonTeam.FruitonIDs.Add(fruitonDictionary[fruitonTeamMember]);
@@ -421,8 +427,45 @@ public class FruitonTeamsManager : MonoBehaviour
         }
     }
 
-    public void FindGame()
+    public void SetPositionsOfFruitonTeam(FruitonTeam fruitonTeam)
     {
-        
+        int i, j;
+        var majorRow = 0;
+        var minorRow = 1;
+        var majorCounter = 2;
+        var minorCounter = 2;
+        var fruitonDatabase = GameManager.Instance.FruitonDatabase;
+        foreach (var id in fruitonTeam.FruitonIDs)
+        {
+            var kernelFruiton = FruitonFactory.makeFruiton(id, fruitonDatabase);
+            switch ((FruitonType)kernelFruiton.type)
+            {
+                case FruitonType.KING:
+                {
+                    i = GameState.WIDTH / 2;
+                    j = majorRow;
+                }
+                    break;
+                case FruitonType.MAJOR:
+                {
+                    i = GameState.WIDTH - majorCounter;
+                    j = majorRow;
+                    if (--majorCounter == 0) --majorCounter;
+                }
+                    break;
+                case FruitonType.MINOR:
+                {
+                    i = GameState.WIDTH / 2 - minorCounter;
+                    j = minorRow;
+                    --minorCounter;
+                }
+                    break;
+                default:
+                {
+                    throw new UndefinedFruitonTypeException();
+                }
+            }
+            currentFruitonTeam.Positions.Add(new Position { X = i, Y = j });
+        }
     }
 }
