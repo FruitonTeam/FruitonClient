@@ -1,5 +1,7 @@
 @echo off
 
+call clean.bat
+
 echo Compiling Kernel...
 
 IF NOT DEFINED FRUITON_KERNEL (
@@ -14,11 +16,12 @@ IF NOT DEFINED FRUITON_KERNEL (
 SET client_dir="%CD%"
 SET kernel_dest=%client_dir%\FruitonClient\Assets\Scripts\Kernel\Generated
 SET unity_resources_folder=%client_dir%\FruitonClient\Assets\Resources
+SET kernel_resources_folder=%unity_resources_folder%\Kernel
 
 CD "%FRUITON_KERNEL%"
 haxe --macro include('fruiton',true,['fruiton.fruitDb.models','fruiton.macro']) -D no-compilation -D no-root -cs %kernel_dest% -cp %FRUITON_KERNEL% fruiton.kernel.Kernel
 
-xcopy /i /y /s "%FRUITON_KERNEL%"\resources %unity_resources_folder%
+xcopy /i /y /s "%FRUITON_KERNEL%"\resources %kernel_resources_folder%
 
 CD %client_dir%
 IF NOT DEFINED FRUITON_PROTOBUFS (
