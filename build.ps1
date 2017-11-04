@@ -1,3 +1,5 @@
+& .\clean.bat
+
 $properties = Get-Content "pom.properties" | Out-String | ConvertFrom-StringData;
 
 # Protobufs
