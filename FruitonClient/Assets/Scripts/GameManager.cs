@@ -1,22 +1,19 @@
 ﻿using Cz.Cuni.Mff.Fruiton.Dto;
 using fruiton.fruitDb;
-using fruiton.fruitDb.factories;
-using fruiton.kernel;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Xml.Serialization;
 using Networking;
 using UnityEngine;
+using Util;
 using KFruiton = fruiton.kernel.Fruiton;
 
 public enum FractionNames { None, GuacamoleGuerrillas, CranberryCrusade, TzatzikiTsardom }
 
-public class GameManager : MonoBehaviour {
+public class GameManager : MonoBehaviour 
+{    
     public static GameManager Instance { get; private set; }
 
+    private static readonly string FRUITON_DB_FILE = "FruitonDb.json";
+    
     #region Fields
 
     private string userName;
@@ -100,7 +97,7 @@ public class GameManager : MonoBehaviour {
     {
         get
         {
-            return (PlayerPrefs.GetInt("ValidUser", 0) == 1)? true: false;
+            return PlayerPrefs.GetInt("ValidUser", 0) == 1;
         }
         set
         {
@@ -176,7 +173,8 @@ public class GameManager : MonoBehaviour {
     public void Initialize()
     {
         Serializer.DeserializeFruitonTeams();
-        FruitonDatabase = new FruitonDatabase(Resources.Load<TextAsset>("FruitonDb").text);
+                
+        FruitonDatabase = new FruitonDatabase(KernelUtils.LoadTextResource(FRUITON_DB_FILE));
         AllFruitons = ClientFruitonFactory.CreateAllKernelFruitons();
         AvailableFruitons = Serializer.LoadAvailableFruitons();
 
@@ -185,27 +183,6 @@ public class GameManager : MonoBehaviour {
             fruitonTeamList = ints;
         },
         Debug.Log);
-    }
-
-    #endregion
-
-    #region Private
-
-    private void SerializeBinary(object toBeSerialized, string filename)
-    {
-        FileStream stream = File.Create(filename);
-        var formatter = new BinaryFormatter();
-        formatter.Serialize(stream, toBeSerialized);
-        stream.Close();
-    }
-
-    private  T DeserializeBinary<T>(string filename)
-    {
-        FileStream stream = File.OpenRead(filename);
-        var formatter = new BinaryFormatter();
-        T deserialized = (T)formatter.Deserialize(stream);
-        stream.Close();
-        return deserialized;
     }
 
     #endregion
