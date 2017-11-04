@@ -6,4 +6,6 @@ FruitonClient/Assets/Resources/FruitonDb.schema.json.meta
 FruitonClient/Assets/Resources/FruitonDb.json.meta
 FruitonClient/Assets/Libraries/kernel.dll
 FruitonClient/Assets/Libraries/protobufs.dll
+FruitonClient/Assets/Libraries/kernel.dll.meta
+FruitonClient/Assets/Libraries/protobufs.dll.meta
 
