@@ -1,5 +1,6 @@
 protoc.exe
 .idea
+.vs
 FruitonClient/Assets/Libraries/kernel.dll
 FruitonClient/Assets/Libraries/protobufs.dll
 FruitonClient/Assets/Libraries/kernel.dll.meta

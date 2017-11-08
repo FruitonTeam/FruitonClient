@@ -88,7 +88,7 @@ public class FruitonTeamsManager : MonoBehaviour
             for (int j = 0; j < typesCounts[i]; j++)
             {
                 GameObject highlight = Instantiate(Resources.Load("Prefabs/Fridge/HighlightType" + type, typeof(GameObject))) as GameObject;
-                highlight.transform.position = defaultCurrentFruitonTeamPosition + highlightTranslation;
+                highlight.transform.position = defaultCurrentFruitonTeamPosition + highlightTranslation + new Vector3(0, 0, 20);
                 highlightTranslation.x += 50;
                 highlight.transform.parent = CurrentFruitonTeamWrapper.transform;
                 highlight.name = "currentFruitonTeamHighlight";
@@ -146,7 +146,7 @@ public class FruitonTeamsManager : MonoBehaviour
     {
         var result = Instantiate(Resources.Load("Models/TeamManagement/" + kernelFruiton.model, typeof(GameObject))) as GameObject;
         result.name = kernelFruiton.model;
-        result.transform.position = position;
+        result.transform.position = new Vector3(position.x, position.y - 20, position.z);
         AddCollider(result);
         var highlight = Instantiate(Resources.Load("Prefabs/Fridge/HighlightType" + kernelFruiton.type, typeof(GameObject))) as GameObject;
         highlight.transform.position = new Vector3(position.x, position.y - 1, 120);
@@ -173,19 +173,6 @@ public class FruitonTeamsManager : MonoBehaviour
 
     private void Update()
     {
-        if (teamManagementState)
-        {
-            foreach (GameObject fruiton in allClientFruitons)
-            {
-                fruiton.transform.Rotate(new Vector3(0, 50 * Time.deltaTime, 0));
-            }
-        }
-
-        foreach (Transform child in CurrentFruitonTeamObject.transform)
-        {
-            child.Rotate(new Vector3(0, 50 * Time.deltaTime, 0));
-        }
-
         if (Input.GetMouseButtonUp(0))
         {
             LeftButtonUpLogic();
@@ -308,7 +295,7 @@ public class FruitonTeamsManager : MonoBehaviour
                     fruitonDictionary.Add(fruitonTeamMember, kernelFruiton.id);
                     AddCollider(fruitonTeamMember);
                     fruitonTeamMember.name = "CurrentFruitonTeam_" + fruitonID;
-                    fruitonTeamMember.transform.position = defaultCurrentFruitonTeamPosition + currentFruitonTeamTranslations[kernelFruiton.type-1];
+                    fruitonTeamMember.transform.position = defaultCurrentFruitonTeamPosition + currentFruitonTeamTranslations[kernelFruiton.type-1] - new Vector3(0, 20);
                     currentFruitonTeamTranslations[kernelFruiton.type - 1].x += 50;
                     fruitonTeamMember.transform.parent = CurrentFruitonTeamObject.transform;
                 }

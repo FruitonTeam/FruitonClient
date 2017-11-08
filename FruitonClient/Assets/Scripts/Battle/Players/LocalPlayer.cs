@@ -16,6 +16,8 @@ public class LocalPlayer : ClientPlayerBase
     {
         this.battleViewer = battleViewer;
         gridLayoutManager = GridLayoutManager.Instance;
+        availableAttackActions = new List<AttackAction>();
+        availableMoveActions = new List<MoveAction>();
     }
 
     public void LeftButtonUpLogic(RaycastHit hit)
