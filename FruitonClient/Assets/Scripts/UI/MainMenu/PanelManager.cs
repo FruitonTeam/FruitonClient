@@ -8,6 +8,8 @@ public class PanelManager : MonoBehaviour {
 
     public Dictionary<MenuPanel, MainMenuPanel> Panels = new Dictionary<MenuPanel, MainMenuPanel>();
     public MenuPanel CurrentPanel = MenuPanel.Welcome;
+    public GameObject LoadingIndicator;
+    public MessagePanel MessagePanel;
 
     // Use this for initialization
     void Awake() {
@@ -24,27 +26,33 @@ public class PanelManager : MonoBehaviour {
     }
 
     //fill Panels with panels in the scene
-    private void FillPanelDictionary() {
-        MainMenuPanel[] panelComponents = GetComponentsInChildren<MainMenuPanel>();
+    private void FillPanelDictionary()
+    {
+        bool mobileView = false;
+        #if UNITY_ANDROID //|| UNITY_EDITOR
+            //mobileView = true;
+        #endif
+        MainMenuPanel[] panelComponents = GetComponentsInChildren<MainMenuPanel>(true);
 
         foreach (MainMenuPanel panel in panelComponents)
         {
-            if (!Panels.ContainsKey(panel.Name))
+            panel.gameObject.SetActive(false);
+            if (!Panels.ContainsKey(panel.Name) || (mobileView && panel.Mobile))
             {
-                Panels.Add(panel.Name, panel);
+                Panels[panel.Name] = panel;
                 //Debug.Log(panel.Name);
-                panel.gameObject.SetActive(false);
             }
             else {
                 Debug.Log("Duplicate of panel " + panel.Name);
             }
         }
 
-        Panels[CurrentPanel].SetPanelActive(true);
+        SwitchPanels(CurrentPanel);
     }
 
     public void SwitchPanels(MenuPanel panel)
     {
+        HideLoadingIndicator();
         if (Panels.ContainsKey(panel))
         {
             // is it possible to close the current panel? e.x. valid login data
@@ -61,4 +69,23 @@ public class PanelManager : MonoBehaviour {
         }
     }
 
+    public void ShowLoadingIndicator()
+    {
+        LoadingIndicator.SetActive(true);
+    }
+
+    public void HideLoadingIndicator()
+    {
+        LoadingIndicator.SetActive(false);
+    }
+
+    public void ShowInfoMessage(string text)
+    {
+        MessagePanel.ShowInfoMessage(text);
+    }
+
+    public void ShowErrorMessage(string text)
+    {
+        MessagePanel.ShowErrorMessage(text);
+    }
 }

@@ -18,24 +18,24 @@ namespace Networking
     {
         private static readonly string URL_CHAT = "ws://prak.mff.cuni.cz:8050/fruiton/socket";
         private static readonly string URL_API = "http://prak.mff.cuni.cz:8050/fruiton/api/";
-        
-        private static readonly string GOOGLE_ID = 
+
+        private static readonly string GOOGLE_ID =
             "827606142557-f63cu712orq80s6do9n6aa8s3eu3h7ag.apps.googleusercontent.com";
         private static readonly string GOOGLE_CLIENT_SECRET = "NyYlQJICuxYX3AnzChou2X8i";
 
         private static readonly int GOOGLE_REDIRECT_PORT = 9999;
-        
+
         private static readonly string GOOGLE_REDIRECT_URI = "http://127.0.0.1:" + GOOGLE_REDIRECT_PORT;
         private static readonly string GOOGLE_TOKEN_URI = "https://www.googleapis.com/oauth2/v4/token";
-        
+
         /// <summary>
         /// Dummy password for google users.
         /// </summary>
         private static readonly string GOOGLE_PASSWORD = "google_pwd";
-        
+
         private static string googleLoginSuccessHtml;
         private static string googleLoginErrorHtml;
-        
+
         private WebSocket webSocket;
 
         private Dictionary<WrapperMessage.MessageOneofCase, List<IOnMessageListener>> listeners =
@@ -69,7 +69,7 @@ namespace Networking
             var headers = GetRequestHeaders(useProtobuf);
 
             var www = new WWW(URL_API + "register", binaryData, headers);
-            StartCoroutine(PostRegister(www));
+            StartCoroutine(PostRegister(www, login));
         }
 
         public void LoginBasic(string login, string password, bool useProtobuf)
@@ -113,6 +113,7 @@ namespace Networking
                 gameManager.UserPassword = password;
                 panelManager.SwitchPanels(MenuPanel.Main);
                 gameManager.Initialize();
+                panelManager.ShowInfoMessage("Login successful!");
             }
             else
             {
@@ -126,22 +127,27 @@ namespace Networking
                 }
                 else
                 {
-                    // TODO: error message
                     panelManager.SwitchPanels(MenuPanel.Login);
+                    panelManager.ShowErrorMessage(resultData.errorMessage);
                 }
             }
         }
 
-        private void ProcessRegistrationResult(bool success)
+        private void ProcessRegistrationResult(RegisterResultData resultData)
         {
             PanelManager panelManager = PanelManager.Instance;
-            if (success)
+            if (resultData.success)
             {
                 panelManager.SwitchPanels(MenuPanel.Login);
+                panelManager.Panels[MenuPanel.Login].GetComponent<Form>().SetValue("name", resultData.login);
+                panelManager.ShowInfoMessage("User " + resultData.login + " successfully registered!");
             }
             else
             {
+                if (String.IsNullOrEmpty(resultData.errorMessage))
+                    resultData.errorMessage = "Unkown error. Please try again later.";
                 panelManager.SwitchPanels(MenuPanel.Register);
+                panelManager.ShowErrorMessage(resultData.errorMessage);
             }
         }
 
@@ -162,12 +168,12 @@ namespace Networking
         public void LoginGoogle()
         {
             var listener = new HttpListener();
-            
+
             listener.Prefixes.Add("http://*:" + GOOGLE_REDIRECT_PORT + "/");
             listener.Start();
-               
+
             Application.OpenURL(
-                "https://accounts.google.com/o/oauth2/v2/auth" 
+                "https://accounts.google.com/o/oauth2/v2/auth"
                 + "?client_id=" + GOOGLE_ID
                 + "&redirect_uri=" + GOOGLE_REDIRECT_URI
                 + "&response_type=code"
@@ -190,7 +196,7 @@ namespace Networking
                 if (IsLogged()) // user logged in by ordinary means sooner
                 {
                     responseString = string.Format(googleLoginErrorHtml, "You are already logged in.");
-                } 
+                }
                 else if (!string.IsNullOrEmpty(code))
                 {
                     responseString = googleLoginSuccessHtml;
@@ -231,7 +237,7 @@ namespace Networking
             form.AddField("client_secret", GOOGLE_CLIENT_SECRET);
             form.AddField("redirect_uri", GOOGLE_REDIRECT_URI);
             form.AddField("grant_type", "authorization_code");
-            
+
             var www = new WWW(GOOGLE_TOKEN_URI, form.data, headers);
             yield return www;
             if (!string.IsNullOrEmpty(www.text))
@@ -245,7 +251,7 @@ namespace Networking
                         string token = googleLoginResult["token"].Value<string>();
                         string login = googleLoginResult["login"].Value<string>();
                         ProcessLoginResult(login, GOOGLE_PASSWORD, token);
-                    }, 
+                    },
                     Debug.LogError));
             }
             else
@@ -254,19 +260,19 @@ namespace Networking
             }
         }
 
-        private IEnumerator PostRegister(WWW www)
+        private IEnumerator PostRegister(WWW www, string login)
         {
             yield return www;
 
-            if (string.IsNullOrEmpty(www.error)) // success
+            if (string.IsNullOrEmpty(www.error))
             {
-                Debug.Log("[Registration] Post request succeeded.");
-                ProcessRegistrationResult(true);
+                Debug.Log("[Registration] Post request succeeded."); // text of success
+                SendMessage(PROCESS_REGISTRATION_RESULT, new RegisterResultData(true, login));
             }
-            else // error
+            else
             {
-                Debug.Log("[Registration] Post request failed.");
-                ProcessRegistrationResult(false);
+                Debug.Log("[Registration] Post request failed."); // error
+                SendMessage(PROCESS_REGISTRATION_RESULT, new RegisterResultData(false, login, www.text));
             }
         }
 
@@ -274,15 +280,17 @@ namespace Networking
         {
             yield return www;
 
-            if (string.IsNullOrEmpty(www.error)) // success
+            if (string.IsNullOrEmpty(www.error))
             {
-                Debug.Log("[Login] Post request succeeded. Token: " + www.text);
-                ProcessLoginResult(login, password, www.text);
+                Debug.Log("[Login] Post request succeeded."); // text of success
+                Debug.Log("WWW text: " + www.text);
+                loginToken = www.text;
+                SendMessage("ProcessLoginResult", new LoginResultData(login, password, true));
             }
-            else // error
+            else
             {
-                Debug.Log("[Login] Post request failed. Message: " + www.error);
-                ProcessLoginResult(login, password, null);
+                Debug.Log("[Login] Post request failed."); // text of fail
+                SendMessage("ProcessLoginResult", new LoginResultData(login, password, false, www.text));
             }
         }
 
@@ -332,7 +340,7 @@ namespace Networking
         private void Start()
         {
             RegisterListener(WrapperMessage.MessageOneofCase.ErrorMessage, this);
-            
+
             googleLoginSuccessHtml = Resources.Load<TextAsset>("Html/google_login_success").text;
             googleLoginErrorHtml = Resources.Load<TextAsset>("Html/google_login_error").text;
         }
@@ -346,7 +354,7 @@ namespace Networking
         {
             return webSocket.IsAlive();
         }
-        
+
         public void Disconnect()
         {
             webSocket.Close();

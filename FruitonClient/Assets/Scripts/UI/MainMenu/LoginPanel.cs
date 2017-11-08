@@ -12,12 +12,22 @@ public class LoginPanel : MainMenuPanel
 
     private Selectable SelectedInputField;
 
-    public enum LoginMessage { ValidUser, NotValidUser, NoConnection}
+    public enum LoginMessage
+    {
+        ValidUser,
+        NotValidUser,
+        NoConnection
+    }
 
     private void Start()
     {
-        SelectedInputField = LoginName;
-        SelectedInputField.Select();
+        gameObject.AddComponent<Form>().SetInputs(
+            LoginButton,
+            new FormControl("name", LoginName, Validator.Required("Please enter name")),
+            new FormControl("password", LoginPassword, Validator.Required("Please enter password")),
+            new FormControl(LoginStayLoggedIn),
+            new FormControl(LoginButton)
+        );
     }
 
     private void Update()
@@ -35,6 +45,7 @@ public class LoginPanel : MainMenuPanel
             }
             SelectedInputField.Select();
         }
+        return;
     }
 
     // checks whether the LoginData combination is valid
@@ -71,9 +82,9 @@ public class LoginPanel : MainMenuPanel
         gameManager.StayLoggedIn = LoginStayLoggedIn.isOn;
         string name = LoginName.text;
         string password = LoginPassword.text;
-
+        Handheld.StartActivityIndicator();
         connectionHandler.LoginBasic(name, password, true);
-
+        panelManager.ShowLoadingIndicator();
     }
 
     // called after pressing Registration Button
