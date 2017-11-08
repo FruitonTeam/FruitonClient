@@ -12,7 +12,7 @@ public enum CharaterSide
 }
 
 
-public class PeaAnimator : MonoBehaviour {
+public class PeaBattleAnimator : MonoBehaviour {
     public CharaterSide characterSide;
 
     private SkeletonAnimation skeletonAnim;

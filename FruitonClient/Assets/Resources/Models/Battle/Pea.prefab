@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 33084090691719418}
   - component: {fileID: 23265990538832920}
   - component: {fileID: 114974955582793840}
-  - component: {fileID: 114629057686594320}
+  - component: {fileID: 114856903231330212}
   m_Layer: 0
   m_Name: Pea
   m_TagString: Untagged
@@ -92,7 +92,7 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1673247990904636}
   m_Mesh: {fileID: 0}
---- !u!114 &114629057686594320
+--- !u!114 &114856903231330212
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}

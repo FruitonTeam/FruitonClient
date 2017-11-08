@@ -119,7 +119,7 @@ MonoBehaviour:
   calculateTangents: 0
   logErrors: 0
   disableRenderingOnOverride: 1
-  _animationName: walk
+  _animationName: 
   loop: 1
   timeScale: 1
 --- !u!114 &114983336612971434

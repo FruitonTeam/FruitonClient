@@ -91,7 +91,7 @@ public class PeaTMAnimator : MonoBehaviour
         //Debug.Log("Doing Attack");
         skeletonAnim.AnimationState.AddAnimation(USUAL_TRACK, "wideStandGetGuns", false, 0);
         skeletonAnim.AnimationState.AddAnimation(USUAL_TRACK, "fire", false, 0);
-        skeletonAnim.AnimationState.AddEmptyAnimation(USUAL_TRACK, 0, 0);
+        //skeletonAnim.AnimationState.AddEmptyAnimation(USUAL_TRACK, 0, 0);
         // TODO Move weapons back so they do not float
     }
 

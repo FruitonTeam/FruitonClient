@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Cz.Cuni.Mff.Fruiton.Dto;
 using fruiton.fruitDb.factories;
@@ -6,6 +7,7 @@ using fruiton.kernel;
 using fruiton.kernel.actions;
 using fruiton.kernel.events;
 using Google.Protobuf.Collections;
+using Spine.Unity;
 using UnityEngine;
 using UnityEngine.UI;
 using KEvent = fruiton.kernel.events.Event;
@@ -19,14 +21,13 @@ public class BattleViewer : MonoBehaviour
     private static readonly string END_TURN = "End turn";
 
     private Battle battle;
-
-    public Button EndTurnButton;
-
-    private bool gameStarted;
+    private bool isGameStarted;
+    private bool isInputEnabled = true;
 
     /// <summary> For handling grid tiles. </summary>
     private GridLayoutManager gridLayoutManager;
 
+    public Button EndTurnButton;
     public GameObject PanelLoadingGame;
     public Text TimeCounter;
 
@@ -50,16 +51,16 @@ public class BattleViewer : MonoBehaviour
         else
         {
             battle = new OfflineBattle(this);
-            gameStarted = true;
+            isGameStarted = true;
         }
     }
 
     private void Update()
     {
-        if (!gameStarted)
+        if (!isGameStarted)
             return;
         UpdateTimer();
-        if (Input.GetMouseButtonUp(0))
+        if (Input.GetMouseButtonUp(0) && isInputEnabled)
             LeftButtonUpLogic();
     }
 
@@ -90,7 +91,7 @@ public class BattleViewer : MonoBehaviour
             Camera.main.transform.eulerAngles = new Vector3(oldEulerAngles.x, oldEulerAngles.y + 180, oldEulerAngles.z);
         }
         PanelLoadingGame.SetActive(false);
-        gameStarted = true;
+        isGameStarted = true;
     }
 
     public void InitializeTeam(IEnumerable<GameObject> currentTeam, Player player,
@@ -159,7 +160,6 @@ public class BattleViewer : MonoBehaviour
         }
     }
 
-
     private void UpdateTimer()
     {
         var timeLeft = battle.ComputeRemainingTime();
@@ -204,14 +204,35 @@ public class BattleViewer : MonoBehaviour
 
     private void ProcessMoveEvent(MoveEvent moveEvent)
     {
-        var from = moveEvent.from;
-        var to = moveEvent.to;
-        var movedObject = Grid[from.x, from.y];
+        isInputEnabled = false;
+        KVector2 from = moveEvent.from;
+        KVector2 to = moveEvent.to;
+        GameObject movedObject = Grid[from.x, from.y];
         Grid[to.x, to.y] = movedObject;
         Grid[from.x, from.y] = null;
-        var toPosition = gridLayoutManager.GetCellPosition(to.x, to.y);
-        movedObject.transform.position = toPosition + new Vector3(0, movedObject.transform.lossyScale.y, 0);
+        Vector3 toPosition = gridLayoutManager.GetCellPosition(to.x, to.y);
+        StartCoroutine(MoveCoroutine(movedObject.transform.position, toPosition, movedObject));
         gridLayoutManager.ResetHighlights();
+    }
+
+    private IEnumerator MoveCoroutine(Vector3 from, Vector3 to, GameObject movedObject)
+    {
+        var anim = movedObject.GetComponent<SkeletonAnimation>();
+        float time = 1.0f;
+        float currentTime = 0.0f;
+        Vector3 direction = to - from;
+        if (anim != null)
+            anim.AnimationState.SetAnimation(5, "walk", true);
+        while (Vector3.Distance(movedObject.transform.position, to) > 0.05)
+        {
+            currentTime += Time.deltaTime;
+            movedObject.transform.position = from + (direction * currentTime);
+            yield return null;
+        }
+        movedObject.transform.position = to; // Always make sure we made it exactly there
+        if (anim != null)
+            anim.AnimationState.ClearTrack(5);
+        isInputEnabled = true;
     }
 
     private void VisualizeAction(KAction action, KFruiton kernelFruiton)
