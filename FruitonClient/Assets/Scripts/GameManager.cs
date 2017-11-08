@@ -1,25 +1,23 @@
 ﻿using Cz.Cuni.Mff.Fruiton.Dto;
 using fruiton.fruitDb;
-using fruiton.fruitDb.factories;
-using fruiton.kernel;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Xml.Serialization;
+using Networking;
 using UnityEngine;
+using Util;
 using KFruiton = fruiton.kernel.Fruiton;
 
 public enum FractionNames { None, GuacamoleGuerrillas, CranberryCrusade, TzatzikiTsardom }
 
-public class GameManager : MonoBehaviour {
+public class GameManager : MonoBehaviour 
+{    
     public static GameManager Instance { get; private set; }
 
+    private static readonly string FRUITON_DB_FILE = "FruitonDb.json";
+    
     #region Fields
 
-    private string userName = null;
-    private string userPassword = null;
+    private string userName;
+    private string userPassword;
     private bool? stayLoggedIn;
     /// <summary> The list of the Fruiton Teams of the current user. </summary>
     private FruitonTeamList fruitonTeamList;
@@ -99,7 +97,7 @@ public class GameManager : MonoBehaviour {
     {
         get
         {
-            return (PlayerPrefs.GetInt("ValidUser", 0) == 1)? true: false;
+            return PlayerPrefs.GetInt("ValidUser", 0) == 1;
         }
         set
         {
@@ -121,8 +119,6 @@ public class GameManager : MonoBehaviour {
     }
 
     public IEnumerable<KFruiton> AllFruitons { get; private set; }
-
-    public bool IsInitialized { get; set; }
 
     public FruitonTeamList FruitonTeamList
     {
@@ -176,35 +172,17 @@ public class GameManager : MonoBehaviour {
 
     public void Initialize()
     {
-        Debug.Log("Initializing Game Manager");
         Serializer.DeserializeFruitonTeams();
-        FruitonDatabase = new FruitonDatabase(Resources.Load<TextAsset>("FruitonDb").text);
-        //fruitonDatabase = new FruitonDatabase(Application.dataPath + "/Scripts/Kernel/Generated/resources/FruitonDb.json");
+                
+        FruitonDatabase = new FruitonDatabase(KernelUtils.LoadTextResource(FRUITON_DB_FILE));
         AllFruitons = ClientFruitonFactory.CreateAllKernelFruitons();
         AvailableFruitons = Serializer.LoadAvailableFruitons();
-        
-        IsInitialized = true;
-    }
 
-    #endregion
-
-    #region Private
-
-    private void SerializeBinary(object toBeSerialized, string filename)
-    {
-        FileStream stream = File.Create(filename);
-        var formatter = new BinaryFormatter();
-        formatter.Serialize(stream, toBeSerialized);
-        stream.Close();
-    }
-
-    private  T DeserializeBinary<T>(string filename)
-    {
-        FileStream stream = File.OpenRead(filename);
-        var formatter = new BinaryFormatter();
-        T deserialized = (T)formatter.Deserialize(stream);
-        stream.Close();
-        return deserialized;
+        PlayerHelper.GetAllFruitonTeams(ints =>
+        {
+            fruitonTeamList = ints;
+        },
+        Debug.Log);
     }
 
     #endregion
@@ -215,8 +193,6 @@ public class GameManager : MonoBehaviour {
         {
             DontDestroyOnLoad(gameObject);
             Instance = this;
-
-            Initialize();
         }
         else if (Instance != this)
         {

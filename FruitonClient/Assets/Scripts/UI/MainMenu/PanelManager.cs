@@ -15,7 +15,7 @@ public class PanelManager : MonoBehaviour {
         {
             Instance = this;
             FillPanelDictionary();
-            //GetComponent<AudioSource>().enabled = isSoundOn;
+
         }
         else if (Instance != this)
         {

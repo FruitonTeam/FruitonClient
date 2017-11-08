@@ -35,7 +35,6 @@ public class LoginPanel : MainMenuPanel
             }
             SelectedInputField.Select();
         }
-        return;
     }
 
     // checks whether the LoginData combination is valid
