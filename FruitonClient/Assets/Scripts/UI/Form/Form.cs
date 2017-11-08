@@ -22,7 +22,6 @@ public class Form : MonoBehaviour
     void Start()
     {
         _errorPanel = (GameObject) GameObject.Instantiate(Resources.Load("Prefabs/FormErrorPanel"));
-        _errorPanel.AddComponent<DeactivateOnClick>();
         _errorTextComponent = _errorPanel.GetComponentInChildren<Text>();
         _errorPanel.SetActive(false);
     }
