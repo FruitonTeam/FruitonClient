@@ -32,20 +32,7 @@ public class LoginPanel : MainMenuPanel
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Tab))
-        {
-            
-            if (SelectedInputField == LoginButton)
-            {
-                SelectedInputField = LoginName;
-            }
-            else
-            {
-                SelectedInputField = SelectedInputField.FindSelectableOnDown();
-            }
-            SelectedInputField.Select();
-        }
-        return;
+
     }
 
     // checks whether the LoginData combination is valid

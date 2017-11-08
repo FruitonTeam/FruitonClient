@@ -21,6 +21,7 @@ namespace Networking
 
         private static readonly string GOOGLE_ID =
             "827606142557-f63cu712orq80s6do9n6aa8s3eu3h7ag.apps.googleusercontent.com";
+
         private static readonly string GOOGLE_CLIENT_SECRET = "NyYlQJICuxYX3AnzChou2X8i";
 
         private static readonly int GOOGLE_REDIRECT_PORT = 9999;
@@ -96,7 +97,7 @@ namespace Networking
             webSocket.Send(GetBinaryData(message));
         }
 
-        private void ProcessLoginResult(string login, string password, string token)
+        private void ProcessLoginResult(string login, string password, string token, string errorMessage = null)
         {
             if (IsLogged())
             {
@@ -118,7 +119,7 @@ namespace Networking
             else
             {
                 // Perform offline login check
-                if (login != "" && password != "" && gameManager.UserName == login 
+                if (login != "" && password != "" && gameManager.UserName == login
                     && gameManager.UserPassword == password)
                 {
                     // Offline check successful
@@ -128,26 +129,26 @@ namespace Networking
                 else
                 {
                     panelManager.SwitchPanels(MenuPanel.Login);
-                    panelManager.ShowErrorMessage(resultData.errorMessage);
+                    panelManager.ShowErrorMessage(errorMessage);
                 }
             }
         }
 
-        private void ProcessRegistrationResult(RegisterResultData resultData)
+        private void ProcessRegistrationResult(bool success, string login, string errorMessage = null)
         {
             PanelManager panelManager = PanelManager.Instance;
-            if (resultData.success)
+            if (success)
             {
                 panelManager.SwitchPanels(MenuPanel.Login);
-                panelManager.Panels[MenuPanel.Login].GetComponent<Form>().SetValue("name", resultData.login);
-                panelManager.ShowInfoMessage("User " + resultData.login + " successfully registered!");
+                panelManager.Panels[MenuPanel.Login].GetComponent<Form>().SetValue("name", login);
+                panelManager.ShowInfoMessage("User " + login + " successfully registered!");
             }
             else
             {
-                if (String.IsNullOrEmpty(resultData.errorMessage))
-                    resultData.errorMessage = "Unkown error. Please try again later.";
+                if (String.IsNullOrEmpty(errorMessage))
+                    errorMessage = "Unkown error. Please try again later.";
                 panelManager.SwitchPanels(MenuPanel.Register);
-                panelManager.ShowErrorMessage(resultData.errorMessage);
+                panelManager.ShowErrorMessage(errorMessage);
             }
         }
 
@@ -242,21 +243,40 @@ namespace Networking
             yield return www;
             if (!string.IsNullOrEmpty(www.text))
             {
-                Debug.Log(www.text);
-                string idToken = JToken.Parse(www.text)["id_token"].Value<string>();
-                StartCoroutine(Get("loginGoogle?idToken=" + idToken,
-                    googleLoginResultJson =>
-                    {
-                        var googleLoginResult = JToken.Parse(googleLoginResultJson);
-                        string token = googleLoginResult["token"].Value<string>();
-                        string login = googleLoginResult["login"].Value<string>();
-                        ProcessLoginResult(login, GOOGLE_PASSWORD, token);
-                    },
-                    Debug.LogError));
+                try
+                {
+                    Debug.Log(www.text);
+                    string idToken = JToken.Parse(www.text)["id_token"].Value<string>();
+                    StartCoroutine(Get("loginGoogle?idToken=" + idToken,
+                        googleLoginResultJson =>
+                        {
+                            try
+                            {
+                                Debug.Log(googleLoginResultJson);
+                                var googleLoginResult = JToken.Parse(googleLoginResultJson);
+                                string token = googleLoginResult["token"].Value<string>();
+                                string login = googleLoginResult["login"].Value<string>();
+                                ProcessLoginResult(login, GOOGLE_PASSWORD, token);
+
+                            }
+                            catch (Exception ex)
+                            {
+                                ProcessLoginResult(null, null, null, "Unkown error. Please try again later.");
+                                Debug.Log("[Google Login] Failed - " + ex);
+                            }
+                        },
+                        Debug.LogError));
+                }
+                catch (Exception ex)
+                {
+                    ProcessLoginResult(null, null, null, "Unkown error. Please try again later.");
+                    Debug.Log("[Google Login] Failed - " + ex);
+                }
             }
             else
             {
-                Debug.Log("Could not login using google on our server " + www.error);
+                ProcessLoginResult(null, null, null, www.error);
+                Debug.Log("[Google Login] Failed - "+www.error); // text of success
             }
         }
 
@@ -267,12 +287,12 @@ namespace Networking
             if (string.IsNullOrEmpty(www.error))
             {
                 Debug.Log("[Registration] Post request succeeded."); // text of success
-                SendMessage(PROCESS_REGISTRATION_RESULT, new RegisterResultData(true, login));
+                ProcessRegistrationResult(true, login);
             }
             else
             {
                 Debug.Log("[Registration] Post request failed."); // error
-                SendMessage(PROCESS_REGISTRATION_RESULT, new RegisterResultData(false, login, www.text));
+                ProcessRegistrationResult(false, login, www.text);
             }
         }
 
@@ -284,13 +304,13 @@ namespace Networking
             {
                 Debug.Log("[Login] Post request succeeded."); // text of success
                 Debug.Log("WWW text: " + www.text);
-                loginToken = www.text;
-                SendMessage("ProcessLoginResult", new LoginResultData(login, password, true));
+                string loginToken = www.text;
+                ProcessLoginResult(login, password, loginToken);
             }
             else
             {
                 Debug.Log("[Login] Post request failed."); // text of fail
-                SendMessage("ProcessLoginResult", new LoginResultData(login, password, false, www.text));
+                ProcessLoginResult(login, password, null, www.text);
             }
         }
 
@@ -309,7 +329,8 @@ namespace Networking
             }
         }
 
-        public IEnumerator Post(string query, Action<string> success, Action<string> error, byte[] body = null, Dictionary<string, string> headers = null)
+        public IEnumerator Post(string query, Action<string> success, Action<string> error, byte[] body = null,
+            Dictionary<string, string> headers = null)
         {
             var www = new WWW(URL_API + query, body, headers);
             yield return www;
@@ -425,11 +446,10 @@ namespace Networking
                 listeners[msgCase].Remove(listener);
             }
         }
-        
+
         public void OnMessage(WrapperMessage message)
         {
             Debug.LogError(message.ErrorMessage.Message);
         }
-
     }
 }
