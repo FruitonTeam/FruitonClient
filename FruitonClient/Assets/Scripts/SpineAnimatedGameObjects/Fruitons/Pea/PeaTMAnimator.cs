@@ -67,28 +67,24 @@ public class PeaTMAnimator : MonoBehaviour
 
     private void StartWalking()
     {
-        //Debug.Log("Doing StartWalking");
         skeletonAnim.AnimationState.AddAnimation(USUAL_TRACK, "startWalk", false, 0);
         skeletonAnim.AnimationState.AddAnimation(USUAL_TRACK, "walk", true, 0);
     }
 
     private void TakeDamageIdle()
     {
-        //Debug.Log("Doing TakeDamageIdle");
         skeletonAnim.AnimationState.AddAnimation(USUAL_TRACK, "takeDamage", false, 0);
         skeletonAnim.AnimationState.AddAnimation(USUAL_TRACK, "takeDamage", false, 3);
     }
 
     private void StandIdle()
     {
-        //Debug.Log("Doing StandIdle");
         skeletonAnim.AnimationState.AddAnimation(USUAL_TRACK, "scratchMustache", false, 0);
         skeletonAnim.AnimationState.AddAnimation(USUAL_TRACK, "scratchMustache", false, 4);
     }
 
     private void Attack()
     {
-        //Debug.Log("Doing Attack");
         skeletonAnim.AnimationState.AddAnimation(USUAL_TRACK, "wideStandGetGuns", false, 0);
         skeletonAnim.AnimationState.AddAnimation(USUAL_TRACK, "fire", false, 0);
         //skeletonAnim.AnimationState.AddEmptyAnimation(USUAL_TRACK, 0, 0);
@@ -169,7 +165,6 @@ public class PeaTMAnimator : MonoBehaviour
         currentAnimTime += Time.deltaTime;
         if (currentAnimTime > AnimSwitchTime)
         {
-            //Debug.Log("Changing anim");
             currentAnimTime -= AnimSwitchTime;
             FinishCurrentAnim();
             AddNextRandomAnim();
