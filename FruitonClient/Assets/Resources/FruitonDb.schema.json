@@ -1,0 +1,156 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "id": "fruiton.FruitonDb.json",
+
+    "definitions": {
+        "fruiton" : {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "type" : {
+                    "type":"integer"
+                },
+                "hp": {
+                    "type": "integer"
+                },
+                "damage": {
+                    "type": "integer"
+                },
+                "abilities": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "effects": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "movements": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "attacks": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": ["id", "model", "type", "hp", "damage", "abilities", "effects", "movements"]
+        },
+        "movement": {
+            "type": "object",
+            "properties": {
+                "id" : {
+                    "type": "integer"
+                },
+                "targetPatternId": {
+                    "type": "integer"
+                }
+            },
+            "additionalProperties": false,
+            "required": ["id", "targetPatternId"]
+        },
+        "attack": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "targetPatternId": {
+                    "type": "integer"
+                }
+            },
+            "additionalProperties": false,
+            "required": ["id", "targetPatternId"]
+        },
+        "effect": {
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "className": {
+                    "type": "string"
+                },
+                "params": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "targetPattern": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "x": {
+                    "type": "integer"
+                },
+                "y": {
+                    "type": "integer"
+                },
+                "min": {
+                    "type": "integer"
+                },
+                "max": {
+                    "type": "integer"
+                }
+            },
+            "additionalProperties": false,
+            "required": ["id", "type", "x", "y", "min", "max"]
+        }
+    },
+
+    "type": "object",
+    "properties": {
+        "fruitonDb": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/fruiton"
+            }
+        },
+        "movementDb": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/movement"
+            }
+        },
+        "attackDb": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/attack"
+            }
+        },
+        "effectDb": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/effect"
+            }
+        },
+        "targetPatternDb": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/targetPattern"
+            }
+        }
+    },
+    "additionalProperties": false,
+    "required": ["fruitonDb", "movementDb", "attackDb", "targetPatternDb"]
+}

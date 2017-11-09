@@ -1,0 +1,99 @@
+{
+    "fruitonDb": [
+        {
+            "id": 1,
+            "model": "Apple_red",
+          	"type": 1,
+            "hp": 12,
+            "damage": 2,
+            "abilities": [],
+            "effects": [],
+            "movements": [1],
+            "attacks": [1]
+        },
+        {
+            "id": 2,
+            "model": "Kiwi",
+          	"type": 2,
+            "hp": 5,
+            "damage": 2,
+            "abilities": [],
+            "effects": [],
+            "movements": [1],
+            "attacks": [1]
+        },
+        {
+            "id": 3,
+            "model": "BlackCube",
+            "type": 3,
+            "hp": 4,
+            "damage": 2,
+            "abilities": [],
+            "effects": [],
+            "movements": [1],
+            "attacks": [1]
+        },
+                {
+            "id": 4,
+            "model": "BlueCube",
+            "type": 3,
+            "hp": 4,
+            "damage": 2,
+            "abilities": [],
+            "effects": [],
+            "movements": [1],
+            "attacks": [1]
+        },
+                {
+            "id": 5,
+            "model": "GreenCube",
+            "type": 3,
+            "hp": 4,
+            "damage": 2,
+            "abilities": [],
+            "effects": [],
+            "movements": [1],
+            "attacks": [1]
+        },
+                {
+            "id": 6,
+            "model": "CyanCube",
+            "type": 3,
+            "hp": 4,
+            "damage": 2,
+            "abilities": [],
+            "effects": ["garlic"],
+            "movements": [1],
+            "attacks": [1]
+        }
+    ],
+    "movementDb": [
+        {
+            "id": 1,
+            "targetPatternId": 1
+        }
+    ],
+    "attackDb": [
+        {
+            "id": 1,
+            "targetPatternId": 1
+        }
+    ],
+    "effectDb": [
+        {
+            "id": "garlic",
+            "className": "lowerAttackOnAttack",
+            "params": [1]
+        }
+    ],
+    "targetPatternDb": [
+        {
+            "id": 1,
+            "type": "range",
+            "x": 0,
+            "y": 0,
+            "min": 1,
+            "max": 1
+        }
+    ]
+}
