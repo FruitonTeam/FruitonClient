@@ -454,7 +454,6 @@ public class FruitonTeamsManager : MonoBehaviour
                 }
             }
             currentFruitonTeam.Positions.Add(new Position { X = i, Y = j });
-            Debug.Log("Fruiton id = " + id + " position = (" + i + "," + j + ")");
         }
     }
 }
