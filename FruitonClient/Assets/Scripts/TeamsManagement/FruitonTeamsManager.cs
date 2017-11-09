@@ -422,6 +422,7 @@ public class FruitonTeamsManager : MonoBehaviour
         var majorCounter = 2;
         var minorCounter = 2;
         var fruitonDatabase = GameManager.Instance.FruitonDatabase;
+        currentFruitonTeam.Positions.Clear();
         foreach (var id in fruitonTeam.FruitonIDs)
         {
             var kernelFruiton = FruitonFactory.makeFruiton(id, fruitonDatabase);
@@ -435,7 +436,7 @@ public class FruitonTeamsManager : MonoBehaviour
                     break;
                 case FruitonType.MAJOR:
                 {
-                    i = GameState.WIDTH - majorCounter;
+                    i = GameState.WIDTH/2 - majorCounter;
                     j = majorRow;
                     if (--majorCounter == 0) --majorCounter;
                 }
