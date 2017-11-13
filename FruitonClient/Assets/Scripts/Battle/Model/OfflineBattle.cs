@@ -2,7 +2,6 @@
 using fruiton.kernel;
 using Google.Protobuf.Collections;
 using haxe.root;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,8 +11,9 @@ public class OfflineBattle : Battle
     {
         Player kernelPlayer1 = new Player(0);
         Player kernelPlayer2 = new Player(1);
-        player1 = new LocalPlayer(battleViewer, kernelPlayer1, this);
-        player2 = new LocalPlayer(battleViewer, kernelPlayer2, this);
+        string login = GameManager.Instance.UserName;
+        player1 = new LocalPlayer(battleViewer, kernelPlayer1, this, login);
+        player2 = new LocalPlayer(battleViewer, kernelPlayer2, this, login);
 
         IEnumerable<GameObject> currentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs);
         IEnumerable<GameObject> opponentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs);

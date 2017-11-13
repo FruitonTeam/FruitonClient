@@ -5,11 +5,14 @@ public abstract class ClientPlayerBase
 {
     protected Battle battle;
 
-    protected ClientPlayerBase(Player kernelPlayer, Battle battle)
+    protected ClientPlayerBase(Player kernelPlayer, Battle battle, string login)
     {
         ID = kernelPlayer.id;
         this.battle = battle;
+        Login = login;
     }
+
+    public string Login { get; private set; }
 
     public bool IsActive { get; set; }
 

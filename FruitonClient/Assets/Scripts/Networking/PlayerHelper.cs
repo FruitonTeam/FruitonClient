@@ -21,7 +21,7 @@ namespace Networking
             );
         }
 
-        public static void GetAvatar(string player, Action<Texture> success, Action<string> error)
+        public static void GetAvatar(string player, Action<Texture2D> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
                 ConnectionHandler.Instance.Get(

@@ -13,8 +13,8 @@ public class Battle
 {
     protected GameManager gameManager;
     protected Kernel kernel;
-    protected ClientPlayerBase player1;
-    protected ClientPlayerBase player2;
+    public ClientPlayerBase player1;
+    public ClientPlayerBase player2;
     protected BattleViewer battleViewer;
 
     public Battle(BattleViewer battleViewer)
