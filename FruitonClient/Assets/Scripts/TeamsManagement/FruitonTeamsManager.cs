@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using KFruiton = fruiton.kernel.Fruiton;
 using System;
+using System.Linq;
 using fruiton.kernel;
 using fruiton.kernel.fruitonTeam;
 using Google.Protobuf.Collections;
@@ -29,6 +30,7 @@ public class FruitonTeamsManager : MonoBehaviour
     public GameObject PanelCurrenFruitonTeams;
     public GameObject PanelFruitonTeams;
     public GameObject ButtonPlay;
+    public GameObject ButtonBin;
 
     private IEnumerable<GameObject> allClientFruitons;
     private FruitonTeam currentFruitonTeam;
@@ -45,8 +47,19 @@ public class FruitonTeamsManager : MonoBehaviour
     /// <summary> Counts of the fruitons in a valid Fruiton Team for each type respectively. </summary>
     private readonly int[] typesCounts = { 1, 4, 5 };
     private bool teamManagementState;
+    // Do not process clicks while the mouse is over the UI objects.
+    private bool mouseOverUI;
+    private bool removingGaps;
 
-    public const string TEAM_MANAGEMENT_STATE = "teamManagementState";
+    /// <summary> Stores the ordered (by x coord) GameObjects representing fruiton teams. Used when deleting teams. </summary>
+    private IOrderedEnumerable<GameObject> orderedTeamObjects;
+
+    public static readonly string TEAM_MANAGEMENT_STATE = "teamManagementState";
+    /// <summary> The horizontal distance between fruitons (or teams) in this scene. </summary>
+    private static readonly int OBJECTS_DISTANCE = 50;
+
+    private static readonly int TOUCH_SPEED_REDUCTION = 40;
+
 
 
     // Use this for initialization
@@ -66,9 +79,55 @@ public class FruitonTeamsManager : MonoBehaviour
             PanelCurrenFruitonTeams.transform.position = PanelAllFruitons.transform.position;
             PanelAllFruitons.SetActive(false);
             AddFruitonTeamButton.SetActive(false);
+            ButtonBin.SetActive(false);
         }
         InitializeFruitonTeams(teamManagementState);
         InitializeCurrentFruitonTeam();
+    }
+
+    private void Update()
+    {
+        if (removingGaps)
+        {
+            FillGapsBetweenTeams();
+            return;
+        }
+        if (Input.GetMouseButtonUp(0) && !mouseOverUI)
+        {
+            LeftButtonUpLogic();
+        }
+
+        float scroll = 0;
+        Ray ray = new Ray();
+#if UNITY_ANDROID
+        Touch[] myTouches = Input.touches;
+        switch (Input.touchCount)
+        {
+            case 1:
+                {
+                    Touch touch = myTouches[0];
+                    if (touch.phase == TouchPhase.Moved)
+                    {
+                        ray = Camera.main.ScreenPointToRay(touch.position);
+                    }
+                    scroll = touch.deltaPosition.x/TOUCH_SPEED_REDUCTION;
+                }
+                break;
+        }
+#endif
+
+#if UNITY_STANDALONE || UNITY_EDITOR
+
+        scroll = Input.GetAxis("Mouse ScrollWheel");
+        ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+#endif
+        if (scroll != 0)
+        {
+            ScrollLogic(scroll, ray);
+        }
+
+
     }
 
     private void InitializeCurrentFruitonTeam()
@@ -89,7 +148,7 @@ public class FruitonTeamsManager : MonoBehaviour
             {
                 GameObject highlight = Instantiate(Resources.Load("Prefabs/Fridge/HighlightType" + type, typeof(GameObject))) as GameObject;
                 highlight.transform.position = defaultCurrentFruitonTeamPosition + highlightTranslation + new Vector3(0, 0, 20);
-                highlightTranslation.x += 50;
+                highlightTranslation.x += OBJECTS_DISTANCE;
                 highlight.transform.parent = CurrentFruitonTeamWrapper.transform;
                 highlight.name = "currentFruitonTeamHighlight";
             }
@@ -131,7 +190,7 @@ public class FruitonTeamsManager : MonoBehaviour
             GameObject fruitonObject = InstantiateFridgeFruiton(fruiton, position);
             fruitonObject.AddComponent<ClientFruiton>().KernelFruiton = fruiton;
             fruitonDictionary.Add(fruitonObject, fruiton.id);
-            position.x += 50;
+            position.x += OBJECTS_DISTANCE;
             fruitonObject.transform.parent = Fruitons.transform;
             fruitons.Add(fruitonObject);
             if (!gameManager.AvailableFruitons.Contains(fruiton.id))
@@ -171,45 +230,6 @@ public class FruitonTeamsManager : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (Input.GetMouseButtonUp(0))
-        {
-            LeftButtonUpLogic();
-        }
-
-        float scroll = 0;
-        Ray ray = new Ray();
-#if UNITY_ANDROID
-        Touch[] myTouches = Input.touches;
-        switch (Input.touchCount)
-        {
-            case 1:
-                {
-                    Touch touch = myTouches[0];
-                    if (touch.phase == TouchPhase.Moved)
-                    {
-                        ray = Camera.main.ScreenPointToRay(touch.position);
-                    }
-                    scroll = touch.deltaPosition.x/40;
-                }
-                break;
-        }
-#endif
-
-#if UNITY_STANDALONE || UNITY_EDITOR
-
-        scroll = Input.GetAxis("Mouse ScrollWheel");
-        ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-#endif
-        if (scroll != 0)
-        {
-            ScrollLogic(scroll, ray);
-        }
-
-
-    }
-
     private void AddCollider(GameObject fruitonObject)
     {
         if (fruitonObject.GetComponent<Collider>() == null)
@@ -227,17 +247,19 @@ public class FruitonTeamsManager : MonoBehaviour
         if (Physics.Raycast(ray, out hit))
         {
             GameObject HitObject = hit.transform.gameObject;
+            var translation = new Vector3(OBJECTS_DISTANCE * scroll, 0, 0);
+
             if (HitObject == AddFruitonTeamButton || HitObject == PanelFruitonTeams || HitObject == Highlight || HitsChildOf(FruitonTeams, HitObject))
             {
-                FruitonTeams.transform.position += new Vector3(50 * scroll, 0, 0);
+                FruitonTeams.transform.position += translation;
             }
             else if (HitObject == PanelAllFruitons || HitsChildOf(Fruitons, HitObject) || HitsChildOf(FruitonsWrapper, HitObject))
             {
-                FruitonsWrapper.transform.position += new Vector3(50 * scroll, 0, 0);
+                FruitonsWrapper.transform.position += translation;
             }
             else if (HitObject == PanelCurrenFruitonTeams || HitsChildOf(CurrentFruitonTeamObject, HitObject) || HitsChildOf(CurrentFruitonTeamWrapper, HitObject))
             {
-                CurrentFruitonTeamWrapper.transform.position += new Vector3(50 * scroll, 0, 0);
+                CurrentFruitonTeamWrapper.transform.position += translation;
             }
 
         }
@@ -260,18 +282,18 @@ public class FruitonTeamsManager : MonoBehaviour
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
-
+            
         if (Physics.Raycast(ray, out hit))
         {
 
-            GameObject HitObject = hit.transform.gameObject;
+            GameObject hitObject = hit.transform.gameObject;
             // Add a new Fruiton Team
             if (hit.transform.name == AddFruitonTeamButton.name)
             {
-                AddFruitonTeam(null);
+                AddFruitonTeam();
             }
             // Switch to the another FruitonTeam
-            else if (HitsChildOf(FruitonTeams, HitObject))
+            else if (HitsChildOf(FruitonTeams, hitObject))
             {
                 for (int i = 0; i < currentFruitonTeamTranslations.Length; i++)
                 {
@@ -280,6 +302,7 @@ public class FruitonTeamsManager : MonoBehaviour
                 CurrentFruitonTeamWrapper.transform.position = defaultCurrenFruitonTeamWrapperPosition;
                 ClearCurrentFruitonTeam();
                 Vector3 hitPosition = hit.transform.position;
+                Highlight.SetActive(true);
                 Highlight.transform.position = new Vector3(hitPosition.x, hitPosition.y - 1, 120);
                 Highlight.transform.parent = hit.transform;
                 currentFruitonTeam = fruitonTeamsDictionary[hit.collider.gameObject];
@@ -296,7 +319,7 @@ public class FruitonTeamsManager : MonoBehaviour
                     AddCollider(fruitonTeamMember);
                     fruitonTeamMember.name = "CurrentFruitonTeam_" + fruitonID;
                     fruitonTeamMember.transform.position = defaultCurrentFruitonTeamPosition + currentFruitonTeamTranslations[kernelFruiton.type-1] - new Vector3(0, 20);
-                    currentFruitonTeamTranslations[kernelFruiton.type - 1].x += 50;
+                    currentFruitonTeamTranslations[kernelFruiton.type - 1].x += OBJECTS_DISTANCE;
                     fruitonTeamMember.transform.parent = CurrentFruitonTeamObject.transform;
                 }
             }
@@ -306,7 +329,7 @@ public class FruitonTeamsManager : MonoBehaviour
                 AddFruitonTeamMember(hit.collider.gameObject);
             }
             // Remove a Fruiton from the current Fruiton Team.
-            else if (teamManagementState && HitsChildOf(CurrentFruitonTeamObject, HitObject))
+            else if (teamManagementState && HitsChildOf(CurrentFruitonTeamObject, hitObject))
             {
                 GameObject toBeDestroyed = hit.transform.gameObject;
                 int id = fruitonDictionary[toBeDestroyed];
@@ -320,10 +343,10 @@ public class FruitonTeamsManager : MonoBehaviour
                     KFruiton kernelChild = FruitonFactory.makeFruiton(childId, GameManager.Instance.FruitonDatabase);
                     if (kernelChild.type == kernelFruiton.type && child.transform.position.x > destroyedPosition.x)
                     {
-                        child.transform.position -= new Vector3(50, 0, 0);
+                        child.transform.position -= new Vector3(OBJECTS_DISTANCE, 0, 0);
                     }
                 }
-                currentFruitonTeamTranslations[kernelFruiton.type - 1] -= new Vector3(50, 0, 0);
+                currentFruitonTeamTranslations[kernelFruiton.type - 1] -= new Vector3(OBJECTS_DISTANCE, 0, 0);
             }
             if (currentFruitonTeam != null)
             {
@@ -352,7 +375,7 @@ public class FruitonTeamsManager : MonoBehaviour
             KFruiton kernelFruiton = FruitonFactory.makeFruiton(id, GameManager.Instance.FruitonDatabase);
             fruitonTeamMember.name = "CurrentFruitonTeam_" + fruitonTeamMember.name;
             fruitonTeamMember.transform.position = CurrentFruitonTeamObject.transform.position + currentFruitonTeamTranslations[kernelFruiton.type - 1];
-            currentFruitonTeamTranslations[kernelFruiton.type - 1].x += 50;
+            currentFruitonTeamTranslations[kernelFruiton.type - 1].x += OBJECTS_DISTANCE;
             fruitonTeamMember.GetComponent<ClientFruiton>().KernelFruiton = kernelFruiton;
         } else
         {
@@ -362,14 +385,15 @@ public class FruitonTeamsManager : MonoBehaviour
 
     }
 
-    private void AddFruitonTeam(FruitonTeam fruitonTeam)
+    private void AddFruitonTeam(FruitonTeam fruitonTeam = null)
     {
         GameManager gameManager = GameManager.Instance;
         GameObject fruitonTeamObject = Instantiate(Resources.Load("Models/TeamManagement/FruitonTeam", typeof(GameObject))) as GameObject;
         fruitonTeamObject.transform.position = AddFruitonTeamButton.transform.position;
         fruitonTeamObject.transform.parent = FruitonTeams.transform;
-        fruitonTeamObject.name = "FruitonTeam";
-        AddFruitonTeamButton.transform.position += new Vector3(50, 0, 0);
+        fruitonTeamObject.name = fruitonTeam == null ? "Fruiton team" : fruitonTeam.Name;
+        
+        AddFruitonTeamButton.transform.position += new Vector3(OBJECTS_DISTANCE, 0, 0);
 
         GameObject signCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
         fruitonTeamObject.AddComponent<SphereCollider>();
@@ -393,7 +417,8 @@ public class FruitonTeamsManager : MonoBehaviour
         FruitonTeam newFruitonTeam;
         if (fruitonTeam == null)
         {
-            mesh.text = "New Team" + gameManager.FruitonTeamList.FruitonTeams.Count;
+            mesh.text = GetNextAvailableTeamName();
+            fruitonTeamObject.name = mesh.text;
             newFruitonTeam = new FruitonTeam();
             newFruitonTeam.Name = mesh.text;
             gameManager.FruitonTeamList.FruitonTeams.Add(newFruitonTeam);
@@ -404,6 +429,26 @@ public class FruitonTeamsManager : MonoBehaviour
             mesh.text = fruitonTeam.Name;
         }
         fruitonTeamsDictionary.Add(fruitonTeamObject, newFruitonTeam);
+        PlayerHelper.UploadFruitonTeam(newFruitonTeam, Debug.Log, Debug.Log);
+    }
+
+    /// <summary>
+    /// Finds the next name for the fruiton team in the following way:
+    /// "New Team N" where N is the smallest available positive integer,
+    /// whilst by available is meant that no other fruiton team has the same name.
+    /// </summary>
+    /// <returns></returns>
+    private string GetNextAvailableTeamName()
+    {
+        GameObject[] teamObjects = fruitonTeamsDictionary.Keys.ToArray();
+        for (int i = 1;; i++)
+        {
+            string potentialName = "New Team " + i;
+            if (teamObjects.All(go => go.name != potentialName))
+            {
+                return potentialName;
+            }
+        }
     }
 
     private void ClearCurrentFruitonTeam()
@@ -454,6 +499,69 @@ public class FruitonTeamsManager : MonoBehaviour
                 }
             }
             currentFruitonTeam.Positions.Add(new Position { X = i, Y = j });
+        }
+    }
+
+    public void MouseEntersUI()
+    {
+        mouseOverUI = true;
+    }
+
+    public void MouseLeavesUI()
+    {
+        mouseOverUI = false;
+    }
+
+    public void DeleteTeam()
+    {
+        if (currentFruitonTeam != null)
+        {
+            GameManager.Instance.FruitonTeamList.FruitonTeams.Remove(currentFruitonTeam);
+            PlayerHelper.RemoveFruitonTeam(currentFruitonTeam, Debug.Log, Debug.Log);
+            KeyValuePair<GameObject, FruitonTeam> keyValuePair = fruitonTeamsDictionary.First(kvPair => kvPair.Value.Equals(currentFruitonTeam));
+            GameObject teamGameObject = keyValuePair.Key;
+            fruitonTeamsDictionary.Remove(teamGameObject);
+            fruitonDictionary.Remove(teamGameObject);
+            Highlight.transform.parent = null;
+            Highlight.SetActive(false);
+            Destroy(teamGameObject);
+            removingGaps = true;
+            var gameObjects = new List<GameObject>();
+            foreach (Transform child in FruitonTeams.transform)
+            {
+                if (!child.gameObject.Equals(teamGameObject))
+                {
+                    gameObjects.Add(child.gameObject);
+                }
+            }
+            orderedTeamObjects = gameObjects.OrderBy(x => x.transform.position.x);
+            currentFruitonTeam = null;
+        }
+    }
+
+    /// <summary>
+    /// Moves the fruiton teams' game objects closer so that they do not form big gaps.
+    /// The distance between each pair of neighboring objects should be app. OBJECTS_DISTANCE eventually.
+    /// </summary>
+    private void FillGapsBetweenTeams()
+    {
+        // This may be called when ordered
+        if (orderedTeamObjects == null)
+        {
+            return;
+        }
+
+        removingGaps = false;
+
+        GameObject previous = null;
+        foreach (GameObject current in orderedTeamObjects)
+        {
+            if (previous != null && current.transform.position.x - previous.transform.position.x > OBJECTS_DISTANCE)
+            {
+                removingGaps = true;
+                current.transform.position += 100 * Time.deltaTime * Vector3.left;
+            }
+            previous = current;
         }
     }
 }
