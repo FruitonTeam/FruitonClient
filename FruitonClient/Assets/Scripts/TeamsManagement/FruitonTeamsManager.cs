@@ -58,6 +58,8 @@ public class FruitonTeamsManager : MonoBehaviour
     /// <summary> The horizontal distance between fruitons (or teams) in this scene. </summary>
     private static readonly int OBJECTS_DISTANCE = 50;
 
+    private static readonly int TOUCH_SPEED_REDUCTION = 40;
+
 
 
     // Use this for initialization
@@ -108,7 +110,7 @@ public class FruitonTeamsManager : MonoBehaviour
                     {
                         ray = Camera.main.ScreenPointToRay(touch.position);
                     }
-                    scroll = touch.deltaPosition.x/40;
+                    scroll = touch.deltaPosition.x/TOUCH_SPEED_REDUCTION;
                 }
                 break;
         }
@@ -119,10 +121,6 @@ public class FruitonTeamsManager : MonoBehaviour
         scroll = Input.GetAxis("Mouse ScrollWheel");
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        if (Input.GetKeyUp(KeyCode.Delete))
-        {
-            
-        }
 #endif
         if (scroll != 0)
         {
