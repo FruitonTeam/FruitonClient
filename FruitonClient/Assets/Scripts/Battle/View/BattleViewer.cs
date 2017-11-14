@@ -71,8 +71,8 @@ public class BattleViewer : MonoBehaviour
 
     public void InitializePlayersInfo()
     {
-        string login1 = battle.player1.Login;
-        string login2 = battle.player2.Login;
+        string login1 = battle.Player1.Login;
+        string login2 = battle.Player2.Login;
         MyLoginText.text = login1;
         OpponentLoginText.text = login2;
         PlayerHelper.GetAvatar(login1,

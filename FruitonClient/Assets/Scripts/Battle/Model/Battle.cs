@@ -13,9 +13,10 @@ public class Battle
 {
     protected GameManager gameManager;
     protected Kernel kernel;
-    public ClientPlayerBase player1;
-    public ClientPlayerBase player2;
     protected BattleViewer battleViewer;
+
+    public ClientPlayerBase Player1 { get; protected set; }
+    public ClientPlayerBase Player2 { get; protected set; }
 
     public Battle(BattleViewer battleViewer)
     {
@@ -54,9 +55,9 @@ public class Battle
 
     private ClientPlayerBase GetWaitingPlayer()
     {
-        if (IsPlayerActive(player1))
-            return player2;
-        return player1;
+        if (IsPlayerActive(Player1))
+            return Player2;
+        return Player1;
     }
 
     private TTargetableAction GetTargetableAction<TTargetableAction>(KVector2 from, KVector2 to)
@@ -81,16 +82,16 @@ public class Battle
 
     public void LeftButtonUpEvent(RaycastHit hit)
     {
-        TryPassLeftButtonEvent(player1, hit);
-        TryPassLeftButtonEvent(player2, hit);
+        TryPassLeftButtonEvent(Player1, hit);
+        TryPassLeftButtonEvent(Player2, hit);
     }
 
     public void EndTurnEvent()
     {
-        if (IsPlayerActive(player1) && player1 is LocalPlayer)
-            ((LocalPlayer) player1).EndTurn();
-        else if (IsPlayerActive(player2) && player2 is LocalPlayer)
-            ((LocalPlayer) player2).EndTurn();
+        if (IsPlayerActive(Player1) && Player1 is LocalPlayer)
+            ((LocalPlayer) Player1).EndTurn();
+        else if (IsPlayerActive(Player2) && Player2 is LocalPlayer)
+            ((LocalPlayer) Player2).EndTurn();
     }
 
     private bool TryPassLeftButtonEvent(ClientPlayerBase player, RaycastHit hit)

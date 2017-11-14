@@ -13,14 +13,14 @@ public class OnlineBattle : Battle, IOnMessageListener
 
     private ClientPlayerBase LocalPlayer
     {
-        get { return player1; }
-        set { player1 = value; }
+        get { return Player1; }
+        set { Player1 = value; }
     }
 
     private ClientPlayerBase OnlinePlayer
     {
-        get { return player2; }
-        set { player2 = value; }
+        get { return Player2; }
+        set { Player2 = value; }
     }
 
     public OnlineBattle(BattleViewer battleViewer) : base(battleViewer)
