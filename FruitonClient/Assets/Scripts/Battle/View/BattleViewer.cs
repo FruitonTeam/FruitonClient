@@ -7,6 +7,7 @@ using fruiton.kernel;
 using fruiton.kernel.actions;
 using fruiton.kernel.events;
 using Google.Protobuf.Collections;
+using Networking;
 using Spine.Unity;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,6 +31,11 @@ public class BattleViewer : MonoBehaviour
     public Button EndTurnButton;
     public GameObject PanelLoadingGame;
     public Text TimeCounter;
+    public Text MyLoginText;
+    public Text OpponentLoginText;
+    public Image MyAvatar;
+    public Image OpponentAvatar;
+
 
     /// <summary> Client fruitons stored at their position. </summary>
     public GameObject[,] Grid { get; set; }
@@ -50,6 +56,7 @@ public class BattleViewer : MonoBehaviour
         {
             battle = new OfflineBattle(this);
             isGameStarted = true;
+            InitializePlayersInfo();
         }
     }
 
@@ -60,6 +67,20 @@ public class BattleViewer : MonoBehaviour
         UpdateTimer();
         if (Input.GetMouseButtonUp(0) && isInputEnabled)
             LeftButtonUpLogic();
+    }
+
+    public void InitializePlayersInfo()
+    {
+        string login1 = battle.Player1.Login;
+        string login2 = battle.Player2.Login;
+        MyLoginText.text = login1;
+        OpponentLoginText.text = login2;
+        PlayerHelper.GetAvatar(login1,
+            texture => MyAvatar.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f)),
+            Debug.Log);
+        PlayerHelper.GetAvatar(login2,
+            texture => OpponentAvatar.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f)),
+            Debug.Log);
     }
 
     private void LeftButtonUpLogic()

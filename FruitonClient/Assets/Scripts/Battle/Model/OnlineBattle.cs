@@ -13,14 +13,14 @@ public class OnlineBattle : Battle, IOnMessageListener
 
     private ClientPlayerBase LocalPlayer
     {
-        get { return player1; }
-        set { player1 = value; }
+        get { return Player1; }
+        set { Player1 = value; }
     }
 
     private ClientPlayerBase OnlinePlayer
     {
-        get { return player2; }
-        set { player2 = value; }
+        get { return Player2; }
+        set { Player2 = value; }
     }
 
     public OnlineBattle(BattleViewer battleViewer) : base(battleViewer)
@@ -69,8 +69,8 @@ public class OnlineBattle : Battle, IOnMessageListener
     {
         Player kernelPlayer1 = new Player(0);
         Player kernelPlayer2 = new Player(1);
-        LocalPlayer = new LocalPlayer(battleViewer, kernelPlayer1, this);
-        OnlinePlayer = new OnlinePlayer(kernelPlayer2, this);
+        LocalPlayer = new LocalPlayer(battleViewer, kernelPlayer1, this, gameManager.UserName);
+        OnlinePlayer = new OnlinePlayer(kernelPlayer2, this, gameReadyMessage.Opponent.Login);
         IEnumerable<GameObject> opponentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameReadyMessage.OpponentTeam.FruitonIDs);
         IEnumerable<GameObject> currentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs);
         // The opponent team is obtained from the server with the correctly set positions.
@@ -105,6 +105,7 @@ public class OnlineBattle : Battle, IOnMessageListener
         }
         
         SendReadyMessage();
+        battleViewer.InitializePlayersInfo();
     }
 
     private void SendReadyMessage()

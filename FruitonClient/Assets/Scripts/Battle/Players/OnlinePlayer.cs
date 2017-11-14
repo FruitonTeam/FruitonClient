@@ -8,7 +8,8 @@ using ProtoAction = Cz.Cuni.Mff.Fruiton.Dto.Action;
 
 public class OnlinePlayer : ClientPlayerBase, IOnMessageListener
 {
-    public OnlinePlayer(Player kernelPlayer, Battle battle) : base(kernelPlayer, battle)
+    public OnlinePlayer(Player kernelPlayer, Battle battle, string login) 
+        : base(kernelPlayer, battle, login)
     {
         if (ConnectionHandler.Instance.IsLogged())
             ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.Action, this);
