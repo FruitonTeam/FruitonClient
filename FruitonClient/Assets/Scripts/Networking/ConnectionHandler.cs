@@ -114,7 +114,6 @@ namespace Networking
                 gameManager.UserPassword = password;
                 panelManager.SwitchPanels(MenuPanel.Main);
                 gameManager.Initialize();
-                panelManager.ShowInfoMessage("Login successful!");
             }
             else
             {
@@ -146,7 +145,7 @@ namespace Networking
             else
             {
                 if (String.IsNullOrEmpty(errorMessage))
-                    errorMessage = "Unkown error. Please try again later.";
+                    errorMessage = "Unknown error. Please try again later.";
                 panelManager.SwitchPanels(MenuPanel.Register);
                 panelManager.ShowErrorMessage(errorMessage);
             }
@@ -245,7 +244,6 @@ namespace Networking
             {
                 try
                 {
-                    Debug.Log(www.text);
                     string idToken = JToken.Parse(www.text)["id_token"].Value<string>();
                     StartCoroutine(Get("loginGoogle?idToken=" + idToken,
                         googleLoginResultJson =>
@@ -261,15 +259,18 @@ namespace Networking
                             }
                             catch (Exception ex)
                             {
-                                ProcessLoginResult(null, null, null, "Unkown error. Please try again later.");
+                                ProcessLoginResult(null, null, null, "Unknown error. Please try again later.");
                                 Debug.Log("[Google Login] Failed - " + ex);
                             }
                         },
-                        Debug.LogError));
+                        error =>
+                        {
+                            ProcessLoginResult(null, null, null, error);
+                        }));
                 }
                 catch (Exception ex)
                 {
-                    ProcessLoginResult(null, null, null, "Unkown error. Please try again later.");
+                    ProcessLoginResult(null, null, null, "Unknown error. Please try again later.");
                     Debug.Log("[Google Login] Failed - " + ex);
                 }
             }
@@ -303,7 +304,6 @@ namespace Networking
             if (string.IsNullOrEmpty(www.error))
             {
                 Debug.Log("[Login] Post request succeeded."); // text of success
-                Debug.Log("WWW text: " + www.text);
                 string loginToken = www.text;
                 ProcessLoginResult(login, password, loginToken);
             }
@@ -325,7 +325,7 @@ namespace Networking
             }
             else
             {
-                error.Invoke(www.error);
+                error.Invoke(www.text);
             }
         }
 

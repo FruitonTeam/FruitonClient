@@ -1,5 +1,4 @@
 ﻿using Networking;
-using UnityEngine;
 using UnityEngine.UI;
 
 public class LoginPanel : MainMenuPanel
@@ -10,7 +9,7 @@ public class LoginPanel : MainMenuPanel
     public Text LoginMessageText;
     public Button LoginButton;
 
-    private Selectable SelectedInputField;
+    private Form form;
 
     public enum LoginMessage
     {
@@ -19,9 +18,9 @@ public class LoginPanel : MainMenuPanel
         NoConnection
     }
 
-    private void Start()
+    private void Awake()
     {
-        gameObject.AddComponent<Form>().SetInputs(
+        form = gameObject.AddComponent<Form>().SetInputs(
             LoginButton,
             new FormControl("name", LoginName, Validator.Required("Please enter name")),
             new FormControl("password", LoginPassword, Validator.Required("Please enter password")),
@@ -30,9 +29,9 @@ public class LoginPanel : MainMenuPanel
         );
     }
 
-    private void Update()
+    private void OnEnable()
     {
-
+        form.ResetForm();
     }
 
     // checks whether the LoginData combination is valid
@@ -69,7 +68,6 @@ public class LoginPanel : MainMenuPanel
         gameManager.StayLoggedIn = LoginStayLoggedIn.isOn;
         string name = LoginName.text;
         string password = LoginPassword.text;
-        Handheld.StartActivityIndicator();
         connectionHandler.LoginBasic(name, password, true);
         panelManager.ShowLoadingIndicator();
     }

@@ -14,15 +14,14 @@ public class FormControl
 
     public FormControl(string name, InputField inputField, params Validator.ValidatorFunc[] validators)
     {
-        Touched = false;
-        this.Name = name;
-        this.InputField = inputField;
-        this.Selectable = inputField;
-        this.Validators = validators;
+        Name = name;
+        InputField = inputField;
+        Selectable = inputField;
+        Validators = validators;
     }
 
     public FormControl(Selectable selectable)
     {
-        this.Selectable = selectable;
+        Selectable = selectable;
     }
 }

@@ -14,9 +14,11 @@ public class RegisterPanel : MainMenuPanel
     public InputField RegisterEmail;
     public Button RegisterButton;
 
-    private void Start()
+    private Form form;
+
+    private void Awake()
     {
-        Form form = gameObject.AddComponent<Form>()
+        form = gameObject.AddComponent<Form>()
             .SetInputs(
                 RegisterButton,
                 new FormControl("name", RegisterName,
@@ -43,6 +45,11 @@ public class RegisterPanel : MainMenuPanel
                     errors["retypePassword"] = "Passwords must match";
                 }
             });
+    }
+
+    private void OnEnable()
+    {
+        form.ResetForm();
     }
 
     public void Register()

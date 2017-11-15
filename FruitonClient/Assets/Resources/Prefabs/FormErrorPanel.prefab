@@ -38,7 +38,6 @@ GameObject:
   - component: {fileID: 224417019148165688}
   - component: {fileID: 222895193943932742}
   - component: {fileID: 114995650570455752}
-  - component: {fileID: 114306991665376776}
   m_Layer: 5
   m_Name: FormErrorPanel
   m_TagString: Untagged
@@ -46,17 +45,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &114306991665376776
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1877451277033194}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08166418cd11e664c87fabf090df2bf2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114475509230770900
 MonoBehaviour:
   m_ObjectHideFlags: 1
