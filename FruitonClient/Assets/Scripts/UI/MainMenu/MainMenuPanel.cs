@@ -5,6 +5,7 @@ using UnityEngine;
 public class MainMenuPanel : MonoBehaviour {
 
     public MenuPanel Name;
+    public bool Mobile = false;
 
     public virtual bool SetPanelActive(bool toggle) {
         if (toggle) {

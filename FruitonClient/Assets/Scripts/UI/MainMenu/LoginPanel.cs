@@ -1,5 +1,4 @@
 ﻿using Networking;
-using UnityEngine;
 using UnityEngine.UI;
 
 public class LoginPanel : MainMenuPanel
@@ -10,31 +9,29 @@ public class LoginPanel : MainMenuPanel
     public Text LoginMessageText;
     public Button LoginButton;
 
-    private Selectable SelectedInputField;
+    private Form form;
 
-    public enum LoginMessage { ValidUser, NotValidUser, NoConnection}
-
-    private void Start()
+    public enum LoginMessage
     {
-        SelectedInputField = LoginName;
-        SelectedInputField.Select();
+        ValidUser,
+        NotValidUser,
+        NoConnection
     }
 
-    private void Update()
+    private void Awake()
     {
-        if (Input.GetKeyDown(KeyCode.Tab))
-        {
-            
-            if (SelectedInputField == LoginButton)
-            {
-                SelectedInputField = LoginName;
-            }
-            else
-            {
-                SelectedInputField = SelectedInputField.FindSelectableOnDown();
-            }
-            SelectedInputField.Select();
-        }
+        form = gameObject.AddComponent<Form>().SetInputs(
+            LoginButton,
+            new FormControl("name", LoginName, Validator.Required("Please enter name")),
+            new FormControl("password", LoginPassword, Validator.Required("Please enter password")),
+            new FormControl(LoginStayLoggedIn),
+            new FormControl(LoginButton)
+        );
+    }
+
+    private void OnEnable()
+    {
+        form.ResetForm();
     }
 
     // checks whether the LoginData combination is valid
@@ -71,9 +68,8 @@ public class LoginPanel : MainMenuPanel
         gameManager.StayLoggedIn = LoginStayLoggedIn.isOn;
         string name = LoginName.text;
         string password = LoginPassword.text;
-
         connectionHandler.LoginBasic(name, password, true);
-
+        panelManager.ShowLoadingIndicator();
     }
 
     // called after pressing Registration Button

@@ -18,24 +18,25 @@ namespace Networking
     {
         private static readonly string URL_CHAT = "ws://prak.mff.cuni.cz:8050/fruiton/socket";
         private static readonly string URL_API = "http://prak.mff.cuni.cz:8050/fruiton/api/";
-        
-        private static readonly string GOOGLE_ID = 
+
+        private static readonly string GOOGLE_ID =
             "827606142557-f63cu712orq80s6do9n6aa8s3eu3h7ag.apps.googleusercontent.com";
+
         private static readonly string GOOGLE_CLIENT_SECRET = "NyYlQJICuxYX3AnzChou2X8i";
 
         private static readonly int GOOGLE_REDIRECT_PORT = 9999;
-        
+
         private static readonly string GOOGLE_REDIRECT_URI = "http://127.0.0.1:" + GOOGLE_REDIRECT_PORT;
         private static readonly string GOOGLE_TOKEN_URI = "https://www.googleapis.com/oauth2/v4/token";
-        
+
         /// <summary>
         /// Dummy password for google users.
         /// </summary>
         private static readonly string GOOGLE_PASSWORD = "google_pwd";
-        
+
         private static string googleLoginSuccessHtml;
         private static string googleLoginErrorHtml;
-        
+
         private WebSocket webSocket;
 
         private Dictionary<WrapperMessage.MessageOneofCase, List<IOnMessageListener>> listeners =
@@ -69,7 +70,7 @@ namespace Networking
             var headers = GetRequestHeaders(useProtobuf);
 
             var www = new WWW(URL_API + "register", binaryData, headers);
-            StartCoroutine(PostRegister(www));
+            StartCoroutine(PostRegister(www, login));
         }
 
         public void LoginBasic(string login, string password, bool useProtobuf)
@@ -96,7 +97,7 @@ namespace Networking
             webSocket.Send(GetBinaryData(message));
         }
 
-        private void ProcessLoginResult(string login, string password, string token)
+        private void ProcessLoginResult(string login, string password, string token, string errorMessage = null)
         {
             if (IsLogged())
             {
@@ -117,7 +118,7 @@ namespace Networking
             else
             {
                 // Perform offline login check
-                if (login != "" && password != "" && gameManager.UserName == login 
+                if (login != "" && password != "" && gameManager.UserName == login
                     && gameManager.UserPassword == password)
                 {
                     // Offline check successful
@@ -126,22 +127,27 @@ namespace Networking
                 }
                 else
                 {
-                    // TODO: error message
                     panelManager.SwitchPanels(MenuPanel.Login);
+                    panelManager.ShowErrorMessage(errorMessage);
                 }
             }
         }
 
-        private void ProcessRegistrationResult(bool success)
+        private void ProcessRegistrationResult(bool success, string login, string errorMessage = null)
         {
             PanelManager panelManager = PanelManager.Instance;
             if (success)
             {
                 panelManager.SwitchPanels(MenuPanel.Login);
+                panelManager.Panels[MenuPanel.Login].GetComponent<Form>().SetValue("name", login);
+                panelManager.ShowInfoMessage("User " + login + " successfully registered!");
             }
             else
             {
+                if (String.IsNullOrEmpty(errorMessage))
+                    errorMessage = "Unknown error. Please try again later.";
                 panelManager.SwitchPanels(MenuPanel.Register);
+                panelManager.ShowErrorMessage(errorMessage);
             }
         }
 
@@ -162,12 +168,12 @@ namespace Networking
         public void LoginGoogle()
         {
             var listener = new HttpListener();
-            
+
             listener.Prefixes.Add("http://*:" + GOOGLE_REDIRECT_PORT + "/");
             listener.Start();
-               
+
             Application.OpenURL(
-                "https://accounts.google.com/o/oauth2/v2/auth" 
+                "https://accounts.google.com/o/oauth2/v2/auth"
                 + "?client_id=" + GOOGLE_ID
                 + "&redirect_uri=" + GOOGLE_REDIRECT_URI
                 + "&response_type=code"
@@ -190,7 +196,7 @@ namespace Networking
                 if (IsLogged()) // user logged in by ordinary means sooner
                 {
                     responseString = string.Format(googleLoginErrorHtml, "You are already logged in.");
-                } 
+                }
                 else if (!string.IsNullOrEmpty(code))
                 {
                     responseString = googleLoginSuccessHtml;
@@ -231,42 +237,63 @@ namespace Networking
             form.AddField("client_secret", GOOGLE_CLIENT_SECRET);
             form.AddField("redirect_uri", GOOGLE_REDIRECT_URI);
             form.AddField("grant_type", "authorization_code");
-            
+
             var www = new WWW(GOOGLE_TOKEN_URI, form.data, headers);
             yield return www;
             if (!string.IsNullOrEmpty(www.text))
             {
-                Debug.Log(www.text);
-                string idToken = JToken.Parse(www.text)["id_token"].Value<string>();
-                StartCoroutine(Get("loginGoogle?idToken=" + idToken,
-                    googleLoginResultJson =>
-                    {
-                        var googleLoginResult = JToken.Parse(googleLoginResultJson);
-                        string token = googleLoginResult["token"].Value<string>();
-                        string login = googleLoginResult["login"].Value<string>();
-                        ProcessLoginResult(login, GOOGLE_PASSWORD, token);
-                    }, 
-                    Debug.LogError));
+                try
+                {
+                    string idToken = JToken.Parse(www.text)["id_token"].Value<string>();
+                    StartCoroutine(Get("loginGoogle?idToken=" + idToken,
+                        googleLoginResultJson =>
+                        {
+                            try
+                            {
+                                Debug.Log(googleLoginResultJson);
+                                var googleLoginResult = JToken.Parse(googleLoginResultJson);
+                                string token = googleLoginResult["token"].Value<string>();
+                                string login = googleLoginResult["login"].Value<string>();
+                                ProcessLoginResult(login, GOOGLE_PASSWORD, token);
+
+                            }
+                            catch (Exception ex)
+                            {
+                                ProcessLoginResult(null, null, null, "Unknown error. Please try again later.");
+                                Debug.Log("[Google Login] Failed - " + ex);
+                            }
+                        },
+                        error =>
+                        {
+                            ProcessLoginResult(null, null, null, error);
+                        }));
+                }
+                catch (Exception ex)
+                {
+                    ProcessLoginResult(null, null, null, "Unknown error. Please try again later.");
+                    Debug.Log("[Google Login] Failed - " + ex);
+                }
             }
             else
             {
-                Debug.Log("Could not login using google on our server " + www.error);
+                ProcessLoginResult(null, null, null, www.error);
+                Debug.Log("[Google Login] Failed - "+www.error); // text of success
             }
         }
 
-        private IEnumerator PostRegister(WWW www)
+        private IEnumerator PostRegister(WWW www, string login)
         {
             yield return www;
 
-            if (string.IsNullOrEmpty(www.error)) // success
+            if (string.IsNullOrEmpty(www.error))
             {
-                Debug.Log("[Registration] Post request succeeded.");
-                ProcessRegistrationResult(true);
+                Debug.Log("[Registration] Post request succeeded."); // text of success
+                ProcessRegistrationResult(true, login);
             }
-            else // error
+            else
             {
-                Debug.Log("[Registration] Post request failed.");
-                ProcessRegistrationResult(false);
+                Debug.Log("[Registration] Post request failed."); // error
+                ProcessRegistrationResult(false, login, www.text);
             }
         }
 
@@ -274,15 +301,16 @@ namespace Networking
         {
             yield return www;
 
-            if (string.IsNullOrEmpty(www.error)) // success
+            if (string.IsNullOrEmpty(www.error))
             {
-                Debug.Log("[Login] Post request succeeded. Token: " + www.text);
-                ProcessLoginResult(login, password, www.text);
+                Debug.Log("[Login] Post request succeeded."); // text of success
+                string loginToken = www.text;
+                ProcessLoginResult(login, password, loginToken);
             }
-            else // error
+            else
             {
-                Debug.Log("[Login] Post request failed. Message: " + www.error);
-                ProcessLoginResult(login, password, null);
+                Debug.Log("[Login] Post request failed."); // text of fail
+                ProcessLoginResult(login, password, null, www.text);
             }
         }
 
@@ -298,11 +326,12 @@ namespace Networking
             }
             else
             {
-                error.Invoke(www.error);
+                error.Invoke(www.text);
             }
         }
 
-        public IEnumerator Post(string query, Action<string> success, Action<string> error, byte[] body = null, Dictionary<string, string> headers = null)
+        public IEnumerator Post(string query, Action<string> success, Action<string> error, byte[] body = null,
+            Dictionary<string, string> headers = null)
         {
             var www = new WWW(URL_API + query, body, headers);
             yield return www;
@@ -333,7 +362,7 @@ namespace Networking
         private void Start()
         {
             RegisterListener(WrapperMessage.MessageOneofCase.ErrorMessage, this);
-            
+
             googleLoginSuccessHtml = Resources.Load<TextAsset>("Html/google_login_success").text;
             googleLoginErrorHtml = Resources.Load<TextAsset>("Html/google_login_error").text;
         }
@@ -347,7 +376,7 @@ namespace Networking
         {
             return webSocket.IsAlive();
         }
-        
+
         public void Disconnect()
         {
             webSocket.Close();
@@ -418,11 +447,10 @@ namespace Networking
                 listeners[msgCase].Remove(listener);
             }
         }
-        
+
         public void OnMessage(WrapperMessage message)
         {
             Debug.LogError(message.ErrorMessage.Message);
         }
-
     }
 }
