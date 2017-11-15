@@ -317,6 +317,7 @@ namespace Networking
         public IEnumerator Get(string query, Action<string> success, Action<string> error)
         {
             var www = new WWW(URL_API + query);
+            Debug.Log("www: " + URL_API + query);
             yield return www;
 
             if (string.IsNullOrEmpty(www.error))

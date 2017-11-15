@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Cz.Cuni.Mff.Fruiton.Dto;
 using fruiton.kernel;
 using fruiton.kernel.actions;
 using UnityEngine;
@@ -12,7 +13,8 @@ public class LocalPlayer : ClientPlayerBase
     private readonly GridLayoutManager gridLayoutManager;
 
 
-    public LocalPlayer(BattleViewer battleViewer, Player kernelPlayer, Battle battle) : base(kernelPlayer, battle)
+    public LocalPlayer(BattleViewer battleViewer, Player kernelPlayer, Battle battle, string login) 
+        : base(kernelPlayer, battle, login)
     {
         this.battleViewer = battleViewer;
         gridLayoutManager = GridLayoutManager.Instance;

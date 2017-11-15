@@ -21,7 +21,7 @@ namespace Networking
             );
         }
 
-        public static void GetAvatar(string player, Action<Texture> success, Action<string> error)
+        public static void GetAvatar(string player, Action<Texture2D> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
                 ConnectionHandler.Instance.Get(
@@ -79,6 +79,19 @@ namespace Networking
                     error,
                     body,
                     ConnectionHandler.Instance.GetRequestHeaders(true)
+                )
+            );
+        }
+
+        public static void RemoveFruitonTeam(FruitonTeam fruitonTeam, Action<string> success, Action<string> error)
+        {
+            string teamName = Uri.EscapeUriString(fruitonTeam.Name);
+            Debug.Log("team encoded name = " + teamName);
+            ConnectionHandler.Instance.StartCoroutine(
+                ConnectionHandler.Instance.Get(
+                    "removeFruitonTeam?login=" + GameManager.Instance.UserName + "&teamName=" + teamName,
+                    success,
+                    error
                 )
             );
         }
