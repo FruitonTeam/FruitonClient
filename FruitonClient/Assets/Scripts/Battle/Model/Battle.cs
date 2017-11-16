@@ -119,7 +119,7 @@ public class Battle
         var attackGenerators = kernelFruiton.attackGenerators.CastToList<AttackGenerator>();
         foreach (var attackGenerator in attackGenerators)
         {
-            var attacks = attackGenerator.getAttacks(potentialPosition, kernelFruiton.damage)
+            var attacks = attackGenerator.getAttacks(potentialPosition, kernelFruiton.currentAttributes.damage)
                 .CastToList<AttackAction>();
             foreach (var attack in attacks)
             {
