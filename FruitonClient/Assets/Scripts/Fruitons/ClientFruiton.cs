@@ -28,13 +28,13 @@ public class ClientFruiton : MonoBehaviour {
                 case HEALTH:
                     {
                         healthTag = child.GetComponentInChildren<TextMesh>();
-                        healthTag.text = KernelFruiton.hp.ToString();
+                        healthTag.text = KernelFruiton.currentAttributes.hp.ToString();
                     }
                     break;
                 case DAMAGE:
                     {
                         damageTag = child.GetComponentInChildren<TextMesh>();
-                        damageTag.text = KernelFruiton.damage.ToString();
+                        damageTag.text = KernelFruiton.currentAttributes.damage.ToString();
                     }
                     break;
             }
