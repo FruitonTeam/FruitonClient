@@ -104,7 +104,7 @@ public class BattleViewer : MonoBehaviour
                 if (fruiton != null)
                     fruiton.transform.Rotate(0, 180, 0);
             var oldPosition = Camera.main.transform.position;
-            Camera.main.transform.position = new Vector3(oldPosition.x, oldPosition.y, -oldPosition.z);
+            Camera.main.transform.position = new Vector3(-oldPosition.x, oldPosition.y, oldPosition.z);
             var oldEulerAngles = Camera.main.transform.eulerAngles;
             Camera.main.transform.eulerAngles = new Vector3(oldEulerAngles.x, oldEulerAngles.y + 180, oldEulerAngles.z);
         }
