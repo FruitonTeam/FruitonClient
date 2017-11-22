@@ -13,7 +13,7 @@ namespace UI.Notification
         
         private Vector3 originalPosition;
 
-        public bool IsAnimationCompleted{ get; private set; }
+        public bool IsAnimationCompleted { get; private set; }
 
         public NotificationView()
         {
