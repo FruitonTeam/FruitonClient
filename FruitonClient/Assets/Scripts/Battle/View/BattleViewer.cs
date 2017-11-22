@@ -214,14 +214,15 @@ public class BattleViewer : MonoBehaviour
 
         float currentTime = 0.0f;
         Vector3 direction = to - from;
-        Vector3 directionNormalized = direction.normalized;
         if (anim != null) // TODO remove when all is Spine
             anim.StartWalking();
 
         float epsilon = 0.05f;
-        while (Vector3.Distance(movedObject.transform.position, to) > epsilon &&
-            (to - movedObject.transform.position).normalized == directionNormalized) // Did we go over?
+        float distance, previousDistance = float.MaxValue;
+        while ((distance = Vector3.Distance(movedObject.transform.position, to)) > epsilon &&
+            distance <= previousDistance) // Are we still going closer?
         {
+            previousDistance = distance;
             currentTime += Time.deltaTime;
             Vector3 moveVector = direction * currentTime;
             movedObject.transform.position = from + moveVector;
