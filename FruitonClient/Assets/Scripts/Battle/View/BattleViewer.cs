@@ -121,6 +121,12 @@ public class BattleViewer : MonoBehaviour
         foreach (var clientFruiton in currentTeam)
         {
             var kernelFruiton = clientFruiton.GetComponent<ClientFruiton>().KernelFruiton;
+            var anim = clientFruiton.GetComponent<SkeletonAnimation>();
+            if (anim != null && player.id == 0)
+            {
+                anim.Skeleton.FlipX = true;
+            }
+
             kernelFruiton.owner = player;
             clientFruiton.gameObject.AddComponent<BoxCollider>();
             if (fruitonsPositions != null)
@@ -196,12 +202,22 @@ public class BattleViewer : MonoBehaviour
 
     private IEnumerator MoveCoroutine(Vector3 from, Vector3 to, GameObject movedObject)
     {
-        var anim = movedObject.GetComponent<SkeletonAnimation>();
-        float time = 1.0f;
+        var anim = movedObject.GetComponent<FruitonBattleAnimator>();
+
+        bool isFlipped = false;
+        if (anim != null &&
+            (anim.SkeletonAnim.Skeleton.FlipX && from.z > to.z ||
+             !anim.SkeletonAnim.Skeleton.FlipX && from.z < to.z))
+        {
+            isFlipped = true;
+            anim.SkeletonAnim.Skeleton.FlipX = !anim.SkeletonAnim.Skeleton.FlipX;
+        }
+
         float currentTime = 0.0f;
         Vector3 direction = to - from;
         if (anim != null)
-            anim.AnimationState.SetAnimation(5, "walk", true);
+            anim.StartWalking();
+
         while (Vector3.Distance(movedObject.transform.position, to) > 0.05)
         {
             currentTime += Time.deltaTime;
@@ -210,7 +226,12 @@ public class BattleViewer : MonoBehaviour
         }
         movedObject.transform.position = to; // Always make sure we made it exactly there
         if (anim != null)
-            anim.AnimationState.ClearTrack(5);
+        {
+            anim.StopWalking();
+            if (isFlipped)
+                anim.SkeletonAnim.Skeleton.FlipX = !anim.SkeletonAnim.Skeleton.FlipX;
+
+        }
         isInputEnabled = true;
     }
 

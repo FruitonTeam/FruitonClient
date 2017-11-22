@@ -8,7 +8,7 @@ public class ClientFruiton : MonoBehaviour {
     private TextMesh healthTag;
     private TextMesh damageTag;
 
-    public Fruiton KernelFruiton { get; set;}
+    public Fruiton KernelFruiton { get; set; }
 
     private const string TAGS = "Tags";
     private const string HEALTH = "Health";
@@ -16,7 +16,7 @@ public class ClientFruiton : MonoBehaviour {
 
     private void Start()
     {
-        var tags = UnityEngine.Object.Instantiate(Resources.Load("Models/Auxiliary/Tags", typeof(GameObject))) as GameObject;
+        var tags = Instantiate(Resources.Load("Models/Auxiliary/Tags", typeof(GameObject))) as GameObject;
         tags.name = TAGS;
         tags.transform.position = transform.position + new Vector3(0, 1, -1.33f);
         tags.transform.Rotate(new Vector3(45, 0, 0));
@@ -38,6 +38,12 @@ public class ClientFruiton : MonoBehaviour {
                     }
                     break;
             }
+        }
+
+        var anim = GetComponent<FruitonBattleAnimator>();
+        if (anim != null) // TODO remove when all is Spine
+        {
+            anim.Initialize();
         }
     }
 
