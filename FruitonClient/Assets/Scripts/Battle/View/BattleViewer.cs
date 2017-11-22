@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cz.Cuni.Mff.Fruiton.Dto;
-using fruiton.fruitDb.factories;
 using fruiton.kernel;
 using fruiton.kernel.actions;
 using fruiton.kernel.events;
@@ -218,12 +217,17 @@ public class BattleViewer : MonoBehaviour
         if (anim != null) // TODO remove when all is Spine
             anim.StartWalking();
 
-        while (Vector3.Distance(movedObject.transform.position, to) > 0.05)
+        float distance, previousDistance = float.MaxValue;
+        while ((distance = Vector3.Distance(movedObject.transform.position, to)) > 0.05f &&
+            distance <= previousDistance) // Are we still going closer?
         {
+            previousDistance = distance;
             currentTime += Time.deltaTime;
-            movedObject.transform.position = from + (direction * currentTime);
+            Vector3 moveVector = direction * currentTime;
+            movedObject.transform.position = from + moveVector;
             yield return null;
         }
+
         movedObject.transform.position = to; // Always make sure we made it exactly there
         if (anim != null) // TODO remove when all is Spine
         {
