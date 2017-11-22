@@ -5,8 +5,6 @@ using Spine.Unity;
 
 public class PeaTMAnimator : MonoBehaviour
 {
-    public CharaterSide characterSide;
-
     private SkeletonAnimation skeletonAnim;
 
     public float AnimSwitchTime;
@@ -89,49 +87,6 @@ public class PeaTMAnimator : MonoBehaviour
         skeletonAnim.AnimationState.AddAnimation(USUAL_TRACK, "fire", false, 0);
         //skeletonAnim.AnimationState.AddEmptyAnimation(USUAL_TRACK, 0, 0);
         // TODO Move weapons back so they do not float
-    }
-
-    private void TurnCharacter(CharaterSide side)
-    {
-        switch (side)
-        {
-            case CharaterSide.FRONT_L:
-                skeletonAnim.AnimationState.ClearTrack(0);
-                skeletonAnim.skeleton.SetSkin("FrontQuarter");
-                skeletonAnim.skeleton.FlipX = false;
-                skeletonAnim.skeleton.SetSlotsToSetupPose();
-                skeletonAnim.AnimationState.Apply(skeletonAnim.Skeleton);
-                break;
-            case CharaterSide.FRONT_R:
-                skeletonAnim.AnimationState.ClearTrack(0);
-                skeletonAnim.skeleton.SetSkin("FrontQuarter");
-                skeletonAnim.skeleton.FlipX = true;
-                skeletonAnim.skeleton.SetSlotsToSetupPose();
-                skeletonAnim.AnimationState.Apply(skeletonAnim.Skeleton);
-                break;
-            //case CharaterSide.SIDE_R:
-            //    skeletonAnim.skeleton.FlipX = true;
-            //    break;
-            case CharaterSide.BACK_R:
-                skeletonAnim.skeleton.FlipX = true;
-                skeletonAnim.AnimationState.SetAnimation(0, "drawOrderBack", false);
-                skeletonAnim.skeleton.SetSkin("BackQuarter");
-                skeletonAnim.skeleton.SetSlotsToSetupPose();
-                skeletonAnim.AnimationState.Apply(skeletonAnim.Skeleton);
-                break;
-            case CharaterSide.BACK_L:
-                skeletonAnim.skeleton.FlipX = false;
-                skeletonAnim.AnimationState.SetAnimation(0, "drawOrderBack", false);
-                skeletonAnim.skeleton.SetSkin("BackQuarter");
-                skeletonAnim.skeleton.SetSlotsToSetupPose();
-                skeletonAnim.AnimationState.Apply(skeletonAnim.Skeleton);
-                break;
-            //case CharaterSide.SIDE_L:
-            //    skeletonAnim.skeleton.FlipX = false;
-            //    break;
-        }
-        characterSide = side;
-
     }
 
     private void ResetCharacter()
