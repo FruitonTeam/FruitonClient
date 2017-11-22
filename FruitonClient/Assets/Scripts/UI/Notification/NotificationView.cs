@@ -12,11 +12,12 @@ namespace UI.Notification
         public Text Text;
         
         private Vector3 originalPosition;
-        private bool isAnimationCompleted = true;
 
-        public bool IsAnimationCompleted
+        public bool IsAnimationCompleted{ get; private set; }
+
+        public NotificationView()
         {
-            get { return isAnimationCompleted; }
+            IsAnimationCompleted = true;
         }
 
         public void SetData(NotificationManager.NotificationData data)
@@ -28,7 +29,7 @@ namespace UI.Notification
         
         public void StartAnimation()
         {
-            isAnimationCompleted = false;
+            IsAnimationCompleted = false;
             
             iTween.MoveTo(gameObject, iTween.Hash(
                 "position", gameObject.transform.position + new Vector3(0, -gameObject.GetComponent<RectTransform>().rect.height),
@@ -46,7 +47,7 @@ namespace UI.Notification
 
         private void OnAnimationComplete()
         {
-            isAnimationCompleted = true;
+            IsAnimationCompleted = true;
         }
 
         private void Start()
