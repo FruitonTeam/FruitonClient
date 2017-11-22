@@ -217,9 +217,8 @@ public class BattleViewer : MonoBehaviour
         if (anim != null) // TODO remove when all is Spine
             anim.StartWalking();
 
-        float epsilon = 0.05f;
         float distance, previousDistance = float.MaxValue;
-        while ((distance = Vector3.Distance(movedObject.transform.position, to)) > epsilon &&
+        while ((distance = Vector3.Distance(movedObject.transform.position, to)) > 0.05f &&
             distance <= previousDistance) // Are we still going closer?
         {
             previousDistance = distance;
