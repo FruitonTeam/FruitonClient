@@ -139,7 +139,7 @@ public class BattleViewer : MonoBehaviour
             Grid[i, j] = clientFruiton;
             kernelFruiton.position = new KVector2(i, j);
             var cellPosition = gridLayoutManager.GetCellPosition(i, j);
-            clientFruiton.transform.position = cellPosition + new Vector3(0, clientFruiton.transform.lossyScale.y, 0);
+            clientFruiton.transform.position = cellPosition;
         }
     }
 
@@ -205,7 +205,7 @@ public class BattleViewer : MonoBehaviour
         var anim = movedObject.GetComponent<FruitonBattleAnimator>();
 
         bool isFlipped = false;
-        if (anim != null &&
+        if (anim != null && // TODO remove when all is Spine
             (anim.SkeletonAnim.Skeleton.FlipX && from.z > to.z ||
              !anim.SkeletonAnim.Skeleton.FlipX && from.z < to.z))
         {
@@ -215,7 +215,7 @@ public class BattleViewer : MonoBehaviour
 
         float currentTime = 0.0f;
         Vector3 direction = to - from;
-        if (anim != null)
+        if (anim != null) // TODO remove when all is Spine
             anim.StartWalking();
 
         while (Vector3.Distance(movedObject.transform.position, to) > 0.05)
@@ -225,7 +225,7 @@ public class BattleViewer : MonoBehaviour
             yield return null;
         }
         movedObject.transform.position = to; // Always make sure we made it exactly there
-        if (anim != null)
+        if (anim != null) // TODO remove when all is Spine
         {
             anim.StopWalking();
             if (isFlipped)

@@ -18,7 +18,7 @@ public class ClientFruiton : MonoBehaviour {
     {
         var tags = Instantiate(Resources.Load("Models/Auxiliary/Tags", typeof(GameObject))) as GameObject;
         tags.name = TAGS;
-        tags.transform.position = transform.position + new Vector3(0, 1, -1.33f);
+        tags.transform.position = transform.position + new Vector3(0, 1.2f, -1.33f);
         tags.transform.Rotate(new Vector3(45, 0, 0));
         tags.transform.parent = transform;
         foreach (Transform child in tags.transform)
