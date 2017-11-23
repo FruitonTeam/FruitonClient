@@ -67,8 +67,8 @@ public class OnlineBattle : Battle, IOnMessageListener
 
     private void ProcessMessage(GameReady gameReadyMessage)
     {
-        Player kernelPlayer1 = new Player(0);
-        Player kernelPlayer2 = new Player(1);
+        var kernelPlayer1 = new Player(0);
+        var kernelPlayer2 = new Player(1);
         LocalPlayer = new LocalPlayer(battleViewer, kernelPlayer1, this, gameManager.UserName);
         OnlinePlayer = new OnlinePlayer(kernelPlayer2, this, gameReadyMessage.Opponent.Login);
         IEnumerable<GameObject> opponentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameReadyMessage.OpponentTeam.FruitonIDs);

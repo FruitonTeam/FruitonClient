@@ -102,10 +102,13 @@ public class BattleViewer : MonoBehaviour
         {
             foreach (var fruiton in Grid)
                 if (fruiton != null)
-                    fruiton.transform.Rotate(0, 180, 0);
-            var oldPosition = Camera.main.transform.position;
+                {
+                    var clientFruiton = fruiton.GetComponent<ClientFruiton>();
+                    clientFruiton.FlipAround();
+                }
+            Vector3 oldPosition = Camera.main.transform.position;
             Camera.main.transform.position = new Vector3(-oldPosition.x, oldPosition.y, oldPosition.z);
-            var oldEulerAngles = Camera.main.transform.eulerAngles;
+            Vector3 oldEulerAngles = Camera.main.transform.eulerAngles;
             Camera.main.transform.eulerAngles = new Vector3(oldEulerAngles.x, oldEulerAngles.y + 180, oldEulerAngles.z);
         }
         PanelLoadingGame.SetActive(false);
@@ -121,7 +124,8 @@ public class BattleViewer : MonoBehaviour
         {
             var kernelFruiton = clientFruiton.GetComponent<ClientFruiton>().KernelFruiton;
             var anim = clientFruiton.GetComponent<SkeletonAnimation>();
-            if (anim != null && player.id == 0)
+            if (anim != null && // TODO remove when all is Spine
+                player.id == 0)
             {
                 anim.Skeleton.FlipX = true;
             }
