@@ -7,6 +7,7 @@ using System.Text;
 using Cz.Cuni.Mff.Fruiton.Dto;
 using Google.Protobuf;
 using Newtonsoft.Json.Linq;
+using UI.Notification;
 using UnityEngine;
 
 namespace Networking
@@ -114,6 +115,8 @@ namespace Networking
                 gameManager.UserPassword = password;
                 panelManager.SwitchPanels(MenuPanel.Main);
                 gameManager.Initialize();
+                
+                OnConnected();
             }
             else
             {
@@ -131,6 +134,11 @@ namespace Networking
                     panelManager.ShowErrorMessage(errorMessage);
                 }
             }
+        }
+
+        private void OnConnected()
+        {
+            RegisterListener(WrapperMessage.MessageOneofCase.Notification, NotificationManager.Instance);
         }
 
         private void ProcessRegistrationResult(bool success, string login, string errorMessage = null)
