@@ -14,13 +14,15 @@ public class ClientFruiton : MonoBehaviour {
     private const string HEALTH = "Health";
     private const string DAMAGE = "Damage";
 
+    private FruitonBattleAnimator animator;
+    private GameObject tags;
+
     private void Start()
     {
-        var tags = Instantiate(Resources.Load("Models/Auxiliary/Tags", typeof(GameObject))) as GameObject;
+        tags = Instantiate(Resources.Load("Models/Auxiliary/Tags", typeof(GameObject))) as GameObject;
         tags.name = TAGS;
-        tags.transform.position = transform.position + new Vector3(0, 1.2f, -1.33f);
-        tags.transform.Rotate(new Vector3(45, 0, 0));
         tags.transform.parent = transform;
+        tags.transform.localPosition = Vector3.zero;
         foreach (Transform child in tags.transform)
         {
             switch (child.name)
@@ -40,10 +42,10 @@ public class ClientFruiton : MonoBehaviour {
             }
         }
 
-        var anim = GetComponent<FruitonBattleAnimator>();
-        if (anim != null) // TODO remove when all is Spine
+        animator = GetComponent<FruitonBattleAnimator>();
+        if (animator != null) // TODO remove when all is Spine
         {
-            anim.Initialize();
+            animator.Initialize();
         }
     }
 
@@ -54,5 +56,14 @@ public class ClientFruiton : MonoBehaviour {
 
         int newHealth = currentHealth - damage;
         healthTag.text = newHealth.ToString();
+    }
+
+    public void FlipAround()
+    {
+        if (animator != null) // TODO remove when all is Spine
+        {
+            animator.SkeletonAnim.Skeleton.FlipX = !animator.SkeletonAnim.Skeleton.FlipX;
+        }
+        tags.transform.Rotate(0, 180, 0);
     }
 }
