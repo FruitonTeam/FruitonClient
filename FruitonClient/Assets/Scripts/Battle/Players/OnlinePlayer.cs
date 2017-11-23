@@ -47,4 +47,9 @@ public class OnlinePlayer : ClientPlayerBase, IOnMessageListener
         var wrapperMessage = new WrapperMessage {Action = actionMessage};
         ConnectionHandler.Instance.SendWebsocketMessage(wrapperMessage);
     }
+
+    public override void Unregister()
+    {
+        ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.Action, this);
+    }
 }

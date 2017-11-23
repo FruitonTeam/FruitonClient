@@ -29,6 +29,7 @@ public class OnlineBattle : Battle, IOnMessageListener
         {
             ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.GameReady, this);
             ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.GameStarts, this);
+            ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.GameOver, this);
         }
         FindGame();
     }
@@ -60,6 +61,11 @@ public class OnlineBattle : Battle, IOnMessageListener
             case WrapperMessage.MessageOneofCase.GameStarts:
                 {
                     ProcessMessage(message.GameStarts);
+                }
+                break;
+            case WrapperMessage.MessageOneofCase.GameOver:
+                {
+                    ProcessMessage(message.GameOver);
                 }
                 break;
         }
@@ -123,5 +129,21 @@ public class OnlineBattle : Battle, IOnMessageListener
     {
         kernel.startGame();
         battleViewer.StartOnlineGame(isLocalPlayerFirst);
+    }
+
+    private void ProcessMessage(GameOver gameOverMessage)
+    {
+        ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.GameReady, this);
+        ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.GameStarts, this);
+        ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.GameOver, this);
+        OnlinePlayer.Unregister();
+        battleViewer.GameOver(gameOverMessage);
+    }
+
+    public override void SurrenderEvent()
+    {
+        var surrenderMessage = new Surrender();
+        var wrapperMessage = new WrapperMessage { Surrender = surrenderMessage };
+        ConnectionHandler.Instance.SendWebsocketMessage(wrapperMessage);
     }
 }

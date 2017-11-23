@@ -9,7 +9,7 @@ using KVector2 = fruiton.dataStructures.Point;
 using KAction = fruiton.kernel.actions.Action;
 using KFruiton = fruiton.kernel.Fruiton;
 
-public class Battle
+public abstract class Battle
 {
     protected GameManager gameManager;
     protected Kernel kernel;
@@ -18,7 +18,7 @@ public class Battle
     public ClientPlayerBase Player1 { get; protected set; }
     public ClientPlayerBase Player2 { get; protected set; }
 
-    public Battle(BattleViewer battleViewer)
+    protected Battle(BattleViewer battleViewer)
     {
         gameManager = GameManager.Instance;
         this.battleViewer = battleViewer;
@@ -92,6 +92,10 @@ public class Battle
             ((LocalPlayer) Player1).EndTurn();
         else if (IsPlayerActive(Player2) && Player2 is LocalPlayer)
             ((LocalPlayer) Player2).EndTurn();
+    }
+
+    public virtual void SurrenderEvent()
+    {
     }
 
     private bool TryPassLeftButtonEvent(ClientPlayerBase player, RaycastHit hit)

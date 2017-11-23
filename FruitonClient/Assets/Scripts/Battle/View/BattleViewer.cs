@@ -146,8 +146,6 @@ public class BattleViewer : MonoBehaviour
         }
     }
 
-
-
     private void UpdateTimer()
     {
         var timeLeft = battle.ComputeRemainingTime();
@@ -274,6 +272,19 @@ public class BattleViewer : MonoBehaviour
         DisableEndTurnButton();
         gridLayoutManager.ResetHighlights();
         battle.EndTurnEvent();
+    }
+
+    public void Surrender()
+    {
+        battle.SurrenderEvent();
+        Scenes.Load(Scenes.MAIN_MENU);
+    }
+
+    public void GameOver(GameOver gameOverMessage)
+    {
+        // TODO show some nice screen here
+        Debug.Log("Game over, reason: " + gameOverMessage.Reason + ", result: " + gameOverMessage.Results);
+        Scenes.Load(Scenes.MAIN_MENU);
     }
 
     public void EnableEndTurnButton()
