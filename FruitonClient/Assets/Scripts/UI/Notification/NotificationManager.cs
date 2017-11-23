@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using Cz.Cuni.Mff.Fruiton.Dto;
+using Networking;
 using UnityEngine;
 
 namespace UI.Notification
 {
-    public class NotificationManager : MonoBehaviour
+    public class NotificationManager : MonoBehaviour, IOnMessageListener
     {
         public static NotificationManager Instance { get; private set; }
 
@@ -18,7 +20,7 @@ namespace UI.Notification
 
         public void Show(string header, string text)
         {
-            notificationQueue.Enqueue(new NotificationData(null, header, text));
+            notificationQueue.Enqueue(new NotificationData(null, header, text)); // TODO: show default image
         }
 
         private void Update()
@@ -41,6 +43,22 @@ namespace UI.Notification
             else if (Instance != this)
             {
                 Destroy(gameObject);
+            }
+        }
+        
+        public void OnMessage(WrapperMessage message)
+        {
+            Cz.Cuni.Mff.Fruiton.Dto.Notification n = message.Notification;
+
+            if (!string.IsNullOrEmpty(n.Image))
+            {
+                var notificationImage = new Texture2D(0, 0);
+                notificationImage.LoadImage(Convert.FromBase64String(n.Image));
+                Show(notificationImage, n.Title, n.Text);
+            }
+            else
+            {
+                Show(n.Title, n.Text);
             }
         }
         
