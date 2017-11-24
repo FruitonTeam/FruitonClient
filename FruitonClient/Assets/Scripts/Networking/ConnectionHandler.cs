@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using Cz.Cuni.Mff.Fruiton.Dto;
 using Google.Protobuf;
+using UI.Chat;
 using UI.Notification;
 using UnityEngine;
 
@@ -138,6 +139,7 @@ namespace Networking
         private void OnConnected()
         {
             RegisterListener(WrapperMessage.MessageOneofCase.Notification, NotificationManager.Instance);
+            RegisterListener(WrapperMessage.MessageOneofCase.ChatMessage, ChatMessageNotifier.Instance);
         }
 
         private void ProcessRegistrationResult(bool success, string login, string errorMessage = null)
@@ -384,11 +386,12 @@ namespace Networking
         public void Disconnect()
         {
             webSocket.Close();
+            listeners = new Dictionary<WrapperMessage.MessageOneofCase, List<IOnMessageListener>>();
         }
 
         public void Logout()
         {
-            webSocket.Close();
+            Disconnect();
             webSocket = null;
         }
 

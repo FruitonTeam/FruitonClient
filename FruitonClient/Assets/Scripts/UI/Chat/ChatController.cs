@@ -38,6 +38,8 @@ namespace UI.Chat
             if (ConnectionHandler.Instance.IsLogged())
             {
                 ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.ChatMessage, this);
+                ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.ChatMessage, 
+                    ChatMessageNotifier.Instance);
             }
         }
 
@@ -46,6 +48,8 @@ namespace UI.Chat
             if (ConnectionHandler.Instance.IsLogged())
             {
                 ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.ChatMessage, this);
+                ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.ChatMessage, 
+                    ChatMessageNotifier.Instance);
             }
         }
 
@@ -112,21 +116,26 @@ namespace UI.Chat
             {
                 if (exists)
                 {
-                    PlayerHelper.GetAvatar(friendToAdd,
-                        texture => { FriendListController.SetAvatar(friendToAdd, texture); },
-                        error =>
-                        {
-                            Debug.LogWarning("Could not get avatar for user " + friendToAdd +
-                                             ". Default avatar will be used.");
-                        });
-                    FriendListController.AddItem(friendToAdd);
-                    friendMessages[friendToAdd] = "";
+                    AddFriendToList(friendToAdd);
                 }
                 else
                 {
                     Debug.LogWarning("No user with name " + friendToAdd);
                 }
             }, err => { Debug.LogWarning("Error while checking player existence" + err); });
+        }
+
+        private void AddFriendToList(string friendToAdd)
+        {
+            PlayerHelper.GetAvatar(friendToAdd,
+                texture => { FriendListController.SetAvatar(friendToAdd, texture); },
+                error =>
+                {
+                    Debug.LogWarning("Could not get avatar for user " + friendToAdd +
+                                     ". Default avatar will be used.");
+                });
+            FriendListController.AddItem(friendToAdd);
+            friendMessages[friendToAdd] = "";
         }
 
         public void OnItemSelected(int index)
@@ -170,28 +179,33 @@ namespace UI.Chat
 
             if (!friends.Contains(from))
             {
-                FriendListController.AddItem(from);
-                friendMessages[from] = "";
+                AddFriendToList(from);
             }
 
-            if (from == FriendName.text)
+            AppendNewMessage(from, chatMessage.Message);
+        }
+
+        private void AppendNewMessage(string friend, string message)
+        {
+            if (friend == FriendName.text)
             {
                 // update current chat
                 if (ChatText.text != "")
                 {
                     ChatText.text += "\n";
                 }
-                ChatText.text += from + ": " + chatMessage.Message;
+                ChatText.text += friend + ": " + message;
             }
             else
             {
-                if (friendMessages[from] != "")
+                if (friendMessages[friend] != "")
                 {
-                    friendMessages[from] += "\n";
+                    friendMessages[friend] += "\n";
                 }
-                friendMessages[from] += from + ": " + chatMessage.Message;
-                FriendListController.IncrementUnreadCount(from);
+                friendMessages[friend] += friend + ": " + message;
+                FriendListController.IncrementUnreadCount(friend);
             }
         }
+        
     }
 }
