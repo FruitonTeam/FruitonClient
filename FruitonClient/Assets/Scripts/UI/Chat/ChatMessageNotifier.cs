@@ -12,15 +12,15 @@ namespace UI.Chat
         private static ChatMessageNotifier instance;
         
         public static ChatMessageNotifier Instance {
-            get {
+            get 
+            {
                 if (instance == null)
                 {
                     instance = new ChatMessageNotifier();
+                    defaultAvatar = Resources.Load<Texture2D>("Images/avatar_default");
                 }
-                defaultAvatar = Resources.Load<Texture2D>("Images/avatar_default");
                 return instance;
             }
-            private set {}
         }
         
         public void OnMessage(WrapperMessage message)
