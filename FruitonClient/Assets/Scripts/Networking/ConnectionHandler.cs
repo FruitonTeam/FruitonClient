@@ -6,7 +6,7 @@ using System.Net;
 using System.Text;
 using Cz.Cuni.Mff.Fruiton.Dto;
 using Google.Protobuf;
-using Newtonsoft.Json.Linq;
+using UI.Chat;
 using UI.Notification;
 using UnityEngine;
 
@@ -139,6 +139,7 @@ namespace Networking
         private void OnConnected()
         {
             RegisterListener(WrapperMessage.MessageOneofCase.Notification, NotificationManager.Instance);
+            RegisterListener(WrapperMessage.MessageOneofCase.ChatMessage, ChatMessageNotifier.Instance);
         }
 
         private void ProcessRegistrationResult(bool success, string login, string errorMessage = null)
@@ -252,18 +253,15 @@ namespace Networking
             {
                 try
                 {
-                    string idToken = JToken.Parse(www.text)["id_token"].Value<string>();
+                    string idToken = JsonUtility.FromJson<IdToken>(www.text).id_token;
                     StartCoroutine(Get("loginGoogle?idToken=" + idToken,
                         googleLoginResultJson =>
                         {
                             try
                             {
                                 Debug.Log(googleLoginResultJson);
-                                var googleLoginResult = JToken.Parse(googleLoginResultJson);
-                                string token = googleLoginResult["token"].Value<string>();
-                                string login = googleLoginResult["login"].Value<string>();
-                                ProcessLoginResult(login, GOOGLE_PASSWORD, token);
-
+                                var googleLoginResult = JsonUtility.FromJson<GoogleLoginResult>(googleLoginResultJson);
+                                ProcessLoginResult(googleLoginResult.login, GOOGLE_PASSWORD, googleLoginResult.token);
                             }
                             catch (Exception ex)
                             {
@@ -388,11 +386,12 @@ namespace Networking
         public void Disconnect()
         {
             webSocket.Close();
+            listeners = new Dictionary<WrapperMessage.MessageOneofCase, List<IOnMessageListener>>();
         }
 
         public void Logout()
         {
-            webSocket.Close();
+            Disconnect();
             webSocket = null;
         }
 
@@ -460,5 +459,19 @@ namespace Networking
         {
             Debug.LogError(message.ErrorMessage.Message);
         }
+
+        [Serializable]
+        private struct IdToken
+        {
+            public string id_token;
+        }
+
+        [Serializable]
+        private struct GoogleLoginResult
+        {
+            public string token;
+            public string login;
+        }
+
     }
 }
