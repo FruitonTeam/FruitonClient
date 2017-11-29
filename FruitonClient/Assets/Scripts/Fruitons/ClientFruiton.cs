@@ -56,6 +56,7 @@ public class ClientFruiton : MonoBehaviour {
 
         int newHealth = currentHealth - damage;
         healthTag.text = newHealth.ToString();
+        healthTag.color = GetHighlightColor(KernelFruiton.originalAttributes.hp, newHealth);
     }
 
     public void FlipAround()
@@ -65,5 +66,27 @@ public class ClientFruiton : MonoBehaviour {
             animator.SkeletonAnim.Skeleton.FlipX = !animator.SkeletonAnim.Skeleton.FlipX;
         }
         tags.transform.Rotate(0, 180, 0);
+    }
+
+    public void ModifyAttack(int newAttack)
+    {
+        damageTag.text = newAttack.ToString();
+        damageTag.color = GetHighlightColor(KernelFruiton.originalAttributes.damage, newAttack);
+    }
+
+    private Color GetHighlightColor(int originalValue, int newValue)
+    {
+        if (newValue < originalValue)
+        {
+            return Color.red;
+        }
+        else if (newValue > originalValue)
+        {
+            return Color.green;
+        }
+        else
+        {
+            return Color.black;
+        }
     }
 }

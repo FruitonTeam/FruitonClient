@@ -173,6 +173,17 @@ public class BattleViewer : MonoBehaviour
             ProcessAttackEvent((AttackEvent) kEvent);
         else if (eventType == typeof(DeathEvent))
             ProcessDeathEvent((DeathEvent) kEvent);
+        else if (eventType == typeof(ModifyAttackEvent))
+        {
+            ProcessModifyAttackEvent((ModifyAttackEvent) kEvent);
+        }
+    }
+
+    private void ProcessModifyAttackEvent(ModifyAttackEvent kEvent)
+    {
+        KVector2 kEventPosition = kEvent.position;
+        var clientFruiton = Grid[kEventPosition.x, kEventPosition.y].GetComponent<ClientFruiton>();
+        clientFruiton.ModifyAttack(kEvent.newAttack);
     }
 
     private void ProcessDeathEvent(DeathEvent kEvent)
