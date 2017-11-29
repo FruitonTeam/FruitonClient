@@ -23,8 +23,8 @@ public class ClientFruiton : MonoBehaviour {
     {
         if (!isInitialized)
         {
-            isInitialized = true;
             Initialize();
+            isInitialized = true;
         }
     }
 
@@ -73,16 +73,12 @@ public class ClientFruiton : MonoBehaviour {
     {
         if (!isInitialized)
         {
-            isInitialized = true;
             Initialize();
+            isInitialized = true;
         }
         if (animator != null) // TODO remove when all is Spine
         {
             animator.SkeletonAnim.Skeleton.FlipX = !animator.SkeletonAnim.Skeleton.FlipX;
-        }
-        if (tags == null)
-        {
-            Debug.Log("null tags");
         }
         tags.transform.Rotate(0, 180, 0);
     }

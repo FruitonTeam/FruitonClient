@@ -73,10 +73,6 @@ public class BattleViewer : MonoBehaviour
             LeftButtonUpLogic();
     }
 
-    private void OnEnable()
-    {
-    }
-
     private void OnDisable()
     {
         battle.OnDisable();
