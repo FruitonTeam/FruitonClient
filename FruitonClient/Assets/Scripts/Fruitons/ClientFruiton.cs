@@ -21,8 +21,10 @@ public class ClientFruiton : MonoBehaviour {
     {
         tags = Instantiate(Resources.Load("Models/Auxiliary/Tags", typeof(GameObject))) as GameObject;
         tags.name = TAGS;
+        tags.transform.Rotate(0, -90, 0);
         tags.transform.parent = transform;
         tags.transform.localPosition = Vector3.zero;
+
         foreach (Transform child in tags.transform)
         {
             switch (child.name)
@@ -42,7 +44,7 @@ public class ClientFruiton : MonoBehaviour {
             }
         }
 
-        animator = GetComponent<FruitonBattleAnimator>();
+        animator = GetComponentInChildren<FruitonBattleAnimator>();
         if (animator != null) // TODO remove when all is Spine
         {
             animator.Initialize();
@@ -56,6 +58,7 @@ public class ClientFruiton : MonoBehaviour {
 
         int newHealth = currentHealth - damage;
         healthTag.text = newHealth.ToString();
+        healthTag.color = GetHighlightColor(KernelFruiton.originalAttributes.hp, newHealth);
     }
 
     public void FlipAround()
@@ -65,5 +68,27 @@ public class ClientFruiton : MonoBehaviour {
             animator.SkeletonAnim.Skeleton.FlipX = !animator.SkeletonAnim.Skeleton.FlipX;
         }
         tags.transform.Rotate(0, 180, 0);
+    }
+
+    public void ModifyAttack(int newAttack)
+    {
+        damageTag.text = newAttack.ToString();
+        damageTag.color = GetHighlightColor(KernelFruiton.originalAttributes.damage, newAttack);
+    }
+
+    private Color GetHighlightColor(int originalValue, int newValue)
+    {
+        if (newValue < originalValue)
+        {
+            return Color.red;
+        }
+        else if (newValue > originalValue)
+        {
+            return Color.green;
+        }
+        else
+        {
+            return Color.black;
+        }
     }
 }

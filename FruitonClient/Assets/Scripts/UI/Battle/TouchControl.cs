@@ -145,7 +145,7 @@ public class TouchControl : MonoBehaviour {
         if (mouseWheel != 0)
         {
             Debug.Log("ZOOMING");
-            Camera.main.fieldOfView -= 10 * mouseWheel;
+            Camera.main.orthographicSize -= 10 * mouseWheel;
         }
 
         // Reset after mouse button(s) release
