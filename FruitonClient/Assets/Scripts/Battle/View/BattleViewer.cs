@@ -141,7 +141,7 @@ public class BattleViewer : MonoBehaviour
         foreach (var clientFruiton in currentTeam)
         {
             var kernelFruiton = clientFruiton.GetComponent<ClientFruiton>().KernelFruiton;
-            var anim = clientFruiton.GetComponent<SkeletonAnimation>();
+            var anim = clientFruiton.GetComponentInChildren<SkeletonAnimation>();
             if (anim != null && // TODO remove when all is Spine
                 player.id == 0)
             {
@@ -189,6 +189,15 @@ public class BattleViewer : MonoBehaviour
             ProcessAttackEvent((AttackEvent) kEvent);
         else if (eventType == typeof(DeathEvent))
             ProcessDeathEvent((DeathEvent) kEvent);
+        else if (eventType == typeof(ModifyAttackEvent))
+            ProcessModifyAttackEvent((ModifyAttackEvent) kEvent);
+    }
+
+    private void ProcessModifyAttackEvent(ModifyAttackEvent kEvent)
+    {
+        KVector2 kEventPosition = kEvent.position;
+        var clientFruiton = Grid[kEventPosition.x, kEventPosition.y].GetComponent<ClientFruiton>();
+        clientFruiton.ModifyAttack(kEvent.newAttack);
     }
 
     private void ProcessDeathEvent(DeathEvent kEvent)
@@ -221,7 +230,7 @@ public class BattleViewer : MonoBehaviour
 
     private IEnumerator MoveCoroutine(Vector3 from, Vector3 to, GameObject movedObject)
     {
-        var anim = movedObject.GetComponent<FruitonBattleAnimator>();
+        var anim = movedObject.GetComponentInChildren<FruitonBattleAnimator>();
 
         bool isFlipped = false;
         if (anim != null && // TODO remove when all is Spine

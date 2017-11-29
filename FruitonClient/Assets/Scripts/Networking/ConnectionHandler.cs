@@ -19,6 +19,7 @@ namespace Networking
     {
         private static readonly string URL_CHAT = "ws://prak.mff.cuni.cz:8050/fruiton/socket";
         private static readonly string URL_API = "http://prak.mff.cuni.cz:8050/fruiton/api/";
+        //private static readonly string URL_API = "http://localhost:8050/api/";
 
         private static readonly string GOOGLE_ID =
             "827606142557-f63cu712orq80s6do9n6aa8s3eu3h7ag.apps.googleusercontent.com";
