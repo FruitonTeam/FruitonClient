@@ -8,7 +8,9 @@ using fruiton.kernel.events;
 using Google.Protobuf.Collections;
 using Networking;
 using Spine.Unity;
+using UI;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using KEvent = fruiton.kernel.events.Event;
 using KFruiton = fruiton.kernel.Fruiton;
@@ -28,6 +30,7 @@ public class BattleViewer : MonoBehaviour
     private GridLayoutManager gridLayoutManager;
 
     public Button EndTurnButton;
+    public Button SurrendButton;
     public GameObject PanelLoadingGame;
     public Text TimeCounter;
     public Text MyLoginText;
@@ -56,7 +59,9 @@ public class BattleViewer : MonoBehaviour
             battle = new OfflineBattle(this);
             isGameStarted = true;
             InitializePlayersInfo();
+            SetupSurrenderButton();
         }
+        battle.OnEnable();
     }
 
     private void Update()
@@ -66,6 +71,18 @@ public class BattleViewer : MonoBehaviour
         UpdateTimer();
         if (Input.GetMouseButtonUp(0) && isInputEnabled)
             LeftButtonUpLogic();
+    }
+
+    private void OnDisable()
+    {
+        battle.OnDisable();
+    }
+
+    public void SetupSurrenderButton()
+    {
+        SurrendButton.GetComponentInChildren<Text>().text = "Surrender";
+        SurrendButton.onClick.RemoveAllListeners();
+        SurrendButton.onClick.AddListener(Surrender);
     }
 
     public void InitializePlayersInfo()
@@ -113,6 +130,7 @@ public class BattleViewer : MonoBehaviour
         }
         PanelLoadingGame.SetActive(false);
         isGameStarted = true;
+        SetupSurrenderButton();
     }
 
     public void InitializeTeam(IEnumerable<GameObject> currentTeam, Player player,
@@ -145,8 +163,6 @@ public class BattleViewer : MonoBehaviour
             clientFruiton.transform.position = cellPosition;
         }
     }
-
-
 
     private void UpdateTimer()
     {
@@ -283,6 +299,25 @@ public class BattleViewer : MonoBehaviour
         DisableEndTurnButton();
         gridLayoutManager.ResetHighlights();
         battle.EndTurnEvent();
+    }
+
+    public void Surrender()
+    {
+        battle.SurrenderEvent();
+        Scenes.Load(Scenes.MAIN_MENU);
+    }
+
+    public void CancelSearch()
+    {
+        battle.CancelSearchEvent();
+        Scenes.Load(Scenes.MAIN_MENU);
+    }
+
+    public void GameOver(GameOver gameOverMessage)
+    {
+        // TODO show some nice screen here
+        Debug.Log("Game over, reason: " + gameOverMessage.Reason + ", result: " + gameOverMessage.Results);
+        Scenes.Load(Scenes.MAIN_MENU);
     }
 
     public void EnableEndTurnButton()

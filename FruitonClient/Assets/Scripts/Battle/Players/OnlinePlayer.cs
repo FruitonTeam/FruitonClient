@@ -11,10 +11,7 @@ public class OnlinePlayer : ClientPlayerBase, IOnMessageListener
     public OnlinePlayer(Player kernelPlayer, Battle battle, string login) 
         : base(kernelPlayer, battle, login)
     {
-        if (ConnectionHandler.Instance.IsLogged())
-            ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.Action, this);
     }
-
 
     public void OnMessage(WrapperMessage message)
     {
@@ -46,5 +43,21 @@ public class OnlinePlayer : ClientPlayerBase, IOnMessageListener
         };
         var wrapperMessage = new WrapperMessage {Action = actionMessage};
         ConnectionHandler.Instance.SendWebsocketMessage(wrapperMessage);
+    }
+
+    public void OnEnable()
+    {
+        if (ConnectionHandler.Instance.IsLogged())
+        {
+            ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.Action, this);
+        }
+    }
+
+    public void OnDisable()
+    {
+        if (ConnectionHandler.Instance.IsLogged())
+        {
+            ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.Action, this);
+        }
     }
 }

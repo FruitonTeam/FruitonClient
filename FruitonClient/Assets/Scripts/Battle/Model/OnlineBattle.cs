@@ -25,11 +25,6 @@ public class OnlineBattle : Battle, IOnMessageListener
 
     public OnlineBattle(BattleViewer battleViewer) : base(battleViewer)
     {
-        if (ConnectionHandler.Instance.IsLogged())
-        {
-            ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.GameReady, this);
-            ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.GameStarts, this);
-        }
         FindGame();
     }
 
@@ -62,6 +57,11 @@ public class OnlineBattle : Battle, IOnMessageListener
                     ProcessMessage(message.GameStarts);
                 }
                 break;
+            case WrapperMessage.MessageOneofCase.GameOver:
+                {
+                    ProcessMessage(message.GameOver);
+                }
+                break;
         }
     }
 
@@ -71,6 +71,7 @@ public class OnlineBattle : Battle, IOnMessageListener
         var kernelPlayer2 = new Player(1);
         LocalPlayer = new LocalPlayer(battleViewer, kernelPlayer1, this, gameManager.UserName);
         OnlinePlayer = new OnlinePlayer(kernelPlayer2, this, gameReadyMessage.Opponent.Login);
+        ((OnlinePlayer)OnlinePlayer).OnEnable();
         IEnumerable<GameObject> opponentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameReadyMessage.OpponentTeam.FruitonIDs);
         IEnumerable<GameObject> currentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs);
         // The opponent team is obtained from the server with the correctly set positions.
@@ -123,5 +124,51 @@ public class OnlineBattle : Battle, IOnMessageListener
     {
         kernel.startGame();
         battleViewer.StartOnlineGame(isLocalPlayerFirst);
+    }
+
+    private void ProcessMessage(GameOver gameOverMessage)
+    {
+        battleViewer.GameOver(gameOverMessage);
+    }
+
+    public override void SurrenderEvent()
+    {
+        var surrenderMessage = new Surrender();
+        var wrapperMessage = new WrapperMessage { Surrender = surrenderMessage };
+        ConnectionHandler.Instance.SendWebsocketMessage(wrapperMessage);
+    }
+
+    public override void CancelSearchEvent()
+    {
+        var cancelMessage = new CancelFindingGame();
+        var wrapperMessage = new WrapperMessage {CancelFindingGame = cancelMessage};
+        ConnectionHandler.Instance.SendWebsocketMessage(wrapperMessage);
+        Debug.Log("Cancel search");
+    }
+
+    public override void OnEnable()
+    {
+        base.OnEnable();
+        if (ConnectionHandler.Instance.IsLogged())
+        {
+            ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.GameReady, this);
+            ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.GameStarts, this);
+            ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.GameOver, this);
+        }
+    }
+
+    public override void OnDisable()
+    {
+        base.OnDisable();
+        if (ConnectionHandler.Instance.IsLogged())
+        {
+            ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.GameReady, this);
+            ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.GameStarts, this);
+            ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.GameOver, this);
+        }
+        if (OnlinePlayer != null)
+        {
+            ((OnlinePlayer) OnlinePlayer).OnDisable();
+        }
     }
 }

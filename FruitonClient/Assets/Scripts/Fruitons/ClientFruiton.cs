@@ -17,7 +17,18 @@ public class ClientFruiton : MonoBehaviour {
     private FruitonBattleAnimator animator;
     private GameObject tags;
 
+    private bool isInitialized;
+
     private void Start()
+    {
+        if (!isInitialized)
+        {
+            Initialize();
+            isInitialized = true;
+        }
+    }
+
+    private void Initialize()
     {
         tags = Instantiate(Resources.Load("Models/Auxiliary/Tags", typeof(GameObject))) as GameObject;
         tags.name = TAGS;
@@ -63,6 +74,11 @@ public class ClientFruiton : MonoBehaviour {
 
     public void FlipAround()
     {
+        if (!isInitialized)
+        {
+            Initialize();
+            isInitialized = true;
+        }
         if (animator != null) // TODO remove when all is Spine
         {
             animator.SkeletonAnim.Skeleton.FlipX = !animator.SkeletonAnim.Skeleton.FlipX;
