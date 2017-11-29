@@ -174,9 +174,7 @@ public class BattleViewer : MonoBehaviour
         else if (eventType == typeof(DeathEvent))
             ProcessDeathEvent((DeathEvent) kEvent);
         else if (eventType == typeof(ModifyAttackEvent))
-        {
             ProcessModifyAttackEvent((ModifyAttackEvent) kEvent);
-        }
     }
 
     private void ProcessModifyAttackEvent(ModifyAttackEvent kEvent)
