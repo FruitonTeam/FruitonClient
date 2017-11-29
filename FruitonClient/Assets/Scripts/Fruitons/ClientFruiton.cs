@@ -21,8 +21,10 @@ public class ClientFruiton : MonoBehaviour {
     {
         tags = Instantiate(Resources.Load("Models/Auxiliary/Tags", typeof(GameObject))) as GameObject;
         tags.name = TAGS;
+        tags.transform.Rotate(0, -90, 0);
         tags.transform.parent = transform;
         tags.transform.localPosition = Vector3.zero;
+
         foreach (Transform child in tags.transform)
         {
             switch (child.name)
@@ -42,7 +44,7 @@ public class ClientFruiton : MonoBehaviour {
             }
         }
 
-        animator = GetComponent<FruitonBattleAnimator>();
+        animator = GetComponentInChildren<FruitonBattleAnimator>();
         if (animator != null) // TODO remove when all is Spine
         {
             animator.Initialize();
