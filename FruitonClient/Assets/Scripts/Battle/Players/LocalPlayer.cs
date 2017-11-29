@@ -12,7 +12,6 @@ public class LocalPlayer : ClientPlayerBase
     private readonly BattleViewer battleViewer;
     private readonly GridLayoutManager gridLayoutManager;
 
-
     public LocalPlayer(BattleViewer battleViewer, Player kernelPlayer, Battle battle, string login) 
         : base(kernelPlayer, battle, login)
     {
@@ -73,7 +72,6 @@ public class LocalPlayer : ClientPlayerBase
             }
         }
     }
-
 
     public void EndTurn()
     {

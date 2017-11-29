@@ -98,6 +98,10 @@ public abstract class Battle
     {
     }
 
+    public virtual void CancelSearchEvent()
+    {
+    }
+
     private bool TryPassLeftButtonEvent(ClientPlayerBase player, RaycastHit hit)
     {
         var localPlayer = player as LocalPlayer;
@@ -143,5 +147,13 @@ public abstract class Battle
     public KFruiton GetFruiton(KVector2 position)
     {
         return kernel.currentState.field.get(position).fruiton;
+    }
+
+    public virtual void OnEnable()
+    {
+    }
+
+    public virtual void OnDisable()
+    {
     }
 }

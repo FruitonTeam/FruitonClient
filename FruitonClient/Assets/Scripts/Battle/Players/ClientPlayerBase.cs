@@ -20,8 +20,4 @@ public abstract class ClientPlayerBase
 
     public abstract void ProcessOpponentAction(EndTurnAction action);
     public abstract void ProcessOpponentAction(TargetableAction action);
-
-    public virtual void Unregister()
-    {
-    }
 }

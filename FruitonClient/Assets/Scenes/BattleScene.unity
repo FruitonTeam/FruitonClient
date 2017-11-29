@@ -542,7 +542,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1561653484}
-        m_MethodName: Surrender
+        m_MethodName: CancelSearch
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1550,6 +1550,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EndTurnButton: {fileID: 1345862657}
+  SurrendButton: {fileID: 653383522}
   PanelLoadingGame: {fileID: 707422766}
   TimeCounter: {fileID: 2139659783}
   MyLoginText: {fileID: 1633204040}
@@ -1716,7 +1717,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Surrender
+  m_Text: Cancel
 --- !u!222 &2095089874
 CanvasRenderer:
   m_ObjectHideFlags: 0
