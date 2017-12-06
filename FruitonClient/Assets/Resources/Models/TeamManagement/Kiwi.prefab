@@ -9,76 +9,46 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1414369892248498}
+  m_RootGameObject: {fileID: 1139076800770860}
   m_IsPrefabParent: 1
---- !u!1 &1158364025256298
+--- !u!1 &1139076800770860
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 4382021624439622}
-  - component: {fileID: 33854245349149292}
-  - component: {fileID: 23859740261135804}
-  - component: {fileID: 114271388428853042}
-  - component: {fileID: 114118185112831246}
+  - component: {fileID: 4099021091719760}
+  - component: {fileID: 33606237051821112}
+  - component: {fileID: 23731031413960448}
+  - component: {fileID: 114780126577613218}
+  - component: {fileID: 114981362508698658}
   m_Layer: 0
-  m_Name: PeaBody
+  m_Name: Kiwi
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!1 &1414369892248498
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 4833738579252920}
-  - component: {fileID: 65447939266998592}
-  m_Layer: 0
-  m_Name: GreenCube
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4382021624439622
+--- !u!4 &4099021091719760
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1158364025256298}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1, y: 0, z: 0}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
-  m_Children: []
-  m_Father: {fileID: 4833738579252920}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &4833738579252920
-Transform:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1414369892248498}
+  m_GameObject: {fileID: 1139076800770860}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 4382021624439622}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!23 &23859740261135804
+--- !u!23 &23731031413960448
 MeshRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1158364025256298}
+  m_GameObject: {fileID: 1139076800770860}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -116,43 +86,19 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!33 &33854245349149292
+--- !u!33 &33606237051821112
 MeshFilter:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1158364025256298}
+  m_GameObject: {fileID: 1139076800770860}
   m_Mesh: {fileID: 0}
---- !u!65 &65447939266998592
-BoxCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1414369892248498}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 5.18, z: 1}
-  m_Center: {x: 0, y: 2.52, z: 0}
---- !u!114 &114118185112831246
+--- !u!114 &114780126577613218
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1158364025256298}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f8d7b3daa28a3846a8b5c811e4653a9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  FruitonColor: {r: 1, g: 1, b: 0, a: 1}
---- !u!114 &114271388428853042
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1158364025256298}
+  m_GameObject: {fileID: 1139076800770860}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
@@ -175,5 +121,18 @@ MonoBehaviour:
   logErrors: 0
   disableRenderingOnOverride: 1
   _animationName: 
-  loop: 0
+  loop: 1
   timeScale: 1
+--- !u!114 &114981362508698658
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1139076800770860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe4569fdd54648e4aa4a699b9dca05a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  FruitonColor: {r: 0, g: 1, b: 0, a: 1}
+  AnimSwitchTime: 5
