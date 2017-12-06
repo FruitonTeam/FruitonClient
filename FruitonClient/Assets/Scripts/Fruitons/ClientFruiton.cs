@@ -79,10 +79,14 @@ public class ClientFruiton : MonoBehaviour {
             Initialize();
             isInitialized = true;
         }
-        if (animator != null) // TODO remove when all is Spine
-        {
-            animator.SkeletonAnim.Skeleton.FlipX = !animator.SkeletonAnim.Skeleton.FlipX;
-        }
+        // Flip (not rotate 180) to make animations play correctly
+        animator.SkeletonAnim.Skeleton.FlipX = !animator.SkeletonAnim.Skeleton.FlipX;
+        // Fruiton sprite may be off center, move closer to (further from) camera
+        Vector3 spriteLocPos = animator.transform.localPosition;
+        animator.transform.localPosition = new Vector3(
+            -spriteLocPos.x,
+            spriteLocPos.y,
+            -spriteLocPos.z);
         tags.transform.Rotate(0, 180, 0);
     }
 

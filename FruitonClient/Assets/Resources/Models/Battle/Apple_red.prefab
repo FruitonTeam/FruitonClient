@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 33854245349149292}
   - component: {fileID: 23859740261135804}
   - component: {fileID: 114271388428853042}
-  - component: {fileID: 114118185112831246}
+  - component: {fileID: 114587400819969534}
   m_Layer: 0
   m_Name: PeaBody
   m_TagString: Untagged
@@ -40,7 +40,7 @@ GameObject:
   - component: {fileID: 4833738579252920}
   - component: {fileID: 65447939266998592}
   m_Layer: 0
-  m_Name: GreenCube
+  m_Name: Apple_red
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -135,18 +135,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 5.18, z: 1}
   m_Center: {x: 0, y: 2.52, z: 0}
---- !u!114 &114118185112831246
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1158364025256298}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f8d7b3daa28a3846a8b5c811e4653a9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  FruitonColor: {r: 1, g: 1, b: 0, a: 1}
 --- !u!114 &114271388428853042
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -177,3 +165,15 @@ MonoBehaviour:
   _animationName: 
   loop: 0
   timeScale: 1
+--- !u!114 &114587400819969534
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1158364025256298}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f8d7b3daa28a3846a8b5c811e4653a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  FruitonColor: {r: 1, g: 0, b: 0, a: 1}
