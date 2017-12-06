@@ -79,11 +79,8 @@ public class ClientFruiton : MonoBehaviour {
             Initialize();
             isInitialized = true;
         }
-        if (animator != null) // TODO remove when all is Spine
-        {
-            animator.SkeletonAnim.Skeleton.FlipX = !animator.SkeletonAnim.Skeleton.FlipX;
-        }
-        tags.transform.Rotate(0, 180, 0);
+
+        transform.Rotate(0, 180, 0);
     }
 
     public void ModifyAttack(int newAttack)
