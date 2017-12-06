@@ -142,8 +142,7 @@ public class BattleViewer : MonoBehaviour
         {
             var kernelFruiton = clientFruiton.GetComponent<ClientFruiton>().KernelFruiton;
             var anim = clientFruiton.GetComponentInChildren<SkeletonAnimation>();
-            if (anim != null && // TODO remove when all is Spine
-                player.id == 0)
+            if (player.id == 0)
             {
                 anim.Skeleton.FlipX = true;
             }
@@ -233,8 +232,7 @@ public class BattleViewer : MonoBehaviour
         var anim = movedObject.GetComponentInChildren<FruitonBattleAnimator>();
 
         bool isFlipped = false;
-        if (anim != null && // TODO remove when all is Spine
-            (anim.SkeletonAnim.Skeleton.FlipX && from.z > to.z ||
+        if ((anim.SkeletonAnim.Skeleton.FlipX && from.z > to.z ||
              !anim.SkeletonAnim.Skeleton.FlipX && from.z < to.z))
         {
             isFlipped = true;
@@ -243,8 +241,7 @@ public class BattleViewer : MonoBehaviour
 
         float currentTime = 0.0f;
         Vector3 direction = to - from;
-        if (anim != null) // TODO remove when all is Spine
-            anim.StartWalking();
+        anim.StartWalking();
 
         float distance, previousDistance = float.MaxValue;
         while ((distance = Vector3.Distance(movedObject.transform.position, to)) > 0.05f &&
@@ -258,13 +255,10 @@ public class BattleViewer : MonoBehaviour
         }
 
         movedObject.transform.position = to; // Always make sure we made it exactly there
-        if (anim != null) // TODO remove when all is Spine
-        {
-            anim.StopWalking();
-            if (isFlipped)
-                anim.SkeletonAnim.Skeleton.FlipX = !anim.SkeletonAnim.Skeleton.FlipX;
+        anim.StopWalking();
+        if (isFlipped)
+            anim.SkeletonAnim.Skeleton.FlipX = !anim.SkeletonAnim.Skeleton.FlipX;
 
-        }
         isInputEnabled = true;
     }
 
