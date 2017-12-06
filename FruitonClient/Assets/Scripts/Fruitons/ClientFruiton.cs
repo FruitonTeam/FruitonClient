@@ -82,10 +82,11 @@ public class ClientFruiton : MonoBehaviour {
         // Flip (not rotate 180) to make animations play correctly
         animator.SkeletonAnim.Skeleton.FlipX = !animator.SkeletonAnim.Skeleton.FlipX;
         // Fruiton sprite may be off center, move closer to (further from) camera
+        Vector3 spriteLocPos = animator.transform.localPosition;
         animator.transform.localPosition = new Vector3(
-            -animator.transform.localPosition.x,
-            animator.transform.localPosition.y,
-            animator.transform.localPosition.z);
+            -spriteLocPos.x,
+            spriteLocPos.y,
+            -spriteLocPos.z);
         tags.transform.Rotate(0, 180, 0);
     }
 
