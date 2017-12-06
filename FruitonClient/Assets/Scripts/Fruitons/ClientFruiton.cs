@@ -79,8 +79,14 @@ public class ClientFruiton : MonoBehaviour {
             Initialize();
             isInitialized = true;
         }
-
-        transform.Rotate(0, 180, 0);
+        // Flip (not rotate 180) to make animations play correctly
+        animator.SkeletonAnim.Skeleton.FlipX = !animator.SkeletonAnim.Skeleton.FlipX;
+        // Fruiton sprite may be off center, move closer to (further from) camera
+        animator.transform.localPosition = new Vector3(
+            -animator.transform.localPosition.x,
+            animator.transform.localPosition.y,
+            animator.transform.localPosition.z);
+        tags.transform.Rotate(0, 180, 0);
     }
 
     public void ModifyAttack(int newAttack)
