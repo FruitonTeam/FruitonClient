@@ -110,9 +110,10 @@ namespace Networking
             if (!string.IsNullOrEmpty(token))
             {
                 webSocket = new WebSocket(new Uri(URL_CHAT), token);
+                
+                OnBeforeConnected();
                 StartCoroutine(webSocket.Connect());
 
-                gameManager.UserName = login;
                 gameManager.UserPassword = password;
                 panelManager.SwitchPanels(MenuPanel.Main);
                 gameManager.Initialize();
@@ -135,6 +136,11 @@ namespace Networking
                     panelManager.ShowErrorMessage(errorMessage);
                 }
             }
+        }
+
+        private void OnBeforeConnected()
+        {
+            RegisterListener(WrapperMessage.MessageOneofCase.LoggedPlayerInfo, GameManager.Instance);
         }
 
         private void OnConnected()

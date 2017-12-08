@@ -1,4 +1,5 @@
-﻿using Cz.Cuni.Mff.Fruiton.Dto;
+﻿using System;
+using Cz.Cuni.Mff.Fruiton.Dto;
 using fruiton.fruitDb;
 using System.Collections.Generic;
 using Networking;
@@ -8,7 +9,7 @@ using KFruiton = fruiton.kernel.Fruiton;
 
 public enum FractionNames { None, GuacamoleGuerrillas, CranberryCrusade, TzatzikiTsardom }
 
-public class GameManager : MonoBehaviour 
+public class GameManager : MonoBehaviour, IOnMessageListener
 {    
     public static GameManager Instance { get; private set; }
 
@@ -16,7 +17,10 @@ public class GameManager : MonoBehaviour
     
     #region Fields
 
-    private string userName;
+    private Texture2D avatar;
+    
+    private LoggedPlayerInfo loggedPlayerInfo;
+    
     private string userPassword;
     private bool? stayLoggedIn;
     /// <summary> The list of the Fruiton Teams of the current user. </summary>
@@ -48,23 +52,11 @@ public class GameManager : MonoBehaviour
     public string UserName {
         get
         {
-            if (userName == null)
+            if (loggedPlayerInfo == null)
             {
-                userName = PlayerPrefs.GetString("username", "");
+                return PlayerPrefs.GetString("username", "");
             }
-            return userName;
-        }
-        set {
-            userName = value;
-            if (StayLoggedIn)
-            {
-                PlayerPrefs.SetString("username", userName);
-            }
-            else
-            {
-                PlayerPrefs.SetString("username", "");
-            }
-            IsUserValid = false;
+            return loggedPlayerInfo.Login;
         }
     }
 
@@ -140,6 +132,46 @@ public class GameManager : MonoBehaviour
 
     public List<int> AvailableFruitons { get; set; }
 
+    public Texture2D Avatar
+    {
+        get
+        {
+            if (avatar == null)
+            {
+                if (loggedPlayerInfo != null && !string.IsNullOrEmpty(loggedPlayerInfo.Avatar))
+                {
+                    avatar = new Texture2D(0, 0);
+                    avatar.LoadImage(Convert.FromBase64String(loggedPlayerInfo.Avatar));
+                }
+                else
+                {
+                    avatar = Resources.Load<Texture2D>("Images/avatar_default");
+                }
+            }
+            return avatar;
+        }
+    }
+
+    public int Money
+    {
+        get
+        {
+            if (loggedPlayerInfo != null)
+            {
+                return loggedPlayerInfo.Money;
+            }
+            return -1; // if we return -1 it will be clear that something is wrong
+        }
+    }
+
+    public bool PlayerInfoInitialized
+    {
+        get
+        {
+            return loggedPlayerInfo != null;
+        }
+    }
+    
     #endregion
 
 
@@ -199,4 +231,25 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    public void OnMessage(WrapperMessage message)
+    {
+        loggedPlayerInfo = message.LoggedPlayerInfo;
+        PersistIfStayLoggedIn();
+    }
+    
+    private void PersistIfStayLoggedIn()
+    {
+        if (StayLoggedIn)
+        {
+            Persist();
+        }
+    }
+
+    private void Persist()
+    {
+        PlayerPrefs.SetString("username", UserName);
+        PlayerPrefs.SetString("userpassword", userPassword);
+    }
+    
 }
