@@ -9,6 +9,7 @@ public class LocalPlayer : ClientPlayerBase
 {
     private List<AttackAction> availableAttackActions;
     private List<MoveAction> availableMoveActions;
+    private List<HealAction> availableHealActions;
     private readonly BattleViewer battleViewer;
     private readonly GridLayoutManager gridLayoutManager;
 
@@ -19,6 +20,7 @@ public class LocalPlayer : ClientPlayerBase
         gridLayoutManager = GridLayoutManager.Instance;
         availableAttackActions = new List<AttackAction>();
         availableMoveActions = new List<MoveAction>();
+        availableHealActions = new List<HealAction>();
     }
 
     public void LeftButtonUpLogic(RaycastHit hit)
@@ -41,8 +43,21 @@ public class LocalPlayer : ClientPlayerBase
                         performedAction.getId());
                 }
             }
+            if (availableHealActions != null)
+            {
+                var performedActions = availableHealActions.FindAll(x =>
+                    ((HealActionContext)x.actionContext).target.equalsTo(indices));
+                if (performedActions.Count != 0)
+                {
+                    var performedAction = performedActions[0];
+                    battle.PerformAction(performedAction.getContext().source, performedAction.getContext().target,
+                        performedAction.getId());
+                }
+            }
             availableMoveActions = battleViewer.VisualizeActionsOfType<MoveAction>(indices);
             availableAttackActions = battleViewer.VisualizeActionsOfType<AttackAction>(indices);
+            availableHealActions = battleViewer.VisualizeActionsOfType<HealAction>(indices);
+
         }
         // A tile was clicked.
         else if (gridLayoutManager.ContainsTile(hitObject))
@@ -77,6 +92,7 @@ public class LocalPlayer : ClientPlayerBase
     {
         availableAttackActions.Clear();
         availableMoveActions.Clear();
+        availableHealActions.Clear();
         gridLayoutManager.ResetHighlights();
         battle.PerformAction(null, null, EndTurnAction.ID);
     }

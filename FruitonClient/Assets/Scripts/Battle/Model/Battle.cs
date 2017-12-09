@@ -51,6 +51,12 @@ public abstract class Battle
             GetWaitingPlayer().ProcessOpponentAction(attackAction);
             PerformAction(attackAction);
         }
+        else if (actionId == HealAction.ID)
+        {
+            var healAction = GetTargetableAction<HealAction>(from, to);
+            GetWaitingPlayer().ProcessOpponentAction(healAction);
+            PerformAction(healAction);
+        }
     }
 
     private ClientPlayerBase GetWaitingPlayer()

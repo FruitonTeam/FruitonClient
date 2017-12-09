@@ -111,4 +111,16 @@ public class ClientFruiton : MonoBehaviour {
             return Color.black;
         }
     }
+
+    public void Heal(int heal)
+    {
+        var originalHealth = KernelFruiton.originalAttributes.hp;
+        string currentHealthStr = healthTag.text;
+        int currentHealth = int.Parse(currentHealthStr);
+
+        int newHealth = currentHealth + heal;
+        if (newHealth > originalHealth) newHealth = originalHealth;
+        healthTag.text = newHealth.ToString();
+        healthTag.color = GetHighlightColor(KernelFruiton.originalAttributes.hp, newHealth);
+    }
 }
