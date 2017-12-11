@@ -1,71 +1,32 @@
-﻿using System;
-using Cz.Cuni.Mff.Fruiton.Dto;
-using Networking;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace UI.MainMenu
 {
-    public class UserBar : MonoBehaviour, IOnMessageListener
+    public class UserBar : MonoBehaviour
     {
         public Text PlayerNameText;
         public Image PlayerAvatarImage;
         public Text MoneyText;
         public Text FriendsText;
 
-        private void OnEnable()
+        public void OnEnable()
         {
-            ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.LoggedPlayerInfo, this);
-            
-            if (GameManager.Instance.IsPlayerInfoInitialized)
-            {
-                Init();
-            }
+            Load();
         }
-
-        private void OnDisable()
+        
+        public void Refresh()
         {
-            ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.LoggedPlayerInfo, this);
+            Load();
         }
-
-        private void Init()
+        
+        private void Load()
         {
             PlayerNameText.text = GameManager.Instance.UserName;
-            MoneyText.text = GameManager.Instance.Money.ToString();
+
+            int money = GameManager.Instance.Money;
+            MoneyText.text = money != -1 ? money.ToString() : "N/A";
             PlayerAvatarImage.sprite = LoadCenteredSprite(GameManager.Instance.Avatar);
-        }
-        
-        public void OnMessage(WrapperMessage message)
-        {
-            Init(message.LoggedPlayerInfo);
-        }
-        
-        private void Init(LoggedPlayerInfo playerInfo)
-        {
-            PlayerNameText.text = playerInfo.Login;
-            MoneyText.text = playerInfo.Money.ToString();
-
-            if (!string.IsNullOrEmpty(playerInfo.Avatar))
-            {
-                InitAvatarFromBase64(playerInfo.Avatar);
-            }
-            else
-            {
-                InitDefaultAvatar();
-            }
-        }
-
-        private void InitAvatarFromBase64(string base64Avatar)
-        {
-            var avatarTexture = new Texture2D(0, 0);
-            avatarTexture.LoadImage(Convert.FromBase64String(base64Avatar));
-            PlayerAvatarImage.sprite = LoadCenteredSprite(avatarTexture);
-        }
-
-        private void InitDefaultAvatar()
-        {
-            var avatarTexture = Resources.Load<Texture2D>("Images/avatar_default");
-            PlayerAvatarImage.sprite = LoadCenteredSprite(avatarTexture);
         }
 
         private Sprite LoadCenteredSprite(Texture2D texture)

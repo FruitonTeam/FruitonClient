@@ -3,13 +3,14 @@ using Cz.Cuni.Mff.Fruiton.Dto;
 using fruiton.fruitDb;
 using System.Collections.Generic;
 using Networking;
+using UI.MainMenu;
 using UnityEngine;
 using Util;
 using KFruiton = fruiton.kernel.Fruiton;
 
 public enum FractionNames { None, GuacamoleGuerrillas, CranberryCrusade, TzatzikiTsardom }
 
-public class GameManager : MonoBehaviour, IOnMessageListener
+public class GameManager : MonoBehaviour
 {    
     public static GameManager Instance { get; private set; }
 
@@ -17,6 +18,8 @@ public class GameManager : MonoBehaviour, IOnMessageListener
     
     #region Fields
 
+    public UserBar Bar;
+    
     private Texture2D avatar;
     
     private LoggedPlayerInfo loggedPlayerInfo;
@@ -54,7 +57,7 @@ public class GameManager : MonoBehaviour, IOnMessageListener
         {
             if (loggedPlayerInfo == null)
             {
-                return PlayerPrefs.GetString("username", "");
+                return PlayerPrefs.GetString("username", "default_login");
             }
             return loggedPlayerInfo.Login;
         }
@@ -164,13 +167,7 @@ public class GameManager : MonoBehaviour, IOnMessageListener
         }
     }
 
-    public bool IsPlayerInfoInitialized
-    {
-        get
-        {
-            return loggedPlayerInfo != null;
-        }
-    }
+    public bool IsOnline { get; private set; }
     
     #endregion
 
@@ -194,19 +191,37 @@ public class GameManager : MonoBehaviour, IOnMessageListener
 
     public bool HasRememberedUser()
     {
-        return (UserName != "" && UserPassword != "");
+        return UserName != "" && UserPassword != "";
+    }
+
+    public void AutomaticLogin()
+    {
+        if (StayLoggedIn && HasRememberedUser())
+        {
+            PanelManager.Instance.ShowLoadingIndicator();
+            AuthenticationHandler.Instance.LoginBasic(UserName, UserPassword);
+        }
     }
 
     public void LoginOffline()
     {
+        IsOnline = false;
         Initialize();
+        ((MainPanel) PanelManager.Instance.Panels[MenuPanel.Main]).DisableOnlineFeatures();
+        PanelManager.Instance.SwitchPanels(MenuPanel.Main);
     }
-    
-    public void OnMessage(WrapperMessage message)
+
+    public void OnLoggedIn(LoggedPlayerInfo playerInfo)
     {
-        loggedPlayerInfo = message.LoggedPlayerInfo;
+        IsOnline = true;
+        
+        RemoveCachedData();
+        
+        loggedPlayerInfo = playerInfo;
         Initialize();
         PersistIfStayLoggedIn();
+        ((MainPanel) PanelManager.Instance.Panels[MenuPanel.Main]).EnableOnlineFeatures();
+        PanelManager.Instance.SwitchPanels(MenuPanel.Main);
     }
 
     #endregion
@@ -219,11 +234,20 @@ public class GameManager : MonoBehaviour, IOnMessageListener
         AllFruitons = ClientFruitonFactory.CreateAllKernelFruitons();
         AvailableFruitons = Serializer.LoadAvailableFruitons();
 
-        PlayerHelper.GetAllFruitonTeams(ints =>
-            {
-                fruitonTeamList = ints;
-            },
-            Debug.Log);
+        if (IsOnline)
+        {
+            PlayerHelper.GetAllFruitonTeams(ints =>
+                {
+                    fruitonTeamList = ints;
+                },
+                Debug.Log);
+            Bar.Refresh();
+        }
+    }
+    
+    private void RemoveCachedData()
+    {
+        avatar = null;
     }
 
     private void Awake()
@@ -250,7 +274,7 @@ public class GameManager : MonoBehaviour, IOnMessageListener
     private void Persist()
     {
         PlayerPrefs.SetString("username", UserName);
-        PlayerPrefs.SetString("userpassword", userPassword);
+        PlayerPrefs.SetString("userpassword", AuthenticationHandler.Instance.LastPassword);
     }
     
 }
