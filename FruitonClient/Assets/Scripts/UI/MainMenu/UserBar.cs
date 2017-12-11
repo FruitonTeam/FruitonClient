@@ -17,7 +17,7 @@ namespace UI.MainMenu
         {
             ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.LoggedPlayerInfo, this);
             
-            if (GameManager.Instance.PlayerInfoInitialized)
+            if (GameManager.Instance.IsPlayerInfoInitialized)
             {
                 Init();
             }
@@ -32,7 +32,7 @@ namespace UI.MainMenu
         {
             PlayerNameText.text = GameManager.Instance.UserName;
             MoneyText.text = GameManager.Instance.Money.ToString();
-            PlayerAvatarImage.sprite = loadCenteredSprite(GameManager.Instance.Avatar);
+            PlayerAvatarImage.sprite = LoadCenteredSprite(GameManager.Instance.Avatar);
         }
         
         public void OnMessage(WrapperMessage message)
@@ -59,16 +59,16 @@ namespace UI.MainMenu
         {
             var avatarTexture = new Texture2D(0, 0);
             avatarTexture.LoadImage(Convert.FromBase64String(base64Avatar));
-            PlayerAvatarImage.sprite = loadCenteredSprite(avatarTexture);
+            PlayerAvatarImage.sprite = LoadCenteredSprite(avatarTexture);
         }
 
         private void InitDefaultAvatar()
         {
             var avatarTexture = Resources.Load<Texture2D>("Images/avatar_default");
-            PlayerAvatarImage.sprite = loadCenteredSprite(avatarTexture);
+            PlayerAvatarImage.sprite = LoadCenteredSprite(avatarTexture);
         }
 
-        private Sprite loadCenteredSprite(Texture2D texture)
+        private Sprite LoadCenteredSprite(Texture2D texture)
         {
             return Sprite.Create(
                 texture,

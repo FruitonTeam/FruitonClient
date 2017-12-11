@@ -164,7 +164,7 @@ public class GameManager : MonoBehaviour, IOnMessageListener
         }
     }
 
-    public bool PlayerInfoInitialized
+    public bool IsPlayerInfoInitialized
     {
         get
         {
@@ -199,10 +199,19 @@ public class GameManager : MonoBehaviour, IOnMessageListener
 
     public void LoginOffline()
     {
-
+        Initialize();
+    }
+    
+    public void OnMessage(WrapperMessage message)
+    {
+        loggedPlayerInfo = message.LoggedPlayerInfo;
+        Initialize();
+        PersistIfStayLoggedIn();
     }
 
-    public void Initialize()
+    #endregion
+    
+    private void Initialize()
     {
         Serializer.DeserializeFruitonTeams();
                 
@@ -211,15 +220,13 @@ public class GameManager : MonoBehaviour, IOnMessageListener
         AvailableFruitons = Serializer.LoadAvailableFruitons();
 
         PlayerHelper.GetAllFruitonTeams(ints =>
-        {
-            fruitonTeamList = ints;
-        },
-        Debug.Log);
+            {
+                fruitonTeamList = ints;
+            },
+            Debug.Log);
     }
 
-    #endregion
-
-    void Awake()
+    private void Awake()
     {
         if (Instance == null)
         {
@@ -230,12 +237,6 @@ public class GameManager : MonoBehaviour, IOnMessageListener
         {
             Destroy(gameObject);
         }
-    }
-
-    public void OnMessage(WrapperMessage message)
-    {
-        loggedPlayerInfo = message.LoggedPlayerInfo;
-        PersistIfStayLoggedIn();
     }
     
     private void PersistIfStayLoggedIn()

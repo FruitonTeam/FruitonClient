@@ -116,7 +116,6 @@ namespace Networking
 
                 gameManager.UserPassword = password;
                 panelManager.SwitchPanels(MenuPanel.Main);
-                gameManager.Initialize();
                 
                 OnConnected();
             }
@@ -128,7 +127,7 @@ namespace Networking
                 {
                     // Offline check successful
                     panelManager.SwitchPanels(MenuPanel.LoginOffline);
-                    gameManager.Initialize();
+                    gameManager.LoginOffline();
                 }
                 else
                 {
