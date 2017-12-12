@@ -15,6 +15,9 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     private static readonly string FRUITON_DB_FILE = "FruitonDb.json";
+
+    private static readonly string LOGIN_KEY = "username";
+    private static readonly string PASSWORD_KEY = "userpassword";
     
     #region Fields
 
@@ -57,7 +60,7 @@ public class GameManager : MonoBehaviour
         {
             if (loggedPlayerInfo == null)
             {
-                return PlayerPrefs.GetString("username", "default_login");
+                return PlayerPrefs.GetString(LOGIN_KEY, "default_login");
             }
             return loggedPlayerInfo.Login;
         }
@@ -69,7 +72,7 @@ public class GameManager : MonoBehaviour
         {
             if (userPassword == null)
             {
-                userPassword = PlayerPrefs.GetString("userpassword", "");
+                userPassword = PlayerPrefs.GetString(PASSWORD_KEY, "");
             }
             return userPassword;
         }
@@ -78,11 +81,11 @@ public class GameManager : MonoBehaviour
             userPassword = value;
             if (StayLoggedIn)
             {
-                PlayerPrefs.SetString("userpassword", value);
+                PlayerPrefs.SetString(PASSWORD_KEY, value);
             }
             else
             {
-                PlayerPrefs.SetString("userpassword", "");
+                PlayerPrefs.SetString(PASSWORD_KEY, "");
             }
             IsUserValid = false;
         }
@@ -273,8 +276,8 @@ public class GameManager : MonoBehaviour
 
     private void Persist()
     {
-        PlayerPrefs.SetString("username", UserName);
-        PlayerPrefs.SetString("userpassword", AuthenticationHandler.Instance.LastPassword);
+        PlayerPrefs.SetString(LOGIN_KEY, UserName);
+        PlayerPrefs.SetString(PASSWORD_KEY, AuthenticationHandler.Instance.LastPassword);
     }
     
 }
