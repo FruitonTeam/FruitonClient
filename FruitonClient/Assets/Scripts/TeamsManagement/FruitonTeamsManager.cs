@@ -58,8 +58,6 @@ public class FruitonTeamsManager : MonoBehaviour
     /// <summary> The horizontal distance between fruitons (or teams) in this scene. </summary>
     private static readonly int OBJECTS_DISTANCE = 50;
 
-    private static readonly int TOUCH_SPEED_REDUCTION = 40;
-
 
 
     // Use this for initialization
