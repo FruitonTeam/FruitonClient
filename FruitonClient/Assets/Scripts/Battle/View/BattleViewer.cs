@@ -293,7 +293,6 @@ public class BattleViewer : MonoBehaviour
             var healAction = (HealAction) action;
             var target = ((HealActionContext)healAction.actionContext).target;
             gridLayoutManager.HighlightCell(target.x, target.y, Color.green);
-
         }
     }
 

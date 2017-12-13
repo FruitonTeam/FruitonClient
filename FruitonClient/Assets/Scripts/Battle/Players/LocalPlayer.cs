@@ -57,7 +57,6 @@ public class LocalPlayer : ClientPlayerBase
             availableMoveActions = battleViewer.VisualizeActionsOfType<MoveAction>(indices);
             availableAttackActions = battleViewer.VisualizeActionsOfType<AttackAction>(indices);
             availableHealActions = battleViewer.VisualizeActionsOfType<HealAction>(indices);
-
         }
         // A tile was clicked.
         else if (gridLayoutManager.ContainsTile(hitObject))
