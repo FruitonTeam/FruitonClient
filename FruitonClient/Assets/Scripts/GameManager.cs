@@ -2,6 +2,7 @@
 using Cz.Cuni.Mff.Fruiton.Dto;
 using fruiton.fruitDb;
 using System.Collections.Generic;
+using Google.Protobuf.Collections;
 using Networking;
 using UI.MainMenu;
 using UnityEngine;
@@ -165,6 +166,18 @@ public class GameManager : MonoBehaviour
                 return loggedPlayerInfo.Money;
             }
             return -1; // if we return -1 it will be clear that something is wrong
+        }
+    }
+
+    public RepeatedField<Quest> Quests
+    {
+        get
+        {
+            if (loggedPlayerInfo != null)
+            {
+                return loggedPlayerInfo.Quests;
+            }
+            return new RepeatedField<Quest>();
         }
     }
 
