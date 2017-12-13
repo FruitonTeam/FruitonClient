@@ -18,6 +18,22 @@ public abstract class Battle
     public ClientPlayerBase Player1 { get; protected set; }
     public ClientPlayerBase Player2 { get; protected set; }
 
+    public ClientPlayerBase ActivePlayer
+    {
+        get
+        {
+            return IsPlayerActive(Player1) ? Player1 : Player2;
+        }
+    }
+
+    public ClientPlayerBase WaitingPlayer
+    {
+        get
+        {
+            return IsPlayerActive(Player1) ? Player2 : Player1;
+        }
+    }
+
     protected Battle(BattleViewer battleViewer)
     {
         gameManager = GameManager.Instance;
@@ -36,28 +52,21 @@ public abstract class Battle
         if (actionId == EndTurnAction.ID)
         {
             var endTurnAction = EndTurnAction.createNew();
-            GetWaitingPlayer().ProcessOpponentAction(endTurnAction);
+            WaitingPlayer.ProcessOpponentAction(endTurnAction);
             PerformAction(endTurnAction);
         }
         else if (actionId == MoveAction.ID)
         {
             var moveAction = GetTargetableAction<MoveAction>(from, to);
-            GetWaitingPlayer().ProcessOpponentAction(moveAction);
+            WaitingPlayer.ProcessOpponentAction(moveAction);
             PerformAction(moveAction);
         }
         else if (actionId == AttackAction.ID)
         {
             var attackAction = GetTargetableAction<AttackAction>(from, to);
-            GetWaitingPlayer().ProcessOpponentAction(attackAction);
+            WaitingPlayer.ProcessOpponentAction(attackAction);
             PerformAction(attackAction);
         }
-    }
-
-    private ClientPlayerBase GetWaitingPlayer()
-    {
-        if (IsPlayerActive(Player1))
-            return Player2;
-        return Player1;
     }
 
     private TTargetableAction GetTargetableAction<TTargetableAction>(KVector2 from, KVector2 to)
@@ -74,7 +83,9 @@ public abstract class Battle
         var timeLeft = (int) (kernel.currentState.turnState.endTime - currentEpochTime);
         if (timeLeft <= 0)
         {
-            PerformAction(EndTurnAction.createNew());
+            if (ActivePlayer is LocalPlayer)
+                battleViewer.EndTurn();
+            // Else wait for server to send us this event
             return 0;
         }
         return timeLeft;
