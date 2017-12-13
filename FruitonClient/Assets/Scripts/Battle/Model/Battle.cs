@@ -6,7 +6,6 @@ using fruiton.kernel.actions;
 using fruiton.kernel.events;
 using haxe.root;
 using UnityEngine;
-using Event = fruiton.kernel.events.Event;
 using KEvent = fruiton.kernel.events.Event;
 using KVector2 = fruiton.dataStructures.Point;
 using KAction = fruiton.kernel.actions.Action;
@@ -62,7 +61,7 @@ public abstract class Battle
 
     private void PerformAction(KAction performedAction)
     {
-        List<Event> events = kernel.performAction(performedAction).CastToList<KEvent>();
+        List<KEvent> events = kernel.performAction(performedAction).CastToList<KEvent>();
 
         for (int i = 0; i < kernel.currentState.fruitons.length; i++)
         {
