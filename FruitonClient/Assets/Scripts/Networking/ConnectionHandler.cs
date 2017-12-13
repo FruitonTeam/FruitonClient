@@ -17,7 +17,9 @@ namespace Networking
     {
         private static readonly string URL_WS = "ws://prak.mff.cuni.cz:8050/fruiton/socket";
         private static readonly string URL_API = "http://prak.mff.cuni.cz:8050/fruiton/api/";
-        
+        //private static readonly string URL_WS = "ws://localhost:8050/socket";
+        //private static readonly string URL_API = "http://localhost:8050/api/";
+
         private WebSocket webSocket;
 
         private Dictionary<WrapperMessage.MessageOneofCase, List<IOnMessageListener>> listeners =

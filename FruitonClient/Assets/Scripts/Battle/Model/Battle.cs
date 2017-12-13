@@ -70,7 +70,7 @@ public abstract class Battle
         else if (actionId == HealAction.ID)
         {
             var healAction = GetTargetableAction<HealAction>(from, to);
-            GetWaitingPlayer().ProcessOpponentAction(healAction);
+            WaitingPlayer.ProcessOpponentAction(healAction);
             PerformAction(healAction);
         }
     }
