@@ -107,6 +107,7 @@ public class OnlineBattle : Battle, IOnMessageListener
         
         SendReadyMessage();
         battleViewer.InitializePlayersInfo();
+        BattleReady();
     }
 
     private void SendReadyMessage()

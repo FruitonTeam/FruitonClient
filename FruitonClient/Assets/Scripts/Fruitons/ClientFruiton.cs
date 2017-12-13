@@ -64,12 +64,19 @@ public class ClientFruiton : MonoBehaviour {
 
     public void TakeDamage(int damage)
     {
-        string currentHealthStr = healthTag.text;
-        int currentHealth = int.Parse(currentHealthStr);
+        UpdateHealthTag();
+    }
 
-        int newHealth = currentHealth - damage;
-        healthTag.text = newHealth.ToString();
-        healthTag.color = GetHighlightColor(KernelFruiton.originalAttributes.hp, newHealth);
+    public void ReceiveHeal(int heal)
+    {
+        UpdateHealthTag();
+    }
+
+    public void UpdateHealthTag()
+    {
+        int newHp = KernelFruiton.currentAttributes.hp;
+        healthTag.text = newHp.ToString();
+        healthTag.color = GetHighlightColor(KernelFruiton.originalAttributes.hp, newHp);
     }
 
     public void FlipAround()
@@ -90,10 +97,10 @@ public class ClientFruiton : MonoBehaviour {
         tags.transform.Rotate(0, 180, 0);
     }
 
-    public void ModifyAttack(int newAttack)
+    public void ModifyAttack(int newAttack, Fruiton kernelFruiton)
     {
         damageTag.text = newAttack.ToString();
-        damageTag.color = GetHighlightColor(KernelFruiton.originalAttributes.damage, newAttack);
+        damageTag.color = GetHighlightColor(kernelFruiton.originalAttributes.damage, newAttack);
     }
 
     private Color GetHighlightColor(int originalValue, int newValue)
@@ -112,15 +119,5 @@ public class ClientFruiton : MonoBehaviour {
         }
     }
 
-    public void Heal(int heal)
-    {
-        var originalHealth = KernelFruiton.originalAttributes.hp;
-        string currentHealthStr = healthTag.text;
-        int currentHealth = int.Parse(currentHealthStr);
 
-        int newHealth = currentHealth + heal;
-        if (newHealth > originalHealth) newHealth = originalHealth;
-        healthTag.text = newHealth.ToString();
-        healthTag.color = GetHighlightColor(KernelFruiton.originalAttributes.hp, newHealth);
-    }
 }

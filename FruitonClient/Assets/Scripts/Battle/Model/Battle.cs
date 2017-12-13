@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using fruiton.kernel;
 using fruiton.kernel.actions;
+using fruiton.kernel.events;
+using haxe.root;
 using UnityEngine;
+using Event = fruiton.kernel.events.Event;
 using KEvent = fruiton.kernel.events.Event;
 using KVector2 = fruiton.dataStructures.Point;
 using KAction = fruiton.kernel.actions.Action;
@@ -14,6 +17,7 @@ public abstract class Battle
     protected GameManager gameManager;
     protected Kernel kernel;
     protected BattleViewer battleViewer;
+    protected Dictionary<int, ClientFruiton> clientFruitons;
 
     public ClientPlayerBase Player1 { get; protected set; }
     public ClientPlayerBase Player2 { get; protected set; }
@@ -38,13 +42,40 @@ public abstract class Battle
     {
         gameManager = GameManager.Instance;
         this.battleViewer = battleViewer;
+
+    }
+
+    // Call this whenever kernel is initialized.
+    protected void BattleReady()
+    {
+        clientFruitons = new Dictionary<int, ClientFruiton>();
+        foreach (GameObject fruitonObject in battleViewer.Grid)
+        {
+            ClientFruiton clientFruiton;
+            if (fruitonObject != null &&
+                (clientFruiton = fruitonObject.GetComponent<ClientFruiton>()) != null)
+            {
+                clientFruitons[clientFruiton.KernelFruiton.id] = clientFruiton;
+            }
+        }
     }
 
     private void PerformAction(KAction performedAction)
     {
-        var events = kernel.performAction(performedAction).CastToList<KEvent>();
+        List<Event> events = kernel.performAction(performedAction).CastToList<KEvent>();
+
+        for (int i = 0; i < kernel.currentState.fruitons.length; i++)
+        {
+            Fruiton fruiton = kernel.currentState.fruitons[i] as Fruiton;
+            var clientFruiton = clientFruitons[fruiton.id];
+            clientFruiton.KernelFruiton = fruiton;
+        }
+
         foreach (var item in events)
+        {
             battleViewer.ProcessEvent(item);
+        }
+            
     }
 
     public void PerformAction(KVector2 from, KVector2 to, int actionId)

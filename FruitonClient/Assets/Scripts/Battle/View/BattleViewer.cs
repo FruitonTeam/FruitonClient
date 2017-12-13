@@ -198,14 +198,14 @@ public class BattleViewer : MonoBehaviour
     {
         KVector2 kEventPosition = kEvent.target;
         var clientFruiton = Grid[kEventPosition.x, kEventPosition.y].GetComponent<ClientFruiton>();
-        clientFruiton.Heal(kEvent.heal);
+        clientFruiton.ReceiveHeal(kEvent.heal);
     }
 
     private void ProcessModifyAttackEvent(ModifyAttackEvent kEvent)
     {
         KVector2 kEventPosition = kEvent.position;
         var clientFruiton = Grid[kEventPosition.x, kEventPosition.y].GetComponent<ClientFruiton>();
-        clientFruiton.ModifyAttack(kEvent.newAttack);
+        clientFruiton.ModifyAttack(kEvent.newAttack, battle.GetFruiton(kEventPosition));
     }
 
     private void ProcessDeathEvent(DeathEvent kEvent)
