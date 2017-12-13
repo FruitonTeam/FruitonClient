@@ -5,11 +5,15 @@ using UnityEngine;
 
 class TempColorTMAnimator : MonoBehaviour
 {
+#pragma warning disable 0649 // Field 'field' is never assigned to, and will always have its default value 'value'
     public Color FruitonColor;
+#pragma warning restore 0649
 
     private SkeletonAnimation skeletonAnim;
 
+#pragma warning disable 0649 // Field 'field' is never assigned to, and will always have its default value 'value'
     public float AnimSwitchTime;
+#pragma warning restore 0649
     private float currentAnimTime;
 
     // 0 - drawOrderBack/Side/(Front)                                           // decide which side to turn + change skins FrontQuarter/BackQuarter
