@@ -10,3 +10,5 @@ FruitonClient/Assets/Resources/Kernel.meta
 FruitonClient/Assets/Scripts/Kernel
 FruitonClient/Assets/Scripts/Kernel.meta
 FruitonClient/build/
+*.psd
+*.psd.meta
