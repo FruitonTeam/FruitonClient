@@ -3809,8 +3809,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerNameText: {fileID: 1281210385}
   PlayerAvatarImage: {fileID: 86439089}
-  MoneyText: {fileID: 0}
-  FriendsText: {fileID: 0}
+  MoneyText: {fileID: 1800515055}
+  FriendsText: {fileID: 759440333}
 --- !u!1 &516773346
 GameObject:
   m_ObjectHideFlags: 0
@@ -10683,6 +10683,22 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1713998520}
+--- !u!1 &1731941811 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1740351476185196, guid: 7828a66a2ef9c30469de5408f59f0d01,
+    type: 2}
+  m_PrefabInternal: {fileID: 2045489823}
+--- !u!114 &1731941816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1731941811}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f5d29c2b3014c3bb42b24af59d76b8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1755503976
 GameObject:
   m_ObjectHideFlags: 0
