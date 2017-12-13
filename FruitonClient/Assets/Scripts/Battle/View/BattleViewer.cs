@@ -205,7 +205,7 @@ public class BattleViewer : MonoBehaviour
     {
         KVector2 kEventPosition = kEvent.position;
         var clientFruiton = Grid[kEventPosition.x, kEventPosition.y].GetComponent<ClientFruiton>();
-        clientFruiton.ModifyAttack(kEvent.newAttack, battle.GetFruiton(kEventPosition));
+        clientFruiton.ModifyAttack(kEvent.newAttack);
     }
 
     private void ProcessDeathEvent(DeathEvent kEvent)

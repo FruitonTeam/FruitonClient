@@ -97,10 +97,10 @@ public class ClientFruiton : MonoBehaviour {
         tags.transform.Rotate(0, 180, 0);
     }
 
-    public void ModifyAttack(int newAttack, Fruiton kernelFruiton)
+    public void ModifyAttack(int newAttack)
     {
         damageTag.text = newAttack.ToString();
-        damageTag.color = GetHighlightColor(kernelFruiton.originalAttributes.damage, newAttack);
+        damageTag.color = GetHighlightColor(KernelFruiton.originalAttributes.damage, newAttack);
     }
 
     private Color GetHighlightColor(int originalValue, int newValue)
