@@ -10,9 +10,21 @@ using KFruiton = fruiton.kernel.Fruiton;
 
 public enum FractionNames { None, GuacamoleGuerrillas, CranberryCrusade, TzatzikiTsardom }
 
-public class GameManager : MonoBehaviour
-{    
-    public static GameManager Instance { get; private set; }
+public class GameManager
+{
+    private static GameManager instance;
+
+    public static GameManager Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = new GameManager();
+            }
+            return instance;
+        }
+    }
 
     private static readonly string FRUITON_DB_FILE = "FruitonDb.json";
 
@@ -248,19 +260,6 @@ public class GameManager : MonoBehaviour
     private void RemoveCachedData()
     {
         avatar = null;
-    }
-
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            DontDestroyOnLoad(gameObject);
-            Instance = this;
-        }
-        else if (Instance != this)
-        {
-            Destroy(gameObject);
-        }
     }
     
     private void PersistIfStayLoggedIn()
