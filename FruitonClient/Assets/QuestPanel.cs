@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,12 +7,11 @@ using UnityEngine.UI;
 public class QuestPanel : MonoBehaviour
 {
     public GameObject QuestsButton;
-    public Text Quest1Text;
-    public Text Quest2Text;
-    public Text Quest3Text;
+    public Text[] QuestTexts;
     public Color PanelColor = new Color(250, 241, 181);
+    public Text QuestCountText;
 
-    private GameObject questsButtonText;
+    private GameObject[] questsButtonChildren;
     private GameObject[] childrenGameObjects;
     private Image image;
     private Vector3 questsButtonPosition;
@@ -20,6 +20,8 @@ public class QuestPanel : MonoBehaviour
 
     public void Start()
     {
+        UpdateQuestCount();
+
         int childCount = transform.childCount;
         childrenGameObjects = new GameObject[childCount];
         for (int i = 0; i < childCount; i++)
@@ -29,6 +31,13 @@ public class QuestPanel : MonoBehaviour
             child.SetActive(false);
         }
 
+        childCount = QuestsButton.transform.childCount;
+        questsButtonChildren = new GameObject[childCount];
+        for (int i = 0; i < childCount; i++)
+        {
+            questsButtonChildren[i] = QuestsButton.transform.GetChild(i).gameObject;
+        }
+
         image = gameObject.GetComponent<Image>();
 
         questsButtonRectTransform = QuestsButton.GetComponent<RectTransform>();
@@ -36,14 +45,60 @@ public class QuestPanel : MonoBehaviour
         questsButtonPosition = QuestsButton.transform.position;
     }
 
-    public void OpenPanel()
+    void OnEnable()
     {
-        if (questsButtonText == null)
+        UpdateQuestCount();
+    }
+
+    public int UpdateQuestCount()
+    {
+        var questCount = GameManager.Instance.Quests.Count;
+        Debug.Log("Quest COUNT");
+        Debug.Log(questCount);
+        if (questCount <= 0)
         {
-            questsButtonText = QuestsButton.transform.GetChild(0).gameObject;
+            QuestCountText.transform.parent.gameObject.SetActive(false);
+        }
+        else
+        {
+            QuestCountText.transform.parent.gameObject.SetActive(true);
+            QuestCountText.text = questCount.ToString();
         }
 
-        questsButtonText.SetActive(false);
+        return questCount;
+    }
+
+    public void OpenPanel()
+    {
+        var quests = GameManager.Instance.Quests;
+        for (int i = 0; i < QuestTexts.Length; i++)
+        {
+            if (i < quests.Count)
+            {
+                var quest = quests[i];
+                QuestTexts[i].text = String.Format(
+                    "<b>- {0}</b>: {1} ({2}/{3})",
+                    quest.Name,
+                    quest.Description,
+                    quest.Progress,
+                    quest.Goal
+                    );
+            }
+            else
+            {
+                QuestTexts[i].text = "";
+            }
+        }
+        if (UpdateQuestCount() <= 0)
+        {
+            QuestTexts[0].text = "No quests available right now!";
+        }
+
+
+        foreach (var child in questsButtonChildren)
+        {
+            child.SetActive(false);
+        }
 
         iTween.MoveTo(QuestsButton, iTween.Hash(
                 "position", gameObject.transform.position,
@@ -127,7 +182,10 @@ public class QuestPanel : MonoBehaviour
 
     void OnCloseComplete()
     {
-        questsButtonText.SetActive(true);
+        foreach (var child in questsButtonChildren)
+        {
+            child.SetActive(true);
+        }
+        UpdateQuestCount();
     }
-
 }
