@@ -64,12 +64,19 @@ public class ClientFruiton : MonoBehaviour {
 
     public void TakeDamage(int damage)
     {
-        string currentHealthStr = healthTag.text;
-        int currentHealth = int.Parse(currentHealthStr);
+        UpdateHealthTag();
+    }
 
-        int newHealth = currentHealth - damage;
-        healthTag.text = newHealth.ToString();
-        healthTag.color = GetHighlightColor(KernelFruiton.originalAttributes.hp, newHealth);
+    public void ReceiveHeal(int heal)
+    {
+        UpdateHealthTag();
+    }
+
+    public void UpdateHealthTag()
+    {
+        int newHp = KernelFruiton.currentAttributes.hp;
+        healthTag.text = newHp.ToString();
+        healthTag.color = GetHighlightColor(KernelFruiton.originalAttributes.hp, newHp);
     }
 
     public void FlipAround()
@@ -111,4 +118,6 @@ public class ClientFruiton : MonoBehaviour {
             return Color.black;
         }
     }
+
+
 }

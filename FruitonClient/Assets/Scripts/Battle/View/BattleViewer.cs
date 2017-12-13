@@ -190,6 +190,15 @@ public class BattleViewer : MonoBehaviour
             ProcessDeathEvent((DeathEvent) kEvent);
         else if (eventType == typeof(ModifyAttackEvent))
             ProcessModifyAttackEvent((ModifyAttackEvent) kEvent);
+        else if (eventType == typeof(HealEvent))
+            ProcessHealEvent((HealEvent) kEvent);
+    }
+
+    private void ProcessHealEvent(HealEvent kEvent)
+    {
+        KVector2 kEventPosition = kEvent.target;
+        var clientFruiton = Grid[kEventPosition.x, kEventPosition.y].GetComponent<ClientFruiton>();
+        clientFruiton.ReceiveHeal(kEvent.heal);
     }
 
     private void ProcessModifyAttackEvent(ModifyAttackEvent kEvent)
@@ -278,6 +287,12 @@ public class BattleViewer : MonoBehaviour
             var attackAction = (AttackAction) action;
             var target = ((AttackActionContext) attackAction.actionContext).target;
             gridLayoutManager.HighlightCell(target.x, target.y, Color.red);
+        }
+        else if (type == typeof(HealAction))
+        {
+            var healAction = (HealAction) action;
+            var target = ((HealActionContext)healAction.actionContext).target;
+            gridLayoutManager.HighlightCell(target.x, target.y, Color.green);
         }
     }
 

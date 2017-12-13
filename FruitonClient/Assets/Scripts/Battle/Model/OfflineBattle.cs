@@ -33,5 +33,7 @@ public class OfflineBattle : Battle
             fruitons.push(fruiton.GetComponent<ClientFruiton>().KernelFruiton);
         }
         kernel = new Kernel(kernelPlayer1, kernelPlayer2, fruitons);
+        BattleReady();
     }
+
 }
