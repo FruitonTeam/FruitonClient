@@ -30,10 +30,13 @@ public class LoginPanel : MainMenuPanel
     }
 
     private void OnEnable()
+    { 
+        form.ResetForm();
+    }
+
+    private void Start()
     {
         GameManager.Instance.AutomaticLogin();
-        
-        form.ResetForm();
     }
 
     // checks whether the LoginData combination is valid

@@ -20,8 +20,6 @@ public class GameManager : MonoBehaviour
     private static readonly string PASSWORD_KEY = "userpassword";
     
     #region Fields
-
-    public UserBar Bar;
     
     private Texture2D avatar;
     
@@ -244,7 +242,6 @@ public class GameManager : MonoBehaviour
                     fruitonTeamList = ints;
                 },
                 Debug.Log);
-            Bar.Refresh();
         }
     }
     

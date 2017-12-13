@@ -70,20 +70,20 @@ namespace UI.MainMenu
         
         public void EnableOnlineFeatures()
         {
-            ChatButton.enabled = true;
-            MoneyButton.enabled = true;
-            PlayOnlineButton.enabled = true;
-            MarketButton.enabled = true;
-            TodoButton.enabled = true;
+            ChatButton.interactable = true;
+            MoneyButton.interactable = true;
+            PlayOnlineButton.interactable = true;
+            MarketButton.interactable = true;
+            TodoButton.interactable = true;
         }
 
         public void DisableOnlineFeatures()
         {
-            ChatButton.enabled = false;
-            MoneyButton.enabled = false;
-            PlayOnlineButton.enabled = false;
-            MarketButton.enabled = false;
-            TodoButton.enabled = false;
+            ChatButton.interactable = false;
+            MoneyButton.interactable = false;
+            PlayOnlineButton.interactable = false;
+            MarketButton.interactable = false;
+            TodoButton.interactable = false;
         }
 
     }
