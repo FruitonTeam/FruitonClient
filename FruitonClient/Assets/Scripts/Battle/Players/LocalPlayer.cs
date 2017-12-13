@@ -61,6 +61,7 @@ public class LocalPlayer : ClientPlayerBase
         // A tile was clicked.
         else if (gridLayoutManager.ContainsTile(hitObject))
         {
+            gridLayoutManager.ResetHighlights();
             var tileIndices = gridLayoutManager.GetIndicesOfTile(hitObject);
             Debug.Log(tileIndices);
             TargetableAction performedAction = null;
