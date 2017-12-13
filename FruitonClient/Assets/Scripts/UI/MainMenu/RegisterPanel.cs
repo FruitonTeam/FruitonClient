@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using Networking;
-using UnityEngine;
+﻿using Networking;
 using UnityEngine.UI;
 
 public class RegisterPanel : MainMenuPanel
@@ -54,13 +49,12 @@ public class RegisterPanel : MainMenuPanel
 
     public void Register()
     {
-        string name = RegisterName.text;
+        string login = RegisterName.text;
         string password = RegisterPassword.text;
-        string retypePassword = RegisterPasswordRetype.text;
         string email = RegisterEmail.text;
 
         PanelManager.Instance.ShowLoadingIndicator();
-        ConnectionHandler.Instance.Register(name, password, email, true);
+        AuthenticationHandler.Instance.Register(login, password, email);
     }
 
     public void BackToLogin()

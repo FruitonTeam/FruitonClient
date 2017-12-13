@@ -1,19 +1,16 @@
 ﻿using System.Collections.Generic;
+using Networking;
 using UnityEngine;
 
 public enum MenuPanel
 {
-    Welcome,
     Login,
     Fraction,
     Main,
-    Storage,
     Fridge,
-    Pantry,
     Online,
     Offline,
     FarmersMarket,
-    LoginOffline,
     Register
 }
 
@@ -22,7 +19,7 @@ public class PanelManager : MonoBehaviour
     public static PanelManager Instance { get; private set; }
 
     public Dictionary<MenuPanel, MainMenuPanel> Panels = new Dictionary<MenuPanel, MainMenuPanel>();
-    public MenuPanel CurrentPanel = MenuPanel.Welcome;
+    public MenuPanel CurrentPanel = MenuPanel.Login;
     public GameObject LoadingIndicator;
     public MessagePanel MessagePanel;
 
@@ -58,7 +55,14 @@ public class PanelManager : MonoBehaviour
             }
         }
 
-        SwitchPanels(CurrentPanel);
+        if (ConnectionHandler.Instance.IsLogged())
+        {
+            SwitchPanels(MenuPanel.Main);
+        }
+        else
+        {
+            SwitchPanels(CurrentPanel);    
+        }
     }
 
     public void SwitchPanels(MenuPanel panel)
@@ -99,6 +103,11 @@ public class PanelManager : MonoBehaviour
 
     public void ShowErrorMessage(string text)
     {
+        if (string.IsNullOrEmpty(text))
+        {
+            text = "Unknown error.";
+        }
         MessagePanel.ShowErrorMessage(text);
     }
+    
 }

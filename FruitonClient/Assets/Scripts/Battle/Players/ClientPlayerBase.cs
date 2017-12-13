@@ -14,8 +14,6 @@ public abstract class ClientPlayerBase
 
     public string Login { get; private set; }
 
-    public bool IsActive { get; set; }
-
     public int ID { get; private set; }
 
     public abstract void ProcessOpponentAction(EndTurnAction action);
