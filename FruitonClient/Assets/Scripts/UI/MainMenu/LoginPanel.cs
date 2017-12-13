@@ -39,22 +39,6 @@ public class LoginPanel : MainMenuPanel
         GameManager.Instance.AutomaticLogin();
     }
 
-    // checks whether the LoginData combination is valid
-    public LoginMessage CheckLoginData()
-    {   
-        if (!GameManager.Instance.IsUserValid)
-        {
-            if (GameManager.Instance.OnlineLoginDataCheck())
-            {
-                if (GameManager.Instance.IsUserValid)
-                    return LoginMessage.ValidUser;
-                return LoginMessage.NotValidUser;
-            }
-            return LoginMessage.NoConnection;
-        }
-        return LoginMessage.ValidUser;
-    }
-
     public void LoginGoogle()
     {
         AuthenticationHandler.Instance.LoginGoogle();

@@ -198,22 +198,7 @@ public class GameManager
     #endregion
 
 
-    #region Public 
-
-    // online check of the LoginData combination, true if online connection was possible 
-    public bool OnlineLoginDataCheck()
-    {
-        //--TODO-- !!!!!!!!
-        //+load and set UserFraction if it's already set => skip fraction panel
-
-        //............Debug..........
-        bool online = true;
-        if (online)
-        {
-            //ConnectionHandler.Instance.LoginCasual(UserName, UserPassword, true);
-        }
-        return false;
-    }
+    #region Public
 
     public bool HasRememberedUser()
     {
