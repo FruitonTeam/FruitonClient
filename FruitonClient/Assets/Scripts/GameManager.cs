@@ -1,22 +1,30 @@
-﻿using Cz.Cuni.Mff.Fruiton.Dto;
+﻿using System;
+using Cz.Cuni.Mff.Fruiton.Dto;
 using fruiton.fruitDb;
 using System.Collections.Generic;
 using Networking;
+using UI.MainMenu;
 using UnityEngine;
 using Util;
 using KFruiton = fruiton.kernel.Fruiton;
 
 public enum FractionNames { None, GuacamoleGuerrillas, CranberryCrusade, TzatzikiTsardom }
 
-public class GameManager : MonoBehaviour 
+public class GameManager : MonoBehaviour
 {    
     public static GameManager Instance { get; private set; }
 
     private static readonly string FRUITON_DB_FILE = "FruitonDb.json";
+
+    private static readonly string LOGIN_KEY = "username";
+    private static readonly string PASSWORD_KEY = "userpassword";
     
     #region Fields
-
-    private string userName;
+    
+    private Texture2D avatar;
+    
+    private LoggedPlayerInfo loggedPlayerInfo;
+    
     private string userPassword;
     private bool? stayLoggedIn;
     /// <summary> The list of the Fruiton Teams of the current user. </summary>
@@ -48,23 +56,11 @@ public class GameManager : MonoBehaviour
     public string UserName {
         get
         {
-            if (userName == null)
+            if (loggedPlayerInfo == null)
             {
-                userName = PlayerPrefs.GetString("username", "");
+                return PlayerPrefs.GetString(LOGIN_KEY, "default_login");
             }
-            return userName;
-        }
-        set {
-            userName = value;
-            if (StayLoggedIn)
-            {
-                PlayerPrefs.SetString("username", userName);
-            }
-            else
-            {
-                PlayerPrefs.SetString("username", "");
-            }
-            IsUserValid = false;
+            return loggedPlayerInfo.Login;
         }
     }
 
@@ -74,7 +70,7 @@ public class GameManager : MonoBehaviour
         {
             if (userPassword == null)
             {
-                userPassword = PlayerPrefs.GetString("userpassword", "");
+                userPassword = PlayerPrefs.GetString(PASSWORD_KEY, "");
             }
             return userPassword;
         }
@@ -83,11 +79,11 @@ public class GameManager : MonoBehaviour
             userPassword = value;
             if (StayLoggedIn)
             {
-                PlayerPrefs.SetString("userpassword", value);
+                PlayerPrefs.SetString(PASSWORD_KEY, value);
             }
             else
             {
-                PlayerPrefs.SetString("userpassword", "");
+                PlayerPrefs.SetString(PASSWORD_KEY, "");
             }
             IsUserValid = false;
         }
@@ -140,6 +136,40 @@ public class GameManager : MonoBehaviour
 
     public List<int> AvailableFruitons { get; set; }
 
+    public Texture2D Avatar
+    {
+        get
+        {
+            if (avatar == null)
+            {
+                if (loggedPlayerInfo != null && !string.IsNullOrEmpty(loggedPlayerInfo.Avatar))
+                {
+                    avatar = new Texture2D(0, 0);
+                    avatar.LoadImage(Convert.FromBase64String(loggedPlayerInfo.Avatar));
+                }
+                else
+                {
+                    avatar = Resources.Load<Texture2D>("Images/avatar_default");
+                }
+            }
+            return avatar;
+        }
+    }
+
+    public int Money
+    {
+        get
+        {
+            if (loggedPlayerInfo != null)
+            {
+                return loggedPlayerInfo.Money;
+            }
+            return -1; // if we return -1 it will be clear that something is wrong
+        }
+    }
+
+    public bool IsOnline { get; private set; }
+    
     #endregion
 
 
@@ -162,15 +192,42 @@ public class GameManager : MonoBehaviour
 
     public bool HasRememberedUser()
     {
-        return (UserName != "" && UserPassword != "");
+        return UserName != "" && UserPassword != "";
+    }
+
+    public void AutomaticLogin()
+    {
+        if (StayLoggedIn && HasRememberedUser())
+        {
+            PanelManager.Instance.ShowLoadingIndicator();
+            AuthenticationHandler.Instance.LoginBasic(UserName, UserPassword);
+        }
     }
 
     public void LoginOffline()
     {
-
+        IsOnline = false;
+        Initialize();
+        ((MainPanel) PanelManager.Instance.Panels[MenuPanel.Main]).DisableOnlineFeatures();
+        PanelManager.Instance.SwitchPanels(MenuPanel.Main);
     }
 
-    public void Initialize()
+    public void OnLoggedIn(LoggedPlayerInfo playerInfo)
+    {
+        IsOnline = true;
+        
+        RemoveCachedData();
+        
+        loggedPlayerInfo = playerInfo;
+        Initialize();
+        PersistIfStayLoggedIn();
+        ((MainPanel) PanelManager.Instance.Panels[MenuPanel.Main]).EnableOnlineFeatures();
+        PanelManager.Instance.SwitchPanels(MenuPanel.Main);
+    }
+
+    #endregion
+    
+    private void Initialize()
     {
         Serializer.DeserializeFruitonTeams();
                 
@@ -178,16 +235,22 @@ public class GameManager : MonoBehaviour
         AllFruitons = ClientFruitonFactory.CreateAllKernelFruitons();
         AvailableFruitons = Serializer.LoadAvailableFruitons();
 
-        PlayerHelper.GetAllFruitonTeams(ints =>
+        if (IsOnline)
         {
-            fruitonTeamList = ints;
-        },
-        Debug.Log);
+            PlayerHelper.GetAllFruitonTeams(ints =>
+                {
+                    fruitonTeamList = ints;
+                },
+                Debug.Log);
+        }
+    }
+    
+    private void RemoveCachedData()
+    {
+        avatar = null;
     }
 
-    #endregion
-
-    void Awake()
+    private void Awake()
     {
         if (Instance == null)
         {
@@ -199,4 +262,19 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
+    
+    private void PersistIfStayLoggedIn()
+    {
+        if (StayLoggedIn)
+        {
+            Persist();
+        }
+    }
+
+    private void Persist()
+    {
+        PlayerPrefs.SetString(LOGIN_KEY, UserName);
+        PlayerPrefs.SetString(PASSWORD_KEY, AuthenticationHandler.Instance.LastPassword);
+    }
+    
 }

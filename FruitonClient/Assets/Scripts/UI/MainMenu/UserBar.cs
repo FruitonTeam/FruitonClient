@@ -1,29 +1,42 @@
-﻿using Networking;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class UserBar : MonoBehaviour
+namespace UI.MainMenu
 {
-    public Text PlayerNameText;
-    public Image PlayerAvatarImage;
-
-    void OnEnable()
+    public class UserBar : MonoBehaviour
     {
-        PlayerNameText.text = GameManager.Instance.UserName;
-        PlayerHelper.GetAvatar(GameManager.Instance.UserName,
-            texture =>
-            {
-                PlayerAvatarImage.sprite = Sprite.Create(
-                    texture,
-                    new Rect(0, 0, texture.width, texture.height),
-                    new Vector2(0.5f, 0.5f)
-                );
-            },
-            error =>
-            {
-                Debug.LogWarning("Could not get user avatar.");
-            });
+        public Text PlayerNameText;
+        public Image PlayerAvatarImage;
+        public Text MoneyText;
+        public Text FriendsText;
+
+        public void OnEnable()
+        {
+            Load();
+        }
+        
+        public void Refresh()
+        {
+            Load();
+        }
+        
+        private void Load()
+        {
+            PlayerNameText.text = GameManager.Instance.UserName;
+
+            int money = GameManager.Instance.Money;
+            MoneyText.text = money != -1 ? money.ToString() : "N/A";
+            PlayerAvatarImage.sprite = LoadCenteredSprite(GameManager.Instance.Avatar);
+        }
+
+        private Sprite LoadCenteredSprite(Texture2D texture)
+        {
+            return Sprite.Create(
+                texture,
+                new Rect(0, 0, texture.width, texture.height),
+                new Vector2(0.5f, 0.5f)
+            );
+        }
+
     }
 }

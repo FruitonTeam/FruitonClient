@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Scenes
+public class Scenes : MonoBehaviour
 {
     public const string CHAT_SCENE = "ChatScene";
     public const string MAIN_MENU = "MainMenu";
@@ -32,8 +33,9 @@ public class Scenes
         return Parameters[paramKey];
     }
 
-    private Scenes()
+    public void LoadMainMenu()
     {
-        
+        Load(MAIN_MENU);
     }
+    
 }

@@ -30,16 +30,18 @@ public class LoginPanel : MainMenuPanel
     }
 
     private void OnEnable()
-    {
+    { 
         form.ResetForm();
+    }
+
+    private void Start()
+    {
+        GameManager.Instance.AutomaticLogin();
     }
 
     // checks whether the LoginData combination is valid
     public LoginMessage CheckLoginData()
-    {
-        GameManager gameManager = GameManager.Instance;
-        
-   
+    {   
         if (!GameManager.Instance.IsUserValid)
         {
             if (GameManager.Instance.OnlineLoginDataCheck())
@@ -55,7 +57,7 @@ public class LoginPanel : MainMenuPanel
 
     public void LoginGoogle()
     {
-        ConnectionHandler.Instance.LoginGoogle();
+        AuthenticationHandler.Instance.LoginGoogle();
     }
 
     // called after pressing Login Button
@@ -63,12 +65,11 @@ public class LoginPanel : MainMenuPanel
     {
         GameManager gameManager = GameManager.Instance;
         PanelManager panelManager = PanelManager.Instance;
-        ConnectionHandler connectionHandler = ConnectionHandler.Instance;
 
         gameManager.StayLoggedIn = LoginStayLoggedIn.isOn;
         string name = LoginName.text;
         string password = LoginPassword.text;
-        connectionHandler.LoginBasic(name, password, true);
+        AuthenticationHandler.Instance.LoginBasic(name, password);
         panelManager.ShowLoadingIndicator();
     }
 
@@ -76,5 +77,10 @@ public class LoginPanel : MainMenuPanel
     public void RegistrationContinue()
     {
         PanelManager.Instance.SwitchPanels(MenuPanel.Register);
+    }
+
+    public void LoginOffline()
+    {
+        AuthenticationHandler.Instance.LoginOffline();
     }
 }

@@ -1,10 +1,10 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Cz.Cuni.Mff.Fruiton.Dto;
 using Newtonsoft.Json;
+using Util;
 
 namespace Networking
 {
@@ -13,7 +13,7 @@ namespace Networking
         public static void Exists(string player, Action<bool> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
-                ConnectionHandler.Instance.Get(
+                ConnectionHandler.Get(
                     "player/exists?login=" + player,
                     result => success(result == "true"),
                     error
@@ -24,7 +24,7 @@ namespace Networking
         public static void GetAvatar(string player, Action<Texture2D> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
-                ConnectionHandler.Instance.Get(
+                ConnectionHandler.Get(
                     "player/avatar?login=" + player,
                     base64 =>
                     {
@@ -40,7 +40,7 @@ namespace Networking
         public static void GetAvailableFruitons(Action<List<int>> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
-                ConnectionHandler.Instance.Get(
+                ConnectionHandler.Get(
                     "player/availableFruitons?login=" + GameManager.Instance.UserName,
                     jsonString =>
                     {
@@ -56,7 +56,7 @@ namespace Networking
         public static void GetAllFruitonTeams(Action<FruitonTeamList> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
-                ConnectionHandler.Instance.Get(
+                ConnectionHandler.Get(
                     "getAllFruitonTeams?login=" + GameManager.Instance.UserName,
                     protobufString =>
                     {
@@ -73,12 +73,12 @@ namespace Networking
         {
             byte[] body = Serializer.GetBinaryData(fruitonTeam);
             ConnectionHandler.Instance.StartCoroutine(
-                ConnectionHandler.Instance.Post(
+                ConnectionHandler.Post(
                     "addFruitonTeam?login=" + GameManager.Instance.UserName,
                     success,
                     error,
                     body,
-                    ConnectionHandler.Instance.GetRequestHeaders(true)
+                    NetworkUtils.GetRequestHeaders(true)
                 )
             );
         }
@@ -88,7 +88,7 @@ namespace Networking
             string teamName = Uri.EscapeUriString(fruitonTeam.Name);
             Debug.Log("team encoded name = " + teamName);
             ConnectionHandler.Instance.StartCoroutine(
-                ConnectionHandler.Instance.Get(
+                ConnectionHandler.Get(
                     "removeFruitonTeam?login=" + GameManager.Instance.UserName + "&teamName=" + teamName,
                     success,
                     error

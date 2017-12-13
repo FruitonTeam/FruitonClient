@@ -1,20 +1,21 @@
 ﻿using System.Collections.Generic;
 using Networking;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI.MainMenu
 {
     public class MainPanel : MainMenuPanel
     {
+        public Button ChatButton;
+        public Button MoneyButton;
+        public Button PlayOnlineButton;
+        public Button MarketButton;
+        public Button TodoButton;
 
         public void OnlineContinue()
         {
             PanelManager.Instance.SwitchPanels(MenuPanel.Online);
-        }
-
-        public void OfflineContinue()
-        {
-            PanelManager.Instance.SwitchPanels(MenuPanel.Offline);
         }
 
         public void FarmersMarketContinue()
@@ -22,19 +23,9 @@ namespace UI.MainMenu
             PanelManager.Instance.SwitchPanels(MenuPanel.FarmersMarket);
         }
 
-        public void StorageContinue()
-        {
-            PanelManager.Instance.SwitchPanels(MenuPanel.Storage);
-        }
-
         public void TeamManagementContinue()
         {
             Scenes.Load(Scenes.TEAMS_MANAGEMENT_SCENE, FruitonTeamsManager.TEAM_MANAGEMENT_STATE, bool.TrueString);
-        }
-
-        public void PantryContinue()
-        {
-            PanelManager.Instance.SwitchPanels(MenuPanel.Pantry);
         }
 
         public void TeamSelectionContinueOnline()
@@ -75,6 +66,24 @@ namespace UI.MainMenu
             PlayerPrefs.SetString("userpassword", "");
             PlayerPrefs.SetInt("stayloggedin", 0);
             PanelManager.Instance.SwitchPanels(MenuPanel.Login);
+        }
+        
+        public void EnableOnlineFeatures()
+        {
+            ChatButton.interactable = true;
+            MoneyButton.interactable = true;
+            PlayOnlineButton.interactable = true;
+            MarketButton.interactable = true;
+            TodoButton.interactable = true;
+        }
+
+        public void DisableOnlineFeatures()
+        {
+            ChatButton.interactable = false;
+            MoneyButton.interactable = false;
+            PlayOnlineButton.interactable = false;
+            MarketButton.interactable = false;
+            TodoButton.interactable = false;
         }
 
     }
