@@ -177,7 +177,7 @@ public class GameManager : MonoBehaviour
             {
                 return loggedPlayerInfo.Quests;
             }
-            return null;
+            return new RepeatedField<Quest>();
         }
     }
 

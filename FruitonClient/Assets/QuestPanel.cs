@@ -53,8 +53,6 @@ public class QuestPanel : MonoBehaviour
     public int UpdateQuestCount()
     {
         var questCount = GameManager.Instance.Quests.Count;
-        Debug.Log("Quest COUNT");
-        Debug.Log(questCount);
         if (questCount <= 0)
         {
             QuestCountText.transform.parent.gameObject.SetActive(false);
