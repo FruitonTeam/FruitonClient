@@ -127,7 +127,7 @@ public abstract class Battle
         return timeLeft;
     }
 
-    public void LeftButtonUpEvent(RaycastHit hit)
+    public void LeftButtonUpEvent(RaycastHit[] hit)
     {
         TryPassLeftButtonEvent(Player1, hit);
         TryPassLeftButtonEvent(Player2, hit);
@@ -149,7 +149,7 @@ public abstract class Battle
     {
     }
 
-    private bool TryPassLeftButtonEvent(ClientPlayerBase player, RaycastHit hit)
+    private bool TryPassLeftButtonEvent(ClientPlayerBase player, RaycastHit[] hit)
     {
         var localPlayer = player as LocalPlayer;
         var pass = localPlayer != null && IsPlayerActive(player);

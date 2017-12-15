@@ -103,4 +103,9 @@ public class GridLayoutManager : MonoBehaviour {
     {
         return SpawnedGrid.GetIndices(tile);
     }
+
+    public Color GetTileColor(int x, int y)
+    {
+        return SpawnedGrid[x, y].GetComponent<Renderer>().material.color;
+    }
 }
