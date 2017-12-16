@@ -48,7 +48,7 @@ namespace Networking
                 Email = email
             };
 
-            StartCoroutine(ConnectionHandler.Post("register",
+            StartCoroutine(ConnectionHandler.Instance.Post("register",
                 success =>
                 {
                     OnSuccessfulRegistration(login);
@@ -81,7 +81,7 @@ namespace Networking
 
             LastPassword = password;
 
-            StartCoroutine(ConnectionHandler.Post("login",
+            StartCoroutine(ConnectionHandler.Instance.Post("login",
                 ProcessLoginResult,
                 OnLoginError,
                 ProtobufUtils.GetBinaryData(loginData),
@@ -186,7 +186,7 @@ namespace Networking
             if (!string.IsNullOrEmpty(www.text))
             {
                 string idToken = JsonUtility.FromJson<IdToken>(www.text).id_token;
-                StartCoroutine(ConnectionHandler.Get("loginGoogle?idToken=" + idToken,
+                StartCoroutine(ConnectionHandler.Instance.Get("loginGoogle?idToken=" + idToken,
                     googleLoginResultJson =>
                     {
                         var googleLoginResult = JsonUtility.FromJson<GoogleLoginResult>(googleLoginResultJson);

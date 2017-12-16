@@ -13,7 +13,7 @@ namespace Networking
         public static void Exists(string player, Action<bool> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
-                ConnectionHandler.Get(
+                ConnectionHandler.Instance.Get(
                     "player/exists?login=" + player,
                     result => success(result == "true"),
                     error
@@ -24,7 +24,7 @@ namespace Networking
         public static void GetAvatar(string player, Action<Texture2D> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
-                ConnectionHandler.Get(
+                ConnectionHandler.Instance.Get(
                     "player/avatar?login=" + player,
                     base64 =>
                     {
@@ -40,8 +40,8 @@ namespace Networking
         public static void GetAvailableFruitons(Action<List<int>> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
-                ConnectionHandler.Get(
-                    "player/availableFruitons?login=" + GameManager.Instance.UserName,
+                ConnectionHandler.Instance.Get(
+                    "secured/player/availableFruitons",
                     jsonString =>
                     {
                         var fruitons = JsonConvert.DeserializeObject<List<int>>(jsonString);
@@ -56,8 +56,8 @@ namespace Networking
         public static void GetAllFruitonTeams(Action<FruitonTeamList> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
-                ConnectionHandler.Get(
-                    "getAllFruitonTeams?login=" + GameManager.Instance.UserName,
+                ConnectionHandler.Instance.Get(
+                    "secured/getAllFruitonTeams",
                     protobufString =>
                     {
                         byte[] protoMessage = Encoding.ASCII.GetBytes(protobufString);
@@ -73,8 +73,8 @@ namespace Networking
         {
             byte[] body = Serializer.GetBinaryData(fruitonTeam);
             ConnectionHandler.Instance.StartCoroutine(
-                ConnectionHandler.Post(
-                    "addFruitonTeam?login=" + GameManager.Instance.UserName,
+                ConnectionHandler.Instance.Post(
+                    "secured/addFruitonTeam",
                     success,
                     error,
                     body,
@@ -88,8 +88,8 @@ namespace Networking
             string teamName = Uri.EscapeUriString(fruitonTeam.Name);
             Debug.Log("team encoded name = " + teamName);
             ConnectionHandler.Instance.StartCoroutine(
-                ConnectionHandler.Get(
-                    "removeFruitonTeam?login=" + GameManager.Instance.UserName + "&teamName=" + teamName,
+                ConnectionHandler.Instance.Get(
+                    "secured/removeFruitonTeam?teamName=" + teamName,
                     success,
                     error
                 )
