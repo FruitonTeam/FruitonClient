@@ -7,11 +7,7 @@ public class TouchControl : MonoBehaviour {
 
     #region All platforms fields
 
-    public GameObject board;
-    /// <summary> Y axis of the plane on which camera movec dring translation. </summary>
-    Vector3 translateDirection;
-    /// <summary> X axis of the plane on which camera movec dring translation. </summary>
-    Vector3 translateNormal;
+    public GameObject Board;
 
     #endregion
 
@@ -24,7 +20,6 @@ public class TouchControl : MonoBehaviour {
 
     private void Start()
     {
-        ComputeTranslateVectors();
     }
 
 	// Update is called once per frame
@@ -32,41 +27,16 @@ public class TouchControl : MonoBehaviour {
     #if UNITY_ANDROID && !UNITY_EDITOR
             UpdateAndroid();
     #elif UNITY_EDITOR || UNITY_STANDALONE
-        UpdateWindows();
+        UpdateStandalone();
         #endif
     }  
 
     #region All platforms methods
 
-        private void RotateBoardAroundCenter(Vector2 startScreenPosition, Vector2 endScreenPosition)
-        {
-            // The center of the board
-            Vector2 center = Camera.main.WorldToScreenPoint(board.transform.position);
-            // The angle between previous and current finger position
-            float angle = FruitMath.GetAngleBetweenTwoPoints(startScreenPosition - center, endScreenPosition  - center);
-            Debug.Log("Computed angle: " + angle + " point1 = " + (startScreenPosition - center) + " point2 = " + (endScreenPosition - center));
-            transform.RotateAround(new Vector3(0, 0, 0), Vector3.down, 0.5f * angle);
-        }
-
         // Move the camera on a plane that is parallel to the plane given by board and intrsects with the camera coords.
         private void TranslateBoard(Vector3 delta)
         {
-            Camera.main.transform.position -= 0.01f * (delta.x * translateNormal + delta.z * translateDirection);
-        }
-
-        /// <summary>
-        /// Updates the values of translateDirection and translateNormal.
-        /// </summary>
-        private void ComputeTranslateVectors()
-        {
-            Vector3 center;
-            FruitMath.LinePlaneIntersection(out center, Camera.main.transform.position, Camera.main.transform.forward, Vector3.up, Vector3.zero);
-            center.y = 0;
-            Vector3 camera = Camera.main.transform.position;
-            // Project the camera location to XZ plane.
-            camera.y = 0;
-            translateDirection = (center - camera).normalized;
-            translateNormal = new Vector3(translateDirection.z, 0, -translateDirection.x);
+            Board.transform.position += delta;
         }
 
     #endregion
@@ -97,11 +67,6 @@ public class TouchControl : MonoBehaviour {
     /// <param name="touch"></param>
     private void SingleTouchLogic(Touch touch)
     {
-        // Rotations of the screen
-        if (touch.phase == TouchPhase.Moved)
-        {
-            RotateBoardAroundCenter(touch.position, touch.position - touch.deltaPosition);
-        }
 
     }
 
@@ -110,13 +75,8 @@ public class TouchControl : MonoBehaviour {
     /// </summary>
     private void DoubleTouchLogic(Touch touch1, Touch touch2)
     {
-        if (touch1.phase == TouchPhase.Began || touch2.phase == TouchPhase.Began)
-        {
-            // Comptute the translation vectors in case translation will occur.
-            ComputeTranslateVectors();
-        }
         // Translation
-        else if ((touch1.phase == TouchPhase.Moved && touch2.phase == TouchPhase.Stationary) ||
+        if ((touch1.phase == TouchPhase.Moved && touch2.phase == TouchPhase.Stationary) ||
             (touch2.phase == TouchPhase.Moved && touch1.phase == TouchPhase.Stationary))
         {
             Vector3 delta = new Vector3(touch1.deltaPosition.x, 0, touch1.deltaPosition.y) + new Vector3(touch2.deltaPosition.x, 0, touch2.deltaPosition.y);
@@ -138,47 +98,40 @@ public class TouchControl : MonoBehaviour {
 
     #region Windows methods
 
-    private void UpdateWindows()
+    private void UpdateStandalone()
     {
         // ZOOM
         float mouseWheel = Input.GetAxis("Mouse ScrollWheel");
         if (mouseWheel != 0)
         {
-            Debug.Log("ZOOMING");
-            Camera.main.orthographicSize -= 10 * mouseWheel;
-        }
-
-        // Reset after mouse button(s) release
-        if (Input.GetMouseButtonUp(0) || Input.GetMouseButtonUp(1))
-        {
-            startPointRight = null;
+            float potentialSize = Camera.main.orthographicSize - 10 * mouseWheel;
+            if (potentialSize >= 1 && potentialSize <= 20)
+            {
+                Camera.main.orthographicSize = potentialSize;
+            }
+            
         }
 
         // The moment of pressing both mouse buttons. Tranlslate vectors have to be computed
         // in order to translate the board in the correct direction. 
-        if ((Input.GetMouseButtonDown(0) && Input.GetMouseButton(1)) ||
-            (Input.GetMouseButtonDown(1) && Input.GetMouseButton(0)))
+        if (Input.GetMouseButtonDown(1))
         {
-            ComputeTranslateVectors();
-            startPointRight = Input.mousePosition;
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            startPointRight = ray.origin + (ray.direction * Vector3.Distance(Camera.main.transform.position, Board.transform.position));
         }
         else
         {
             if (Input.GetMouseButton(1))
             {
-                Vector3 endPoint = Input.mousePosition;
+                var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                Vector3 endPoint = ray.origin + (ray.direction * Vector3.Distance(Camera.main.transform.position, Board.transform.position));
                 if (startPointRight.HasValue)
                 {
                     // Check whether the user wants to translate (2 buttons) or to rotate (1 button)
-                    if (Input.GetMouseButton(0))
+                    if (Input.GetMouseButton(1))
                     {
-                        Vector3 diff = endPoint - startPointRight.Value;
-                        Vector3 delta = new Vector3(diff.x, 0, diff.y);
+                        Vector3 delta = endPoint - startPointRight.Value;
                         TranslateBoard(delta);
-                    }
-                    else
-                    {
-                        RotateBoardAroundCenter(endPoint, startPointRight.Value);
                     }
                 }
                 startPointRight = endPoint;

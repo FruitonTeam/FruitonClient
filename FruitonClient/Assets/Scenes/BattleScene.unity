@@ -1537,7 +1537,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50f8ccf2d8e10724580c658c37fb59f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  board: {fileID: 1206884549}
+  Board: {fileID: 1206884549}
 --- !u!114 &1561653484
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1549,6 +1549,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf02a14c1198faa45ac47024451fa653, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  GridLayoutManager: {fileID: 0}
   EndTurnButton: {fileID: 1345862657}
   SurrendButton: {fileID: 653383522}
   PanelLoadingGame: {fileID: 707422766}
@@ -1557,6 +1558,7 @@ MonoBehaviour:
   OpponentLoginText: {fileID: 1120954169}
   MyAvatar: {fileID: 1531631832}
   OpponentAvatar: {fileID: 1358792517}
+  Board: {fileID: 1206884549}
 --- !u!1 &1633204037
 GameObject:
   m_ObjectHideFlags: 0

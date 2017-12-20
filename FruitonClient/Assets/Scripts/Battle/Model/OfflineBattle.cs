@@ -15,8 +15,8 @@ public class OfflineBattle : Battle
         Player1 = new LocalPlayer(battleViewer, kernelPlayer1, this, login);
         Player2 = new LocalPlayer(battleViewer, kernelPlayer2, this, login);
 
-        IEnumerable<GameObject> currentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs);
-        IEnumerable<GameObject> opponentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs);
+        IEnumerable<GameObject> currentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs, battleViewer.Board);
+        IEnumerable<GameObject> opponentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs, battleViewer.Board);
 
         RepeatedField<Position> coords = gameManager.CurrentFruitonTeam.Positions;
         battleViewer.InitializeTeam(currentTeam, kernelPlayer1, coords);

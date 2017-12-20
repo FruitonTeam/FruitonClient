@@ -40,6 +40,7 @@ public class BattleViewer : MonoBehaviour
     public Text OpponentLoginText;
     public Image MyAvatar;
     public Image OpponentAvatar;
+    public GameObject Board;
 
 
     /// <summary> Client fruitons stored at their position. </summary>
