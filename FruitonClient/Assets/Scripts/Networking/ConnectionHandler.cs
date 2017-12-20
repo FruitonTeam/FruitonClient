@@ -15,12 +15,16 @@ namespace Networking
     /// </summary>
     public class ConnectionHandler : MonoBehaviour, IOnMessageListener
     {
+        private readonly string XAuthTokenHeaderKey = "x-auth-token";
+        
         private static readonly string URL_WS = "ws://prak.mff.cuni.cz:8050/fruiton/socket";
         private static readonly string URL_API = "http://prak.mff.cuni.cz:8050/fruiton/api/";
         //private static readonly string URL_WS = "ws://localhost:8050/socket";
         //private static readonly string URL_API = "http://localhost:8050/api/";
 
         private WebSocket webSocket;
+
+        private string token;
 
         private Dictionary<WrapperMessage.MessageOneofCase, List<IOnMessageListener>> listeners =
             new Dictionary<WrapperMessage.MessageOneofCase, List<IOnMessageListener>>();
@@ -31,9 +35,9 @@ namespace Networking
         {
         }
         
-        public static IEnumerator Get(string query, Action<string> success, Action<string> error)
+        public IEnumerator Get(string query, Action<string> success, Action<string> error)
         {
-            var www = new WWW(URL_API + query);
+            var www = new WWW(URL_API + query, null, AuthHeader());
             Debug.Log("www: " + URL_API + query);
             yield return www;
 
@@ -47,14 +51,14 @@ namespace Networking
             }
         }
 
-        public static IEnumerator Post(
+        public IEnumerator Post(
             string query, 
             Action<string> success, 
             Action<string> error, 
             byte[] body = null,
             Dictionary<string, string> headers = null
         ) {
-            var www = new WWW(URL_API + query, body, headers);
+            var www = new WWW(URL_API + query, body, AuthHeader(headers));
             yield return www;
 
             if (string.IsNullOrEmpty(www.error))
@@ -66,7 +70,20 @@ namespace Networking
                 error.Invoke(www.error);
             }
         }
-        
+
+        private Dictionary<string, string> AuthHeader(Dictionary<string, string> headers = null)
+        {
+            if (headers == null)
+            {
+                headers = new Dictionary<string, string>();
+            }
+            if (!string.IsNullOrEmpty(token))
+            {
+                headers[XAuthTokenHeaderKey] = token;        
+            }
+            return headers;
+        }
+
         public void SendWebsocketMessage(IMessage message)
         {
             if (!IsLogged())
@@ -78,6 +95,7 @@ namespace Networking
 
         public void Connect(string token)
         {
+            this.token = token;
             webSocket = new WebSocket(new Uri(URL_WS), token);
             
             StartCoroutine(webSocket.Connect());
