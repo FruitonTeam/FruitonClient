@@ -306,12 +306,11 @@ public class BattleViewer : MonoBehaviour
         var potentialTargets = battle.ComputePossibleAttacks(potentialPosition, kernelFruiton);
         foreach (var potentialTarget in potentialTargets)
         {
-            if (GridLayoutManager.GetTileColor(potentialTarget.x, potentialTarget.y) != Color.red)
+            if (!GridLayoutManager.IsTileAttack(potentialTarget.x, potentialTarget.y))
             {
                 GridLayoutManager.HighlightCell(potentialTarget.x, potentialTarget.y, Color.yellow);
             }
-        }
-            
+        }  
     }
 
     public void EndTurn()
