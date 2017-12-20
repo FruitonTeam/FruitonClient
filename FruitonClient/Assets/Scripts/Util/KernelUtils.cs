@@ -12,8 +12,7 @@ namespace Util
 
         public static string LoadTextResource(string resource)
         {
-            Assembly kernelAssembly = AppDomain.CurrentDomain.GetAssemblies()
-                    .SingleOrDefault(assembly => assembly.GetName().Name.StartsWith(KERNEL_DLL_NAME_PREFIX));
+            Assembly kernelAssembly = GetKernelAssembly();
             if (kernelAssembly != null)
             {
                 using (Stream resourceStream = kernelAssembly.GetManifestResourceStream(resource))
@@ -32,6 +31,12 @@ namespace Util
             {
                 return Resources.Load<TextAsset>("Kernel/" + Path.GetFileNameWithoutExtension(resource)).text;
             }
+        }
+
+        public static Assembly GetKernelAssembly()
+        {
+            return AppDomain.CurrentDomain.GetAssemblies()
+                .SingleOrDefault(assembly => assembly.GetName().Name.StartsWith(KERNEL_DLL_NAME_PREFIX));
         }
         
     }

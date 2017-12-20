@@ -169,22 +169,19 @@ public class BattleViewer : MonoBehaviour
         TimeCounter.text = timeLeft.ToString();
     }
 
-    public List<TargetableAction> VisualizeActionsOfType(KVector2 indices, Type type)
+    public LazyDictionary<int, List<TargetableAction>> VisualizeAvailableTargetableActions(KVector2 indices)
     {
+        var result = new LazyDictionary<int, List<TargetableAction>>();
         List<Action> allActions = battle.GetAllValidActionFrom(indices);
-        List<Action> result = new List<Action>();
+        Fruiton kernelFruiton = battle.GetFruiton(indices);
         foreach (Action action in allActions)
         {
-            if (action.GetType() == type)
-            {
-                result.Add(action);
-            }
-        }
-        //IEnumerable<Action> result = allActions.Where(item => item.GetType() == type);
-        Fruiton kernelFruiton = battle.GetFruiton(indices);
-        foreach (var action in result)
             VisualizeAction(action, kernelFruiton);
-        return result.Cast<TargetableAction>().ToList();
+            TargetableAction castAction = action as TargetableAction;
+            if (castAction != null)
+                result[action.getId()].Add(castAction);
+        }
+        return result;
     }
 
     public void ProcessEvent(KEvent kEvent)
