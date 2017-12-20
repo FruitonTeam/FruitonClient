@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Cz.Cuni.Mff.Fruiton.Dto;
@@ -12,6 +13,8 @@ using UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Action = fruiton.kernel.actions.Action;
+using Fruiton = fruiton.kernel.Fruiton;
 using KEvent = fruiton.kernel.events.Event;
 using KFruiton = fruiton.kernel.Fruiton;
 using KAction = fruiton.kernel.actions.Action;
@@ -27,7 +30,7 @@ public class BattleViewer : MonoBehaviour
     private bool isInputEnabled = true;
 
     /// <summary> For handling grid tiles. </summary>
-    private GridLayoutManager gridLayoutManager;
+    public GridLayoutManager GridLayoutManager;
 
     public Button EndTurnButton;
     public Button SurrendButton;
@@ -44,8 +47,8 @@ public class BattleViewer : MonoBehaviour
 
     private void Start()
     {
-        gridLayoutManager = GridLayoutManager.Instance;
-        Grid = new GameObject[gridLayoutManager.WidthCount, gridLayoutManager.HeighCount];
+        GridLayoutManager = GridLayoutManager.Instance;
+        Grid = new GameObject[GridLayoutManager.WidthCount, GridLayoutManager.HeighCount];
 
         var online = Scenes.GetParam(Scenes.ONLINE) == bool.TrueString;
         Debug.Log("playing online = " + online);
@@ -102,10 +105,7 @@ public class BattleViewer : MonoBehaviour
     private void LeftButtonUpLogic()
     {
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit))
-            battle.LeftButtonUpEvent(hit);
+        battle.LeftButtonUpEvent(Physics.RaycastAll(ray));
     }
 
     /// <summary>
@@ -158,7 +158,7 @@ public class BattleViewer : MonoBehaviour
             }
             Grid[i, j] = clientFruiton;
             kernelFruiton.position = new KVector2(i, j);
-            var cellPosition = gridLayoutManager.GetCellPosition(i, j);
+            var cellPosition = GridLayoutManager.GetCellPosition(i, j);
             clientFruiton.transform.position = cellPosition;
         }
     }
@@ -169,14 +169,19 @@ public class BattleViewer : MonoBehaviour
         TimeCounter.text = timeLeft.ToString();
     }
 
-    public List<T> VisualizeActionsOfType<T>(KVector2 indices) where T : KAction
+    public LazyDictionary<int, List<TargetableAction>> VisualizeAvailableTargetableActions(KVector2 indices)
     {
-        var allActions = battle.GetAllValidActionFrom(indices);
-        var result = allActions.OfType<T>();
-        var kernelFruiton = battle.GetFruiton(indices);
-        foreach (var action in result)
+        var result = new LazyDictionary<int, List<TargetableAction>>();
+        List<Action> allActions = battle.GetAllValidActionFrom(indices);
+        Fruiton kernelFruiton = battle.GetFruiton(indices);
+        foreach (Action action in allActions)
+        {
             VisualizeAction(action, kernelFruiton);
-        return result.ToList();
+            TargetableAction castAction = action as TargetableAction;
+            if (castAction != null)
+                result[action.getId()].Add(castAction);
+        }
+        return result;
     }
 
     public void ProcessEvent(KEvent kEvent)
@@ -231,9 +236,9 @@ public class BattleViewer : MonoBehaviour
         GameObject movedObject = Grid[from.x, from.y];
         Grid[to.x, to.y] = movedObject;
         Grid[from.x, from.y] = null;
-        Vector3 toPosition = gridLayoutManager.GetCellPosition(to.x, to.y);
+        Vector3 toPosition = GridLayoutManager.GetCellPosition(to.x, to.y);
         StartCoroutine(MoveCoroutine(movedObject.transform.position, toPosition, movedObject));
-        gridLayoutManager.ResetHighlights();
+        GridLayoutManager.ResetHighlights();
     }
 
     private IEnumerator MoveCoroutine(Vector3 from, Vector3 to, GameObject movedObject)
@@ -278,21 +283,21 @@ public class BattleViewer : MonoBehaviour
         {
             var moveAction = (MoveAction) action;
             var target = ((MoveActionContext) moveAction.actionContext).target;
-            Debug.Log("Highlight x=" + target.x + " y=" + target.y);
-            gridLayoutManager.HighlightCell(target.x, target.y, Color.blue);
+            //Debug.Log("Highlight x=" + target.x + " y=" + target.y);
+            GridLayoutManager.HighlightCell(target.x, target.y, Color.blue);
             VisualizePossibleAttacks(target, kernelFruiton);
         }
         else if (type == typeof(AttackAction))
         {
             var attackAction = (AttackAction) action;
             var target = ((AttackActionContext) attackAction.actionContext).target;
-            gridLayoutManager.HighlightCell(target.x, target.y, Color.red);
+            GridLayoutManager.HighlightCell(target.x, target.y, Color.red);
         }
         else if (type == typeof(HealAction))
         {
             var healAction = (HealAction) action;
             var target = ((HealActionContext)healAction.actionContext).target;
-            gridLayoutManager.HighlightCell(target.x, target.y, Color.green);
+            GridLayoutManager.HighlightCell(target.x, target.y, Color.green);
         }
     }
 
@@ -300,13 +305,18 @@ public class BattleViewer : MonoBehaviour
     {
         var potentialTargets = battle.ComputePossibleAttacks(potentialPosition, kernelFruiton);
         foreach (var potentialTarget in potentialTargets)
-            gridLayoutManager.HighlightCell(potentialTarget.x, potentialTarget.y, Color.yellow);
+        {
+            if (!GridLayoutManager.IsTileAttack(potentialTarget.x, potentialTarget.y))
+            {
+                GridLayoutManager.HighlightCell(potentialTarget.x, potentialTarget.y, Color.yellow);
+            }
+        }  
     }
 
     public void EndTurn()
     {
         DisableEndTurnButton();
-        gridLayoutManager.ResetHighlights();
+        GridLayoutManager.ResetHighlights();
         battle.EndTurnEvent();
     }
 

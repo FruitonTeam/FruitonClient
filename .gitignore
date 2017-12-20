@@ -12,3 +12,8 @@ FruitonClient/Assets/Scripts/Kernel.meta
 FruitonClient/build/
 *.psd
 *.psd.meta
+FruitonClientTests/bin/
+FruitonClientTests/obj/Debug/TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs
+FruitonClient/packages/MSTest.TestFramework.1.1.18/lib/netstandard1.0/pl/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml
+FruitonClientTests/obj/
+FruitonClient/packages/

@@ -1,15 +1,16 @@
-﻿using System.Collections.Generic;
-using Cz.Cuni.Mff.Fruiton.Dto;
+﻿using fruiton.kernel.actions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using fruiton.dataStructures;
 using fruiton.kernel;
-using fruiton.kernel.actions;
 using UnityEngine;
-using KAction = fruiton.kernel.actions.Action;
+using Action = fruiton.kernel.actions.Action;
 
 public class LocalPlayer : ClientPlayerBase
 {
-    private List<AttackAction> availableAttackActions;
-    private List<MoveAction> availableMoveActions;
-    private List<HealAction> availableHealActions;
+    // Key = Action type, Value = List of currently available action of that type to perform.
+    private LazyDictionary<int, List<TargetableAction>> availableActions;
     private readonly BattleViewer battleViewer;
     private readonly GridLayoutManager gridLayoutManager;
 
@@ -18,81 +19,75 @@ public class LocalPlayer : ClientPlayerBase
     {
         this.battleViewer = battleViewer;
         gridLayoutManager = GridLayoutManager.Instance;
-        availableAttackActions = new List<AttackAction>();
-        availableMoveActions = new List<MoveAction>();
-        availableHealActions = new List<HealAction>();
+        availableActions = new LazyDictionary<int, List<TargetableAction>>();
     }
 
-    public void LeftButtonUpLogic(RaycastHit hit)
+    public void LeftButtonUpLogic(RaycastHit[] hits)
     {
-        var hitObject = hit.transform.gameObject;
-        // Player clicked on a fruiton.
-        if (battleViewer.Grid.Contains(hitObject))
+        if (hits.Length == 0)
         {
-            gridLayoutManager.ResetHighlights();
-            var indices = battleViewer.Grid.GetIndices(hitObject);
-            if (availableAttackActions != null)
-            {
-                // Find the action where the target is the clicked fruiton and perform it (if such action exists).
-                var performedActions = availableAttackActions.FindAll(x =>
-                    ((AttackActionContext) x.actionContext).target.equalsTo(indices));
-                if (performedActions.Count != 0)
-                {
-                    var performedAction = performedActions[0];
-                    battle.PerformAction(performedAction.getContext().source, performedAction.getContext().target,
-                        performedAction.getId());
-                }
-            }
-            if (availableHealActions != null)
-            {
-                var performedActions = availableHealActions.FindAll(x =>
-                    ((HealActionContext)x.actionContext).target.equalsTo(indices));
-                if (performedActions.Count != 0)
-                {
-                    var performedAction = performedActions[0];
-                    battle.PerformAction(performedAction.getContext().source, performedAction.getContext().target,
-                        performedAction.getId());
-                }
-            }
-            availableMoveActions = battleViewer.VisualizeActionsOfType<MoveAction>(indices);
-            availableAttackActions = battleViewer.VisualizeActionsOfType<AttackAction>(indices);
-            availableHealActions = battleViewer.VisualizeActionsOfType<HealAction>(indices);
+            ClearAllAvailableActions();
         }
-        // A tile was clicked.
-        else if (gridLayoutManager.ContainsTile(hitObject))
+        gridLayoutManager.ResetHighlights();
+        Func<RaycastHit, bool> isHitGridTile =
+            hit => battleViewer.GridLayoutManager.ContainsTile(hit.transform.gameObject);
+        // We are only interested in clicks on the tiles.
+        if (!hits.Any(isHitGridTile)) return;
+        
+        GameObject hitTile = hits.FirstOrDefault(isHitGridTile).transform.gameObject;
+        if (hitTile.Equals(default(GameObject))) return;
+        Point tilePosition = battleViewer.GridLayoutManager.GetIndicesOfTile(hitTile);
+        GameObject hitFruiton = battleViewer.Grid[tilePosition.x, tilePosition.y];
+        
+        // A tile with a fruiton was clicked.
+        if(hitFruiton != null)
         {
-            gridLayoutManager.ResetHighlights();
-            var tileIndices = gridLayoutManager.GetIndicesOfTile(hitObject);
-            Debug.Log(tileIndices);
-            TargetableAction performedAction = null;
-            if (availableMoveActions != null)
+            bool performedAnyAction = false;
+            // Find the action where the target is the clicked fruiton and perform it (if such action exists).
+            performedAnyAction |= TryFindAndPerformAction(AttackAction.ID, tilePosition);
+            performedAnyAction |= TryFindAndPerformAction(HealAction.ID, tilePosition);
+            // Check if I clicked on my fruiton in order to take action on him or only to select him.
+            if (!performedAnyAction && hitFruiton.GetComponent<ClientFruiton>().KernelFruiton.owner.id == ID)
             {
-                var performedActions = availableMoveActions.FindAll(x =>
-                    ((MoveActionContext) x.actionContext).target.equalsTo(tileIndices));
-                if (performedActions.Count != 0)
-                    performedAction = performedActions[0];
+                battleViewer.GridLayoutManager.HighlightCell(tilePosition.x, tilePosition.y, Color.magenta);
             }
-            if (availableAttackActions != null && performedAction == null)
+            availableActions = battleViewer.VisualizeAvailableTargetableActions(tilePosition);
+        }
+        // A tile without fruiton was clicked.
+        else
+        {
+            if (!TryFindAndPerformAction(MoveAction.ID, tilePosition))
             {
-                var performedActions = availableAttackActions.FindAll(x =>
-                    ((AttackActionContext) x.actionContext).target.equalsTo(tileIndices));
-                if (performedActions.Count != 0)
-                    performedAction = performedActions[0];
+                ClearAllAvailableActions();
             }
-            if (performedAction != null)
-            {
-                var context = performedAction.getContext();
-                var castAction = (KAction) performedAction;
-                battle.PerformAction(context.source, context.target, castAction.getId());
-            }
+        }
+    }
+
+    private bool TryFindAndPerformAction(int actionType, Point tilePosition)
+    {
+        List<TargetableAction> performedActions = availableActions[actionType].FindAll(x =>
+            x.getContext().target.equalsTo(tilePosition));
+        bool success = performedActions.Count != 0;
+        if (success)
+        {
+            var performedAction = performedActions[0];
+            battle.PerformAction(performedAction.getContext().source, performedAction.getContext().target,
+                ((Action)performedAction).getId());
+        }
+        return success;
+    }
+
+    private void ClearAllAvailableActions()
+    {
+        foreach (List<TargetableAction> actions in availableActions.Values)
+        {
+            actions.Clear();
         }
     }
 
     public void EndTurn()
     {
-        availableAttackActions.Clear();
-        availableMoveActions.Clear();
-        availableHealActions.Clear();
+        ClearAllAvailableActions();
         gridLayoutManager.ResetHighlights();
         battle.PerformAction(null, null, EndTurnAction.ID);
     }
