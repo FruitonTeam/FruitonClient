@@ -36,7 +36,9 @@ public class TouchControl : MonoBehaviour {
         // Move the camera on a plane that is parallel to the plane given by board and intrsects with the camera coords.
         private void TranslateBoard(Vector3 delta)
         {
-            Board.transform.position += delta;
+            Vector3 result = Board.transform.position + delta;
+            result.y = 0;
+            Board.transform.position = result;
         }
 
     #endregion
