@@ -40,6 +40,7 @@ public class BattleViewer : MonoBehaviour
     public Text OpponentLoginText;
     public Image MyAvatar;
     public Image OpponentAvatar;
+    public GameObject Board;
 
 
     /// <summary> Client fruitons stored at their position. </summary>
@@ -83,7 +84,6 @@ public class BattleViewer : MonoBehaviour
 
     public void SetupSurrenderButton()
     {
-        SurrendButton.GetComponentInChildren<Text>().text = "Surrender";
         SurrendButton.onClick.RemoveAllListeners();
         SurrendButton.onClick.AddListener(Surrender);
     }
@@ -341,13 +341,12 @@ public class BattleViewer : MonoBehaviour
 
     public void EnableEndTurnButton()
     {
-        EndTurnButton.enabled = true;
-        EndTurnButton.GetComponentInChildren<Text>().text = END_TURN;
+        EndTurnButton.interactable = true;
     }
 
     public void DisableEndTurnButton()
     {
-        EndTurnButton.enabled = false;
-        EndTurnButton.GetComponentInChildren<Text>().text = OPPONENTS_TURN;
+        EndTurnButton.interactable = false;
+        
     }
 }

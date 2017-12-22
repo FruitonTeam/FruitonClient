@@ -13,6 +13,7 @@ public class GridLayoutManager : MonoBehaviour {
     public int HeighCount;
 
     private float CELL_SIZE = 1f;
+    private float transparencyLevel = 235f / 255f;
 
     public static GridLayoutManager Instance { get; private set; }
 
@@ -83,6 +84,7 @@ public class GridLayoutManager : MonoBehaviour {
 
     public void HighlightCell(int x, int y, Color color)
     {
+        color.a = transparencyLevel;
         SpawnedGrid[x, y].GetComponent<Renderer>().material.color = color;
     }
 
@@ -90,7 +92,7 @@ public class GridLayoutManager : MonoBehaviour {
     {
         foreach (var cell in SpawnedGrid)
         {
-            cell.GetComponent<Renderer>().material.color = Color.white;
+            cell.GetComponent<Renderer>().material.color = new Color(1,1,1,1-transparencyLevel);
         }
     }
 
