@@ -103,6 +103,12 @@ public class ClientFruiton : MonoBehaviour {
         damageTag.color = GetHighlightColor(KernelFruiton.originalAttributes.damage, newAttack);
     }
 
+    public void ModifyHealth(int newHealth)
+    {
+        healthTag.text = newHealth.ToString();
+        healthTag.color = GetHighlightColor(KernelFruiton.originalAttributes.hp, newHealth);
+    }
+
     private Color GetHighlightColor(int originalValue, int newValue)
     {
         if (newValue < originalValue)
@@ -118,6 +124,5 @@ public class ClientFruiton : MonoBehaviour {
             return Color.black;
         }
     }
-
 
 }

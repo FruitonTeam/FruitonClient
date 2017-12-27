@@ -197,6 +197,15 @@ public class BattleViewer : MonoBehaviour
             ProcessModifyAttackEvent((ModifyAttackEvent) kEvent);
         else if (eventType == typeof(HealEvent))
             ProcessHealEvent((HealEvent) kEvent);
+        else if (eventType == typeof(ModifyHealthEvent))
+            ProcessModifyHealthEvent((ModifyHealthEvent) kEvent);
+    }
+
+    private void ProcessModifyHealthEvent(ModifyHealthEvent kEvent)
+    {
+        KVector2 kEventPosition = kEvent.position;
+        var clientFruiton = Grid[kEventPosition.x, kEventPosition.y].GetComponent<ClientFruiton>();
+        clientFruiton.ModifyHealth(kEvent.newHealth);
     }
 
     private void ProcessHealEvent(HealEvent kEvent)
