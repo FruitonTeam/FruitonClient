@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class MessagePanel : MonoBehaviour
@@ -8,6 +9,8 @@ public class MessagePanel : MonoBehaviour
 
     private Text textComponent;
     private Button button;
+
+    private Action onCloseAction;
 
     public void ShowInfoMessage(string text)
     {
@@ -44,4 +47,24 @@ public class MessagePanel : MonoBehaviour
         }
         gameObject.SetActive(true);
     }
+
+    public void OnClose(Action a)
+    {
+        onCloseAction = a;
+        if (button == null)
+        {
+            button = GetComponentInChildren<Button>(true);
+        }
+        button.onClick.AddListener(PerformOnCloseAction);
+    }
+
+    private void PerformOnCloseAction()
+    {
+        if (onCloseAction != null)
+        {
+            onCloseAction();
+        }
+        onCloseAction = null;
+    }
+
 }
