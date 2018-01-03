@@ -149,7 +149,7 @@ public class GameManager
 
     public List<int> AvailableFruitons { get; set; }
 
-    public void UnlockFruitons(IList<int> unlockedFruitons)
+    public void UnlockFruitons(IEnumerable<int> unlockedFruitons)
     {
         if (unlockedFruitons != null)
         {
