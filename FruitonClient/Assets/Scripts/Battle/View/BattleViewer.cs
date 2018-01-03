@@ -22,9 +22,6 @@ using KVector2 = fruiton.dataStructures.Point;
 
 public class BattleViewer : MonoBehaviour
 {
-    private static readonly string OPPONENTS_TURN = "Opponent's turn";
-    private static readonly string END_TURN = "End turn";
-
     private Battle battle;
     private bool isGameStarted;
     private bool isInputEnabled = true;
