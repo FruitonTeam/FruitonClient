@@ -9,9 +9,7 @@ using fruiton.kernel.events;
 using Google.Protobuf.Collections;
 using Networking;
 using Spine.Unity;
-using UI;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Action = fruiton.kernel.actions.Action;
 using Fruiton = fruiton.kernel.Fruiton;
@@ -41,6 +39,7 @@ public class BattleViewer : MonoBehaviour
     public Image MyAvatar;
     public Image OpponentAvatar;
     public GameObject Board;
+    public MessagePanel GameResultsPanel;
 
 
     /// <summary> Client fruitons stored at their position. </summary>
@@ -343,9 +342,25 @@ public class BattleViewer : MonoBehaviour
 
     public void GameOver(GameOver gameOverMessage)
     {
-        // TODO show some nice screen here
+        GameResultsPanel.OnClose(() => Scenes.Load(Scenes.MAIN_MENU));
+        GameResultsPanel.ShowInfoMessage("Game over: " + gameOverMessage.Reason + Environment.NewLine +
+                                         "Money gain: " + gameOverMessage.Results.Money + Environment.NewLine +
+                                         "Unlocked fruitons: " + gameOverMessage.Results.UnlockedFruitons + Environment.NewLine +
+                                         "Unlocked quests: " + string.Join(",", 
+                                             gameOverMessage.Results.Quests.Select(q => q.Name).ToArray()));
+        
+        GameManager.Instance.AddMoney(gameOverMessage.Results.Money);
+        GameManager.Instance.UnlockFruitons(gameOverMessage.Results.UnlockedFruitons);
+
+        if (gameOverMessage.Results.Quests != null)
+        {
+            foreach (Quest q in gameOverMessage.Results.Quests)
+            {
+                GameManager.Instance.AddMoney(q.Reward.Money);
+            }
+        }
+        
         Debug.Log("Game over, reason: " + gameOverMessage.Reason + ", result: " + gameOverMessage.Results);
-        Scenes.Load(Scenes.MAIN_MENU);
     }
 
     public void EnableEndTurnButton()
@@ -356,6 +371,5 @@ public class BattleViewer : MonoBehaviour
     public void DisableEndTurnButton()
     {
         EndTurnButton.interactable = false;
-        
     }
 }
