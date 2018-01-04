@@ -3,8 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Cz.Cuni.Mff.Fruiton.Dto;
+using fruiton.fruitDb.factories;
 using fruiton.kernel;
+using fruiton.kernel.abilities;
 using fruiton.kernel.actions;
+using fruiton.kernel.effects;
 using fruiton.kernel.events;
 using Google.Protobuf.Collections;
 using Networking;
@@ -40,6 +43,7 @@ public class BattleViewer : MonoBehaviour
     public Image OpponentAvatar;
     public GameObject Board;
     public MessagePanel GameResultsPanel;
+    public GameObject FruitonInfoPanel;
 
 
     /// <summary> Client fruitons stored at their position. </summary>
@@ -74,6 +78,8 @@ public class BattleViewer : MonoBehaviour
         UpdateTimer();
         if (Input.GetMouseButtonUp(0) && isInputEnabled)
             LeftButtonUpLogic();
+        else
+            HoverLogic();
     }
 
     private void OnDisable()
@@ -105,6 +111,44 @@ public class BattleViewer : MonoBehaviour
     {
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         battle.LeftButtonUpEvent(Physics.RaycastAll(ray));
+    }
+
+    private void HoverLogic()
+    {
+        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit[] raycastHits = Physics.RaycastAll(ray);
+        RaycastHit tileHit = raycastHits.FirstOrDefault(hit => GridLayoutManager.ContainsTile(hit.transform.gameObject));
+        if (!tileHit.Equals(default(RaycastHit)))
+        {
+            KVector2 tilePosition = GridLayoutManager.GetIndicesOfTile(tileHit.transform.gameObject);
+            GameObject hitFruiton = Grid[tilePosition.x, tilePosition.y];
+            if (hitFruiton != null)
+            {
+                var clientFruiton = hitFruiton.GetComponent<ClientFruiton>();
+                Fruiton kernelFruiton = clientFruiton.KernelFruiton;
+                string fruitonInfo = "<b>" + kernelFruiton.model.ToUpper() + "</b>\n";
+                fruitonInfo += "\n<b>Abilities</b>\n";
+                foreach (Ability ability in kernelFruiton.abilities.ToList())
+                {
+                    fruitonInfo += String.Format(ability.text, kernelFruiton.currentAttributes.heal);
+                }
+                fruitonInfo += "\n<b>Effects</b>\n";
+                foreach (Effect effect in kernelFruiton.effects.ToList())
+                {
+                    fruitonInfo += effect.text + "\n";
+                }
+                foreach (int immunity in kernelFruiton.currentAttributes.immunities.ToList())
+                {
+                    string immunityInfoString = "";
+                    if (immunity == HealAction.ID) fruitonInfo += "Unable to be healed.\n";
+                    else if (immunity == AttackAction.ID) fruitonInfo += "Can't be attacked.\n";
+                }
+                FruitonInfoPanel.SetActive(true);
+                FruitonInfoPanel.GetComponentInChildren<Text>().text = fruitonInfo;
+                return;
+            }
+        }
+        FruitonInfoPanel.SetActive(false);
     }
 
     /// <summary>
