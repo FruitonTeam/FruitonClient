@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Cz.Cuni.Mff.Fruiton.Dto;
 using fruiton.fruitDb.factories;
 using fruiton.kernel;
@@ -126,25 +127,25 @@ public class BattleViewer : MonoBehaviour
             {
                 var clientFruiton = hitFruiton.GetComponent<ClientFruiton>();
                 Fruiton kernelFruiton = clientFruiton.KernelFruiton;
-                string fruitonInfo = "<b>" + kernelFruiton.model.ToUpper() + "</b>\n";
-                fruitonInfo += "\n<b>Abilities</b>\n";
+                StringBuilder fruitonInfo = new StringBuilder("<b>" + kernelFruiton.model.ToUpper() + "</b>\n");
+                fruitonInfo.Append("\n<b>Abilities</b>\n");
                 foreach (Ability ability in kernelFruiton.abilities.ToList())
                 {
-                    fruitonInfo += String.Format(ability.text, kernelFruiton.currentAttributes.heal);
+                    fruitonInfo.Append(String.Format(ability.text, kernelFruiton.currentAttributes.heal));
                 }
-                fruitonInfo += "\n<b>Effects</b>\n";
+                fruitonInfo.Append("\n<b>Effects</b>\n");
                 foreach (Effect effect in kernelFruiton.effects.ToList())
                 {
-                    fruitonInfo += effect.text + "\n";
+                    fruitonInfo.Append(effect.text + "\n");
                 }
                 foreach (int immunity in kernelFruiton.currentAttributes.immunities.ToList())
                 {
                     string immunityInfoString = "";
-                    if (immunity == HealAction.ID) fruitonInfo += "Unable to be healed.\n";
-                    else if (immunity == AttackAction.ID) fruitonInfo += "Can't be attacked.\n";
+                    if (immunity == HealAction.ID) fruitonInfo.Append("Unable to be healed.\n");
+                    else if (immunity == AttackAction.ID) fruitonInfo.Append("Can't be attacked.\n");
                 }
                 FruitonInfoPanel.SetActive(true);
-                FruitonInfoPanel.GetComponentInChildren<Text>().text = fruitonInfo;
+                FruitonInfoPanel.GetComponentInChildren<Text>().text = fruitonInfo.ToString();
                 return;
             }
         }
