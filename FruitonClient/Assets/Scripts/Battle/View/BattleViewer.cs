@@ -329,20 +329,20 @@ public class BattleViewer : MonoBehaviour
     public void Surrender()
     {
         battle.SurrenderEvent();
-        Scenes.Load(Scenes.MAIN_MENU);
+        Scenes.Load(Scenes.MAIN_MENU_SCENE);
     }
 
     public void CancelSearch()
     {
         battle.CancelSearchEvent();
-        Scenes.Load(Scenes.MAIN_MENU);
+        Scenes.Load(Scenes.MAIN_MENU_SCENE);
     }
 
     public void GameOver(GameOver gameOverMessage)
     {
         // TODO show some nice screen here
         Debug.Log("Game over, reason: " + gameOverMessage.Reason + ", result: " + gameOverMessage.Results);
-        Scenes.Load(Scenes.MAIN_MENU);
+        Scenes.Load(Scenes.MAIN_MENU_SCENE);
     }
 
     public void EnableEndTurnButton()

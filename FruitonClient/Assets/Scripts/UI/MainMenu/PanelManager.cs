@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Networking;
 using UI.MainMenu;
 using UnityEngine;
@@ -21,7 +22,7 @@ public class PanelManager : MonoBehaviour
     public static PanelManager Instance { get; private set; }
 
     public Dictionary<MenuPanel, MainMenuPanel> Panels = new Dictionary<MenuPanel, MainMenuPanel>();
-    public MenuPanel CurrentPanel = MenuPanel.Login;
+    public MenuPanel CurrentPanel;
     public GameObject LoadingIndicator;
     public MessagePanel MessagePanel;
 
@@ -41,16 +42,14 @@ public class PanelManager : MonoBehaviour
     }
 
     //fill Panels with panels in the scene
-    public void FillPanelDictionary()
+    private void FillPanelDictionary()
     {
-        var canvas = GameObject.Find("Canvas");
-
         Panels = new Dictionary<MenuPanel, MainMenuPanel>();
         bool mobileView = false;
 #if UNITY_ANDROID
         mobileView = true;
 #endif
-        MainMenuPanel[] panelComponents = canvas.GetComponentsInChildren<MainMenuPanel>(true);
+        MainMenuPanel[] panelComponents = GetComponentsInChildren<MainMenuPanel>(true);
 
         foreach (MainMenuPanel panel in panelComponents)
         {
@@ -61,30 +60,29 @@ public class PanelManager : MonoBehaviour
             }
         }
 
-        if (ConnectionHandler.Instance.IsLogged())
+
+        if (Scenes.IsActive(Scenes.MAIN_MENU_SCENE))
         {
-            SwitchPanels(MenuPanel.Main);
+            CurrentPanel = MenuPanel.Main;
+            if (ConnectionHandler.Instance.IsLogged())
+            {
+                ((MainPanel)Panels[MenuPanel.Main]).EnableOnlineFeatures();
+            }
+            else
+            {
+                ((MainPanel)Panels[MenuPanel.Main]).DisableOnlineFeatures();
+            }
+        }
+        else if (Scenes.IsActive(Scenes.LOGIN_SCENE))
+        {
+            CurrentPanel = MenuPanel.Login;
         }
         else
         {
-            SwitchPanels(CurrentPanel);    
+            throw new NotSupportedException("Panel manager is not supported in scene " + Scenes.GetActive());
         }
 
-        string isLoggedin;
-        if (Scenes.Parameters == null)
-            return;
-        Scenes.Parameters.TryGetValue(Scenes.IS_LOGGEDIN, out isLoggedin);
-
-        if (isLoggedin == true.ToString())
-        {
-            ((MainPanel) Instance.Panels[MenuPanel.Main]).EnableOnlineFeatures();
-            Instance.SwitchPanels(MenuPanel.Main);
-        }
-        else if (isLoggedin == false.ToString())
-        {
-            ((MainPanel)Instance.Panels[MenuPanel.Main]).DisableOnlineFeatures();
-            Instance.SwitchPanels(MenuPanel.Main);
-        }
+        SwitchPanels(CurrentPanel);
     }
 
     public void SwitchPanels(MenuPanel panel)
@@ -102,7 +100,7 @@ public class PanelManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("Scene doesn't contain " + panel);
+            throw new InvalidOperationException("Scene " + Scenes.GetActive() + " does not contain panel " + panel);
         }
     }
 

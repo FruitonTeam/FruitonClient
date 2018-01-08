@@ -219,7 +219,7 @@ public class GameManager
     {
         IsOnline = false;
         Initialize();
-        Scenes.Load(Scenes.MAIN_MENU, new Dictionary<string, string> {{Scenes.IS_LOGGEDIN, false.ToString()}});
+        Scenes.Load(Scenes.MAIN_MENU_SCENE);
     }
 
     public void OnLoggedIn(LoggedPlayerInfo playerInfo)
@@ -234,7 +234,7 @@ public class GameManager
 
         PanelManager.Instance.x = 10;
 
-        Scenes.Load(Scenes.MAIN_MENU, new Dictionary<string, string> {{Scenes.IS_LOGGEDIN, true.ToString()}});
+        Scenes.Load(Scenes.MAIN_MENU_SCENE);
     }
 
     #endregion
