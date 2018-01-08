@@ -11,13 +11,6 @@ public class LoginPanel : MainMenuPanel
 
     private Form form;
 
-    public enum LoginMessage
-    {
-        ValidUser,
-        NotValidUser,
-        NoConnection
-    }
-
     private void Awake()
     {
         form = gameObject.AddComponent<Form>().SetInputs(
@@ -39,22 +32,6 @@ public class LoginPanel : MainMenuPanel
         GameManager.Instance.AutomaticLogin();
     }
 
-    // checks whether the LoginData combination is valid
-    public LoginMessage CheckLoginData()
-    {   
-        if (!GameManager.Instance.IsUserValid)
-        {
-            if (GameManager.Instance.OnlineLoginDataCheck())
-            {
-                if (GameManager.Instance.IsUserValid)
-                    return LoginMessage.ValidUser;
-                return LoginMessage.NotValidUser;
-            }
-            return LoginMessage.NoConnection;
-        }
-        return LoginMessage.ValidUser;
-    }
-
     public void LoginGoogle()
     {
         AuthenticationHandler.Instance.LoginGoogle();
@@ -67,9 +44,9 @@ public class LoginPanel : MainMenuPanel
         PanelManager panelManager = PanelManager.Instance;
 
         gameManager.StayLoggedIn = LoginStayLoggedIn.isOn;
-        string name = LoginName.text;
+        string username = LoginName.text;
         string password = LoginPassword.text;
-        AuthenticationHandler.Instance.LoginBasic(name, password);
+        AuthenticationHandler.Instance.LoginBasic(username, password);
         panelManager.ShowLoadingIndicator();
     }
 

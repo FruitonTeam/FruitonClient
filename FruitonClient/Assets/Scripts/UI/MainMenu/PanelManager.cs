@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Networking;
+using UI.MainMenu;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum MenuPanel
 {
@@ -19,11 +22,10 @@ public class PanelManager : MonoBehaviour
     public static PanelManager Instance { get; private set; }
 
     public Dictionary<MenuPanel, MainMenuPanel> Panels = new Dictionary<MenuPanel, MainMenuPanel>();
-    public MenuPanel CurrentPanel = MenuPanel.Login;
+    public MenuPanel CurrentPanel;
     public GameObject LoadingIndicator;
     public MessagePanel MessagePanel;
 
-    // Use this for initialization
     void Awake()
     {
         if (Instance == null)
@@ -40,6 +42,7 @@ public class PanelManager : MonoBehaviour
     //fill Panels with panels in the scene
     private void FillPanelDictionary()
     {
+        Panels = new Dictionary<MenuPanel, MainMenuPanel>();
         bool mobileView = false;
 #if UNITY_ANDROID
         mobileView = true;
@@ -55,14 +58,29 @@ public class PanelManager : MonoBehaviour
             }
         }
 
-        if (ConnectionHandler.Instance.IsLogged())
+
+        if (Scenes.IsActive(Scenes.MAIN_MENU_SCENE))
         {
-            SwitchPanels(MenuPanel.Main);
+            CurrentPanel = MenuPanel.Main;
+            if (ConnectionHandler.Instance.IsLogged())
+            {
+                ((MainPanel)Panels[MenuPanel.Main]).EnableOnlineFeatures();
+            }
+            else
+            {
+                ((MainPanel)Panels[MenuPanel.Main]).DisableOnlineFeatures();
+            }
+        }
+        else if (Scenes.IsActive(Scenes.LOGIN_SCENE))
+        {
+            CurrentPanel = MenuPanel.Login;
         }
         else
         {
-            SwitchPanels(CurrentPanel);    
+            throw new NotSupportedException("Panel manager is not supported in scene " + Scenes.GetActive());
         }
+
+        SwitchPanels(CurrentPanel);
     }
 
     public void SwitchPanels(MenuPanel panel)
@@ -70,19 +88,17 @@ public class PanelManager : MonoBehaviour
         HideLoadingIndicator();
         if (Panels.ContainsKey(panel))
         {
-            // is it possible to close the current panel? e.x. valid login data
-            if (Panels[CurrentPanel].SetPanelActive(false))
+            if (Panels.ContainsKey(CurrentPanel))
             {
-                // is it possible to open the next panel? e.x. skipping login
-                if (Panels[panel].SetPanelActive(true))
-                {
-                    CurrentPanel = panel;
-                }
+                Panels[CurrentPanel].SetPanelActive(false);
             }
+
+            Panels[panel].SetPanelActive(true);
+            CurrentPanel = panel;
         }
         else
         {
-            Debug.Log("Scene doesn't contain " + panel);
+            throw new InvalidOperationException("Scene " + Scenes.GetActive() + " does not contain panel " + panel);
         }
     }
 

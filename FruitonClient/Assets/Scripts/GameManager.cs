@@ -7,6 +7,7 @@ using Networking;
 using UI.MainMenu;
 using UnityEngine;
 using Util;
+using UnityEngine.SceneManagement;
 using KFruiton = fruiton.kernel.Fruiton;
 
 public enum FractionNames { None, GuacamoleGuerrillas, CranberryCrusade, TzatzikiTsardom }
@@ -217,22 +218,7 @@ public class GameManager
     #endregion
 
 
-    #region Public 
-
-    // online check of the LoginData combination, true if online connection was possible 
-    public bool OnlineLoginDataCheck()
-    {
-        //--TODO-- !!!!!!!!
-        //+load and set UserFraction if it's already set => skip fraction panel
-
-        //............Debug..........
-        bool online = true;
-        if (online)
-        {
-            //ConnectionHandler.Instance.LoginCasual(UserName, UserPassword, true);
-        }
-        return false;
-    }
+    #region Public
 
     public bool HasRememberedUser()
     {
@@ -252,8 +238,7 @@ public class GameManager
     {
         IsOnline = false;
         Initialize();
-        ((MainPanel) PanelManager.Instance.Panels[MenuPanel.Main]).DisableOnlineFeatures();
-        PanelManager.Instance.SwitchPanels(MenuPanel.Main);
+        Scenes.Load(Scenes.MAIN_MENU_SCENE);
     }
 
     public void OnLoggedIn(LoggedPlayerInfo playerInfo)
@@ -265,8 +250,8 @@ public class GameManager
         loggedPlayerInfo = playerInfo;
         Initialize();
         PersistIfStayLoggedIn();
-        ((MainPanel) PanelManager.Instance.Panels[MenuPanel.Main]).EnableOnlineFeatures();
-        PanelManager.Instance.SwitchPanels(MenuPanel.Main);
+
+        Scenes.Load(Scenes.MAIN_MENU_SCENE);
     }
 
     #endregion

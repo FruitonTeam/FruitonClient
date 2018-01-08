@@ -24,9 +24,6 @@ using KVector2 = fruiton.dataStructures.Point;
 
 public class BattleViewer : MonoBehaviour
 {
-    private static readonly string OPPONENTS_TURN = "Opponent's turn";
-    private static readonly string END_TURN = "End turn";
-
     private Battle battle;
     private bool isGameStarted;
     private bool isInputEnabled = true;
@@ -376,18 +373,18 @@ public class BattleViewer : MonoBehaviour
     public void Surrender()
     {
         battle.SurrenderEvent();
-        Scenes.Load(Scenes.MAIN_MENU);
+        Scenes.Load(Scenes.MAIN_MENU_SCENE);
     }
 
     public void CancelSearch()
     {
         battle.CancelSearchEvent();
-        Scenes.Load(Scenes.MAIN_MENU);
+        Scenes.Load(Scenes.MAIN_MENU_SCENE);
     }
 
     public void GameOver(GameOver gameOverMessage)
     {
-        GameResultsPanel.OnClose(() => Scenes.Load(Scenes.MAIN_MENU));
+        GameResultsPanel.OnClose(() => Scenes.Load(Scenes.MAIN_MENU_SCENE));
         GameResultsPanel.ShowInfoMessage("Game over: " + gameOverMessage.Reason + Environment.NewLine +
                                          "Money gain: " + gameOverMessage.Results.Money + Environment.NewLine +
                                          "Unlocked fruitons: " + gameOverMessage.Results.UnlockedFruitons + Environment.NewLine +

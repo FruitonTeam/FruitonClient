@@ -4,15 +4,16 @@ using UnityEngine.SceneManagement;
 
 public class Scenes : MonoBehaviour
 {
-    public const string CHAT_SCENE = "ChatScene";
-    public const string MAIN_MENU = "MainMenu";
-    public const string TEAMS_MANAGEMENT_SCENE = "TeamsManagementScene";
-    public const string BATTLE_SCENE = "BattleScene";
+    public static readonly string LOGIN_SCENE = "Login";
+    public static readonly string CHAT_SCENE = "ChatScene";
+    public static readonly string MAIN_MENU_SCENE = "MainMenu";
+    public static readonly string TEAMS_MANAGEMENT_SCENE = "TeamsManagementScene";
+    public static readonly string BATTLE_SCENE = "BattleScene";
 
-    public const string TEAM_MANAGEMENT_STATE = "teamManagementState";
-    public const string ONLINE = "online";
+    public static readonly string TEAM_MANAGEMENT_STATE = "teamManagementState";
+    public static readonly string ONLINE = "online";
 
-    private static Dictionary<string, string> Parameters { get; set; }
+    public static Dictionary<string, string> Parameters { get; private set; }
 
     public static void Load(string sceneName, Dictionary<string, string> parameters = null)
     {
@@ -22,8 +23,7 @@ public class Scenes : MonoBehaviour
 
     public static void Load(string sceneName, string paramKey, string paramValue)
     {
-        Parameters = new Dictionary<string, string>();
-        Parameters.Add(paramKey, paramValue);
+        Parameters = new Dictionary<string, string> {{paramKey, paramValue}};
         SceneManager.LoadScene(sceneName);
     }
 
@@ -35,7 +35,16 @@ public class Scenes : MonoBehaviour
 
     public void LoadMainMenu()
     {
-        Load(MAIN_MENU);
+        Load(MAIN_MENU_SCENE);
     }
-    
+
+    public static bool IsActive(string sceneName)
+    {
+        return SceneManager.GetActiveScene().name == sceneName;
+    }
+
+    public static string GetActive()
+    {
+        return SceneManager.GetActiveScene().name;
+    }
 }

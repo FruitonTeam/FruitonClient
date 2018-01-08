@@ -65,7 +65,7 @@ namespace UI.MainMenu
             PlayerPrefs.SetString("username", "");
             PlayerPrefs.SetString("userpassword", "");
             PlayerPrefs.SetInt("stayloggedin", 0);
-            PanelManager.Instance.SwitchPanels(MenuPanel.Login);
+            Scenes.Load(Scenes.LOGIN_SCENE);
         }
         
         public void EnableOnlineFeatures()
