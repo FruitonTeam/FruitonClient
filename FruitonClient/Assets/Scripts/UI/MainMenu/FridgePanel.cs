@@ -5,7 +5,7 @@ namespace UI.MainMenu
 {
     public class FridgePanel : MainMenuPanel
     {
-        public override bool SetPanelActive(bool toggle)
+        public override void SetPanelActive(bool toggle)
         {
             if (toggle)
             {
@@ -14,7 +14,6 @@ namespace UI.MainMenu
                 Scenes.Load(Scenes.TEAMS_MANAGEMENT_SCENE);
                 Debug.Log("Fridge loaded");
             }
-            return true;
         }
     }
 }

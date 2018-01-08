@@ -8,7 +8,7 @@ public class FractionPanel : MainMenuPanel
     public int SelectedFractionID = -1;
     public Image[] Markers;
 
-    public override bool SetPanelActive(bool toggle)
+    public override void SetPanelActive(bool toggle)
     {
         if (toggle)
         {
@@ -22,7 +22,6 @@ public class FractionPanel : MainMenuPanel
         {
             gameObject.SetActive(false);
         }
-        return true;
     }
 
     // toggle between fractions using graphics & effects

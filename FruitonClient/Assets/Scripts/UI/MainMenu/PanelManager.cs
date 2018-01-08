@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Networking;
+using UI.MainMenu;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum MenuPanel
 {
@@ -23,7 +25,8 @@ public class PanelManager : MonoBehaviour
     public GameObject LoadingIndicator;
     public MessagePanel MessagePanel;
 
-    // Use this for initialization
+    public int x = 0;
+
     void Awake()
     {
         if (Instance == null)
@@ -38,13 +41,16 @@ public class PanelManager : MonoBehaviour
     }
 
     //fill Panels with panels in the scene
-    private void FillPanelDictionary()
+    public void FillPanelDictionary()
     {
+        var canvas = GameObject.Find("Canvas");
+
+        Panels = new Dictionary<MenuPanel, MainMenuPanel>();
         bool mobileView = false;
 #if UNITY_ANDROID
         mobileView = true;
 #endif
-        MainMenuPanel[] panelComponents = GetComponentsInChildren<MainMenuPanel>(true);
+        MainMenuPanel[] panelComponents = canvas.GetComponentsInChildren<MainMenuPanel>(true);
 
         foreach (MainMenuPanel panel in panelComponents)
         {
@@ -63,6 +69,22 @@ public class PanelManager : MonoBehaviour
         {
             SwitchPanels(CurrentPanel);    
         }
+
+        string isLoggedin;
+        if (Scenes.Parameters == null)
+            return;
+        Scenes.Parameters.TryGetValue(Scenes.IS_LOGGEDIN, out isLoggedin);
+
+        if (isLoggedin == true.ToString())
+        {
+            ((MainPanel) Instance.Panels[MenuPanel.Main]).EnableOnlineFeatures();
+            Instance.SwitchPanels(MenuPanel.Main);
+        }
+        else if (isLoggedin == false.ToString())
+        {
+            ((MainPanel)Instance.Panels[MenuPanel.Main]).DisableOnlineFeatures();
+            Instance.SwitchPanels(MenuPanel.Main);
+        }
     }
 
     public void SwitchPanels(MenuPanel panel)
@@ -70,15 +92,13 @@ public class PanelManager : MonoBehaviour
         HideLoadingIndicator();
         if (Panels.ContainsKey(panel))
         {
-            // is it possible to close the current panel? e.x. valid login data
-            if (Panels[CurrentPanel].SetPanelActive(false))
+            if (Panels.ContainsKey(CurrentPanel))
             {
-                // is it possible to open the next panel? e.x. skipping login
-                if (Panels[panel].SetPanelActive(true))
-                {
-                    CurrentPanel = panel;
-                }
+                Panels[CurrentPanel].SetPanelActive(false);
             }
+
+            Panels[panel].SetPanelActive(true);
+            CurrentPanel = panel;
         }
         else
         {

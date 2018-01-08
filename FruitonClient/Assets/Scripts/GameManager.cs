@@ -7,6 +7,7 @@ using Networking;
 using UI.MainMenu;
 using UnityEngine;
 using Util;
+using UnityEngine.SceneManagement;
 using KFruiton = fruiton.kernel.Fruiton;
 
 public enum FractionNames { None, GuacamoleGuerrillas, CranberryCrusade, TzatzikiTsardom }
@@ -218,8 +219,7 @@ public class GameManager
     {
         IsOnline = false;
         Initialize();
-        ((MainPanel) PanelManager.Instance.Panels[MenuPanel.Main]).DisableOnlineFeatures();
-        PanelManager.Instance.SwitchPanels(MenuPanel.Main);
+        Scenes.Load(Scenes.MAIN_MENU, new Dictionary<string, string> {{Scenes.IS_LOGGEDIN, false.ToString()}});
     }
 
     public void OnLoggedIn(LoggedPlayerInfo playerInfo)
@@ -231,8 +231,10 @@ public class GameManager
         loggedPlayerInfo = playerInfo;
         Initialize();
         PersistIfStayLoggedIn();
-        ((MainPanel) PanelManager.Instance.Panels[MenuPanel.Main]).EnableOnlineFeatures();
-        PanelManager.Instance.SwitchPanels(MenuPanel.Main);
+
+        PanelManager.Instance.x = 10;
+
+        Scenes.Load(Scenes.MAIN_MENU, new Dictionary<string, string> {{Scenes.IS_LOGGEDIN, true.ToString()}});
     }
 
     #endregion
