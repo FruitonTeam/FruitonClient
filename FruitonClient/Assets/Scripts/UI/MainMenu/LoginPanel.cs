@@ -11,13 +11,6 @@ public class LoginPanel : MainMenuPanel
 
     private Form form;
 
-    public enum LoginMessage
-    {
-        ValidUser,
-        NotValidUser,
-        NoConnection
-    }
-
     private void Awake()
     {
         form = gameObject.AddComponent<Form>().SetInputs(
@@ -51,9 +44,9 @@ public class LoginPanel : MainMenuPanel
         PanelManager panelManager = PanelManager.Instance;
 
         gameManager.StayLoggedIn = LoginStayLoggedIn.isOn;
-        string name = LoginName.text;
+        string username = LoginName.text;
         string password = LoginPassword.text;
-        AuthenticationHandler.Instance.LoginBasic(name, password);
+        AuthenticationHandler.Instance.LoginBasic(username, password);
         panelManager.ShowLoadingIndicator();
     }
 
