@@ -26,8 +26,6 @@ public class PanelManager : MonoBehaviour
     public GameObject LoadingIndicator;
     public MessagePanel MessagePanel;
 
-    public int x = 0;
-
     void Awake()
     {
         if (Instance == null)

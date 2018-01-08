@@ -232,8 +232,6 @@ public class GameManager
         Initialize();
         PersistIfStayLoggedIn();
 
-        PanelManager.Instance.x = 10;
-
         Scenes.Load(Scenes.MAIN_MENU_SCENE);
     }
 
