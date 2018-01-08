@@ -150,6 +150,20 @@ public class GameManager
 
     public List<int> AvailableFruitons { get; set; }
 
+    public void UnlockFruitons(IEnumerable<int> unlockedFruitons)
+    {
+        if (unlockedFruitons != null)
+        {
+            foreach (int fruiton in unlockedFruitons)
+            {
+                if (!AvailableFruitons.Contains(fruiton))
+                {
+                    AvailableFruitons.Add(fruiton);
+                }
+            }
+        }
+    }
+
     public Texture2D Avatar
     {
         get
@@ -180,6 +194,11 @@ public class GameManager
             }
             return -1; // if we return -1 it will be clear that something is wrong
         }
+    }
+
+    public void AddMoney(int toAdd)
+    {
+        loggedPlayerInfo.Money = loggedPlayerInfo.Money + toAdd;
     }
 
     public RepeatedField<Quest> Quests

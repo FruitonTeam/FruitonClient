@@ -2,16 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Cz.Cuni.Mff.Fruiton.Dto;
+using fruiton.fruitDb.factories;
 using fruiton.kernel;
+using fruiton.kernel.abilities;
 using fruiton.kernel.actions;
+using fruiton.kernel.effects;
 using fruiton.kernel.events;
 using Google.Protobuf.Collections;
 using Networking;
 using Spine.Unity;
-using UI;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Action = fruiton.kernel.actions.Action;
 using Fruiton = fruiton.kernel.Fruiton;
@@ -38,6 +40,8 @@ public class BattleViewer : MonoBehaviour
     public Image MyAvatar;
     public Image OpponentAvatar;
     public GameObject Board;
+    public MessagePanel GameResultsPanel;
+    public GameObject FruitonInfoPanel;
 
 
     /// <summary> Client fruitons stored at their position. </summary>
@@ -72,6 +76,8 @@ public class BattleViewer : MonoBehaviour
         UpdateTimer();
         if (Input.GetMouseButtonUp(0) && isInputEnabled)
             LeftButtonUpLogic();
+        else
+            HoverLogic();
     }
 
     private void OnDisable()
@@ -103,6 +109,44 @@ public class BattleViewer : MonoBehaviour
     {
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         battle.LeftButtonUpEvent(Physics.RaycastAll(ray));
+    }
+
+    private void HoverLogic()
+    {
+        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit[] raycastHits = Physics.RaycastAll(ray);
+        RaycastHit tileHit = raycastHits.FirstOrDefault(hit => GridLayoutManager.ContainsTile(hit.transform.gameObject));
+        if (!tileHit.Equals(default(RaycastHit)))
+        {
+            KVector2 tilePosition = GridLayoutManager.GetIndicesOfTile(tileHit.transform.gameObject);
+            GameObject hitFruiton = Grid[tilePosition.x, tilePosition.y];
+            if (hitFruiton != null)
+            {
+                var clientFruiton = hitFruiton.GetComponent<ClientFruiton>();
+                Fruiton kernelFruiton = clientFruiton.KernelFruiton;
+                StringBuilder fruitonInfo = new StringBuilder("<b>" + kernelFruiton.model.ToUpper() + "</b>\n");
+                fruitonInfo.Append("\n<b>Abilities</b>\n");
+                foreach (Ability ability in kernelFruiton.abilities.ToList())
+                {
+                    fruitonInfo.Append(String.Format(ability.text, kernelFruiton.currentAttributes.heal));
+                }
+                fruitonInfo.Append("\n<b>Effects</b>\n");
+                foreach (Effect effect in kernelFruiton.effects.ToList())
+                {
+                    fruitonInfo.Append(effect.text + "\n");
+                }
+                foreach (int immunity in kernelFruiton.currentAttributes.immunities.ToList())
+                {
+                    string immunityInfoString = "";
+                    if (immunity == HealAction.ID) fruitonInfo.Append("Unable to be healed.\n");
+                    else if (immunity == AttackAction.ID) fruitonInfo.Append("Can't be attacked.\n");
+                }
+                FruitonInfoPanel.SetActive(true);
+                FruitonInfoPanel.GetComponentInChildren<Text>().text = fruitonInfo.ToString();
+                return;
+            }
+        }
+        FruitonInfoPanel.SetActive(false);
     }
 
     /// <summary>
@@ -340,9 +384,25 @@ public class BattleViewer : MonoBehaviour
 
     public void GameOver(GameOver gameOverMessage)
     {
-        // TODO show some nice screen here
+        GameResultsPanel.OnClose(() => Scenes.Load(Scenes.MAIN_MENU_SCENE));
+        GameResultsPanel.ShowInfoMessage("Game over: " + gameOverMessage.Reason + Environment.NewLine +
+                                         "Money gain: " + gameOverMessage.Results.Money + Environment.NewLine +
+                                         "Unlocked fruitons: " + gameOverMessage.Results.UnlockedFruitons + Environment.NewLine +
+                                         "Unlocked quests: " + string.Join(",", 
+                                             gameOverMessage.Results.Quests.Select(q => q.Name).ToArray()));
+        
+        GameManager.Instance.AddMoney(gameOverMessage.Results.Money);
+        GameManager.Instance.UnlockFruitons(gameOverMessage.Results.UnlockedFruitons);
+
+        if (gameOverMessage.Results.Quests != null)
+        {
+            foreach (Quest q in gameOverMessage.Results.Quests)
+            {
+                GameManager.Instance.AddMoney(q.Reward.Money);
+            }
+        }
+        
         Debug.Log("Game over, reason: " + gameOverMessage.Reason + ", result: " + gameOverMessage.Results);
-        Scenes.Load(Scenes.MAIN_MENU_SCENE);
     }
 
     public void EnableEndTurnButton()
@@ -353,6 +413,5 @@ public class BattleViewer : MonoBehaviour
     public void DisableEndTurnButton()
     {
         EndTurnButton.interactable = false;
-        
     }
 }
