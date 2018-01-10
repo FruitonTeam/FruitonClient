@@ -11,7 +11,7 @@ public class FruitonBattleAnimator : MonoBehaviour
 
     public virtual void StartWalking()
     {
-        SkeletonAnim.AnimationState.SetAnimation(USUAL_TRACK, "walk", true);
+        SkeletonAnim.AnimationState.SetAnimation(USUAL_TRACK, "02_walk", true);
     }
 
     public virtual void StopWalking()
@@ -21,9 +21,6 @@ public class FruitonBattleAnimator : MonoBehaviour
 
     protected virtual void ResetCharacter()
     {
-        SkeletonAnim.AnimationState.ClearTrack(2);
-        SkeletonAnim.AnimationState.ClearTrack(3);
-        SkeletonAnim.AnimationState.ClearTrack(USUAL_TRACK);
     }
 
     public virtual void Initialize()

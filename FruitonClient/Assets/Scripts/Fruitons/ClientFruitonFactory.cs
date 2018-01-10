@@ -4,6 +4,7 @@ using fruiton.kernel;
 using Google.Protobuf.Collections;
 using System.Collections;
 using System.Collections.Generic;
+using Spine.Unity;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,7 +31,8 @@ public static class ClientFruitonFactory {
         foreach (int id in teamIDs)
         {
             Fruiton kernelFruiton = FruitonFactory.makeFruiton(id, fruitonDatabase);
-            var newFruitonObject = UnityEngine.Object.Instantiate(Resources.Load("Models/Battle/" + kernelFruiton.model, typeof(GameObject))) as GameObject;
+            var newFruitonObject = UnityEngine.Object.Instantiate(Resources.Load("Models/Battle/BoyFighter", typeof(GameObject))) as GameObject;
+            newFruitonObject.GetComponentInChildren<SkeletonAnimation>().skeleton.SetSkin(kernelFruiton.model);
             newFruitonObject.AddComponent<ClientFruiton>().KernelFruiton = kernelFruiton;
             newFruitonObject.transform.parent = parent.transform;
             result.Add(newFruitonObject);

@@ -15,6 +15,7 @@ using Google.Protobuf.Collections;
 using haxe.root;
 using UnityEngine.SceneManagement;
 using Networking;
+using Spine.Unity;
 
 public class FruitonTeamsManager : MonoBehaviour
 {
@@ -202,7 +203,8 @@ public class FruitonTeamsManager : MonoBehaviour
 
     private GameObject InstantiateFridgeFruiton(KFruiton kernelFruiton, Vector3 position)
     {
-        var result = Instantiate(Resources.Load("Models/TeamManagement/" + kernelFruiton.model, typeof(GameObject))) as GameObject;
+        var result = Instantiate(Resources.Load("Models/TeamManagement/BoyFighter", typeof(GameObject))) as GameObject;
+        result.GetComponent<SkeletonAnimation>().Skeleton.SetSkin(kernelFruiton.model);
         result.name = kernelFruiton.model;
         result.transform.position = new Vector3(position.x, position.y - 20, position.z);
         AddCollider(result);
@@ -313,7 +315,8 @@ public class FruitonTeamsManager : MonoBehaviour
                 foreach (int fruitonID in currentFruitonTeam.FruitonIDs)
                 {
                     KFruiton kernelFruiton = FruitonFactory.makeFruiton(fruitonID, fruitonDatabase);
-                    GameObject fruitonTeamMember = Instantiate(Resources.Load("Models/TeamManagement/" + kernelFruiton.model, typeof(GameObject))) as GameObject;
+                    var fruitonTeamMember = Instantiate(Resources.Load("Models/TeamManagement/BoyFighter", typeof(GameObject))) as GameObject;
+                    fruitonTeamMember.GetComponent<SkeletonAnimation>().Skeleton.SetSkin(kernelFruiton.model);
                     fruitonDictionary.Add(fruitonTeamMember, kernelFruiton.id);
                     AddCollider(fruitonTeamMember);
                     fruitonTeamMember.name = "CurrentFruitonTeam_" + fruitonID;

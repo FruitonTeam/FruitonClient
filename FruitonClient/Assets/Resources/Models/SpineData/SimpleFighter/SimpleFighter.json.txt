@@ -1,5 +1,5 @@
 {
-"skeleton": { "hash": "9IX6fp8dnGIcr4IzImp1VU5KsN0", "spine": "3.6.50", "width": 323.75, "height": 384.47, "images": "../Img_anim/" },
+"skeleton": { "hash": "8u7973UZ7LctScfbzkwky2Aueko", "spine": "3.6.50", "width": 338.89, "height": 367.84, "images": "../Img_anim/" },
 "bones": [
 	{ "name": "root" },
 	{ "name": "body_main", "parent": "root", "length": 55.46, "rotation": 91.39, "x": 0.4, "y": 1.2 },
@@ -70,6 +70,28 @@
 			"defult/leg_rigth_up": { "x": 15.55, "y": 0.86, "rotation": 93.75, "width": 19, "height": 39 }
 		}
 	},
+	"Axeman": {
+		"defult/Sleeveless_01": {
+			"sleeves_placeholder": { "name": "defult/clothes/Sleeveless_35", "x": 0.06, "y": -7.6, "rotation": -89.54, "width": 128, "height": 128 }
+		},
+		"defult/arm_rigth_weapon": {
+			"weapon_placeholder": { "name": "defult/weapon/weapon_012", "x": 55.11, "y": -9.32, "rotation": -145.2, "width": 256, "height": 256 }
+		},
+		"defult/head_hair": {
+			"hair_placeholder": { "name": "defult/hair style/hair style_13", "rotation": -91.28, "width": 256, "height": 256 }
+		}
+	},
+	"Badminton": {
+		"defult/Sleeveless_01": {
+			"sleeves_placeholder": { "name": "defult/clothes/Sleeveless_16", "x": 0.06, "y": -6.94, "rotation": -89.54, "width": 128, "height": 128 }
+		},
+		"defult/arm_rigth_weapon": {
+			"weapon_placeholder": { "name": "defult/weapon/weapon_070", "x": 74.5, "y": -1.77, "rotation": -137.17, "width": 256, "height": 256 }
+		},
+		"defult/head_hair": {
+			"hair_placeholder": { "name": "defult/hair style/hair style_35", "rotation": -91.28, "width": 256, "height": 256 }
+		}
+	},
 	"Baseball": {
 		"defult/Sleeveless_01": {
 			"sleeves_placeholder": { "name": "defult/clothes/Sleeveless_14", "x": 0.06, "y": -7.19, "rotation": -89.54, "width": 128, "height": 128 }
@@ -81,6 +103,47 @@
 			"hair_placeholder": { "name": "defult/hair style/hair style_10", "rotation": -91.28, "width": 256, "height": 256 }
 		}
 	},
+	"BrokenSieve": {
+		"defult/Sleeveless_01": {
+			"sleeves_placeholder": { "name": "defult/clothes/Sleeveless_28", "x": 0.06, "y": -7.72, "rotation": -89.54, "width": 128, "height": 128 }
+		},
+		"defult/arm_rigth_weapon": {
+			"weapon_placeholder": { "name": "defult/weapon/weapon_055", "x": 59.8, "y": -10.76, "rotation": -145.2, "width": 256, "height": 256 }
+		},
+		"defult/head_hair": {
+			"hair_placeholder": { "name": "defult/hair style/hair style_05", "rotation": -91.28, "width": 256, "height": 256 }
+		}
+	},
+	"Broom": {
+		"defult/Sleeveless_01": {
+			"sleeves_placeholder": { "name": "defult/clothes/Sleeveless_09", "x": 0.06, "y": -6.94, "rotation": -89.54, "width": 128, "height": 128 }
+		},
+		"defult/arm_rigth_weapon": {
+			"weapon_placeholder": { "name": "defult/weapon/weapon_019", "x": 53.93, "y": -0.56, "rotation": -137.04, "width": 256, "height": 256 }
+		},
+		"defult/head_hair": {
+			"hair_placeholder": { "name": "defult/hair style/hair style_34", "rotation": -91.28, "width": 256, "height": 256 }
+		}
+	},
+	"ClownFist": {
+		"defult/Sleeveless_01": {
+			"sleeves_placeholder": { "name": "defult/clothes/Sleeveless_17", "x": 1.59, "y": -6.51, "rotation": -89.54, "width": 128, "height": 128 }
+		},
+		"defult/arm_rigth_weapon": {
+			"weapon_placeholder": { "name": "defult/weapon/weapon_014", "x": 83.96, "y": -7.35, "rotation": -137.48, "width": 256, "height": 256 }
+		},
+		"defult/head_hair": {
+			"hair_placeholder": {
+				"name": "defult/hair style/hair style_25",
+				"color": "08f8f8ff",
+				"x": -0.11,
+				"y": -4.79,
+				"rotation": -91.28,
+				"width": 256,
+				"height": 256
+			}
+		}
+	},
 	"ClownPalm": {
 		"defult/Sleeveless_01": {
 			"sleeves_placeholder": { "name": "defult/clothes/Sleeveless_23", "x": 0.05, "y": -5.99, "rotation": -89.54, "width": 128, "height": 128 }
@@ -90,6 +153,28 @@
 		},
 		"defult/head_hair": {
 			"hair_placeholder": { "name": "defult/hair style/hair style_25", "x": -0.11, "y": -4.79, "rotation": -91.28, "width": 256, "height": 256 }
+		}
+	},
+	"ClownPoint": {
+		"defult/Sleeveless_01": {
+			"sleeves_placeholder": { "name": "defult/clothes/Sleeveless_21", "x": 1.01, "y": -6.23, "rotation": -89.54, "width": 128, "height": 128 }
+		},
+		"defult/arm_rigth_weapon": {
+			"weapon_placeholder": { "name": "defult/weapon/weapon_013", "x": 83.96, "y": -7.35, "rotation": -137.48, "width": 256, "height": 256 }
+		},
+		"defult/head_hair": {
+			"hair_placeholder": {
+				"name": "defult/hair style/hair style_25",
+				"type": "mesh",
+				"color": "0cfa12ff",
+				"uvs": [ 1, 1, 0, 1, 0, 0, 1, 0 ],
+				"triangles": [ 1, 2, 3, 1, 3, 0 ],
+				"vertices": [ -130.93, -129.91, -125.22, 126.03, 130.72, 120.32, 125, -135.62 ],
+				"hull": 4,
+				"edges": [ 0, 2, 2, 4, 4, 6, 0, 6 ],
+				"width": 256,
+				"height": 256
+			}
 		}
 	},
 	"CookFish": {
@@ -125,6 +210,39 @@
 			"hair_placeholder": { "name": "defult/hair style/hair style_32", "rotation": -91.28, "width": 256, "height": 256 }
 		}
 	},
+	"FlyCatcher": {
+		"defult/Sleeveless_01": {
+			"sleeves_placeholder": { "name": "defult/clothes/Sleeveless_24", "x": 0.06, "y": -7.61, "rotation": -89.54, "width": 128, "height": 128 }
+		},
+		"defult/arm_rigth_weapon": {
+			"weapon_placeholder": { "name": "defult/weapon/weapon_067", "x": 87.71, "y": -0.03, "rotation": -136.02, "width": 256, "height": 256 }
+		},
+		"defult/head_hair": {
+			"hair_placeholder": { "name": "defult/hair style/hair style_33", "rotation": -91.28, "width": 256, "height": 256 }
+		}
+	},
+	"MorningStar": {
+		"defult/Sleeveless_01": {
+			"sleeves_placeholder": { "name": "defult/clothes/Sleeveless_03", "x": 0.05, "y": -6.14, "rotation": -89.54, "width": 128, "height": 128 }
+		},
+		"defult/arm_rigth_weapon": {
+			"weapon_placeholder": { "name": "defult/weapon/weapon_029", "x": 74.56, "y": -5.85, "rotation": -139.54, "width": 256, "height": 256 }
+		},
+		"defult/head_hair": {
+			"hair_placeholder": { "name": "defult/hair style/hair style_18", "rotation": -91.28, "width": 256, "height": 256 }
+		}
+	},
+	"Pickaxe": {
+		"defult/Sleeveless_01": {
+			"sleeves_placeholder": { "name": "defult/clothes/Sleeveless_08", "x": 5.84, "y": -6.9, "rotation": -89.54, "width": 128, "height": 128 }
+		},
+		"defult/arm_rigth_weapon": {
+			"weapon_placeholder": { "name": "defult/weapon/weapon_002", "x": 47.86, "y": -1.96, "rotation": -136.88, "width": 256, "height": 256 }
+		},
+		"defult/head_hair": {
+			"hair_placeholder": { "name": "defult/hair style/hair style_20", "rotation": -91.28, "width": 256, "height": 256 }
+		}
+	},
 	"PinkWizard": {
 		"defult/Sleeveless_01": {
 			"sleeves_placeholder": { "name": "defult/clothes/Sleeveless_02", "x": 2.82, "y": -8.25, "rotation": -90.02, "width": 128, "height": 128 }
@@ -136,6 +254,17 @@
 			"hair_placeholder": { "name": "defult/hair style/hair style_04", "rotation": -91.28, "width": 256, "height": 256 }
 		}
 	},
+	"Plumber": {
+		"defult/Sleeveless_01": {
+			"sleeves_placeholder": { "name": "defult/clothes/Sleeveless_10", "x": 0.06, "y": -7.15, "rotation": -89.54, "width": 128, "height": 128 }
+		},
+		"defult/arm_rigth_weapon": {
+			"weapon_placeholder": { "name": "defult/weapon/weapon_032", "x": 50.74, "y": -3.66, "rotation": -145.2, "width": 256, "height": 256 }
+		},
+		"defult/head_hair": {
+			"hair_placeholder": { "name": "defult/hair style/hair style_28", "rotation": -91.28, "width": 256, "height": 256 }
+		}
+	},
 	"RescueWorker": {
 		"defult/Sleeveless_01": {
 			"sleeves_placeholder": { "name": "defult/clothes/Sleeveless_13", "x": 4.86, "y": -7.84, "rotation": -90, "width": 128, "height": 128 }
@@ -145,6 +274,17 @@
 		},
 		"defult/head_hair": {
 			"hair_placeholder": { "name": "defult/hair style/hair style_29", "rotation": -91.28, "width": 256, "height": 256 }
+		}
+	},
+	"Rocker": {
+		"defult/Sleeveless_01": {
+			"sleeves_placeholder": { "name": "defult/clothes/Sleeveless_22", "x": 0.07, "y": -8.94, "rotation": -89.54, "width": 128, "height": 128 }
+		},
+		"defult/arm_rigth_weapon": {
+			"weapon_placeholder": { "name": "defult/weapon/weapon_042", "x": 103.77, "y": -12.78, "rotation": -145.2, "width": 256, "height": 256 }
+		},
+		"defult/head_hair": {
+			"hair_placeholder": { "name": "defult/hair style/hair style_23", "rotation": -91.28, "width": 256, "height": 256 }
 		}
 	},
 	"RussianWorker": {
@@ -224,6 +364,28 @@
 			"hair_placeholder": { "name": "defult/hair style/hair style_11", "x": 1.84, "y": -0.04, "rotation": -91.28, "width": 256, "height": 256 }
 		}
 	},
+	"Spatula": {
+		"defult/Sleeveless_01": {
+			"sleeves_placeholder": { "name": "defult/clothes/Sleeveless_30", "x": 2.49, "y": -8.47, "rotation": -89.54, "width": 128, "height": 128 }
+		},
+		"defult/arm_rigth_weapon": {
+			"weapon_placeholder": { "name": "defult/weapon/weapon_064", "x": 78.83, "y": -10.03, "rotation": -145.2, "width": 256, "height": 256 }
+		},
+		"defult/head_hair": {
+			"hair_placeholder": { "name": "defult/hair style/hair style_01", "rotation": -91.28, "width": 256, "height": 256 }
+		}
+	},
+	"SpoonHoney": {
+		"defult/Sleeveless_01": {
+			"sleeves_placeholder": { "name": "defult/clothes/Sleeveless_04", "x": 0.06, "y": -6.83, "rotation": -89.54, "width": 128, "height": 128 }
+		},
+		"defult/arm_rigth_weapon": {
+			"weapon_placeholder": { "name": "defult/weapon/weapon_052", "x": 58.99, "y": -5.55, "rotation": -145.2, "width": 256, "height": 256 }
+		},
+		"defult/head_hair": {
+			"hair_placeholder": { "name": "defult/hair style/hair style_21", "x": -0.11, "y": -5.04, "rotation": -91.28, "width": 256, "height": 256 }
+		}
+	},
 	"Tenis": {
 		"defult/Sleeveless_01": {
 			"sleeves_placeholder": { "name": "defult/clothes/Sleeveless_01", "x": 0.06, "y": -7.19, "rotation": -89.54, "width": 128, "height": 128 }
@@ -233,6 +395,28 @@
 		},
 		"defult/head_hair": {
 			"hair_placeholder": { "name": "defult/hair style/hair style_12", "rotation": -91.28, "width": 256, "height": 256 }
+		}
+	},
+	"Twig": {
+		"defult/Sleeveless_01": {
+			"sleeves_placeholder": { "name": "defult/clothes/Sleeveless_34", "x": 0.06, "y": -6.94, "rotation": -89.54, "width": 128, "height": 128 }
+		},
+		"defult/arm_rigth_weapon": {
+			"weapon_placeholder": { "name": "defult/weapon/weapon_100", "x": 41.16, "y": -20.71, "rotation": -145.2, "width": 256, "height": 256 }
+		},
+		"defult/head_hair": {
+			"hair_placeholder": { "name": "defult/hair style/hair style_07", "x": 3.44, "y": -1.23, "rotation": -91.28, "width": 256, "height": 256 }
+		}
+	},
+	"WhiskBroom": {
+		"defult/Sleeveless_01": {
+			"sleeves_placeholder": { "name": "defult/clothes/Sleeveless_25", "x": 0.04, "y": -5.43, "rotation": -89.54, "width": 128, "height": 128 }
+		},
+		"defult/arm_rigth_weapon": {
+			"weapon_placeholder": { "name": "defult/weapon/weapon_062", "x": 75.49, "y": -9.21, "rotation": -139.21, "width": 256, "height": 256 }
+		},
+		"defult/head_hair": {
+			"hair_placeholder": { "name": "defult/hair style/hair style_15", "rotation": -91.28, "width": 256, "height": 256 }
 		}
 	}
 },

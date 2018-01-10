@@ -6,14 +6,14 @@ filter: Linear,Linear
 repeat: none
 defult/Sleeveless_01
   rotate: false
-  xy: 776, 894
+  xy: 160, 120
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 defult/clothes/Sleeveless_01
   rotate: false
-  xy: 776, 894
+  xy: 160, 120
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
@@ -62,79 +62,86 @@ defult/body_belt.
   index: -1
 defult/clothes/Sleeveless_02
   rotate: false
-  xy: 160, 120
+  xy: 776, 764
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 defult/clothes/Sleeveless_03
   rotate: false
-  xy: 776, 764
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: -1
-defult/clothes/Sleeveless_05
-  rotate: false
   xy: 290, 120
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-defult/clothes/Sleeveless_06
+defult/clothes/Sleeveless_04
   rotate: false
   xy: 776, 634
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-defult/clothes/Sleeveless_07
+defult/clothes/Sleeveless_05
   rotate: false
   xy: 420, 120
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-defult/clothes/Sleeveless_13
+defult/clothes/Sleeveless_06
   rotate: false
   xy: 776, 504
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-defult/clothes/Sleeveless_14
+defult/clothes/Sleeveless_07
   rotate: false
   xy: 550, 120
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-defult/clothes/Sleeveless_18
+defult/clothes/Sleeveless_08
   rotate: false
   xy: 776, 374
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-defult/clothes/Sleeveless_20
+defult/clothes/Sleeveless_09
   rotate: false
   xy: 776, 244
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-defult/clothes/Sleeveless_23
+defult/clothes/Sleeveless_10
   rotate: false
   xy: 680, 114
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-defult/clothes/Sleeveless_27
+defult/clothes/Sleeveless_13
   rotate: false
   xy: 810, 114
   size: 128, 128
   orig: 128, 128
+  offset: 0, 0
+  index: -1
+defult/clothes/Sleeveless_35
+  rotate: false
+  xy: 776, 894
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+defult/hair style/hair style_01
+  rotate: false
+  xy: 2, 766
+  size: 256, 256
+  orig: 256, 256
   offset: 0, 0
   index: -1
 defult/hair style/hair style_02
@@ -151,42 +158,42 @@ defult/hair style/hair style_04
   orig: 256, 256
   offset: 0, 0
   index: -1
-defult/hair style/hair style_08
+defult/hair style/hair style_05
   rotate: false
   xy: 2, 250
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
-defult/hair style/hair style_10
+defult/hair style/hair style_07
   rotate: false
   xy: 260, 508
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
-defult/hair style/hair style_11
+defult/hair style/hair style_08
   rotate: false
   xy: 518, 766
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
-defult/hair style/hair style_12
+defult/hair style/hair style_10
   rotate: false
   xy: 260, 250
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
-defult/hair style/hair style_24
+defult/hair style/hair style_11
   rotate: false
   xy: 518, 508
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
-defult/hair style/hair style_25
+defult/hair style/hair style_12
   rotate: false
   xy: 518, 250
   size: 256, 256
@@ -228,78 +235,162 @@ defult/leg_rigth_up
   orig: 19, 39
   offset: 0, 0
   index: -1
-defult/weapon/weapon_098
-  rotate: false
-  xy: 2, 766
-  size: 256, 256
-  orig: 256, 256
-  offset: 0, 0
-  index: -1
 
 SimpleFighter2.png
 size: 1024,1024
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
+defult/clothes/Sleeveless_14
+  rotate: false
+  xy: 2, 8
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+defult/clothes/Sleeveless_16
+  rotate: false
+  xy: 776, 782
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+defult/clothes/Sleeveless_17
+  rotate: false
+  xy: 132, 8
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+defult/clothes/Sleeveless_18
+  rotate: false
+  xy: 776, 652
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+defult/clothes/Sleeveless_20
+  rotate: false
+  xy: 262, 8
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+defult/clothes/Sleeveless_21
+  rotate: false
+  xy: 776, 522
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+defult/clothes/Sleeveless_22
+  rotate: false
+  xy: 392, 8
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+defult/clothes/Sleeveless_23
+  rotate: false
+  xy: 776, 392
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+defult/clothes/Sleeveless_24
+  rotate: false
+  xy: 522, 8
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+defult/clothes/Sleeveless_25
+  rotate: false
+  xy: 776, 262
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+defult/clothes/Sleeveless_27
+  rotate: false
+  xy: 652, 8
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+defult/clothes/Sleeveless_28
+  rotate: false
+  xy: 782, 132
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+defult/clothes/Sleeveless_30
+  rotate: false
+  xy: 782, 2
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+defult/hair style/hair style_13
+  rotate: false
+  xy: 2, 654
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/hair style/hair style_15
+  rotate: false
+  xy: 2, 396
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/hair style/hair style_18
+  rotate: false
+  xy: 260, 654
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/hair style/hair style_20
+  rotate: false
+  xy: 2, 138
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/hair style/hair style_21
+  rotate: false
+  xy: 260, 396
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/hair style/hair style_23
+  rotate: false
+  xy: 518, 654
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/hair style/hair style_24
+  rotate: false
+  xy: 260, 138
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/hair style/hair style_25
+  rotate: false
+  xy: 518, 396
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
 defult/hair style/hair style_26
   rotate: false
-  xy: 2, 518
-  size: 256, 256
-  orig: 256, 256
-  offset: 0, 0
-  index: -1
-defult/hair style/hair style_27
-  rotate: false
-  xy: 2, 260
-  size: 256, 256
-  orig: 256, 256
-  offset: 0, 0
-  index: -1
-defult/hair style/hair style_29
-  rotate: false
-  xy: 260, 518
-  size: 256, 256
-  orig: 256, 256
-  offset: 0, 0
-  index: -1
-defult/hair style/hair style_31
-  rotate: false
-  xy: 2, 2
-  size: 256, 256
-  orig: 256, 256
-  offset: 0, 0
-  index: -1
-defult/hair style/hair style_32
-  rotate: false
-  xy: 260, 260
-  size: 256, 256
-  orig: 256, 256
-  offset: 0, 0
-  index: -1
-defult/weapon/weapon_004
-  rotate: false
-  xy: 518, 518
-  size: 256, 256
-  orig: 256, 256
-  offset: 0, 0
-  index: -1
-defult/weapon/weapon_007
-  rotate: false
-  xy: 260, 2
-  size: 256, 256
-  orig: 256, 256
-  offset: 0, 0
-  index: -1
-defult/weapon/weapon_009
-  rotate: false
-  xy: 518, 260
-  size: 256, 256
-  orig: 256, 256
-  offset: 0, 0
-  index: -1
-defult/weapon/weapon_015
-  rotate: false
-  xy: 518, 2
+  xy: 518, 138
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
@@ -310,63 +401,139 @@ size: 1024,1024
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-defult/weapon/weapon_022
+defult/clothes/Sleeveless_34
+  rotate: false
+  xy: 2, 2
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+defult/hair style/hair style_27
+  rotate: false
+  xy: 2, 648
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/hair style/hair style_28
+  rotate: false
+  xy: 2, 390
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/hair style/hair style_29
+  rotate: false
+  xy: 260, 648
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/hair style/hair style_31
+  rotate: false
+  xy: 2, 132
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/hair style/hair style_32
+  rotate: false
+  xy: 260, 390
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/hair style/hair style_33
+  rotate: false
+  xy: 518, 648
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/hair style/hair style_34
+  rotate: false
+  xy: 260, 132
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/hair style/hair style_35
+  rotate: false
+  xy: 518, 390
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/weapon/weapon_002
+  rotate: false
+  xy: 518, 132
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+
+SimpleFighter4.png
+size: 1024,1024
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+defult/weapon/weapon_004
   rotate: false
   xy: 2, 518
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
-defult/weapon/weapon_023
+defult/weapon/weapon_007
   rotate: false
   xy: 2, 260
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
-defult/weapon/weapon_024
+defult/weapon/weapon_009
   rotate: false
   xy: 260, 518
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
-defult/weapon/weapon_037
+defult/weapon/weapon_012
   rotate: false
   xy: 2, 2
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
-defult/weapon/weapon_041
+defult/weapon/weapon_013
   rotate: false
   xy: 260, 260
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
-defult/weapon/weapon_048
+defult/weapon/weapon_014
   rotate: false
   xy: 518, 518
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
-defult/weapon/weapon_050
+defult/weapon/weapon_015
   rotate: false
   xy: 260, 2
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
-defult/weapon/weapon_051
+defult/weapon/weapon_019
   rotate: false
   xy: 518, 260
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
-defult/weapon/weapon_059
+defult/weapon/weapon_022
   rotate: false
   xy: 518, 2
   size: 256, 256
@@ -374,14 +541,159 @@ defult/weapon/weapon_059
   offset: 0, 0
   index: -1
 
-SimpleFighter4.png
-size: 512,512
+SimpleFighter5.png
+size: 1024,1024
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-defult/weapon/weapon_072
+defult/weapon/weapon_023
+  rotate: false
+  xy: 2, 518
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/weapon/weapon_024
+  rotate: false
+  xy: 2, 260
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/weapon/weapon_029
+  rotate: false
+  xy: 260, 518
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/weapon/weapon_032
   rotate: false
   xy: 2, 2
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/weapon/weapon_037
+  rotate: false
+  xy: 260, 260
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/weapon/weapon_041
+  rotate: false
+  xy: 518, 518
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/weapon/weapon_042
+  rotate: false
+  xy: 260, 2
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/weapon/weapon_048
+  rotate: false
+  xy: 518, 260
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/weapon/weapon_050
+  rotate: false
+  xy: 518, 2
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+
+SimpleFighter6.png
+size: 1024,1024
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+defult/weapon/weapon_051
+  rotate: false
+  xy: 2, 518
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/weapon/weapon_052
+  rotate: false
+  xy: 2, 260
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/weapon/weapon_055
+  rotate: false
+  xy: 260, 518
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/weapon/weapon_059
+  rotate: false
+  xy: 2, 2
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/weapon/weapon_062
+  rotate: false
+  xy: 260, 260
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/weapon/weapon_064
+  rotate: false
+  xy: 518, 518
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/weapon/weapon_067
+  rotate: false
+  xy: 260, 2
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/weapon/weapon_070
+  rotate: false
+  xy: 518, 260
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/weapon/weapon_072
+  rotate: false
+  xy: 518, 2
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+
+SimpleFighter7.png
+size: 1024,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+defult/weapon/weapon_098
+  rotate: false
+  xy: 2, 2
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+defult/weapon/weapon_100
+  rotate: false
+  xy: 260, 2
   size: 256, 256
   orig: 256, 256
   offset: 0, 0

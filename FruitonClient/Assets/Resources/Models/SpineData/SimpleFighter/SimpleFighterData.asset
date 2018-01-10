@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Name: SimpleFighterData
   m_EditorClassIdentifier: 
   atlasAssets:
-  - {fileID: 11400000, guid: 5e0e9e74408acfa4db1457572d94185d, type: 2}
+  - {fileID: 11400000, guid: d099bf8a33450554e9b25702b8cf4d41, type: 2}
   scale: 0.01
-  skeletonJSON: {fileID: 4900000, guid: 54a1f70fab0f4304ca380e5e98f8b901, type: 3}
+  skeletonJSON: {fileID: 4900000, guid: d79fd19f35d902549aec38afe74dcb90, type: 3}
   fromAnimation: []
   toAnimation: []
   duration: []

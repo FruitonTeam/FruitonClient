@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: b1e369b8f522ac74788d53c9a644bfcf
+guid: e42f04c2cc28fcb4582977cbd5742d13
 timeCreated: 1515599851
 licenseType: Free
 TextureImporter:
@@ -60,20 +60,7 @@ TextureImporter:
     overridden: 0
   spriteSheet:
     serializedVersion: 2
-    sprites:
-    - serializedVersion: 2
-      name: defult/weapon/weapon_072
-      rect:
-        serializedVersion: 2
-        x: 2
-        y: 254
-        width: 256
-        height: 256
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      tessellationDetail: -1
+    sprites: []
     outline: []
   spritePackingTag: 
   userData: 
