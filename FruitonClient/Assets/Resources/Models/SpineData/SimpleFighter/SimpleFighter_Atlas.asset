@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6b194f808b1af6499c93410e504af42, type: 3}
+  m_Name: SimpleFighter_Atlas
+  m_EditorClassIdentifier: 
+  atlasFile: {fileID: 4900000, guid: 6cfa400290dd89e4289e16a9404b88ed, type: 3}
+  materials:
+  - {fileID: 2100000, guid: 5aa11b3446c43064f90e1e071c6b7431, type: 2}
+  - {fileID: 2100000, guid: e8a6742f405c35a48acbe5c499cf0e1b, type: 2}
+  - {fileID: 2100000, guid: 6772537a6199e6f4dbde8118e348f3f7, type: 2}
+  - {fileID: 2100000, guid: ae029d867aae8524eb1918403ca14625, type: 2}
