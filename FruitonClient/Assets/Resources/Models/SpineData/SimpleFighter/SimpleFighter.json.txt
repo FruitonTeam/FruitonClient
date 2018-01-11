@@ -1,5 +1,5 @@
 {
-"skeleton": { "hash": "8u7973UZ7LctScfbzkwky2Aueko", "spine": "3.6.50", "width": 338.89, "height": 367.84, "images": "../Img_anim/" },
+"skeleton": { "hash": "oX3PnUfgohPjOP0zyFjHnPtVp/8", "spine": "3.6.50", "width": 339.2, "height": 368.16, "images": "../Img_anim/" },
 "bones": [
 	{ "name": "root" },
 	{ "name": "body_main", "parent": "root", "length": 55.46, "rotation": 91.39, "x": 0.4, "y": 1.2 },
@@ -78,7 +78,7 @@
 			"weapon_placeholder": { "name": "defult/weapon/weapon_012", "x": 55.11, "y": -9.32, "rotation": -145.2, "width": 256, "height": 256 }
 		},
 		"defult/head_hair": {
-			"hair_placeholder": { "name": "defult/hair style/hair style_13", "rotation": -91.28, "width": 256, "height": 256 }
+			"hair_placeholder": { "name": "defult/hair style/hair style_13", "rotation": -91.42, "width": 256, "height": 256 }
 		}
 	},
 	"Badminton": {
