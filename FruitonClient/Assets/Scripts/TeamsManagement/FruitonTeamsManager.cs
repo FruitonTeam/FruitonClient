@@ -370,13 +370,15 @@ public class FruitonTeamsManager : MonoBehaviour
         if (validationResult.valid)
         {
             GameObject fruitonTeamMember = Instantiate(pattern);
+            var skinName = pattern.GetComponent<SkeletonAnimation>().skeleton.skin.Name;
+            fruitonTeamMember.GetComponent<SkeletonAnimation>().skeleton.SetSkin(skinName);
             fruitonTeamMember.transform.parent = CurrentFruitonTeamObject.transform;
             fruitonDictionary.Add(fruitonTeamMember, fruitonDictionary[pattern]);
             currentFruitonTeam.FruitonIDs.Add(fruitonDictionary[fruitonTeamMember]);
             int id = fruitonDictionary[fruitonTeamMember];
             KFruiton kernelFruiton = FruitonFactory.makeFruiton(id, GameManager.Instance.FruitonDatabase);
             fruitonTeamMember.name = "CurrentFruitonTeam_" + fruitonTeamMember.name;
-            fruitonTeamMember.transform.position = CurrentFruitonTeamObject.transform.position + currentFruitonTeamTranslations[kernelFruiton.type - 1];
+            fruitonTeamMember.transform.position = CurrentFruitonTeamObject.transform.position + currentFruitonTeamTranslations[kernelFruiton.type - 1] - new Vector3(0, 20);
             currentFruitonTeamTranslations[kernelFruiton.type - 1].x += OBJECTS_DISTANCE;
             fruitonTeamMember.GetComponent<ClientFruiton>().KernelFruiton = kernelFruiton;
         } else

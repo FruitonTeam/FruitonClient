@@ -66,13 +66,13 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1150925170794930}
-  m_LocalRotation: {x: 0, y: 0, z: 0.2588191, w: 0.9659258}
+  m_LocalRotation: {x: 0, y: 0, z: 0.2164396, w: 0.97629607}
   m_LocalPosition: {x: 0.8, y: 0, z: 0}
   m_LocalScale: {x: 0.7, y: 0.7, z: 1}
   m_Children: []
   m_Father: {fileID: 4103323225942504}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 30}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 25}
 --- !u!23 &23840066031384472
 MeshRenderer:
   m_ObjectHideFlags: 1
@@ -86,10 +86,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: f1a9ff7c8b9655840baf130646e0f748, type: 2}
-  - {fileID: 2100000, guid: a160adf527b635846ac36b69c40bf785, type: 2}
-  - {fileID: 2100000, guid: c9c70d652a6359847857f242fea4624a, type: 2}
-  - {fileID: 2100000, guid: f1a9ff7c8b9655840baf130646e0f748, type: 2}
+  - {fileID: 2100000, guid: cc9ad405e0b537045ac3388c9c3214f1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -138,7 +135,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: 612b4a75e7b29c74aa599f520a72b57e, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: dfe17e6b7a993ef47866fc6bd25d7df8, type: 2}
   initialSkinName: Spatula
   initialFlipX: 0
   initialFlipY: 0
@@ -155,7 +152,7 @@ MonoBehaviour:
   logErrors: 0
   disableRenderingOnOverride: 1
   _animationName: 01_Idle
-  loop: 0
+  loop: 1
   timeScale: 1
 --- !u!114 &114385216805471902
 MonoBehaviour:
