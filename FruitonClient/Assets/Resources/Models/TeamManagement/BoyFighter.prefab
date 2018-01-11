@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 33620637076552934}
   - component: {fileID: 23049884420998344}
   - component: {fileID: 114866022462192898}
-  - component: {fileID: 114074839285078674}
+  - component: {fileID: 135318549321559684}
   m_Layer: 0
   m_Name: BoyFighter
   m_TagString: Untagged
@@ -37,7 +37,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1160775794392686}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.2041321, y: -1.8752899, z: 0}
+  m_LocalPosition: {x: -4.5, y: 4.597412, z: -52.182755}
   m_LocalScale: {x: 10, y: 10, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -56,10 +56,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: f1a9ff7c8b9655840baf130646e0f748, type: 2}
-  - {fileID: 2100000, guid: a160adf527b635846ac36b69c40bf785, type: 2}
-  - {fileID: 2100000, guid: c9c70d652a6359847857f242fea4624a, type: 2}
-  - {fileID: 2100000, guid: f1a9ff7c8b9655840baf130646e0f748, type: 2}
+  - {fileID: 2100000, guid: cc9ad405e0b537045ac3388c9c3214f1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -85,17 +82,6 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1160775794392686}
   m_Mesh: {fileID: 0}
---- !u!114 &114074839285078674
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1160775794392686}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a5ce025b2d19fc9469b0db8c77dc5944, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114866022462192898
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -107,7 +93,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: 612b4a75e7b29c74aa599f520a72b57e, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: dfe17e6b7a993ef47866fc6bd25d7df8, type: 2}
   initialSkinName: Spatula
   initialFlipX: 0
   initialFlipY: 0
@@ -124,5 +110,17 @@ MonoBehaviour:
   logErrors: 0
   disableRenderingOnOverride: 1
   _animationName: 01_Idle
-  loop: 0
+  loop: 1
   timeScale: 1
+--- !u!135 &135318549321559684
+SphereCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1160775794392686}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 1.7903991
+  m_Center: {x: -0.4657998, y: 1.679648, z: 0}
