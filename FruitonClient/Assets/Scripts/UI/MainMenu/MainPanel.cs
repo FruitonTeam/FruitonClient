@@ -67,6 +67,11 @@ namespace UI.MainMenu
             PlayerPrefs.SetInt("stayloggedin", 0);
             Scenes.Load(Scenes.LOGIN_SCENE);
         }
+
+        public void OpenMarketOnWeb()
+        {
+            ConnectionHandler.Instance.OpenUrlAuthorized("bazaar");
+        }
         
         public void EnableOnlineFeatures()
         {
