@@ -162,11 +162,10 @@ public class FridgeTeamGrid : MonoBehaviour
 
     private static Position GetBattlePositionFromGridPosition(int x, int y)
     {
-        var result = new Position
+        return new Position
         {
             X = y + 2,
             Y = x
         };
-        return result;
     }
 }

@@ -24,8 +24,6 @@ public class FruitonTeamsManager : MonoBehaviour
         TeamEdit
     }
 
-    private const int MaxTeamCount = 16;
-
     public ScrollRect ScrollRect;
     public FridgeTeamGrid TeamGrid;
     public Image DragAndDropBarrier;
@@ -47,26 +45,28 @@ public class FruitonTeamsManager : MonoBehaviour
 
     private ViewMode viewMode;
     private List<FridgeFruitonTeam> teams;
-    private int selectedTeamIndex = 0;
+    private int selectedTeamIndex;
     private Color defaultTeamIconColor;
-    private bool isDragging = false;
-    private bool isDraggingFromTeam = false;
+    private bool isDragging;
+    private bool isDraggingFromTeam;
     private Position teamDragGridPosition;
     private KFruiton draggedFruiton;
 
     /// <summary> true if player is actually editing teams, false if only viewing/picking </summary>
-    private bool teamManagementState;
+    private bool isInTeamManagement;
 
     /// <summary> Name of scene param, true if player is actually editing teams, false if only viewing/picking</summary>
     public static readonly string TEAM_MANAGEMENT_STATE = "teamManagementState";
 
+    public static readonly int MAX_TEAM_COUNT = 16;
+
     // Use this for initialization
     void Start()
     {
-        teamManagementState = bool.Parse(Scenes.GetParam(TEAM_MANAGEMENT_STATE));
-        InitializeTeams(teamManagementState);
+        isInTeamManagement = bool.Parse(Scenes.GetParam(TEAM_MANAGEMENT_STATE));
+        InitializeTeams(isInTeamManagement);
         SwitchViewMode(viewMode);
-        if (teamManagementState)
+        if (isInTeamManagement)
         {
             ButtonPlay.gameObject.SetActive(false);
             InitializeAllFruitons();
@@ -80,7 +80,16 @@ public class FruitonTeamsManager : MonoBehaviour
         TeamGrid.OnBeginDragFromTeam.AddListener(BeginFruitonDragFromTeam);
         if (viewMode == ViewMode.TeamSelect)
         {
-            SelectTeam(0);
+            if (GameManager.Instance.CurrentFruitonTeam != null)
+            {
+                SelectTeam(
+                    GameManager.Instance.FruitonTeamList.FruitonTeams.IndexOf(GameManager.Instance.CurrentFruitonTeam)
+                );
+            }
+            else
+            {
+                SelectTeam(0);
+            }
         }
         DragAndDropFruiton.gameObject.SetActive(false);
     }
@@ -96,7 +105,7 @@ public class FruitonTeamsManager : MonoBehaviour
             if (Input.touchCount > 0)
             {
                 var touchPos = Input.GetTouch(0).position;
-                pointerPosition = new Vector3(touchPos.x, touchPos.y, 0) + new Vector3(-1,1,0) * 50;
+                pointerPosition = new Vector3(touchPos.x, touchPos.y, 0) + new Vector3(-1, 1, 0) * 50;
                 dndPosition = pointerPosition + new Vector3(-1, 1, 0) * 100;
             }
 #endif
@@ -168,7 +177,7 @@ public class FruitonTeamsManager : MonoBehaviour
         AddTeamToScene(newFruitonTeam);
         SelectTeam(teams.Count - 1);
         SwitchViewMode(ViewMode.TeamEdit);
-        ButtonNewTeam.interactable = teams.Count < MaxTeamCount;
+        ButtonNewTeam.interactable = teams.Count < MAX_TEAM_COUNT;
     }
 
     public void DeleteTeam()
@@ -181,7 +190,7 @@ public class FruitonTeamsManager : MonoBehaviour
         ReindexTeams();
         ResizeScrollContent(teams.Count);
         PlayerHelper.RemoveFruitonTeam(team.KernelTeam, Debug.Log, Debug.Log);
-        ButtonNewTeam.interactable = teams.Count < MaxTeamCount;
+        ButtonNewTeam.interactable = teams.Count < MAX_TEAM_COUNT;
     }
 
     public void StartTeamEdit()
@@ -206,6 +215,7 @@ public class FruitonTeamsManager : MonoBehaviour
         }
         else
         {
+            team.gameObject.GetComponentInChildren<Text>().text = GetTeamDescription(kTeam);
             PlayerHelper.UploadFruitonTeam(team.KernelTeam, Debug.Log, Debug.Log);
         }
         SwitchViewMode(ViewMode.TeamSelect);
@@ -221,6 +231,14 @@ public class FruitonTeamsManager : MonoBehaviour
 
     public void ReturnToMenu()
     {
+        if (isInTeamManagement)
+        {
+            GameManager.Instance.FruitonTeamList = new FruitonTeamList();
+            foreach (var team in teams)
+            {
+                GameManager.Instance.FruitonTeamList.FruitonTeams.Add(team.KernelTeam);
+            }
+        }
         Scenes.Load(Scenes.MAIN_MENU_SCENE);
     }
 
@@ -238,7 +256,7 @@ public class FruitonTeamsManager : MonoBehaviour
         fruitonTeamObject.name = team.Name;
         fruitonTeamObject.transform.localScale = FridgeFruitonTemplate.gameObject.GetComponent<RectTransform>()
             .localScale;
-        fruitonTeamObject.transform.localPosition = getPositionOnScrollViewGrid(teamIndex);
+        fruitonTeamObject.transform.localPosition = GetPositionOnScrollViewGrid(teamIndex);
         fruitonTeamObject.GetComponentInChildren<Text>().text = GetTeamDescription(team);
         fruitonTeamObject.GetComponent<Button>().onClick.AddListener(() => SelectTeam(fridgeFruitonTeam.FridgeIndex));
         fruitonTeamObject.SetActive(true);
@@ -257,7 +275,6 @@ public class FruitonTeamsManager : MonoBehaviour
             }
         }
         defaultTeamIconColor = FridgeTeamTemplate.GetComponent<Image>().color;
-        SelectTeam(selectedTeamIndex);
         FridgeTeamTemplate.SetActive(false);
     }
 
@@ -273,17 +290,16 @@ public class FruitonTeamsManager : MonoBehaviour
     {
         // TODO: FILTER UNAVAILABLE FRUITONS 
         // PlayerHelper.GetAvailableFruitons(UpdateAvailableFruitons, Debug.Log);
-        List<GameObject> fruitons = new List<GameObject>();
         GameManager gameManager = GameManager.Instance;
         IEnumerable<KFruiton> allFruitons = gameManager.AllFruitons;
         var i = 0;
-        var prefabRectTransform = FridgeFruitonTemplate.gameObject.GetComponent<RectTransform>();
+        var templateRectTransform = FridgeFruitonTemplate.gameObject.GetComponent<RectTransform>();
         foreach (KFruiton fruiton in allFruitons)
         {
             var fridgeFruiton = Instantiate(FridgeFruitonTemplate);
             fridgeFruiton.transform.SetParent(WrapperFruitons.transform);
-            fridgeFruiton.transform.localScale = prefabRectTransform.localScale;
-            fridgeFruiton.transform.localPosition = getPositionOnScrollViewGrid(i);
+            fridgeFruiton.transform.localScale = templateRectTransform.localScale;
+            fridgeFruiton.transform.localPosition = GetPositionOnScrollViewGrid(i);
 
             var spineSkeleton = fridgeFruiton.GetComponentInChildren<SkeletonGraphic>();
             spineSkeleton.Skeleton.SetSkin(fruiton.model);
@@ -336,7 +352,7 @@ public class FruitonTeamsManager : MonoBehaviour
             if (newIndex != oldIndex)
             {
                 iTween.MoveTo(team.gameObject, iTween.Hash(
-                        "position", getPositionOnScrollViewGrid(newIndex),
+                        "position", GetPositionOnScrollViewGrid(newIndex),
                         "islocal", true,
                         "time", 1,
                         "easetype", iTween.EaseType.easeOutExpo
@@ -355,7 +371,7 @@ public class FruitonTeamsManager : MonoBehaviour
     /// <returns></returns>
     private string GetNextAvailableTeamName()
     {
-        for (int i = 1; ; i++)
+        for (int i = 1;; i++)
         {
             string potentialName = "New Team " + i;
             if (teams.All(ft => ft.KernelTeam.Name != potentialName))
@@ -370,7 +386,7 @@ public class FruitonTeamsManager : MonoBehaviour
     /// </summary>
     /// <param name="index">index of the object</param>
     /// <returns>position of an object on the scroll view grid</returns>
-    private Vector3 getPositionOnScrollViewGrid(int index)
+    private Vector3 GetPositionOnScrollViewGrid(int index)
     {
         return new Vector3(
             27.5f + (index / 2) * 240,
@@ -402,7 +418,7 @@ public class FruitonTeamsManager : MonoBehaviour
         var isAnySquareAvailable = TeamGrid.HighlightAvailableSquares(fruiton.type, isDraggingFromTeam);
         if (!isAnySquareAvailable)
         {
-            WarningText.text = "You don't have any empty square for fruiton of this type!";
+            WarningText.text = "You don't have any empty space for fruiton of this type!";
             WarningText.transform.parent.gameObject.SetActive(true);
         }
     }
@@ -436,7 +452,7 @@ public class FruitonTeamsManager : MonoBehaviour
             teams[selectedTeamIndex].gameObject.GetComponent<Image>().color = defaultTeamIconColor;
         }
 
-        teams[index].gameObject.GetComponent<Image>().color = new Color(0.55f,0.85f,1);
+        teams[index].gameObject.GetComponent<Image>().color = new Color(0.55f, 0.85f, 1);
         selectedTeamIndex = index;
         var newTeam = teams[selectedTeamIndex].KernelTeam;
         InputTeamName.text = newTeam.Name;
@@ -476,7 +492,7 @@ public class FruitonTeamsManager : MonoBehaviour
     {
         var contentSize = ScrollContentRectTransform.sizeDelta;
         var helperIndex = objectCount + objectCount % 2;
-        var newWidth = getPositionOnScrollViewGrid(helperIndex).x;
+        var newWidth = GetPositionOnScrollViewGrid(helperIndex).x;
         ScrollContentRectTransform.sizeDelta = new Vector2(newWidth, contentSize.y);
     }
 }
