@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Cz.Cuni.Mff.Fruiton.Dto;
-using fruiton.fruitDb.factories;
 using fruiton.kernel;
 using fruiton.kernel.abilities;
 using fruiton.kernel.actions;
@@ -21,6 +20,7 @@ using KEvent = fruiton.kernel.events.Event;
 using KFruiton = fruiton.kernel.Fruiton;
 using KAction = fruiton.kernel.actions.Action;
 using KVector2 = fruiton.dataStructures.Point;
+using UObject = UnityEngine.Object;
 
 public class BattleViewer : MonoBehaviour
 {
@@ -201,6 +201,24 @@ public class BattleViewer : MonoBehaviour
             kernelFruiton.position = new KVector2(i, j);
             var cellPosition = GridLayoutManager.GetCellPosition(i, j);
             clientFruiton.transform.position = cellPosition;
+        }
+    }
+
+    public void InitializeMap(List<List<Tile>> field)
+    {
+        UObject obstacleResource = Resources.Load("Prefabs/Obstacle");
+        foreach (List<Tile> tiles in field)
+        {
+            foreach (Tile tile in tiles)
+            {
+                if (tile.type == TileType.impassable)
+                {
+                    var obstacle = (GameObject)Instantiate(obstacleResource);
+                    Vector3 pos = GridLayoutManager.GetCellPosition(tile.position.x, tile.position.y);
+                    obstacle.transform.position = pos;
+                    obstacle.transform.parent = Board.transform;
+                }
+            }
         }
     }
 

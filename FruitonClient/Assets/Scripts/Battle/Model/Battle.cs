@@ -44,9 +44,13 @@ public abstract class Battle
 
     }
 
-    // Call this whenever kernel is initialized.
+    /// <summary>
+    /// Call this whenever kernel is initialized.
+    /// </summary>
     protected void BattleReady()
     {
+        battleViewer.InitializeMap(kernel.currentState.field.field.CastToList2D<Tile>());
+
         clientFruitons = new Dictionary<int, ClientFruiton>();
         foreach (GameObject fruitonObject in battleViewer.Grid)
         {
