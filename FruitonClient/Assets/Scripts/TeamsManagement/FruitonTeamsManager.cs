@@ -1,7 +1,4 @@
 ﻿using Cz.Cuni.Mff.Fruiton.Dto;
-using fruiton.fruitDb;
-using fruiton.fruitDb.factories;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,14 +6,10 @@ using KFruiton = fruiton.kernel.Fruiton;
 using System;
 using System.Linq;
 using System.Text;
-using fruiton.kernel;
 using fruiton.kernel.abilities;
-using fruiton.kernel.actions;
 using fruiton.kernel.effects;
 using fruiton.kernel.fruitonTeam;
-using Google.Protobuf.Collections;
 using haxe.root;
-using UnityEngine.SceneManagement;
 using Networking;
 using Spine.Unity;
 
@@ -502,6 +495,8 @@ public class FruitonTeamsManager : MonoBehaviour
         isDraggingFromTeam = teamPosition != null;
 #if UNITY_ANDROID && !UNITY_EDITOR
         ShowTooltip(fruiton, 2);
+# else 
+        HideTooltip();
 #endif
         var isAnySquareAvailable = TeamGrid.HighlightAvailableSquares(fruiton.type, isDraggingFromTeam);
         if (isAnySquareAvailable)

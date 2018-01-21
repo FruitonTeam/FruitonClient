@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Spine.Unity;
+﻿using Spine.Unity;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -53,10 +51,5 @@ public class FridgeDndFruiton : MonoBehaviour
     public void SetSkin(string skin)
     {
         spineSkeletonGraphic.Skeleton.SetSkin(skin);
-    }
-
-    private void LoadResources()
-    {
-
     }
 }

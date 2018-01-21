@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Cz.Cuni.Mff.Fruiton.Dto;
 using KFruiton = fruiton.kernel.Fruiton;
 using fruiton.fruitDb.factories;

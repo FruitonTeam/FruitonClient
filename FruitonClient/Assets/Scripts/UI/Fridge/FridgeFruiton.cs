@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-using fruiton.kernel;
+﻿using fruiton.kernel;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;

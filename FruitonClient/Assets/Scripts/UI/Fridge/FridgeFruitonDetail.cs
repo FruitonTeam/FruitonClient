@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using fruiton.kernel;
+﻿using fruiton.kernel;
 using Spine.Unity;
 using UnityEngine;
 using UnityEngine.UI;
@@ -72,7 +70,7 @@ public class FridgeFruitonDetail : MonoBehaviour
                 "<b>TIP</b>: Tap and hold fruiton in the fridge to add it to the team";
             TipText.color = Color.black;
 #else
-            TipText.text = ""
+            TipText.text = "";
 #endif
         }
         else

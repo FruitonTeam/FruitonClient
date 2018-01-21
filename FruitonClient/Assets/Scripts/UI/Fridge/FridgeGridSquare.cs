@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using fruiton.kernel;
+﻿using fruiton.kernel;
 using Spine.Unity;
 using UnityEngine;
 using UnityEngine.Events;
