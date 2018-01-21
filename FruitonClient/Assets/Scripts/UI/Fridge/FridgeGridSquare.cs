@@ -8,14 +8,20 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class FridgeGridSquare : MonoBehaviour, IPointerDownHandler
+public class FridgeGridSquare : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
 {
-    public int FruitonType;
+    public Image ImageFruitonType;
+
+    public int FruitonType { get; private set; }
     public UnityEvent OnBeginDrag { get; private set; }
     public bool IsEmpty { get; private set; }
     public bool IsSuggestionShown { get; private set; }
     public RectTransform RectTransform { get; private set; }
     public Fruiton KernelFruiton { get; private set; }
+    public UnityEvent OnMouseEnter { get; private set; }
+    public UnityEvent OnMouseExit { get; private set; }
+
+    private static Sprite[] typeIconSprites;
 
     private SkeletonGraphic spineSkeleton;
     private Image background;
@@ -29,6 +35,17 @@ public class FridgeGridSquare : MonoBehaviour, IPointerDownHandler
         background = GetComponentInChildren<Image>();
         defaultBackgroundColor = GetComponentInChildren<Image>().color;
         OnBeginDrag = new UnityEvent();
+        OnMouseEnter = new UnityEvent();
+        OnMouseExit = new UnityEvent();
+
+        if (typeIconSprites == null)
+        {
+            typeIconSprites = new Sprite[4];
+            for (int i = 1; i < 4; i++)
+            {
+                typeIconSprites[i] = Resources.Load<Sprite>("Images/UI/Icons/" + FridgeFruiton.TypeNames[i] + "_256");
+            }
+        }
     }
 
     public void SetFruiton(Fruiton fruiton)
@@ -38,6 +55,15 @@ public class FridgeGridSquare : MonoBehaviour, IPointerDownHandler
         spineSkeleton.gameObject.SetActive(true);
         spineSkeleton.Skeleton.SetSkin(fruiton.model);
         spineSkeleton.color = Color.white;
+    }
+
+    public void SetFruitonType(int type)
+    {
+        FruitonType = type;
+        ImageFruitonType.sprite = typeIconSprites[type];
+        Color color;
+        ColorUtility.TryParseHtmlString(FridgeFruiton.TypeColors[type] + "25", out color);
+        ImageFruitonType.color = color;
     }
 
     public void SuggestFruiton(Fruiton fruiton)
@@ -89,5 +115,15 @@ public class FridgeGridSquare : MonoBehaviour, IPointerDownHandler
         {
             OnBeginDrag.Invoke();
         }
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        OnMouseEnter.Invoke();
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        OnMouseExit.Invoke();
     }
 }

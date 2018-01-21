@@ -26,7 +26,7 @@ public class FridgeDndFruiton : MonoBehaviour
         dropStatusSprites = new Sprite[iconNames.Length];
         for (int i = 0; i < iconNames.Length; i++)
         {
-            dropStatusSprites[i] = Resources.Load<Sprite>("Images/UI/Icons/" + iconNames[i]);
+            dropStatusSprites[i] = Resources.Load<Sprite>("Images/UI/Icons/" + iconNames[i] + "_64");
         }
     }
 
@@ -43,15 +43,20 @@ public class FridgeDndFruiton : MonoBehaviour
                 statusColor = Color.green;
                 break;
             case DropStatus.Swap:
-                statusColor = Color.blue;
+                statusColor = new Color(0.3f, 0.3f, 1);
                 break;
         }
-        dropStatusIcon.sprite = dropStatusSprites[(int)status];
+        dropStatusIcon.sprite = dropStatusSprites[(int) status];
         dropStatusIcon.color = statusColor;
     }
 
     public void SetSkin(string skin)
     {
         spineSkeletonGraphic.Skeleton.SetSkin(skin);
+    }
+
+    private void LoadResources()
+    {
+
     }
 }
