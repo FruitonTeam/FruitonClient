@@ -1,4 +1,6 @@
-﻿using fruiton.kernel;
+﻿using System.Collections;
+using System.Collections.Generic;
+using fruiton.kernel;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
