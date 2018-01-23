@@ -1,18 +1,15 @@
 ﻿using Cz.Cuni.Mff.Fruiton.Dto;
-using fruiton.fruitDb;
-using fruiton.fruitDb.factories;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using KFruiton = fruiton.kernel.Fruiton;
 using System;
 using System.Linq;
-using fruiton.kernel;
+using System.Text;
+using fruiton.kernel.abilities;
+using fruiton.kernel.effects;
 using fruiton.kernel.fruitonTeam;
-using Google.Protobuf.Collections;
 using haxe.root;
-using UnityEngine.SceneManagement;
 using Networking;
 using Spine.Unity;
 
@@ -32,7 +29,10 @@ public class FruitonTeamsManager : MonoBehaviour
     public GameObject FridgeTeamTemplate;
     public GameObject WrapperFruitons;
     public GameObject WrapperTeams;
+    public GameObject PanelTooltip;
+    public FridgeFruitonDetail FruitonDetail;
     public RectTransform ScrollContentRectTransform;
+    public RectTransform[] TooltipPanelPositions;
     public Button ButtonPlay;
     public Button ButtonNewTeam;
     public Button ButtonDelete;
@@ -49,6 +49,7 @@ public class FruitonTeamsManager : MonoBehaviour
     private Color defaultTeamIconColor;
     private bool isDragging;
     private bool isDraggingFromTeam;
+    private bool isAddingFromDetail;
     private Position teamDragGridPosition;
     private KFruiton draggedFruiton;
 
@@ -77,7 +78,8 @@ public class FruitonTeamsManager : MonoBehaviour
             ButtonEdit.gameObject.SetActive(false);
             ButtonDelete.gameObject.SetActive(false);
         }
-        TeamGrid.OnBeginDragFromTeam.AddListener(BeginFruitonDragFromTeam);
+        InitializeTeamGridListeners();
+        InitializeFruitonDetailListeners();
         if (viewMode == ViewMode.TeamSelect)
         {
             if (GameManager.Instance.CurrentFruitonTeam != null)
@@ -96,11 +98,11 @@ public class FruitonTeamsManager : MonoBehaviour
 
     void Update()
     {
-        // drag and drop logic
+        // drag and drop (or adding from fruiton detail window) logic
         if (isDragging)
         {
-            Vector3 dndPosition = Vector3.zero;
-            Vector3 pointerPosition = Vector3.zero;
+            Vector3 dndPosition = Vector3.left*1000;
+            Vector3 pointerPosition = Vector3.left * 1000;
 #if UNITY_ANDROID
             if (Input.touchCount > 0)
             {
@@ -120,31 +122,29 @@ public class FruitonTeamsManager : MonoBehaviour
 
             if (dropGridPosition == null)
             {
-                if (isDraggingFromTeam)
-                {
-                    DragAndDropFruiton.SetDropStatus(FridgeDndFruiton.DropStatus.Delete);
-                }
-                else
-                {
-                    DragAndDropFruiton.SetDropStatus(FridgeDndFruiton.DropStatus.Nothing);
-                }
+                DragAndDropFruiton.SetDropStatus(
+                    isDraggingFromTeam
+                        ? FridgeDndFruiton.DropStatus.Delete
+                        : FridgeDndFruiton.DropStatus.Nothing
+                );
             }
             else
             {
-                if (isDraggingFromTeam)
-                {
-                    DragAndDropFruiton.SetDropStatus(FridgeDndFruiton.DropStatus.Swap);
-                }
-                else
-                {
-                    DragAndDropFruiton.SetDropStatus(FridgeDndFruiton.DropStatus.Ok);
-                }
+                DragAndDropFruiton.SetDropStatus(
+                    isDraggingFromTeam
+                        ? FridgeDndFruiton.DropStatus.Swap
+                        : FridgeDndFruiton.DropStatus.Ok
+                );
             }
 
             // stop drag and drop
-            if (!Input.GetMouseButton(0))
+            if (
+                (!isAddingFromDetail && !Input.GetMouseButton(0))
+                || (isAddingFromDetail && Input.GetMouseButton(0)))
             {
+                HideTooltip();
                 isDragging = false;
+                isAddingFromDetail = false;
                 DragAndDropFruiton.gameObject.SetActive(false);
                 DragAndDropBarrier.gameObject.SetActive(false);
                 TeamGrid.CancelHighlights();
@@ -168,6 +168,11 @@ public class FruitonTeamsManager : MonoBehaviour
                 TeamGrid.LoadTeam(teams[selectedTeamIndex].KernelTeam);
                 WarningText.transform.parent.gameObject.SetActive(false);
             }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ReturnToMenu();
         }
     }
 
@@ -221,6 +226,13 @@ public class FruitonTeamsManager : MonoBehaviour
         SwitchViewMode(ViewMode.TeamSelect);
     }
 
+    public void HideDetail()
+    {
+        FruitonDetail.gameObject.SetActive(false);
+        FruitonDetail.Barrier.gameObject.SetActive(false);
+        HideTooltip();
+    }
+
     public void LoadBattle()
     {
         if (GameManager.Instance.CurrentFruitonTeam != null)
@@ -260,6 +272,66 @@ public class FruitonTeamsManager : MonoBehaviour
         fruitonTeamObject.GetComponentInChildren<Text>().text = GetTeamDescription(team);
         fruitonTeamObject.GetComponent<Button>().onClick.AddListener(() => SelectTeam(fridgeFruitonTeam.FridgeIndex));
         fruitonTeamObject.SetActive(true);
+    }
+
+    private string GetFruitonTooltip(KFruiton kernelFruiton)
+    {
+        StringBuilder tooltipText = new StringBuilder("<b>" + kernelFruiton.model.ToUpper() + "</b>\n");
+        tooltipText.Append("\n<b>Abilities</b>\n");
+        foreach (Ability ability in kernelFruiton.abilities.ToList())
+        {
+            tooltipText.Append(String.Format(ability.text, kernelFruiton.currentAttributes.heal));
+        }
+        tooltipText.Append("\n<b>Effects</b>\n");
+        foreach (Effect effect in kernelFruiton.effects.ToList())
+        {
+            tooltipText.Append(effect.text + "\n");
+        }
+        return tooltipText.ToString();
+    }
+
+    private void InitializeFruitonDetailListeners()
+    {
+        FruitonDetail.CloseButton.onClick.AddListener(HideDetail);
+        FruitonDetail.Barrier.onClick.AddListener(HideDetail);
+        FruitonDetail.AddToTeamButton.onClick.AddListener(() =>
+        {
+            HideDetail();
+            var availablePositions = TeamGrid.GetAvailableSquares(FruitonDetail.CurrentFruiton);
+            if (availablePositions.Count == 1)
+            {
+                AddFruitonToTeam(FruitonDetail.CurrentFruiton, availablePositions[0]);
+            }
+            else
+            {
+                isAddingFromDetail = true;
+                BeginFruitonDrag(FruitonDetail.CurrentFruiton);
+            }
+        });
+    }
+
+    private void InitializeTeamGridListeners()
+    {
+        TeamGrid.OnBeginDragFromTeam.AddListener(BeginFruitonDragFromTeam);
+        TeamGrid.OnMouseEnterSquare.AddListener(square =>
+        {
+            if (!isDragging)
+            {
+                square.Highlight(new Color(1, 1, 0.8f));
+                if (square.KernelFruiton != null)
+                {
+                    ShowTooltip(square.KernelFruiton, 1);
+                }
+            }
+        });
+        TeamGrid.OnMouseExitSquare.AddListener(square =>
+        {
+            if (!isDragging)
+            {
+                square.CancelHighlight();
+                HideTooltip();
+            }
+        });
     }
 
     private void InitializeTeams(bool includeIncomplete)
@@ -304,8 +376,15 @@ public class FruitonTeamsManager : MonoBehaviour
             var spineSkeleton = fridgeFruiton.GetComponentInChildren<SkeletonGraphic>();
             spineSkeleton.Skeleton.SetSkin(fruiton.model);
             var kFruiton = fruiton;
-            fridgeFruiton.GetComponent<FridgeFruiton>()
-                .OnBeginDrag.AddListener(() => BeginFruitonDrag(kFruiton));
+            var fFruiton = fridgeFruiton.GetComponent<FridgeFruiton>();
+            fFruiton.OnBeginDrag.AddListener(() => BeginFruitonDrag(kFruiton));
+#if UNITY_STANDALONE || UNITY_EDITOR
+            fFruiton.OnMouseEnter.AddListener(() => ShowTooltip(kFruiton));
+            fFruiton.OnMouseExit.AddListener(HideTooltip);
+            fFruiton.OnRightClick.AddListener(() => ShowDetail(kFruiton));
+#endif
+            fFruiton.OnTap.AddListener(() => ShowDetail(kFruiton));
+            fFruiton.SetKernelFruiton(kFruiton);
             i++;
         }
         FridgeFruitonTemplate.SetActive(false);
@@ -390,7 +469,7 @@ public class FruitonTeamsManager : MonoBehaviour
     {
         return new Vector3(
             27.5f + (index / 2) * 240,
-            -225 - (index % 2) * 230,
+            -233 - (index % 2) * 231,
             0
         );
     }
@@ -414,13 +493,36 @@ public class FruitonTeamsManager : MonoBehaviour
         teamDragGridPosition = teamPosition;
         isDragging = true;
         isDraggingFromTeam = teamPosition != null;
-
+#if UNITY_ANDROID && !UNITY_EDITOR
+        ShowTooltip(fruiton, 2);
+# else 
+        HideTooltip();
+#endif
         var isAnySquareAvailable = TeamGrid.HighlightAvailableSquares(fruiton.type, isDraggingFromTeam);
-        if (!isAnySquareAvailable)
+        if (isAnySquareAvailable)
         {
-            WarningText.text = "You don't have any empty space for fruiton of this type!";
-            WarningText.transform.parent.gameObject.SetActive(true);
+            if (isDraggingFromTeam)
+            {
+                WarningText.text = "<color=#5555ff>Move</color> fruiton to other <color=#00ff00>available square</color> or <color=#ff0000>remove</color> it from the team";
+            }
+            else if (isAddingFromDetail)
+            {
+                WarningText.text =
+                    "Choose an <color=#00ff00>available square</color> or click anywhere else to cancel";
+            }
+            else
+            {
+                WarningText.text =
+                    "Drag the fruiton to any of the <color=#00ff00>available squares</color> to add it to the team";
+            }
+            WarningText.color = Color.white;
         }
+        else
+        {
+            WarningText.text = "You don't have any empty square for fruiton of this type!";
+            WarningText.color = Color.red;
+        }
+        WarningText.transform.parent.gameObject.SetActive(true);
     }
 
     private void BeginFruitonDragFromTeam(KFruiton fruiton, Position position)
@@ -458,6 +560,31 @@ public class FruitonTeamsManager : MonoBehaviour
         InputTeamName.text = newTeam.Name;
         GameManager.Instance.CurrentFruitonTeam = newTeam;
         TeamGrid.LoadTeam(newTeam);
+    }
+
+    private void ShowDetail(KFruiton fruiton)
+    {
+        FruitonDetail.SetFruiton(fruiton, TeamGrid.GetAvailableSquares(fruiton).Count != 0);
+        FruitonDetail.TooltipText.text = GetFruitonTooltip(fruiton);
+        FruitonDetail.gameObject.SetActive(true);
+    }
+
+    private void ShowTooltip(KFruiton fruiton, int positionIndex = 0)
+    {
+        var targetTransform = TooltipPanelPositions[positionIndex];
+        var tooltipTransform = PanelTooltip.GetComponent<RectTransform>();
+        PanelTooltip.SetActive(true);
+        PanelTooltip.transform.SetParent(targetTransform.parent);
+        tooltipTransform.pivot = targetTransform.pivot;
+        tooltipTransform.anchorMin = targetTransform.anchorMin;
+        tooltipTransform.anchorMax = targetTransform.anchorMax;
+        tooltipTransform.anchoredPosition = targetTransform.anchoredPosition;
+        PanelTooltip.GetComponentInChildren<Text>().text = GetFruitonTooltip(fruiton);
+    }
+
+    private void HideTooltip()
+    {
+        PanelTooltip.SetActive(false);
     }
 
     private void SwitchViewMode(ViewMode viewMode)
