@@ -46,7 +46,15 @@ namespace UI.Notification
                 Destroy(gameObject);
             }
         }
-        
+
+        private void Start()
+        {
+            if (GameManager.Instance.IsOnline)
+            {
+                ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.Notification, this);
+            }
+        }
+
         public void OnMessage(WrapperMessage message)
         {
             Cz.Cuni.Mff.Fruiton.Dto.Notification n = message.Notification;

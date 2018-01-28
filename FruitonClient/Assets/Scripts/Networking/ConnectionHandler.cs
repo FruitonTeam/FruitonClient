@@ -17,11 +17,11 @@ namespace Networking
     {
         private readonly string XAuthTokenHeaderKey = "x-auth-token";
         
-        private static readonly string URL_WEB = "http://prak.mff.cuni.cz:8050/fruiton/";
-        //private static readonly string URL_WEB = "http://localhost:8050/";
+        //private static readonly string URL_WEB = "http://prak.mff.cuni.cz:8050/fruiton/";
+        private static readonly string URL_WEB = "http://localhost:8050/";
         
-        private static readonly string URL_WS = "ws://prak.mff.cuni.cz:8050/fruiton/socket";
-        //private static readonly string URL_WS = "ws://localhost:8050/socket";
+        //private static readonly string URL_WS = "ws://prak.mff.cuni.cz:8050/fruiton/socket";
+        private static readonly string URL_WS = "ws://localhost:8050/socket";
 
         private static readonly string URL_API = URL_WEB + "api/";
         
@@ -114,9 +114,16 @@ namespace Networking
         private void OnConnected()
         {
             RegisterListener(WrapperMessage.MessageOneofCase.ErrorMessage, this);
-            
-            RegisterListener(WrapperMessage.MessageOneofCase.Notification, NotificationManager.Instance);
             RegisterListener(WrapperMessage.MessageOneofCase.ChatMessage, ChatMessageNotifier.Instance);
+            
+            if (NotificationManager.Instance != null) // main menu was already created
+            {
+                RegisterListener(WrapperMessage.MessageOneofCase.Notification, NotificationManager.Instance);
+                RegisterListener(WrapperMessage.MessageOneofCase.FriendRequest, FeedbackNotificationManager.Instance);
+                RegisterListener(WrapperMessage.MessageOneofCase.ChatMessage, ChatController.Instance);
+                RegisterListener(WrapperMessage.MessageOneofCase.FriendRequestResult, ChatController.Instance);
+                RegisterListener(WrapperMessage.MessageOneofCase.OnlineStatusChange, ChatController.Instance);                
+            }
         }
 
         private void Awake()

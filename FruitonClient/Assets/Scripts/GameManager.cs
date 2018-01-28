@@ -2,17 +2,17 @@
 using Cz.Cuni.Mff.Fruiton.Dto;
 using fruiton.fruitDb;
 using System.Collections.Generic;
+using System.Linq;
 using Google.Protobuf.Collections;
 using Networking;
-using UI.MainMenu;
+using UI.Chat;
 using UnityEngine;
 using Util;
-using UnityEngine.SceneManagement;
 using KFruiton = fruiton.kernel.Fruiton;
 
 public enum FractionNames { None, GuacamoleGuerrillas, CranberryCrusade, TzatzikiTsardom }
 
-public class GameManager
+public class GameManager : IOnMessageListener
 {
     private static GameManager instance;
 
@@ -213,12 +213,30 @@ public class GameManager
         }
     }
 
+    public RepeatedField<Friend> Friends
+    {
+        get
+        {
+            if (loggedPlayerInfo != null)
+            {
+                return loggedPlayerInfo.FriendList;
+            }
+            return new RepeatedField<Friend>();
+        }
+    }
+
     public bool IsOnline { get; private set; }
     
     #endregion
 
 
     #region Public
+    
+    public void OnMessage(WrapperMessage message)
+    {
+        OnlineStatusChange onlineStatusChange = message.OnlineStatusChange;
+        Friends.Single(f => f.Login == onlineStatusChange.Login).Status = onlineStatusChange.Status;
+    }
 
     public bool HasRememberedUser()
     {
@@ -248,10 +266,20 @@ public class GameManager
         RemoveCachedData();
         
         loggedPlayerInfo = playerInfo;
+        if (ChatController.Instance != null)
+        {
+            ChatController.Instance.Init();
+        }
+
         Initialize();
         PersistIfStayLoggedIn();
 
         Scenes.Load(Scenes.MAIN_MENU_SCENE);
+    }
+
+    public void AddFriend(Friend friend)
+    {
+        Friends.Add(friend);
     }
 
     #endregion

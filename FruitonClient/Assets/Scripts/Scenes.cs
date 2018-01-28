@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 public class Scenes : MonoBehaviour
 {
     public static readonly string LOGIN_SCENE = "Login";
-    public static readonly string CHAT_SCENE = "ChatScene";
     public static readonly string MAIN_MENU_SCENE = "MainMenu";
     public static readonly string TEAMS_MANAGEMENT_SCENE = "TeamsManagementScene";
     public static readonly string BATTLE_SCENE = "BattleScene";

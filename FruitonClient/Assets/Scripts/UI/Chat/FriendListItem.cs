@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Cz.Cuni.Mff.Fruiton.Dto;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace UI.Chat
@@ -9,12 +10,15 @@ namespace UI.Chat
         {
             public string Name;
             public int UnreadMessages;
+            public Status OnlineStatus;
             public Texture Avatar;
         }
 
         public Image Background;
         public Text FriendName;
         public Text UnreadCount;
+
+        public Text StatusText;
 
         public RawImage Avatar;
 
@@ -40,6 +44,7 @@ namespace UI.Chat
             FriendName.text = itemData.Name;
             Background.color = Color;
             UnreadCount.text = itemData.UnreadMessages.ToString();
+            StatusText.text = itemData.OnlineStatus.ToString();
             if (itemData.Avatar != null)
             {
                 Avatar.texture = itemData.Avatar;
