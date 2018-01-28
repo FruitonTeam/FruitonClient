@@ -217,5 +217,9 @@ namespace Networking
             Debug.LogError(message.ErrorMessage.Message);
         }
 
+        private void OnApplicationQuit()
+        {
+            Disconnect(); // explicitly close the connection so the server does not have to wait for timeout
+        }
     }
 }
