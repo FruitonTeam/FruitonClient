@@ -25,16 +25,16 @@ namespace UI.Chat
         
         public void OnMessage(WrapperMessage message)
         {
-            ChatMessage chatMessage = message.ChatMessage;
-            PlayerHelper.GetAvatar(chatMessage.Sender,
-                avatar =>
-                {
-                    NotificationManager.Instance.Show(avatar, chatMessage.Sender, chatMessage.Message);
-                },
-                error =>
-                {
-                    NotificationManager.Instance.Show(defaultAvatar, chatMessage.Sender, chatMessage.Message);
-                });
+            if (!ChatController.Instance.ChatPanel.activeInHierarchy) // show notification only if chat panel is not active
+            {
+                ChatMessage chatMessage = message.ChatMessage;
+                PlayerHelper.GetAvatar(chatMessage.Sender,
+                    avatar => { NotificationManager.Instance.Show(avatar, chatMessage.Sender, chatMessage.Message); },
+                    error =>
+                    {
+                        NotificationManager.Instance.Show(defaultAvatar, chatMessage.Sender, chatMessage.Message);
+                    });
+            }
         }
     }
 }

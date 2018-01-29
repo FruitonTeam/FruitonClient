@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using Networking;
+using UI.Chat;
+using UI.Notification;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -46,11 +48,6 @@ namespace UI.MainMenu
             Scenes.Load(Scenes.TEAMS_MANAGEMENT_SCENE, parameters);
         }
 
-        public void ChangeToChatScene()
-        {
-            Scenes.Load(Scenes.CHAT_SCENE);
-        }
-
         public void LoadBattle()
         {
             if (GameManager.Instance.CurrentFruitonTeam != null)
@@ -65,6 +62,10 @@ namespace UI.MainMenu
             PlayerPrefs.SetString("username", "");
             PlayerPrefs.SetString("userpassword", "");
             PlayerPrefs.SetInt("stayloggedin", 0);
+            
+            ChatController.Instance.Clear();
+            FeedbackNotificationManager.Instance.Clear();
+            
             Scenes.Load(Scenes.LOGIN_SCENE);
         }
 

@@ -114,9 +114,16 @@ namespace Networking
         private void OnConnected()
         {
             RegisterListener(WrapperMessage.MessageOneofCase.ErrorMessage, this);
-            
-            RegisterListener(WrapperMessage.MessageOneofCase.Notification, NotificationManager.Instance);
             RegisterListener(WrapperMessage.MessageOneofCase.ChatMessage, ChatMessageNotifier.Instance);
+            
+            if (NotificationManager.Instance != null) // main menu was already created
+            {
+                RegisterListener(WrapperMessage.MessageOneofCase.Notification, NotificationManager.Instance);
+                RegisterListener(WrapperMessage.MessageOneofCase.FriendRequest, FeedbackNotificationManager.Instance);
+                RegisterListener(WrapperMessage.MessageOneofCase.ChatMessage, ChatController.Instance);
+                RegisterListener(WrapperMessage.MessageOneofCase.FriendRequestResult, ChatController.Instance);
+                RegisterListener(WrapperMessage.MessageOneofCase.OnlineStatusChange, ChatController.Instance);                
+            }
         }
 
         private void Awake()
