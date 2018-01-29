@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cz.Cuni.Mff.Fruiton.Dto;
 using fruiton.kernel;
 using fruiton.kernel.actions;
 using fruiton.kernel.events;
@@ -41,7 +42,6 @@ public abstract class Battle
     {
         gameManager = GameManager.Instance;
         this.battleViewer = battleViewer;
-
     }
 
     /// <summary>
@@ -69,7 +69,7 @@ public abstract class Battle
 
         for (int i = 0; i < kernel.currentState.fruitons.length; i++)
         {
-            Fruiton fruiton = kernel.currentState.fruitons[i] as Fruiton;
+            KFruiton fruiton = kernel.currentState.fruitons[i] as KFruiton;
             var clientFruiton = clientFruitons[fruiton.id];
             clientFruiton.KernelFruiton = fruiton;
         }

@@ -35,7 +35,7 @@ public class OfflineBattle : Battle
         
         Array<int> maps = GameManager.Instance.FruitonDatabase.getMapsIds();
         int rndMapId = maps[Random.Range(0, maps.length)];
-        GameSettings kernelSettings = GameSettingsFactory.CreateGameSettings(rndMapId);
+        GameSettings kernelSettings = GameSettingsFactory.CreateGameSettings(rndMapId, battleViewer.GameMode);
 
         kernel = new Kernel(kernelPlayer1, kernelPlayer2, fruitons, kernelSettings);
         BattleReady();

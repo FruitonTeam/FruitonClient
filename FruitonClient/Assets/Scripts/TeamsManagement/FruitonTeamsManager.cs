@@ -12,6 +12,7 @@ using fruiton.kernel.fruitonTeam;
 using haxe.root;
 using Networking;
 using Spine.Unity;
+using UnityEditor.SceneManagement;
 
 public class FruitonTeamsManager : MonoBehaviour
 {
@@ -238,6 +239,11 @@ public class FruitonTeamsManager : MonoBehaviour
         if (GameManager.Instance.CurrentFruitonTeam != null)
         {
             Scenes.Load(Scenes.BATTLE_SCENE, Scenes.ONLINE, Scenes.GetParam(Scenes.ONLINE));
+            Scenes.Load(Scenes.BATTLE_SCENE, new Dictionary<string, string>
+            {
+                {Scenes.ONLINE, Scenes.GetParam(Scenes.ONLINE)},
+                {Scenes.GAME_MODE, FindGame.Types.GameMode.Standard.ToString()} // TODO get GameMode from UI (when scene is unlocked)
+            });
         }
     }
 
