@@ -12,7 +12,7 @@ namespace UI.Notification
 
         public static FeedbackNotificationManager Instance { get; private set; }
 
-        private static readonly Queue<FeedBackNotificationData> notificationQueue = 
+        private readonly Queue<FeedBackNotificationData> notificationQueue = 
                 new Queue<FeedBackNotificationData>();
         
         public FeedbackNotificationView View;

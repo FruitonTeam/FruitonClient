@@ -48,11 +48,6 @@ namespace UI.MainMenu
             Scenes.Load(Scenes.TEAMS_MANAGEMENT_SCENE, parameters);
         }
 
-        /*public void ChangeToChatScene()
-        {
-            Scenes.Load(Scenes.CHAT_SCENE);
-        }*/
-
         public void LoadBattle()
         {
             if (GameManager.Instance.CurrentFruitonTeam != null)

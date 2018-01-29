@@ -25,7 +25,7 @@ namespace UI.Chat
         
         public void OnMessage(WrapperMessage message)
         {
-            if (!ChatController.Instance.ChatPanel.active) // show notification only if chat panel is not active
+            if (!ChatController.Instance.ChatPanel.activeInHierarchy) // show notification only if chat panel is not active
             {
                 ChatMessage chatMessage = message.ChatMessage;
                 PlayerHelper.GetAvatar(chatMessage.Sender,
