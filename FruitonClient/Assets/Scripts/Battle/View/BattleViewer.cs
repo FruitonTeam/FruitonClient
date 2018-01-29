@@ -86,7 +86,10 @@ public class BattleViewer : MonoBehaviour
 
     private void OnDisable()
     {
-        battle.OnDisable();
+        if (battle != null)
+        {
+            battle.OnDisable();
+        }
     }
 
     public void SetupSurrenderButton()
