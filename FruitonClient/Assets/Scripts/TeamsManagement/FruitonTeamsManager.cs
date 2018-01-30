@@ -238,10 +238,9 @@ public class FruitonTeamsManager : MonoBehaviour
     {
         if (GameManager.Instance.CurrentFruitonTeam != null)
         {
-            Scenes.Load(Scenes.BATTLE_SCENE, Scenes.ONLINE, Scenes.GetParam(Scenes.ONLINE));
             Scenes.Load(Scenes.BATTLE_SCENE, new Dictionary<string, string>
             {
-                {Scenes.ONLINE, Scenes.GetParam(Scenes.ONLINE)},
+                {Scenes.BATTLE_TYPE, Scenes.GetParam(Scenes.BATTLE_TYPE)},
                 {Scenes.GAME_MODE, FindGame.Types.GameMode.Standard.ToString()} // TODO get GameMode from UI (when scene is unlocked)
             });
         }

@@ -32,19 +32,26 @@ namespace UI.MainMenu
 
         public void TeamSelectionContinueOnline()
         {
-            TeamSelectionContinue(true);
+            TeamSelectionContinue(BattleType.OnlineBattle);
         }
 
         public void TeamSelectionContinueOffline()
         {
-            TeamSelectionContinue(false);
+            TeamSelectionContinue(BattleType.OfflineBattle);
         }
 
-        private void TeamSelectionContinue(bool online)
+        public void TeamSelectionContinueAI()
         {
-            var parameters = new Dictionary<string, string>();
-            parameters.Add(Scenes.TEAM_MANAGEMENT_STATE, bool.FalseString);
-            parameters.Add(Scenes.ONLINE, online.ToString());
+            TeamSelectionContinue(BattleType.AIBattle);
+        }
+
+        private void TeamSelectionContinue(BattleType battleType)
+        {
+            var parameters = new Dictionary<string, string>
+            {
+                {Scenes.TEAM_MANAGEMENT_STATE, bool.FalseString},
+                {Scenes.BATTLE_TYPE, battleType.ToString()}
+            };
             Scenes.Load(Scenes.TEAMS_MANAGEMENT_SCENE, parameters);
         }
 
@@ -52,7 +59,7 @@ namespace UI.MainMenu
         {
             if (GameManager.Instance.CurrentFruitonTeam != null)
             {
-                Scenes.Load(Scenes.BATTLE_SCENE, Scenes.ONLINE, Scenes.GetParam(Scenes.ONLINE));
+                Scenes.Load(Scenes.BATTLE_SCENE, Scenes.BATTLE_TYPE, Scenes.GetParam(Scenes.BATTLE_TYPE));
             }
         }
 

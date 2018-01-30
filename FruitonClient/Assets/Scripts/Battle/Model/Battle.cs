@@ -12,6 +12,13 @@ using KVector2 = fruiton.dataStructures.Point;
 using KAction = fruiton.kernel.actions.Action;
 using KFruiton = fruiton.kernel.Fruiton;
 
+public enum BattleType
+{
+    OnlineBattle,
+    OfflineBattle,
+    AIBattle
+}
+
 public abstract class Battle
 {
     protected GameManager gameManager;
@@ -206,5 +213,14 @@ public abstract class Battle
 
     public virtual void OnDisable()
     {
+    }
+
+    public virtual void Update()
+    {
+    }
+
+    public Kernel GetKernelClone()
+    {
+        return kernel.clone();
     }
 }
