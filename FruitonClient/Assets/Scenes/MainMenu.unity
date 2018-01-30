@@ -2030,7 +2030,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: TRAIN vs. AI
+  m_Text: Train vs AI
 --- !u!222 &413658692
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2663,7 +2663,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: FRIDGE
+  m_Text: Fridge
 --- !u!222 &526080587
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3843,7 +3843,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: PLAY
+  m_Text: Play
 --- !u!222 &903168263
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5162,7 +5162,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: LOCAL DUEL
+  m_Text: 'Local duel
+
+'
 --- !u!222 &1275656229
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6828,7 +6830,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: MARKET
+  m_Text: Market
 --- !u!222 &1713998523
 CanvasRenderer:
   m_ObjectHideFlags: 0
