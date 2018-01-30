@@ -280,22 +280,6 @@ public class FruitonTeamsManager : MonoBehaviour
         fruitonTeamObject.SetActive(true);
     }
 
-    private string GetFruitonTooltip(KFruiton kernelFruiton)
-    {
-        StringBuilder tooltipText = new StringBuilder("<b>" + kernelFruiton.model.ToUpper() + "</b>\n");
-        tooltipText.Append("\n<b>Abilities</b>\n");
-        foreach (Ability ability in kernelFruiton.abilities.ToList())
-        {
-            tooltipText.Append(String.Format(ability.text, kernelFruiton.currentAttributes.heal));
-        }
-        tooltipText.Append("\n<b>Effects</b>\n");
-        foreach (Effect effect in kernelFruiton.effects.ToList())
-        {
-            tooltipText.Append(effect.text + "\n");
-        }
-        return tooltipText.ToString();
-    }
-
     private void InitializeFruitonDetailListeners()
     {
         FruitonDetail.CloseButton.onClick.AddListener(HideDetail);
@@ -571,7 +555,7 @@ public class FruitonTeamsManager : MonoBehaviour
     private void ShowDetail(KFruiton fruiton)
     {
         FruitonDetail.SetFruiton(fruiton, TeamGrid.GetAvailableSquares(fruiton).Count != 0);
-        FruitonDetail.TooltipText.text = GetFruitonTooltip(fruiton);
+        FruitonDetail.TooltipText.text = TooltipUtil.GenerateTooltip(fruiton);
         FruitonDetail.gameObject.SetActive(true);
     }
 
@@ -585,7 +569,7 @@ public class FruitonTeamsManager : MonoBehaviour
         tooltipTransform.anchorMin = targetTransform.anchorMin;
         tooltipTransform.anchorMax = targetTransform.anchorMax;
         tooltipTransform.anchoredPosition = targetTransform.anchoredPosition;
-        PanelTooltip.GetComponentInChildren<Text>().text = GetFruitonTooltip(fruiton);
+        PanelTooltip.GetComponentInChildren<Text>().text = TooltipUtil.GenerateTooltip(fruiton);
     }
 
     private void HideTooltip()

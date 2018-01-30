@@ -131,22 +131,7 @@ public class BattleViewer : MonoBehaviour
             {
                 var clientFruiton = hitFruiton.GetComponent<ClientFruiton>();
                 Fruiton kernelFruiton = clientFruiton.KernelFruiton;
-                StringBuilder fruitonInfo = new StringBuilder("<b>" + kernelFruiton.model.ToUpper() + "</b>\n");
-                fruitonInfo.Append("\n<b>Abilities</b>\n");
-                foreach (Ability ability in kernelFruiton.abilities.ToList())
-                {
-                    fruitonInfo.Append(String.Format(ability.text, kernelFruiton.currentAttributes.heal));
-                }
-                fruitonInfo.Append("\n<b>Effects</b>\n");
-                foreach (Effect effect in kernelFruiton.effects.ToList())
-                {
-                    fruitonInfo.Append(effect.text + "\n");
-                }
-                foreach (int immunity in kernelFruiton.currentAttributes.immunities.ToList())
-                {
-                    if (immunity == HealAction.ID) fruitonInfo.Append("Unable to be healed.\n");
-                    else if (immunity == AttackAction.ID) fruitonInfo.Append("Can't be attacked.\n");
-                }
+                string fruitonInfo = TooltipUtil.GenerateTooltip(kernelFruiton);
                 FruitonInfoPanel.SetActive(true);
                 FruitonInfoPanel.GetComponentInChildren<Text>().text = fruitonInfo.ToString();
                 return;

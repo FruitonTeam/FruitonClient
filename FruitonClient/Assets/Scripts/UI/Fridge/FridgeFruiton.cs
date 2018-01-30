@@ -83,7 +83,7 @@ public class FridgeFruiton : MonoBehaviour, IPointerDownHandler, IPointerEnterHa
     {
         TextAttack.text = kFruiton.currentAttributes.damage.ToString();
         TextHealth.text = kFruiton.currentAttributes.hp.ToString();
-        textName.text = kFruiton.model;
+        textName.text = kFruiton.name;
         Color color;
         ColorUtility.TryParseHtmlString(TypeColors[kFruiton.type], out color);
         PanelName.color = color;
