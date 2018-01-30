@@ -47,12 +47,16 @@ public class BattleViewer : MonoBehaviour
     /// <summary> Client fruitons stored at their position. </summary>
     public GameObject[,] Grid { get; set; }
 
+    public FindGame.Types.GameMode GameMode { get; private set; }
+
     private void Start()
     {
         GridLayoutManager = GridLayoutManager.Instance;
         Grid = new GameObject[GridLayoutManager.WidthCount, GridLayoutManager.HeighCount];
 
         var online = Scenes.GetParam(Scenes.ONLINE) == bool.TrueString;
+        GameMode = (FindGame.Types.GameMode) Enum.Parse(typeof(FindGame.Types.GameMode), Scenes.GetParam(Scenes.GAME_MODE));
+
         Debug.Log("playing online = " + online);
         if (online)
         {
@@ -82,7 +86,10 @@ public class BattleViewer : MonoBehaviour
 
     private void OnDisable()
     {
-        battle.OnDisable();
+        if (battle != null)
+        {
+            battle.OnDisable();
+        }
     }
 
     public void SetupSurrenderButton()
@@ -137,7 +144,6 @@ public class BattleViewer : MonoBehaviour
                 }
                 foreach (int immunity in kernelFruiton.currentAttributes.immunities.ToList())
                 {
-                    string immunityInfoString = "";
                     if (immunity == HealAction.ID) fruitonInfo.Append("Unable to be healed.\n");
                     else if (immunity == AttackAction.ID) fruitonInfo.Append("Can't be attacked.\n");
                 }
