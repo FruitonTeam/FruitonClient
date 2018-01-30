@@ -94,7 +94,7 @@ public class OnlineBattle : Battle, IOnMessageListener
         if (isLocalPlayerFirst)
         {
             battleViewer.InitializeTeam(currentTeam, kernelPlayer1, GameManager.Instance.CurrentFruitonTeam.Positions);
-            kernel = new Kernel(kernelPlayer1, kernelPlayer2, fruitons, kernelSettings);
+            kernel = new Kernel(kernelPlayer1, kernelPlayer2, fruitons, kernelSettings, false);
         }
         // If the online opponent begins, we need to flip the positions to the opposite side because we do not receive 
         // the new positions from the server. The first argument has to be the online opponent = kernelPlayer2.
@@ -104,7 +104,7 @@ public class OnlineBattle : Battle, IOnMessageListener
             var height = GameState.HEIGHT;
             var flippedPositions = BattleHelper.FlipCoordinates(GameManager.Instance.CurrentFruitonTeam.Positions, width, height);
             battleViewer.InitializeTeam(currentTeam, kernelPlayer1, flippedPositions);
-            kernel = new Kernel(kernelPlayer2, kernelPlayer1, fruitons, kernelSettings);
+            kernel = new Kernel(kernelPlayer2, kernelPlayer1, fruitons, kernelSettings, false);
             battleViewer.DisableEndTurnButton();
         }
         

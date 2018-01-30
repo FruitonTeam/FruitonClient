@@ -26,7 +26,7 @@ public class BattleViewer : MonoBehaviour
 {
     private Battle battle;
     private bool isGameStarted;
-    private bool isInputEnabled = true;
+    public bool IsInputEnabled { get; private set; }
 
     /// <summary> For handling grid tiles. </summary>
     public GridLayoutManager GridLayoutManager;
@@ -49,27 +49,43 @@ public class BattleViewer : MonoBehaviour
 
     public FindGame.Types.GameMode GameMode { get; private set; }
 
+    public BattleViewer()
+    {
+        IsInputEnabled = true;
+    }
+
     private void Start()
     {
         GridLayoutManager = GridLayoutManager.Instance;
         Grid = new GameObject[GridLayoutManager.WidthCount, GridLayoutManager.HeighCount];
 
-        var online = Scenes.GetParam(Scenes.ONLINE) == bool.TrueString;
+        var battleType = (BattleType) Enum.Parse(typeof(BattleType), Scenes.GetParam(Scenes.BATTLE_TYPE));
         GameMode = (FindGame.Types.GameMode) Enum.Parse(typeof(FindGame.Types.GameMode), Scenes.GetParam(Scenes.GAME_MODE));
 
-        Debug.Log("playing online = " + online);
-        if (online)
+        Debug.Log("playing battle = " + battleType);
+
+        switch (battleType)
         {
-            battle = new OnlineBattle(this);
-            PanelLoadingGame.SetActive(true);
+            case BattleType.OnlineBattle:
+                battle = new OnlineBattle(this);
+                PanelLoadingGame.SetActive(true);
+                break;
+            case BattleType.OfflineBattle:
+                battle = new OfflineBattle(this);
+                isGameStarted = true;
+                InitializePlayersInfo();
+                SetupSurrenderButton();
+                break;
+            case BattleType.AIBattle:
+                battle = new AIBattle(this);
+                isGameStarted = true;
+                InitializePlayersInfo();
+                SetupSurrenderButton();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
-        else
-        {
-            battle = new OfflineBattle(this);
-            isGameStarted = true;
-            InitializePlayersInfo();
-            SetupSurrenderButton();
-        }
+
         battle.OnEnable();
     }
 
@@ -78,7 +94,8 @@ public class BattleViewer : MonoBehaviour
         if (!isGameStarted)
             return;
         UpdateTimer();
-        if (Input.GetMouseButtonUp(0) && isInputEnabled)
+        battle.Update();
+        if (Input.GetMouseButtonUp(0) && IsInputEnabled)
             LeftButtonUpLogic();
         else
             HoverLogic();
@@ -249,6 +266,8 @@ public class BattleViewer : MonoBehaviour
             ProcessHealEvent((HealEvent) kEvent);
         else if (eventType == typeof(ModifyHealthEvent))
             ProcessModifyHealthEvent((ModifyHealthEvent) kEvent);
+        else if (eventType == typeof(GameOverEvent))
+            ProcessGameOverEvent((GameOverEvent) kEvent);
     }
 
     private void ProcessModifyHealthEvent(ModifyHealthEvent kEvent)
@@ -289,7 +308,7 @@ public class BattleViewer : MonoBehaviour
 
     private void ProcessMoveEvent(MoveEvent moveEvent)
     {
-        isInputEnabled = false;
+        IsInputEnabled = false;
         KVector2 from = moveEvent.from;
         KVector2 to = moveEvent.to;
         GameObject movedObject = Grid[from.x, from.y];
@@ -298,6 +317,21 @@ public class BattleViewer : MonoBehaviour
         Vector3 toPosition = GridLayoutManager.GetCellPosition(to.x, to.y);
         StartCoroutine(MoveCoroutine(movedObject.transform.position, toPosition, movedObject));
         GridLayoutManager.ResetHighlights();
+    }
+
+    private void ProcessGameOverEvent(GameOverEvent gameOverEvent)
+    {
+        var message = new GameOver
+        {
+            Reason = Cz.Cuni.Mff.Fruiton.Dto.GameOver.Types.Reason.Standard,
+            Results = new GameResults
+            {
+                Money = 0,
+                Quests = {},
+                UnlockedFruitons = {}
+            }
+        };
+        GameOver(message);
     }
 
     private IEnumerator MoveCoroutine(Vector3 from, Vector3 to, GameObject movedObject)
@@ -332,7 +366,7 @@ public class BattleViewer : MonoBehaviour
         if (isFlipped)
             anim.SkeletonAnim.Skeleton.FlipX = !anim.SkeletonAnim.Skeleton.FlipX;
 
-        isInputEnabled = true;
+        IsInputEnabled = true;
     }
 
     private void VisualizeAction(KAction action, KFruiton kernelFruiton)
