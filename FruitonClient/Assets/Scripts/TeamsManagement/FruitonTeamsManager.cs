@@ -238,11 +238,20 @@ public class FruitonTeamsManager : MonoBehaviour
     {
         if (GameManager.Instance.CurrentFruitonTeam != null)
         {
-            Scenes.Load(Scenes.BATTLE_SCENE, new Dictionary<string, string>
+            var param = new Dictionary<string, string>
             {
                 {Scenes.BATTLE_TYPE, Scenes.GetParam(Scenes.BATTLE_TYPE)},
                 {Scenes.GAME_MODE, FindGame.Types.GameMode.Standard.ToString()} // TODO get GameMode from UI (when scene is unlocked)
-            });
+            };
+
+            var battleType = (BattleType) Enum.Parse(typeof(BattleType), Scenes.GetParam(Scenes.BATTLE_TYPE));
+            if (battleType == BattleType.AIBattle)
+            {
+                // TODO get AI type from the UI (when scene is unlocked)
+                param.Add(Scenes.AI_TYPE, AIType.AggroGreedy.ToString());
+            }
+
+            Scenes.Load(Scenes.BATTLE_SCENE, param);
         }
     }
 

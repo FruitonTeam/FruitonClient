@@ -12,6 +12,7 @@ public class Scenes : MonoBehaviour
     public static readonly string TEAM_MANAGEMENT_STATE = "teamManagementState";
     public static readonly string BATTLE_TYPE = "battleType";
     public static readonly string GAME_MODE = "gameMode";
+    public static readonly string AI_TYPE = "aiType";
 
     public static Dictionary<string, string> Parameters { get; private set; }
 

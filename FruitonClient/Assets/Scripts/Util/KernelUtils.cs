@@ -2,6 +2,8 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using fruiton.dataStructures;
+using fruiton.kernel;
 using UnityEngine;
 
 namespace Util
@@ -38,6 +40,10 @@ namespace Util
             return AppDomain.CurrentDomain.GetAssemblies()
                 .SingleOrDefault(assembly => assembly.GetName().Name.StartsWith(KERNEL_DLL_NAME_PREFIX));
         }
-        
+
+        public static Fruiton GetFruitonAt(Kernel kernel, Point position)
+        {
+            return kernel.currentState.field.get(position).fruiton;
+        }
     }
 }

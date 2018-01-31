@@ -77,7 +77,8 @@ public class BattleViewer : MonoBehaviour
                 SetupSurrenderButton();
                 break;
             case BattleType.AIBattle:
-                battle = new AIBattle(this);
+                var aiType = (AIType) Enum.Parse(typeof(AIType), Scenes.GetParam(Scenes.AI_TYPE));
+                battle = new AIBattle(this, aiType);
                 isGameStarted = true;
                 InitializePlayersInfo();
                 SetupSurrenderButton();
@@ -117,8 +118,8 @@ public class BattleViewer : MonoBehaviour
 
     public void InitializePlayersInfo()
     {
-        string login1 = battle.Player1.Login;
-        string login2 = battle.Player2.Login;
+        string login1 = battle.Player1.Name;
+        string login2 = battle.Player2.Name;
         MyLoginText.text = login1;
         OpponentLoginText.text = login2;
         PlayerHelper.GetAvatar(login1,
