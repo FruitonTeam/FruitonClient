@@ -119,8 +119,8 @@ class AggroGreedyAIPlayer : AIPlayerBase
     {
         var newContext = (HealActionContext) newAction.getContext();
         var prevContext = (HealActionContext) prevAction.getContext();
-        Fruiton newTarget = kernel.currentState.field.get(newContext.target).fruiton;
-        Fruiton prevTarget = kernel.currentState.field.get(prevContext.target).fruiton;
+        Fruiton newTarget = KernelUtils.GetFruitonAt(kernel, newContext.target);
+        Fruiton prevTarget = KernelUtils.GetFruitonAt(kernel, prevContext.target);
 
         int newHealAmount = Math.Min(newContext.heal, newTarget.originalAttributes.hp - newTarget.currentAttributes.hp);
         int prevHealAmount = Math.Min(prevContext.heal, prevTarget.originalAttributes.hp - prevTarget.currentAttributes.hp);
@@ -156,8 +156,8 @@ class AggroGreedyAIPlayer : AIPlayerBase
     {
         var newContext = (MoveActionContext) newAction.getContext();
         var prevContext = (MoveActionContext) prevAction.getContext();
-        Fruiton newSource = kernel.currentState.field.get(newContext.source).fruiton;
-        Fruiton prevSource = kernel.currentState.field.get(prevContext.source).fruiton;
+        Fruiton newSource = KernelUtils.GetFruitonAt(kernel, newContext.source);
+        Fruiton prevSource = KernelUtils.GetFruitonAt(kernel, prevContext.source);
 
         float newDistModifier = newSource.type == Fruiton.MAJOR_TYPE ? -1 : newSource.get_isKing() ? +1 : 0;
         float prevDistModifier = prevSource.type == Fruiton.MAJOR_TYPE ? -1 : prevSource.get_isKing() ? +1 : 0;
