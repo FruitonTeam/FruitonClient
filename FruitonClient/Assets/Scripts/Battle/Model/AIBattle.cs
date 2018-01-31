@@ -1,9 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Cz.Cuni.Mff.Fruiton.Dto;
 using fruiton.kernel;
 using Google.Protobuf.Collections;
 using haxe.root;
 using UnityEngine;
+using Random = UnityEngine.Random;
+
+enum AIType
+{
+    Random,
+    AggroGreedy
+}
 
 class AIBattle : Battle
 {
@@ -12,19 +20,19 @@ class AIBattle : Battle
         get { return Player1; }
         set { Player1 = value; }
     }
-    private ClientPlayerBase aiPlayer
+    private AIPlayerBase aiPlayer
     {
-        get { return Player2; }
+        get { return (AIPlayerBase)Player2; }
         set { Player2 = value; }
     }
 
-    public AIBattle(BattleViewer battleViewer)
+    public AIBattle(BattleViewer battleViewer, AIType aiType)
         : base(battleViewer)
     {
         var kernelPlayer1 = new Player(0);
         var kernelPlayer2 = new Player(1);
         humanPlayer = new LocalPlayer(battleViewer, kernelPlayer1, this, GameManager.Instance.UserName);
-        aiPlayer = new RandomAIPlayer(battleViewer, kernelPlayer2, this, "Random AI");
+        aiPlayer = CreateAI(aiType, battleViewer, kernelPlayer2, this);
 
         IEnumerable<GameObject> humanTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs, battleViewer.Board);
         IEnumerable<GameObject> aiTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs, battleViewer.Board);
@@ -55,6 +63,19 @@ class AIBattle : Battle
     public override void Update()
     {
         base.Update();
-        ((RandomAIPlayer)aiPlayer).Update();
+        aiPlayer.Update();
+    }
+
+    private static AIPlayerBase CreateAI(AIType type, BattleViewer battleViewer, Player kernelPlayer, Battle battle)
+    {
+        switch (type)
+        {
+            case AIType.Random:
+                return new RandomAIPlayer(battleViewer, kernelPlayer, battle);
+            case AIType.AggroGreedy:
+                return new AggroGreedyAIPlayer(battleViewer, kernelPlayer, battle);
+            default:
+                throw new ArgumentOutOfRangeException("type", type, null);
+        }
     }
 }
