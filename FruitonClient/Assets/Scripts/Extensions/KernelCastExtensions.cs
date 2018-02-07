@@ -35,6 +35,22 @@ public static class KernelCastExtensions {
         return array.CastToList<TOut, object>();
     }
 
+    public static List<List<TOut>> CastToList2D<TOut>(this Array<object> array)
+        where TOut : class
+    {
+        var list = new List<List<TOut>>(array.length);
+        for (int i = 0; i < array.length; i++)
+        {
+            list.Add(new List<TOut>());
+            var inner = (Array<object>) array[i];
+            for (int j = 0; j < inner.length; j++)
+            {
+                list[i].Add((TOut)inner[j]);
+            }
+        }
+        return list;
+    }
+
     public static Position ToPosition(this KVector2 kernelPoint)
     {
         return new Position { X = kernelPoint.x, Y = kernelPoint.y };

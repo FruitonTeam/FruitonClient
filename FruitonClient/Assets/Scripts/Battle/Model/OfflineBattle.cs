@@ -9,8 +9,8 @@ public class OfflineBattle : Battle
 {
     public OfflineBattle(BattleViewer battleViewer) : base(battleViewer)
     {
-        Player kernelPlayer1 = new Player(0);
-        Player kernelPlayer2 = new Player(1);
+        var kernelPlayer1 = new Player(0);
+        var kernelPlayer2 = new Player(1);
         string login = GameManager.Instance.UserName;
         Player1 = new LocalPlayer(battleViewer, kernelPlayer1, this, login);
         Player2 = new LocalPlayer(battleViewer, kernelPlayer2, this, login);
@@ -32,7 +32,12 @@ public class OfflineBattle : Battle
         {
             fruitons.push(fruiton.GetComponent<ClientFruiton>().KernelFruiton);
         }
-        kernel = new Kernel(kernelPlayer1, kernelPlayer2, fruitons);
+        
+        Array<int> maps = GameManager.Instance.FruitonDatabase.getMapsIds();
+        int rndMapId = maps[Random.Range(0, maps.length)];
+        GameSettings kernelSettings = GameSettingsFactory.CreateGameSettings(rndMapId, battleViewer.GameMode);
+
+        kernel = new Kernel(kernelPlayer1, kernelPlayer2, fruitons, kernelSettings, false);
         BattleReady();
     }
 

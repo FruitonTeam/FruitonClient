@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Cz.Cuni.Mff.Fruiton.Dto;
-using fruiton.fruitDb.factories;
 using fruiton.kernel;
 using fruiton.kernel.abilities;
 using fruiton.kernel.actions;
@@ -21,12 +20,13 @@ using KEvent = fruiton.kernel.events.Event;
 using KFruiton = fruiton.kernel.Fruiton;
 using KAction = fruiton.kernel.actions.Action;
 using KVector2 = fruiton.dataStructures.Point;
+using UObject = UnityEngine.Object;
 
 public class BattleViewer : MonoBehaviour
 {
     private Battle battle;
     private bool isGameStarted;
-    private bool isInputEnabled = true;
+    public bool IsInputEnabled { get; private set; }
 
     /// <summary> For handling grid tiles. </summary>
     public GridLayoutManager GridLayoutManager;
@@ -47,25 +47,46 @@ public class BattleViewer : MonoBehaviour
     /// <summary> Client fruitons stored at their position. </summary>
     public GameObject[,] Grid { get; set; }
 
+    public FindGame.Types.GameMode GameMode { get; private set; }
+
+    public BattleViewer()
+    {
+        IsInputEnabled = true;
+    }
+
     private void Start()
     {
         GridLayoutManager = GridLayoutManager.Instance;
         Grid = new GameObject[GridLayoutManager.WidthCount, GridLayoutManager.HeighCount];
 
-        var online = Scenes.GetParam(Scenes.ONLINE) == bool.TrueString;
-        Debug.Log("playing online = " + online);
-        if (online)
+        var battleType = (BattleType) Enum.Parse(typeof(BattleType), Scenes.GetParam(Scenes.BATTLE_TYPE));
+        GameMode = (FindGame.Types.GameMode) Enum.Parse(typeof(FindGame.Types.GameMode), Scenes.GetParam(Scenes.GAME_MODE));
+
+        Debug.Log("playing battle = " + battleType);
+
+        switch (battleType)
         {
-            battle = new OnlineBattle(this);
-            PanelLoadingGame.SetActive(true);
+            case BattleType.OnlineBattle:
+                battle = new OnlineBattle(this);
+                PanelLoadingGame.SetActive(true);
+                break;
+            case BattleType.OfflineBattle:
+                battle = new OfflineBattle(this);
+                isGameStarted = true;
+                InitializePlayersInfo();
+                SetupSurrenderButton();
+                break;
+            case BattleType.AIBattle:
+                var aiType = (AIType) Enum.Parse(typeof(AIType), Scenes.GetParam(Scenes.AI_TYPE));
+                battle = new AIBattle(this, aiType);
+                isGameStarted = true;
+                InitializePlayersInfo();
+                SetupSurrenderButton();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
-        else
-        {
-            battle = new OfflineBattle(this);
-            isGameStarted = true;
-            InitializePlayersInfo();
-            SetupSurrenderButton();
-        }
+
         battle.OnEnable();
     }
 
@@ -74,7 +95,8 @@ public class BattleViewer : MonoBehaviour
         if (!isGameStarted)
             return;
         UpdateTimer();
-        if (Input.GetMouseButtonUp(0) && isInputEnabled)
+        battle.Update();
+        if (Input.GetMouseButtonUp(0) && IsInputEnabled)
             LeftButtonUpLogic();
         else
             HoverLogic();
@@ -82,7 +104,10 @@ public class BattleViewer : MonoBehaviour
 
     private void OnDisable()
     {
-        battle.OnDisable();
+        if (battle != null)
+        {
+            battle.OnDisable();
+        }
     }
 
     public void SetupSurrenderButton()
@@ -93,8 +118,8 @@ public class BattleViewer : MonoBehaviour
 
     public void InitializePlayersInfo()
     {
-        string login1 = battle.Player1.Login;
-        string login2 = battle.Player2.Login;
+        string login1 = battle.Player1.Name;
+        string login2 = battle.Player2.Name;
         MyLoginText.text = login1;
         OpponentLoginText.text = login2;
         PlayerHelper.GetAvatar(login1,
@@ -124,23 +149,7 @@ public class BattleViewer : MonoBehaviour
             {
                 var clientFruiton = hitFruiton.GetComponent<ClientFruiton>();
                 Fruiton kernelFruiton = clientFruiton.KernelFruiton;
-                StringBuilder fruitonInfo = new StringBuilder("<b>" + kernelFruiton.model.ToUpper() + "</b>\n");
-                fruitonInfo.Append("\n<b>Abilities</b>\n");
-                foreach (Ability ability in kernelFruiton.abilities.ToList())
-                {
-                    fruitonInfo.Append(String.Format(ability.text, kernelFruiton.currentAttributes.heal));
-                }
-                fruitonInfo.Append("\n<b>Effects</b>\n");
-                foreach (Effect effect in kernelFruiton.effects.ToList())
-                {
-                    fruitonInfo.Append(effect.text + "\n");
-                }
-                foreach (int immunity in kernelFruiton.currentAttributes.immunities.ToList())
-                {
-                    string immunityInfoString = "";
-                    if (immunity == HealAction.ID) fruitonInfo.Append("Unable to be healed.\n");
-                    else if (immunity == AttackAction.ID) fruitonInfo.Append("Can't be attacked.\n");
-                }
+                string fruitonInfo = TooltipUtil.GenerateTooltip(kernelFruiton);
                 FruitonInfoPanel.SetActive(true);
                 FruitonInfoPanel.GetComponentInChildren<Text>().text = fruitonInfo.ToString();
                 return;
@@ -204,6 +213,24 @@ public class BattleViewer : MonoBehaviour
         }
     }
 
+    public void InitializeMap(List<List<Tile>> field)
+    {
+        UObject obstacleResource = Resources.Load("Prefabs/Obstacle");
+        foreach (List<Tile> tiles in field)
+        {
+            foreach (Tile tile in tiles)
+            {
+                if (tile.type == TileType.impassable)
+                {
+                    var obstacle = (GameObject)Instantiate(obstacleResource);
+                    Vector3 pos = GridLayoutManager.GetCellPosition(tile.position.x, tile.position.y);
+                    obstacle.transform.position = pos;
+                    obstacle.transform.parent = Board.transform;
+                }
+            }
+        }
+    }
+
     private void UpdateTimer()
     {
         var timeLeft = battle.ComputeRemainingTime();
@@ -240,6 +267,8 @@ public class BattleViewer : MonoBehaviour
             ProcessHealEvent((HealEvent) kEvent);
         else if (eventType == typeof(ModifyHealthEvent))
             ProcessModifyHealthEvent((ModifyHealthEvent) kEvent);
+        else if (eventType == typeof(GameOverEvent))
+            ProcessGameOverEvent((GameOverEvent) kEvent);
     }
 
     private void ProcessModifyHealthEvent(ModifyHealthEvent kEvent)
@@ -280,7 +309,7 @@ public class BattleViewer : MonoBehaviour
 
     private void ProcessMoveEvent(MoveEvent moveEvent)
     {
-        isInputEnabled = false;
+        IsInputEnabled = false;
         KVector2 from = moveEvent.from;
         KVector2 to = moveEvent.to;
         GameObject movedObject = Grid[from.x, from.y];
@@ -289,6 +318,21 @@ public class BattleViewer : MonoBehaviour
         Vector3 toPosition = GridLayoutManager.GetCellPosition(to.x, to.y);
         StartCoroutine(MoveCoroutine(movedObject.transform.position, toPosition, movedObject));
         GridLayoutManager.ResetHighlights();
+    }
+
+    private void ProcessGameOverEvent(GameOverEvent gameOverEvent)
+    {
+        var message = new GameOver
+        {
+            Reason = Cz.Cuni.Mff.Fruiton.Dto.GameOver.Types.Reason.Standard,
+            Results = new GameResults
+            {
+                Money = 0,
+                Quests = {},
+                UnlockedFruitons = {}
+            }
+        };
+        GameOver(message);
     }
 
     private IEnumerator MoveCoroutine(Vector3 from, Vector3 to, GameObject movedObject)
@@ -323,7 +367,7 @@ public class BattleViewer : MonoBehaviour
         if (isFlipped)
             anim.SkeletonAnim.Skeleton.FlipX = !anim.SkeletonAnim.Skeleton.FlipX;
 
-        isInputEnabled = true;
+        IsInputEnabled = true;
     }
 
     private void VisualizeAction(KAction action, KFruiton kernelFruiton)

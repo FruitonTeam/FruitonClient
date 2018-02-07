@@ -12,6 +12,7 @@ using fruiton.kernel.fruitonTeam;
 using haxe.root;
 using Networking;
 using Spine.Unity;
+using UnityEditor.SceneManagement;
 
 public class FruitonTeamsManager : MonoBehaviour
 {
@@ -257,7 +258,20 @@ public class FruitonTeamsManager : MonoBehaviour
     {
         if (GameManager.Instance.CurrentFruitonTeam != null)
         {
-            Scenes.Load(Scenes.BATTLE_SCENE, Scenes.ONLINE, Scenes.GetParam(Scenes.ONLINE));
+            var param = new Dictionary<string, string>
+            {
+                {Scenes.BATTLE_TYPE, Scenes.GetParam(Scenes.BATTLE_TYPE)},
+                {Scenes.GAME_MODE, FindGame.Types.GameMode.Standard.ToString()} // TODO get GameMode from UI (when scene is unlocked)
+            };
+
+            var battleType = (BattleType) Enum.Parse(typeof(BattleType), Scenes.GetParam(Scenes.BATTLE_TYPE));
+            if (battleType == BattleType.AIBattle)
+            {
+                // TODO get AI type from the UI (when scene is unlocked)
+                param.Add(Scenes.AI_TYPE, AIType.AggroGreedy.ToString());
+            }
+
+            Scenes.Load(Scenes.BATTLE_SCENE, param);
         }
     }
 
@@ -292,22 +306,6 @@ public class FruitonTeamsManager : MonoBehaviour
         fruitonTeamObject.GetComponentInChildren<Text>().text = GetTeamDescription(team);
         fruitonTeamObject.GetComponent<Button>().onClick.AddListener(() => SelectTeam(fridgeFruitonTeam.FridgeIndex));
         fruitonTeamObject.SetActive(true);
-    }
-
-    private string GetFruitonTooltip(KFruiton kernelFruiton)
-    {
-        StringBuilder tooltipText = new StringBuilder("<b>" + kernelFruiton.model.ToUpper() + "</b>\n");
-        tooltipText.Append("\n<b>Abilities</b>\n");
-        foreach (Ability ability in kernelFruiton.abilities.ToList())
-        {
-            tooltipText.Append(String.Format(ability.text, kernelFruiton.currentAttributes.heal));
-        }
-        tooltipText.Append("\n<b>Effects</b>\n");
-        foreach (Effect effect in kernelFruiton.effects.ToList())
-        {
-            tooltipText.Append(effect.text + "\n");
-        }
-        return tooltipText.ToString();
     }
 
     private void InitializeFruitonDetailListeners()
@@ -631,7 +629,7 @@ public class FruitonTeamsManager : MonoBehaviour
     private void ShowDetail(FridgeFruiton fruiton)
     {
         FruitonDetail.SetFruiton(fruiton, TeamGrid.GetAvailableSquares(fruiton.KernelFruiton).Count != 0);
-        FruitonDetail.TooltipText.text = GetFruitonTooltip(fruiton.KernelFruiton);
+        FruitonDetail.TooltipText.text = TooltipUtil.GenerateTooltip(fruiton.KernelFruiton);
         FruitonDetail.gameObject.SetActive(true);
     }
 
@@ -645,7 +643,7 @@ public class FruitonTeamsManager : MonoBehaviour
         tooltipTransform.anchorMin = targetTransform.anchorMin;
         tooltipTransform.anchorMax = targetTransform.anchorMax;
         tooltipTransform.anchoredPosition = targetTransform.anchoredPosition;
-        PanelTooltip.GetComponentInChildren<Text>().text = GetFruitonTooltip(fruiton);
+        PanelTooltip.GetComponentInChildren<Text>().text = TooltipUtil.GenerateTooltip(fruiton);
     }
 
     private void HideTooltip()

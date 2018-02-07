@@ -5,14 +5,14 @@ public abstract class ClientPlayerBase
 {
     protected Battle battle;
 
-    protected ClientPlayerBase(Player kernelPlayer, Battle battle, string login)
+    protected ClientPlayerBase(Player kernelPlayer, Battle battle, string name)
     {
         ID = kernelPlayer.id;
         this.battle = battle;
-        Login = login;
+        Name = name;
     }
 
-    public string Login { get; private set; }
+    public string Name { get; private set; }
 
     public int ID { get; private set; }
 

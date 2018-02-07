@@ -95,5 +95,31 @@ namespace Networking
                 )
             );
         }
+
+        public static void IsOnline(string login, Action<bool> success, Action<string> error)
+        {
+            ConnectionHandler.Instance.StartCoroutine(
+                ConnectionHandler.Instance.Get(
+                    "player/isOnline?login=" + login,
+                    result => success(result == "true"),
+                    error
+                )
+            );
+        }
+
+        public static void GetFriendRequests(Action<List<string>> success, Action<string> error)
+        {
+            ConnectionHandler.Instance.StartCoroutine(
+                ConnectionHandler.Instance.Get(
+                    "secured/player/friendRequests",
+                    jsonString =>
+                    {
+                        var requests = JsonConvert.DeserializeObject<List<string>>(jsonString);
+                        success(requests);
+                    },
+                    error
+                )
+            );
+        }
     }
 }

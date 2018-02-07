@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Cz.Cuni.Mff.Fruiton.Dto;
 using UnityEngine;
 
 namespace UI.Chat
@@ -16,12 +17,13 @@ namespace UI.Chat
             RecyclableList.gameObject.SetActive(true);
         }
 
-        public void AddItem(string friendName)
+        public void AddItem(string friendName, Status status)
         {
             var itemData = new FriendListItem.FriendItemData
             {
                 Name = friendName,
-                UnreadMessages = 0
+                UnreadMessages = 0,
+                OnlineStatus = status
             };
 
             Data.Add(itemData);
@@ -64,5 +66,26 @@ namespace UI.Chat
             }
             RecyclableList.NotifyDataChanged();
         }
+
+        public void ChangeOnlineStatus(string friend, Status newStatus)
+        {
+            foreach (FriendListItem.FriendItemData friendData in Data)
+            {
+                if (friendData.Name.Equals(friend))
+                {
+                    friendData.OnlineStatus = newStatus;
+                    break;
+                }
+            }
+            RecyclableList.NotifyDataChanged();
+        }
+
+        public void Clear()
+        {
+            Data = new List<FriendListItem.FriendItemData>();
+            RecyclableList.Destroy();
+            Start();
+        }
+        
     }
 }

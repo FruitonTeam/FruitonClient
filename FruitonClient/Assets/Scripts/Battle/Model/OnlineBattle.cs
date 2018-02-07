@@ -31,9 +31,10 @@ public class OnlineBattle : Battle, IOnMessageListener
     private void FindGame()
     {
         var connectionHandler = ConnectionHandler.Instance;
-        FindGame findGameMessage = new FindGame
+        var findGameMessage = new FindGame
         {
-            Team = GameManager.Instance.CurrentFruitonTeam
+            Team = GameManager.Instance.CurrentFruitonTeam,
+            GameMode = battleViewer.GameMode
         };
         var wrapperMessage = new WrapperMessage
         {
@@ -77,6 +78,8 @@ public class OnlineBattle : Battle, IOnMessageListener
         // The opponent team is obtained from the server with the correctly set positions.
         battleViewer.InitializeTeam(opponentTeam, kernelPlayer2, gameReadyMessage.OpponentTeam.Positions);
 
+        GameSettings kernelSettings = GameSettingsFactory.CreateGameSettings(gameReadyMessage.MapId, battleViewer.GameMode);
+
         var fruitons = new Array<object>();
         foreach (var fruiton in currentTeam)
         {
@@ -91,7 +94,7 @@ public class OnlineBattle : Battle, IOnMessageListener
         if (isLocalPlayerFirst)
         {
             battleViewer.InitializeTeam(currentTeam, kernelPlayer1, GameManager.Instance.CurrentFruitonTeam.Positions);
-            kernel = new Kernel(kernelPlayer1, kernelPlayer2, fruitons);
+            kernel = new Kernel(kernelPlayer1, kernelPlayer2, fruitons, kernelSettings, false);
         }
         // If the online opponent begins, we need to flip the positions to the opposite side because we do not receive 
         // the new positions from the server. The first argument has to be the online opponent = kernelPlayer2.
@@ -101,7 +104,7 @@ public class OnlineBattle : Battle, IOnMessageListener
             var height = GameState.HEIGHT;
             var flippedPositions = BattleHelper.FlipCoordinates(GameManager.Instance.CurrentFruitonTeam.Positions, width, height);
             battleViewer.InitializeTeam(currentTeam, kernelPlayer1, flippedPositions);
-            kernel = new Kernel(kernelPlayer2, kernelPlayer1, fruitons);
+            kernel = new Kernel(kernelPlayer2, kernelPlayer1, fruitons, kernelSettings, false);
             battleViewer.DisableEndTurnButton();
         }
         

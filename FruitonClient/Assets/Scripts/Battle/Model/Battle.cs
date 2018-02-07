@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cz.Cuni.Mff.Fruiton.Dto;
 using fruiton.kernel;
 using fruiton.kernel.actions;
 using fruiton.kernel.events;
@@ -10,6 +11,13 @@ using KEvent = fruiton.kernel.events.Event;
 using KVector2 = fruiton.dataStructures.Point;
 using KAction = fruiton.kernel.actions.Action;
 using KFruiton = fruiton.kernel.Fruiton;
+
+public enum BattleType
+{
+    OnlineBattle,
+    OfflineBattle,
+    AIBattle
+}
 
 public abstract class Battle
 {
@@ -41,12 +49,15 @@ public abstract class Battle
     {
         gameManager = GameManager.Instance;
         this.battleViewer = battleViewer;
-
     }
 
-    // Call this whenever kernel is initialized.
+    /// <summary>
+    /// Call this whenever kernel is initialized.
+    /// </summary>
     protected void BattleReady()
     {
+        battleViewer.InitializeMap(kernel.currentState.field.field.CastToList2D<Tile>());
+
         clientFruitons = new Dictionary<int, ClientFruiton>();
         foreach (GameObject fruitonObject in battleViewer.Grid)
         {
@@ -65,7 +76,7 @@ public abstract class Battle
 
         for (int i = 0; i < kernel.currentState.fruitons.length; i++)
         {
-            Fruiton fruiton = kernel.currentState.fruitons[i] as Fruiton;
+            KFruiton fruiton = kernel.currentState.fruitons[i] as KFruiton;
             var clientFruiton = clientFruitons[fruiton.id];
             clientFruiton.KernelFruiton = fruiton;
         }
@@ -202,5 +213,14 @@ public abstract class Battle
 
     public virtual void OnDisable()
     {
+    }
+
+    public virtual void Update()
+    {
+    }
+
+    public Kernel GetKernelClone()
+    {
+        return kernel.clone();
     }
 }

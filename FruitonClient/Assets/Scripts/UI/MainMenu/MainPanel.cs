@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using Networking;
+using UI.Chat;
+using UI.Notification;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,32 +32,34 @@ namespace UI.MainMenu
 
         public void TeamSelectionContinueOnline()
         {
-            TeamSelectionContinue(true);
+            TeamSelectionContinue(BattleType.OnlineBattle);
         }
 
         public void TeamSelectionContinueOffline()
         {
-            TeamSelectionContinue(false);
+            TeamSelectionContinue(BattleType.OfflineBattle);
         }
 
-        private void TeamSelectionContinue(bool online)
+        public void TeamSelectionContinueAI()
         {
-            var parameters = new Dictionary<string, string>();
-            parameters.Add(Scenes.TEAM_MANAGEMENT_STATE, bool.FalseString);
-            parameters.Add(Scenes.ONLINE, online.ToString());
+            TeamSelectionContinue(BattleType.AIBattle);
+        }
+
+        private void TeamSelectionContinue(BattleType battleType)
+        {
+            var parameters = new Dictionary<string, string>
+            {
+                {Scenes.TEAM_MANAGEMENT_STATE, bool.FalseString},
+                {Scenes.BATTLE_TYPE, battleType.ToString()}
+            };
             Scenes.Load(Scenes.TEAMS_MANAGEMENT_SCENE, parameters);
-        }
-
-        public void ChangeToChatScene()
-        {
-            Scenes.Load(Scenes.CHAT_SCENE);
         }
 
         public void LoadBattle()
         {
             if (GameManager.Instance.CurrentFruitonTeam != null)
             {
-                Scenes.Load(Scenes.BATTLE_SCENE, Scenes.ONLINE, Scenes.GetParam(Scenes.ONLINE));
+                Scenes.Load(Scenes.BATTLE_SCENE, Scenes.BATTLE_TYPE, Scenes.GetParam(Scenes.BATTLE_TYPE));
             }
         }
 
@@ -65,6 +69,10 @@ namespace UI.MainMenu
             PlayerPrefs.SetString("username", "");
             PlayerPrefs.SetString("userpassword", "");
             PlayerPrefs.SetInt("stayloggedin", 0);
+            
+            ChatController.Instance.Clear();
+            FeedbackNotificationManager.Instance.Clear();
+            
             Scenes.Load(Scenes.LOGIN_SCENE);
         }
 

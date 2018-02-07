@@ -114,9 +114,16 @@ namespace Networking
         private void OnConnected()
         {
             RegisterListener(WrapperMessage.MessageOneofCase.ErrorMessage, this);
-            
-            RegisterListener(WrapperMessage.MessageOneofCase.Notification, NotificationManager.Instance);
             RegisterListener(WrapperMessage.MessageOneofCase.ChatMessage, ChatMessageNotifier.Instance);
+            
+            if (NotificationManager.Instance != null) // main menu was already created
+            {
+                RegisterListener(WrapperMessage.MessageOneofCase.Notification, NotificationManager.Instance);
+                RegisterListener(WrapperMessage.MessageOneofCase.FriendRequest, FeedbackNotificationManager.Instance);
+                RegisterListener(WrapperMessage.MessageOneofCase.ChatMessage, ChatController.Instance);
+                RegisterListener(WrapperMessage.MessageOneofCase.FriendRequestResult, ChatController.Instance);
+                RegisterListener(WrapperMessage.MessageOneofCase.OnlineStatusChange, ChatController.Instance);                
+            }
         }
 
         private void Awake()
@@ -217,5 +224,9 @@ namespace Networking
             Debug.LogError(message.ErrorMessage.Message);
         }
 
+        private void OnApplicationQuit()
+        {
+            Disconnect(); // explicitly close the connection so the server does not have to wait for timeout
+        }
     }
 }
