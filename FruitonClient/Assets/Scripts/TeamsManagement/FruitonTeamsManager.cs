@@ -484,6 +484,7 @@ public class FruitonTeamsManager : MonoBehaviour
                 }
                 else
                 {
+                    iTween.Stop(fruiton.gameObject);
                     iTween.MoveTo(fruiton.gameObject, iTween.Hash(
                             "position", GetPositionOnScrollViewGrid(newIndex),
                             "islocal", true,

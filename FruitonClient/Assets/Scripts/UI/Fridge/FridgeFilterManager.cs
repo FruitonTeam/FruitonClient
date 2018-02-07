@@ -34,7 +34,6 @@ public class FridgeFilterManager : MonoBehaviour
 
     public void UpdateAvailableFruitons(List<int> availableIds)
     {
-        availableIds = new List<int>( new []{1,3,5,6,7,8,11,12,13}); // TODO delete this line
         var idSet = new HashSet<int>(availableIds);
 
         foreach (var fruiton in AllFruitons)
