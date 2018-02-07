@@ -38,9 +38,10 @@ public class FridgeFruitonDetail : MonoBehaviour
         }
     }
 
-    public void SetFruiton(Fruiton fruiton, bool canAddToTeam)
+    public void SetFruiton(FridgeFruiton fruiton, bool isFreeSquareInTeam)
     {
-        CurrentFruiton = fruiton;
+        var kFruiton = fruiton.KernelFruiton;
+        CurrentFruiton = kFruiton;
 
         if (typeIconSprites == null)
         {
@@ -49,21 +50,30 @@ public class FridgeFruitonDetail : MonoBehaviour
 
 #if UNITY_STANDALONE || UNITY_EDITOR
         // TODO: figure out why SpineSkeleton.Skeleton is null on android when this method is first called
-        SpineSkeleton.Skeleton.SetSkin(fruiton.model);
+        SpineSkeleton.Skeleton.SetSkin(kFruiton.model);
         SpineSkeleton.AnimationState.SetEmptyAnimation(0,0);
 #endif
 
-        TypeImage.sprite = typeIconSprites[fruiton.type];
+        TypeImage.sprite = typeIconSprites[kFruiton.type];
         Color color;
-        ColorUtility.TryParseHtmlString(FridgeFruiton.TypeColors[fruiton.type] + "55", out color);
+        ColorUtility.TryParseHtmlString(FridgeFruiton.TypeColors[kFruiton.type] + "55", out color);
         TypeImage.color = color;
-        ColorUtility.TryParseHtmlString(FridgeFruiton.TypeColors[fruiton.type] + "88", out color);
+        ColorUtility.TryParseHtmlString(FridgeFruiton.TypeColors[kFruiton.type] + "88", out color);
         TypeText.color = color;
-        TypeText.text = ((FruitonType)FruitonType.ToObject(typeof(FruitonType), fruiton.type)).ToString();
-        NameText.text = fruiton.model;
+        TypeText.text = ((FruitonType)FruitonType.ToObject(typeof(FruitonType), kFruiton.type)).ToString();
+        NameText.text = kFruiton.model;
 
-        AddToTeamButton.gameObject.SetActive(canAddToTeam);
-        if (canAddToTeam)
+        AddToTeamButton.gameObject.SetActive(fruiton.IsOwned && isFreeSquareInTeam);
+
+        if (!fruiton.IsOwned)
+        {
+            TipText.text =
+                "You do not own this fruiton";
+            TipText.color = new Color(0.55f, 0, 0);
+            return;
+        }
+
+        if (isFreeSquareInTeam)
         {
 #if UNITY_ANDROID
             TipText.text =
@@ -77,7 +87,7 @@ public class FridgeFruitonDetail : MonoBehaviour
         {
             TipText.text =
                 "This fruiton can't be added to the team right now because there are no empty squares left for its type";
-            TipText.color = new Color(0.6f, 0, 0);
+            TipText.color = new Color(0.55f, 0, 0);
         }
 
     }

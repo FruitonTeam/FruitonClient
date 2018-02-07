@@ -16,6 +16,7 @@ public class Form : MonoBehaviour
     private Button submitButton;
     private List<Validator.GlobalValidator> globalValidators;
     private bool valid;
+    private int errorFontSize;
 
     public Form SetInputs(Button submitButton, params FormControl[] formControls)
     {
@@ -30,6 +31,9 @@ public class Form : MonoBehaviour
         submitOverlay.onClick.SetPersistentListenerState(0, UnityEventCallState.Off);
         submitOverlay.image.color = new Color(0, 0, 1, 0.0f);
         submitOverlay.onClick.AddListener(SubmitForm);
+        // set original button as a parent to mirror its active/disablede state
+        submitOverlay.transform.SetParent(submitButton.transform, true);
+        submitOverlay.gameObject.SetActive(true);
 
         controls = formControls;
 
@@ -55,6 +59,12 @@ public class Form : MonoBehaviour
     public Form AddGlobalValidator(Validator.GlobalValidator globalValidator)
     {
         globalValidators.Add(globalValidator);
+        return this;
+    }
+
+    public Form SetErrorFontSize(int size)
+    {
+        errorFontSize = size;
         return this;
     }
 
@@ -197,24 +207,29 @@ public class Form : MonoBehaviour
                 {
                     errorPanel.SetActive(true);
                     errorTextComponent.text = error;
+                    errorTextComponent.fontSize =  errorFontSize > 0 ? errorFontSize : inputField.GetComponentInChildren<Text>().fontSize;
 
                     var errorRt = errorPanel.GetComponent<RectTransform>();
-                    var errorTextRt = errorTextComponent.GetComponent<RectTransform>();
                     var fieldRt = inputField.GetComponent<RectTransform>();
 
-                    // use `setParent` with  `worldPositionStays` `false` to prevent problems with scaling
-                    errorRt.SetParent(fieldRt.parent, false);
+
+                    // copy rect transform
+                    errorRt.SetParent(fieldRt.parent);
+                    errorRt.anchorMin = fieldRt.anchorMin;
+                    errorRt.anchorMax = fieldRt.anchorMax;
+                    errorRt.pivot = fieldRt.pivot;
+                    errorRt.localScale = fieldRt.localScale;
+
                     if (fieldRt.localPosition.x < 100)
                     {
-                        errorRt.localPosition = fieldRt.localPosition + new Vector3(5 + fieldRt.sizeDelta.x, 0, 0);
+                        errorRt.anchoredPosition = fieldRt.anchoredPosition + new Vector2(5 + fieldRt.rect.width, 0);
                     }
                     else
                     {
-                        errorRt.localPosition = fieldRt.localPosition + new Vector3(-5 - fieldRt.sizeDelta.x, 0, 0);
+                        errorRt.anchoredPosition = fieldRt.anchoredPosition + new Vector2(-5 - fieldRt.rect.width, 0);
                     }
                     var newLines = error.Count(c => c == '\n');
                     errorRt.sizeDelta = new Vector2(fieldRt.sizeDelta.x, fieldRt.sizeDelta.y * (newLines + 1));
-                    errorTextRt.sizeDelta = new Vector2(errorTextRt.sizeDelta.x, fieldRt.sizeDelta.y * (newLines + 1));
                 }
             }
         }
