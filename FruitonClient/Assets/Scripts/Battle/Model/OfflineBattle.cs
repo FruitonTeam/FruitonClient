@@ -3,6 +3,7 @@ using fruiton.kernel;
 using Google.Protobuf.Collections;
 using haxe.root;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class OfflineBattle : Battle
@@ -19,9 +20,9 @@ public class OfflineBattle : Battle
         IEnumerable<GameObject> opponentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs, battleViewer.Board);
 
         RepeatedField<Position> coords = gameManager.CurrentFruitonTeam.Positions;
-        battleViewer.InitializeTeam(currentTeam, kernelPlayer1, coords);
+        battleViewer.InitializeTeam(currentTeam, kernelPlayer1, coords.ToArray());
         RepeatedField<Position> flippedCoords = BattleHelper.FlipCoordinates(coords, GameState.WIDTH, GameState.HEIGHT);
-        battleViewer.InitializeTeam(opponentTeam, kernelPlayer2, flippedCoords);
+        battleViewer.InitializeTeam(opponentTeam, kernelPlayer2, flippedCoords.ToArray());
 
         var fruitons = new Array<object>();
         foreach (var fruiton in currentTeam)

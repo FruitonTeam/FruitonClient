@@ -1,30 +1,29 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Cz.Cuni.Mff.Fruiton.Dto;
+﻿using Cz.Cuni.Mff.Fruiton.Dto;
 using fruiton.kernel;
-using fruiton.kernel.abilities;
 using fruiton.kernel.actions;
-using fruiton.kernel.effects;
 using fruiton.kernel.events;
 using Google.Protobuf.Collections;
 using Networking;
 using Spine.Unity;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using Action = fruiton.kernel.actions.Action;
 using Fruiton = fruiton.kernel.Fruiton;
+using KAction = fruiton.kernel.actions.Action;
 using KEvent = fruiton.kernel.events.Event;
 using KFruiton = fruiton.kernel.Fruiton;
-using KAction = fruiton.kernel.actions.Action;
 using KVector2 = fruiton.dataStructures.Point;
 using UObject = UnityEngine.Object;
 
 public class BattleViewer : MonoBehaviour
 {
-    private Battle battle;
+    public Battle battle;
+    private BattleType battleType;
+    private Tutorial tutorial;
     private bool isGameStarted;
     public bool IsInputEnabled { get; private set; }
 
@@ -42,6 +41,7 @@ public class BattleViewer : MonoBehaviour
     public GameObject Board;
     public MessagePanel GameResultsPanel;
     public GameObject FruitonInfoPanel;
+    public GameObject TutorialPanel;
 
 
     /// <summary> Client fruitons stored at their position. </summary>
@@ -59,7 +59,7 @@ public class BattleViewer : MonoBehaviour
         GridLayoutManager = GridLayoutManager.Instance;
         Grid = new GameObject[GridLayoutManager.WidthCount, GridLayoutManager.HeighCount];
 
-        var battleType = (BattleType) Enum.Parse(typeof(BattleType), Scenes.GetParam(Scenes.BATTLE_TYPE));
+        battleType = (BattleType) Enum.Parse(typeof(BattleType), Scenes.GetParam(Scenes.BATTLE_TYPE));
         GameMode = (FindGame.Types.GameMode) Enum.Parse(typeof(FindGame.Types.GameMode), Scenes.GetParam(Scenes.GAME_MODE));
 
         Debug.Log("playing battle = " + battleType);
@@ -72,16 +72,18 @@ public class BattleViewer : MonoBehaviour
                 break;
             case BattleType.OfflineBattle:
                 battle = new OfflineBattle(this);
-                isGameStarted = true;
-                InitializePlayersInfo();
-                SetupSurrenderButton();
+                InitializeOfflineGame();
                 break;
             case BattleType.AIBattle:
                 var aiType = (AIType) Enum.Parse(typeof(AIType), Scenes.GetParam(Scenes.AI_TYPE));
                 battle = new AIBattle(this, aiType);
-                isGameStarted = true;
-                InitializePlayersInfo();
-                SetupSurrenderButton();
+                InitializeOfflineGame();
+                break;
+            case BattleType.TutorialBattle:
+                battle = new AIBattle(this, AIType.Tutorial);
+                TutorialPanel.SetActive(true);
+                InitializeOfflineGame();
+                tutorial = new Tutorial(this);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -94,6 +96,25 @@ public class BattleViewer : MonoBehaviour
     {
         if (!isGameStarted)
             return;
+        switch (battleType)
+        {
+            case BattleType.TutorialBattle:
+                TutorialUpdate();
+                break;
+            default:
+                DefaultUpdate();
+                break;
+        }
+
+    }
+
+    private void TutorialUpdate()
+    {
+        tutorial.Update();
+    }
+
+    private void DefaultUpdate()
+    {
         UpdateTimer();
         battle.Update();
         if (Input.GetMouseButtonUp(0) && IsInputEnabled)
@@ -108,6 +129,13 @@ public class BattleViewer : MonoBehaviour
         {
             battle.OnDisable();
         }
+    }
+
+    private void InitializeOfflineGame()
+    {
+        isGameStarted = true;
+        InitializePlayersInfo();
+        SetupSurrenderButton();
     }
 
     public void SetupSurrenderButton()
@@ -130,10 +158,14 @@ public class BattleViewer : MonoBehaviour
             Debug.Log);
     }
 
-    private void LeftButtonUpLogic()
+    public void LeftButtonUpLogic(RaycastHit[] raycastHits = null)
     {
-        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        battle.LeftButtonUpEvent(Physics.RaycastAll(ray));
+        if (raycastHits == null)
+        {
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            raycastHits = Physics.RaycastAll(ray);
+        }
+        battle.LeftButtonUpEvent(raycastHits);
     }
 
     private void HoverLogic()
@@ -184,7 +216,7 @@ public class BattleViewer : MonoBehaviour
     }
 
     public void InitializeTeam(IEnumerable<GameObject> currentTeam, Player player,
-        RepeatedField<Position> fruitonsPositions = null)
+        Position[] fruitonsPositions = null)
     {
         var counter = 0;
         int i = 0, j = 0;
@@ -231,7 +263,7 @@ public class BattleViewer : MonoBehaviour
         }
     }
 
-    private void UpdateTimer()
+    public void UpdateTimer()
     {
         var timeLeft = battle.ComputeRemainingTime();
         TimeCounter.text = timeLeft.ToString();

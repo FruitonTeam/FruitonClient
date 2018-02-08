@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Cz.Cuni.Mff.Fruiton.Dto;
 using Networking;
 using UI.Chat;
 using UI.Notification;
@@ -14,6 +15,21 @@ namespace UI.MainMenu
         public Button PlayOnlineButton;
         public Button MarketButton;
         public Button TodoButton;
+
+        // Only for getting to tutorial at this time
+        public void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.T))
+            {
+                
+                var param = new Dictionary<string, string>
+                {
+                    {Scenes.BATTLE_TYPE, BattleType.TutorialBattle.ToString()},
+                    {Scenes.GAME_MODE, FindGame.Types.GameMode.Standard.ToString()}
+                };
+                Scenes.Load(Scenes.BATTLE_SCENE, param);
+            }
+        }
 
         public void OnlineContinue()
         {

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 using fruiton.kernel;
 using fruiton.kernel.abilities;
 using fruiton.kernel.actions;
@@ -10,16 +11,36 @@ public static class TooltipUtil
     {
         var fruitonInfo = new StringBuilder("<b>" + kernelFruiton.name + "</b>\n");
 
-        fruitonInfo.Append("\n<b>Abilities</b>\n");
-        foreach (Ability ability in kernelFruiton.abilities.ToList())
+        fruitonInfo.Append("\n<b>Movement</b>\n");
+        foreach (MoveGenerator moveGenerator in kernelFruiton.moveGenerators.ToList())
         {
-            fruitonInfo.Append(string.Format(ability.text, kernelFruiton.currentAttributes.heal));
+            fruitonInfo.Append(moveGenerator);
         }
 
-        fruitonInfo.Append("\n<b>Effects</b>\n");
-        foreach (Effect effect in kernelFruiton.effects.ToList())
+        fruitonInfo.Append("\n<b>Attack</b>\n");
+        foreach (AttackGenerator attackGenerator in kernelFruiton.attackGenerators.ToList())
         {
-            fruitonInfo.Append(effect.text + "\n");
+            fruitonInfo.Append(attackGenerator);
+        }
+
+        List<object> abilities = kernelFruiton.abilities.ToList();
+        if (abilities.Count > 0)
+        {
+            fruitonInfo.Append("\n<b>Abilities</b>\n");
+            foreach (Ability ability in abilities)
+            {
+                fruitonInfo.Append(string.Format(ability.text, kernelFruiton.currentAttributes.heal));
+            }
+        }
+
+        List<object> effects = kernelFruiton.effects.ToList();
+        if (effects.Count > 0)
+        {
+            fruitonInfo.Append("\n<b>Effects</b>\n");
+            foreach (Effect effect in effects)
+            {
+                fruitonInfo.Append(effect.text + "\n");
+            }
         }
 
         foreach (int immunity in kernelFruiton.currentAttributes.immunities.ToList())

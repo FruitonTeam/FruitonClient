@@ -6,7 +6,7 @@ using UnityEngine;
 
 public static class BattleHelper
 {
-    public static RepeatedField<Position> FlipCoordinates(RepeatedField<Position> positions, int width, int height)
+    public static RepeatedField<Position> FlipCoordinates(IEnumerable<Position> positions, int width, int height)
     {
         var result = new RepeatedField<Position>();
         foreach (var position in positions)

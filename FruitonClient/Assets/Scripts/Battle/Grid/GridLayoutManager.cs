@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -108,6 +109,38 @@ public class GridLayoutManager : MonoBehaviour {
 
     public bool IsTileAttack(int x, int y)
     {
-        return SpawnedGrid[x, y].GetComponent<Renderer>().material.color == Color.red;
+        return IsTileAttack(SpawnedGrid[x, y]);
+    }
+
+    private bool IsTileAttack(GameObject tile)
+    {
+        Color red = Color.red;
+        red.a = transparencyLevel;
+        return tile.GetComponent<Renderer>().material.color == red;
+    }
+
+    private bool IsTileMovement(GameObject tile)
+    {
+        Color blue = Color.blue;
+        blue.a = transparencyLevel;
+        return tile.GetComponent<Renderer>().material.color == blue;
+    }
+
+    public List<GameObject> GetMovementTiles()
+    {
+        return FilterTiles(IsTileMovement);
+    }
+
+    private List<GameObject> FilterTiles(Func<GameObject, bool> condition)
+    {
+        List<GameObject> result = new List<GameObject>();
+        foreach (GameObject gameObject in SpawnedGrid)
+        {
+            if (condition(gameObject))
+            {
+                result.Add(gameObject);
+            }
+        }
+        return result;
     }
 }
