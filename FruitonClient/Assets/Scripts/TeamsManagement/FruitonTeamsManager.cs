@@ -5,14 +5,9 @@ using UnityEngine.UI;
 using KFruiton = fruiton.kernel.Fruiton;
 using System;
 using System.Linq;
-using System.Text;
-using fruiton.kernel.abilities;
-using fruiton.kernel.effects;
 using fruiton.kernel.fruitonTeam;
 using haxe.root;
 using Networking;
-using Spine.Unity;
-using UnityEditor.SceneManagement;
 
 public class FruitonTeamsManager : MonoBehaviour
 {
