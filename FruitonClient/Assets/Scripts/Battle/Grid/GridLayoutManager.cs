@@ -141,7 +141,7 @@ public class GridLayoutManager : MonoBehaviour {
         return FilterTiles(IsTileMovement);
     }
 
-    private List<GameObject> FilterTiles(Func<GameObject, bool> condition)
+    private List<GameObject> FilterTiles(Predicate<GameObject> condition)
     {
         List<GameObject> result = new List<GameObject>();
         foreach (GameObject gameObject in SpawnedGrid)

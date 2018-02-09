@@ -103,21 +103,15 @@ public class BattleViewer : MonoBehaviour
             return;
         UpdateTimer();
         battle.Update();
-        switch (battleType)
+        if (battleType == BattleType.TutorialBattle)
         {
-            case BattleType.TutorialBattle:
-                TutorialUpdate();
-                break;
-            default:
-                DefaultUpdate();
-                break;
+            tutorial.Update();
+        }
+        else
+        {
+            DefaultUpdate();
         }
 
-    }
-
-    public void TutorialUpdate()
-    {
-        tutorial.Update();
     }
 
     public void DefaultUpdate()

@@ -44,21 +44,20 @@ class AIBattle : Battle
         IEnumerable<Position> flippedCoords;
 
 
-        switch (aiType)
+        if (aiType == AIType.Tutorial)
         {
-            case AIType.Tutorial:
-                int[] humanTeamIDs =  { 2, 5, 15, 14, 12, 17, 21, 21, 30 ,25};
-                int[] aiTeamIDs = {1001, 1002, 1002, 1002, 1002, 1003, 1003, 1003, 1003, 1003};
-                humanTeam = ClientFruitonFactory.CreateClientFruitonTeam(humanTeamIDs, battleViewer.Board);
-                aiTeam = ClientFruitonFactory.CreateClientFruitonTeam(aiTeamIDs, battleViewer.Board);
-                coords = FruitonTeamsManager.CreatePositionsForArtificialTeam(humanTeam.Select(gameObject =>
-                    gameObject.GetComponent<ClientFruiton>().KernelFruiton));
-                break;
-            default:
-                humanTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs, battleViewer.Board);
-                aiTeam  = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs, battleViewer.Board);
-                coords = gameManager.CurrentFruitonTeam.Positions;
-                break;
+            int[] humanTeamIDs = {2, 5, 15, 14, 12, 17, 21, 21, 30, 25};
+            int[] aiTeamIDs = {1001, 1002, 1002, 1002, 1002, 1003, 1003, 1003, 1003, 1003};
+            humanTeam = ClientFruitonFactory.CreateClientFruitonTeam(humanTeamIDs, battleViewer.Board);
+            aiTeam = ClientFruitonFactory.CreateClientFruitonTeam(aiTeamIDs, battleViewer.Board);
+            coords = FruitonTeamsManager.CreatePositionsForArtificialTeam(humanTeam.Select(gameObject =>
+            gameObject.GetComponent<ClientFruiton>().KernelFruiton));
+        }
+        else
+        {
+            humanTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs, battleViewer.Board);
+            aiTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs, battleViewer.Board);
+            coords = gameManager.CurrentFruitonTeam.Positions;
         }
         battleViewer.InitializeTeam(humanTeam, kernelPlayer1, coords.ToArray());
         flippedCoords = BattleHelper.FlipCoordinates(coords, GameState.WIDTH, GameState.HEIGHT);

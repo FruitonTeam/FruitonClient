@@ -44,7 +44,7 @@ public class Tutorial
         stages = new Queue<TutorialStage>();
 
         string text = "Hi " + username + "! Welcome to Fruitons! Let me quickly introduce you to the basics." +
-            "Whenever I become too boring just " + clickAnywhere + " to load the text instantly.";
+            " Whenever I become too boring just " + clickAnywhere + " to load the text instantly.";
         stages.Enqueue(new TutorialStage(text));
 
         text = "These are your Fruitons. Take a good care of them, they will fight and even die for you.";
@@ -100,7 +100,7 @@ public class Tutorial
 
         stages.Enqueue(descriptionStage);
 
-        text = "Turn the switch the \"Info mode\" off now.";
+        text = "Switch the \"Info mode\" off now.";
         stages.Enqueue(new TutorialStage(
             text,
             () => new List<GameObject> { battleViewer.InfoAndroidButton.gameObject },
@@ -123,7 +123,7 @@ public class Tutorial
             text,
             () => new List<GameObject> { battleViewer.EndTurnButton.gameObject }));
 
-        text = "The timer shows you how many seconds do you have to complete your turn. If you can't make it, " +
+        text = "The timer shows you how many seconds you have to complete your turn. If you can't make it, " +
                "your turn will be ended automatically when the timer reaches 0. However, don't worry about it in this tutorial.";
         stages.Enqueue(new TutorialStage(
             text,
@@ -237,11 +237,9 @@ public class Tutorial
     }
 
     /// <summary>
-    /// Iterate through all the fruitons on the board and return a list of fruitons/tiles (according to <paramref name="returnTiles"/>)
-    /// that satisfies all the conditions given by <paramref name="filters"/>
+    /// Iterate through all the fruitons on the board and return a list of fruitons/tiles (according to <param name="returnTiles"/>)
+    /// that satisfies all the conditions given by <param name="filters"/>
     /// </summary>
-    /// <param name="returnTiles"></param>
-    /// <param name="filters"></param>
     /// <returns></returns>
     private List<GameObject> FilterFruitons(bool returnTiles, params Func<ClientFruiton, bool>[] filters)
     {
@@ -396,7 +394,6 @@ public class Tutorial
             var nextChar = textToType.Dequeue();
             var textComponent = battleViewer.TutorialPanel.GetComponentInChildren<Text>();
             textComponent.text += nextChar;
-            elapsedTime = 0;
         }
         return false;
     }

@@ -24,7 +24,7 @@ public class TutorialStage
     private float timer;
     private Dictionary<GameObject, Color> originalColors;
 
-    private Color blackColor = Color.black;
+    private static readonly Color BlackColor = Color.black;
 
     /// <summary> What will be writen to the user. </summary>
     public string Text;
@@ -120,7 +120,7 @@ public class TutorialStage
                 Color originalColor = originalColors[highlightedObject];
                 Color currentColor = highlightedObject.GetComponent<Renderer>().material.color;
                 highlightedObject.GetComponent<Renderer>().material.color = currentColor == originalColor
-                    ? blackColor
+                    ? BlackColor
                     : originalColor;
             }
             timer = 0;
