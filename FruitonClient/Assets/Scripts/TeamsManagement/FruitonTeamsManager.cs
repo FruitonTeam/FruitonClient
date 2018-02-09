@@ -195,6 +195,7 @@ public class FruitonTeamsManager : MonoBehaviour
     public void CreateNewTeam()
     {
         var newFruitonTeam = new FruitonTeam {Name = GetNextAvailableTeamName()};
+        GameManager.Instance.FruitonTeamList.FruitonTeams.Add(newFruitonTeam);
         AddTeamToScene(newFruitonTeam);
         SelectTeam(teams.Count - 1);
         SwitchViewMode(ViewMode.TeamEdit);        
@@ -240,7 +241,6 @@ public class FruitonTeamsManager : MonoBehaviour
         else
         {
             team.gameObject.GetComponentInChildren<Text>().text = GetTeamDescription(kTeam);
-            GameManager.Instance.UpdateFruitonTeam(kTeam);
             PlayerHelper.UploadFruitonTeam(team.KernelTeam, Debug.Log, Debug.Log);
         }
         Serializer.SerializeFruitonTeams();
