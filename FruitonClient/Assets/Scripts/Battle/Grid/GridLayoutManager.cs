@@ -12,6 +12,7 @@ public class GridLayoutManager : MonoBehaviour {
     public GameObject GridCellBase;
     public int WidthCount;
     public int HeighCount;
+    public List<GameObject> Obstacles;
 
     private float CELL_SIZE = 1f;
     private float transparencyLevel = 235f / 255f;
@@ -35,6 +36,8 @@ public class GridLayoutManager : MonoBehaviour {
 
     // Use this for initialization
     void Start() {
+        Obstacles = new List<GameObject>();
+
         float originX = transform.position.x;
         float originZ = transform.position.z;
 
@@ -126,6 +129,13 @@ public class GridLayoutManager : MonoBehaviour {
         return tile.GetComponent<Renderer>().material.color == blue;
     }
 
+    private bool IsTentativeAttack(GameObject tile)
+    {
+        Color yellow = Color.yellow;
+        yellow.a = transparencyLevel;
+        return tile.GetComponent<Renderer>().material.color == yellow;
+    }
+
     public List<GameObject> GetMovementTiles()
     {
         return FilterTiles(IsTileMovement);
@@ -142,5 +152,21 @@ public class GridLayoutManager : MonoBehaviour {
             }
         }
         return result;
+    }
+
+    public void MarkAsObstacle(int x, int y)
+    {
+        Obstacles.Add(SpawnedGrid[x, y]);
+    }
+
+    public List<GameObject> GetTentativeAttacks()
+    {
+        return FilterTiles(IsTentativeAttack);
+    }
+
+
+    public GameObject GetTile(int x, int y)
+    {
+        return SpawnedGrid[x, y];
     }
 }

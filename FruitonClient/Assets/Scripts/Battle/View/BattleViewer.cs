@@ -32,6 +32,8 @@ public class BattleViewer : MonoBehaviour
 
     public Button EndTurnButton;
     public Button SurrendButton;
+    public Button TutorialContinueButton;
+    public Button InfoAndroidButton;
     public GameObject PanelLoadingGame;
     public Text TimeCounter;
     public Text MyLoginText;
@@ -56,6 +58,9 @@ public class BattleViewer : MonoBehaviour
 
     private void Start()
     {
+#if UNITY_ANDROID
+        InfoAndroidButton.gameObject.SetActive(true);
+#endif
         GridLayoutManager = GridLayoutManager.Instance;
         Grid = new GameObject[GridLayoutManager.WidthCount, GridLayoutManager.HeighCount];
 
@@ -108,19 +113,44 @@ public class BattleViewer : MonoBehaviour
 
     }
 
-    private void TutorialUpdate()
+    public void TutorialUpdate()
     {
         tutorial.Update();
+        battle.Update();
     }
 
-    private void DefaultUpdate()
+    public void DefaultUpdate()
     {
         UpdateTimer();
         battle.Update();
         if (Input.GetMouseButtonUp(0) && IsInputEnabled)
-            LeftButtonUpLogic();
+        {
+            HandleLeftButtonUp();
+        }
         else
+        {
+#if UNITY_STANDALONE || UNITY_EDITOR
             HoverLogic();
+#endif
+        }
+            
+    }
+
+    public void HandleLeftButtonUp()
+    {
+#if UNITY_ANDROID
+        if (InfoAndroidButton.GetComponent<Image>().color == Color.white)
+        {
+            LeftButtonUpLogic();
+        }
+        else
+        {
+            HoverLogic();
+        }  
+#else
+
+        LeftButtonUpLogic();
+#endif
     }
 
     private void OnDisable()
@@ -162,13 +192,14 @@ public class BattleViewer : MonoBehaviour
     {
         if (raycastHits == null)
         {
+            FruitonInfoPanel.SetActive(false);
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             raycastHits = Physics.RaycastAll(ray);
         }
         battle.LeftButtonUpEvent(raycastHits);
     }
 
-    private void HoverLogic()
+    public void HoverLogic()
     {
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit[] raycastHits = Physics.RaycastAll(ray);
@@ -179,15 +210,20 @@ public class BattleViewer : MonoBehaviour
             GameObject hitFruiton = Grid[tilePosition.x, tilePosition.y];
             if (hitFruiton != null)
             {
-                var clientFruiton = hitFruiton.GetComponent<ClientFruiton>();
-                Fruiton kernelFruiton = clientFruiton.KernelFruiton;
-                string fruitonInfo = TooltipUtil.GenerateTooltip(kernelFruiton);
-                FruitonInfoPanel.SetActive(true);
-                FruitonInfoPanel.GetComponentInChildren<Text>().text = fruitonInfo.ToString();
+                UpdateAndShowTooltip(hitFruiton);
                 return;
             }
         }
         FruitonInfoPanel.SetActive(false);
+    }
+
+    private void UpdateAndShowTooltip(GameObject fruitonObject)
+    {
+        var clientFruiton = fruitonObject.GetComponent<ClientFruiton>();
+        Fruiton kernelFruiton = clientFruiton.KernelFruiton;
+        var fruitonInfo = TooltipUtil.GenerateTooltip(kernelFruiton);
+        FruitonInfoPanel.SetActive(true);
+        FruitonInfoPanel.GetComponentInChildren<Text>().text = fruitonInfo;
     }
 
     /// <summary>
@@ -256,6 +292,7 @@ public class BattleViewer : MonoBehaviour
                 {
                     var obstacle = (GameObject)Instantiate(obstacleResource);
                     Vector3 pos = GridLayoutManager.GetCellPosition(tile.position.x, tile.position.y);
+                    GridLayoutManager.MarkAsObstacle(tile.position.x, tile.position.y);
                     obstacle.transform.position = pos;
                     obstacle.transform.parent = Board.transform;
                 }
@@ -441,6 +478,10 @@ public class BattleViewer : MonoBehaviour
 
     public void EndTurn()
     {
+        if (battleType == BattleType.TutorialBattle)
+        {
+            tutorial.EndAndNextStage();
+        }
         DisableEndTurnButton();
         GridLayoutManager.ResetHighlights();
         battle.EndTurnEvent();
@@ -489,5 +530,15 @@ public class BattleViewer : MonoBehaviour
     public void DisableEndTurnButton()
     {
         EndTurnButton.interactable = false;
+    }
+
+    public void InfoAndroidButtonClick()
+    {
+        if (battleType == BattleType.TutorialBattle)
+        {
+            tutorial.EndAndNextStage();
+        }
+        Color currentColor = InfoAndroidButton.GetComponent<Image>().color;
+        InfoAndroidButton.GetComponent<Image>().color = currentColor == Color.white ? Color.red : Color.white;
     }
 }

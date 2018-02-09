@@ -24,5 +24,5 @@ EditorBuildSettings:
     path: Assets/Scenes/TeamsManagementScene.unity
     guid: 4ad35230be4d5e949b559e35a2fab4bc
   - enabled: 0
-    path: Assets/Scenes/ChatScene.unity
+    path: 
     guid: 21e35236f934a44e9b39e9440a6f2aba

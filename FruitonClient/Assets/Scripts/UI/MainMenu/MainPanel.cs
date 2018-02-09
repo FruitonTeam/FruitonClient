@@ -16,21 +16,6 @@ namespace UI.MainMenu
         public Button MarketButton;
         public Button TodoButton;
 
-        // Only for getting to tutorial at this time
-        public void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.T))
-            {
-                
-                var param = new Dictionary<string, string>
-                {
-                    {Scenes.BATTLE_TYPE, BattleType.TutorialBattle.ToString()},
-                    {Scenes.GAME_MODE, FindGame.Types.GameMode.Standard.ToString()}
-                };
-                Scenes.Load(Scenes.BATTLE_SCENE, param);
-            }
-        }
-
         public void OnlineContinue()
         {
             PanelManager.Instance.SwitchPanels(MenuPanel.Online);
@@ -77,6 +62,16 @@ namespace UI.MainMenu
             {
                 Scenes.Load(Scenes.BATTLE_SCENE, Scenes.BATTLE_TYPE, Scenes.GetParam(Scenes.BATTLE_TYPE));
             }
+        }
+
+        public void LoadTutorial()
+        {
+            var param = new Dictionary<string, string>
+            {
+                {Scenes.BATTLE_TYPE, BattleType.TutorialBattle.ToString()},
+                {Scenes.GAME_MODE, FindGame.Types.GameMode.Standard.ToString()}
+            };
+            Scenes.Load(Scenes.BATTLE_SCENE, param);
         }
 
         public void Logout()

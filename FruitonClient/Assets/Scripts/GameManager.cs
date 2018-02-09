@@ -271,7 +271,19 @@ public class GameManager : IOnMessageListener
         Initialize();
         PersistIfStayLoggedIn();
 
-        Scenes.Load(Scenes.MAIN_MENU_SCENE);
+        //if (loggedPlayerInfo.Fraction == Fraction.None)
+        //{
+        //    var param = new Dictionary<string, string>
+        //    {
+        //        {Scenes.BATTLE_TYPE, BattleType.TutorialBattle.ToString()},
+        //        {Scenes.GAME_MODE, FindGame.Types.GameMode.Standard.ToString()}
+        //    };
+        //    Scenes.Load(Scenes.BATTLE_SCENE, param);
+        //}
+        //else
+        {
+            Scenes.Load(Scenes.MAIN_MENU_SCENE);
+        }
     }
 
     public void AddFriend(Friend friend)

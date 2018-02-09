@@ -47,7 +47,7 @@ class AIBattle : Battle
         switch (aiType)
         {
             case AIType.Tutorial:
-                int[] humanTeamIDs =  { 2, 5, 15, 14, 12, 17, 22, 23, 30 ,25};
+                int[] humanTeamIDs =  { 2, 5, 15, 14, 12, 17, 21, 21, 30 ,25};
                 int[] aiTeamIDs = {1001, 1002, 1002, 1002, 1002, 1003, 1003, 1003, 1003, 1003};
                 humanTeam = ClientFruitonFactory.CreateClientFruitonTeam(humanTeamIDs, battleViewer.Board);
                 aiTeam = ClientFruitonFactory.CreateClientFruitonTeam(aiTeamIDs, battleViewer.Board);
