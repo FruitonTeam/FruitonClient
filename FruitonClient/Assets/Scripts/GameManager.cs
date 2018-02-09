@@ -134,11 +134,7 @@ public class GameManager : IOnMessageListener
     {
         get
         {
-            if (fruitonTeamList == null)
-            {
-                fruitonTeamList = new FruitonTeamList();
-            }
-            return fruitonTeamList;
+            return fruitonTeamList ?? (fruitonTeamList = new FruitonTeamList());
         }
         set
         {
@@ -280,6 +276,20 @@ public class GameManager : IOnMessageListener
     public void AddFriend(Friend friend)
     {
         Friends.Add(friend);
+    }
+
+    public void UpdateFruitonTeam(FruitonTeam team)
+    {
+        FruitonTeam existingTeam = FruitonTeamList.FruitonTeams.FirstOrDefault(x => x.Name == team.Name);
+        if (existingTeam != null) // Update team
+        {
+            FruitonTeamList.FruitonTeams.Remove(existingTeam);
+            FruitonTeamList.FruitonTeams.Add(team);
+        }
+        else // Add new
+        {
+            FruitonTeamList.FruitonTeams.Add(team);
+        }
     }
 
     #endregion

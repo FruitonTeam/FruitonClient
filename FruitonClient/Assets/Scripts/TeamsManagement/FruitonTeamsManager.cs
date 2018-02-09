@@ -197,7 +197,7 @@ public class FruitonTeamsManager : MonoBehaviour
         var newFruitonTeam = new FruitonTeam {Name = GetNextAvailableTeamName()};
         AddTeamToScene(newFruitonTeam);
         SelectTeam(teams.Count - 1);
-        SwitchViewMode(ViewMode.TeamEdit);
+        SwitchViewMode(ViewMode.TeamEdit);        
         ButtonNewTeam.interactable = teams.Count < MAX_TEAM_COUNT;
     }
 
@@ -210,7 +210,9 @@ public class FruitonTeamsManager : MonoBehaviour
         teams.RemoveAt(deleteIndex);
         ReindexTeams();
         ResizeScrollContent(teams.Count);
-        PlayerHelper.RemoveFruitonTeam(team.KernelTeam, Debug.Log, Debug.Log);
+        GameManager.Instance.FruitonTeamList.FruitonTeams.Remove(team.KernelTeam);
+        Serializer.SerializeFruitonTeams();
+        PlayerHelper.RemoveFruitonTeam(team.KernelTeam.Name, Debug.Log, Debug.Log);
         ButtonNewTeam.interactable = teams.Count < MAX_TEAM_COUNT;
     }
 
@@ -221,15 +223,16 @@ public class FruitonTeamsManager : MonoBehaviour
 
     public void EndTeamEdit()
     {
-        var team = teams[selectedTeamIndex];
-        var kTeam = teams[selectedTeamIndex].KernelTeam;
+        FridgeFruitonTeam team = teams[selectedTeamIndex];
+        FruitonTeam kTeam = teams[selectedTeamIndex].KernelTeam;
         var newName = InputTeamName.text;
         if (kTeam.Name != newName)
         {
-            PlayerHelper.RemoveFruitonTeam(team.KernelTeam, (r) =>
+            string oldName = kTeam.Name;
+            kTeam.Name = newName;
+            team.gameObject.GetComponentInChildren<Text>().text = GetTeamDescription(kTeam);
+            PlayerHelper.RemoveFruitonTeam(oldName, (r) =>
                 {
-                    kTeam.Name = newName;
-                    team.gameObject.GetComponentInChildren<Text>().text = GetTeamDescription(kTeam);
                     PlayerHelper.UploadFruitonTeam(team.KernelTeam, Debug.Log, Debug.Log);
                 },
                 Debug.Log);
@@ -237,8 +240,10 @@ public class FruitonTeamsManager : MonoBehaviour
         else
         {
             team.gameObject.GetComponentInChildren<Text>().text = GetTeamDescription(kTeam);
+            GameManager.Instance.UpdateFruitonTeam(kTeam);
             PlayerHelper.UploadFruitonTeam(team.KernelTeam, Debug.Log, Debug.Log);
         }
+        Serializer.SerializeFruitonTeams();
         SwitchViewMode(ViewMode.TeamSelect);
     }
 
@@ -402,6 +407,7 @@ public class FruitonTeamsManager : MonoBehaviour
         FridgeFruitonTemplate.SetActive(false);
         FilterManager.AllFruitons = fridgeFruitons;
         FilterManager.OnFilterUpdated.AddListener(ReindexFruitons);
+        FilterManager.UpdateAvailableFruitons(gameManager.AvailableFruitons);
         PlayerHelper.GetAvailableFruitons(FilterManager.UpdateAvailableFruitons, Debug.Log);
     }
 

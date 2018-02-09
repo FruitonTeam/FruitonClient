@@ -83,9 +83,9 @@ namespace Networking
             );
         }
 
-        public static void RemoveFruitonTeam(FruitonTeam fruitonTeam, Action<string> success, Action<string> error)
+        public static void RemoveFruitonTeam(string teamName, Action<string> success, Action<string> error)
         {
-            string teamName = Uri.EscapeUriString(fruitonTeam.Name);
+            teamName = Uri.EscapeUriString(teamName);
             Debug.Log("team encoded name = " + teamName);
             ConnectionHandler.Instance.StartCoroutine(
                 ConnectionHandler.Instance.Get(
