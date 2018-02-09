@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using fruiton.kernel;
+using Spine.Unity;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -12,14 +13,31 @@ public class FridgeFruiton : MonoBehaviour, IPointerDownHandler, IPointerEnterHa
     public Text TextAttack;
     public Text TextHealth;
     public Image PanelName;
+    public SkeletonGraphic SpineSkeleton;
     public Image[] TypeIcons;
+    public int FridgeIndex;
+
+    public Fruiton KernelFruiton { get; private set; }
+
+    public bool IsOwned
+    {
+        get { return isOwned; }
+        set
+        {
+            isOwned = value;
+            backgroud.color = isOwned ? Color.white : Color.gray;
+            SpineSkeleton.color = isOwned ? Color.white : Color.gray;
+        }
+    }
 
     public static string[] TypeColors = {"#ffffff", "#002366", "#8D2626", "#4b5320"};
     public static string[] TypeNames = {"", "king", "major", "pawn"};
 
     private static Sprite[] typeIconSprites;
 
+    private bool isOwned;
     private Text textName;
+    private Image backgroud;
 
 #if UNITY_ANDROID
     private Coroutine pointerDownCoroutine;
@@ -39,8 +57,8 @@ public class FridgeFruiton : MonoBehaviour, IPointerDownHandler, IPointerEnterHa
         OnMouseExit = new UnityEvent();
         OnTap = new UnityEvent();
         OnRightClick = new UnityEvent();
+        backgroud = GetComponent<Image>();
         textName = PanelName.GetComponentInChildren<Text>();
-
         if (typeIconSprites == null)
         {
             typeIconSprites = new Sprite[4];
@@ -81,6 +99,7 @@ public class FridgeFruiton : MonoBehaviour, IPointerDownHandler, IPointerEnterHa
 
     public void SetKernelFruiton(Fruiton kFruiton)
     {
+        KernelFruiton = kFruiton;
         TextAttack.text = kFruiton.currentAttributes.damage.ToString();
         TextHealth.text = kFruiton.currentAttributes.hp.ToString();
         textName.text = kFruiton.name;
@@ -91,6 +110,7 @@ public class FridgeFruiton : MonoBehaviour, IPointerDownHandler, IPointerEnterHa
         {
             icon.sprite = typeIconSprites[kFruiton.type];
         }
+        SpineSkeleton.Skeleton.SetSkin(kFruiton.model);
     }
 
 #if UNITY_ANDROID && !UNITY_EDITOR

@@ -60,7 +60,7 @@ namespace Networking
                     "secured/getAllFruitonTeams",
                     protobufString =>
                     {
-                        byte[] protoMessage = Encoding.ASCII.GetBytes(protobufString);
+                        byte[] protoMessage = Encoding.UTF8.GetBytes(protobufString);
                         FruitonTeamList fruitomTeamList = FruitonTeamList.Parser.ParseFrom(protoMessage);
                         success(fruitomTeamList);
                     },
@@ -83,9 +83,9 @@ namespace Networking
             );
         }
 
-        public static void RemoveFruitonTeam(FruitonTeam fruitonTeam, Action<string> success, Action<string> error)
+        public static void RemoveFruitonTeam(string teamName, Action<string> success, Action<string> error)
         {
-            string teamName = Uri.EscapeUriString(fruitonTeam.Name);
+            teamName = Uri.EscapeUriString(teamName);
             Debug.Log("team encoded name = " + teamName);
             ConnectionHandler.Instance.StartCoroutine(
                 ConnectionHandler.Instance.Get(
@@ -121,5 +121,40 @@ namespace Networking
                 )
             );
         }
+
+        public static void GetMessagesWith(string login, int page, Action<ChatMessages, int> success, 
+            Action<string> error)
+        {
+            ConnectionHandler.Instance.StartCoroutine(
+                ConnectionHandler.Instance.Get(
+                    "secured/getAllMessagesWithUser?otherUserLogin=" + login + "&page=" + page,
+                    protobufString =>
+                    {
+                        byte[] protoMessage = Encoding.UTF8.GetBytes(protobufString);
+                        ChatMessages chatMessages = ChatMessages.Parser.ParseFrom(protoMessage);
+                        success(chatMessages, page);
+                    },
+                    error
+                )
+            );
+        }
+
+        public static void GetMessagesBefore(string messageId, int page, Action<ChatMessages, int> success,
+            Action<string> error)
+        {
+            ConnectionHandler.Instance.StartCoroutine(
+                ConnectionHandler.Instance.Get(
+                    "secured/getAllMessagesBefore?messageId=" + messageId + "&page=" + page,
+                    protobufString =>
+                    {
+                        byte[] protoMessage = Encoding.UTF8.GetBytes(protobufString);
+                        ChatMessages chatMessages = ChatMessages.Parser.ParseFrom(protoMessage);
+                        success(chatMessages, page);
+                    },
+                    error
+                )
+            );
+        }
+        
     }
 }

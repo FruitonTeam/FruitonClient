@@ -131,11 +131,7 @@ public class GameManager : IOnMessageListener
     {
         get
         {
-            if (fruitonTeamList == null)
-            {
-                fruitonTeamList = new FruitonTeamList();
-            }
-            return fruitonTeamList;
+            return fruitonTeamList ?? (fruitonTeamList = new FruitonTeamList());
         }
         set
         {
@@ -303,14 +299,86 @@ public class GameManager : IOnMessageListener
 
         if (IsOnline)
         {
-            PlayerHelper.GetAllFruitonTeams(ints =>
-                {
-                    fruitonTeamList = ints;
-                },
-                Debug.Log);
+            PlayerHelper.GetAllFruitonTeams(MergeTeamLists, Debug.Log);
         }
     }
-    
+
+    private void MergeTeamLists(FruitonTeamList serverTeamList)
+    {
+        RepeatedField<FruitonTeam> serverTeams = serverTeamList.FruitonTeams;
+        RepeatedField<FruitonTeam> localTeams = FruitonTeamList.FruitonTeams;
+        var serverTeamDb = new Dictionary<string, FruitonTeam>(serverTeams.Count);
+        foreach (FruitonTeam serverTeam in serverTeams)
+        {
+            serverTeamDb.Add(serverTeam.Name, serverTeam);
+        }
+        var localTeamNames = new HashSet<string>(localTeams.Select(x => x.Name));
+        foreach (FruitonTeam localTeam in FruitonTeamList.FruitonTeams)
+        {
+            FruitonTeam serverTeam;
+            bool areNamesSame = serverTeamDb.TryGetValue(localTeam.Name, out serverTeam);
+            // Exactly the same team
+            if (areNamesSame && AreTeamsEqual(localTeam, serverTeam))
+            {
+                continue;
+            }
+            
+            // Name clash, different teams
+            if (areNamesSame)
+            {
+                localTeam.Name = GenerateNewName(localTeam.Name, localTeamNames, serverTeamDb);
+            }
+
+            // Upload changes
+            serverTeamDb.Add(localTeam.Name, localTeam);
+            serverTeams.Add(localTeam);
+            PlayerHelper.UploadFruitonTeam(localTeam, Debug.Log, Debug.Log);
+        }
+
+        FruitonTeamList = serverTeamList;
+        Serializer.SerializeFruitonTeams();
+    }
+
+    private static string GenerateNewName(
+        string oldName, 
+        ICollection<string> localNames, 
+        IDictionary<string, FruitonTeam> serverNames
+    )
+    {
+        for (int i = 1; i < int.MaxValue; i++)
+        {
+            string newName = oldName + " (" + i + ")";
+            if (!localNames.Contains(newName) && !serverNames.ContainsKey(newName))
+                return newName;
+        }
+        throw new IndexOutOfRangeException("Could not find suitable team name");
+    }
+
+    private static bool AreTeamsEqual(FruitonTeam a, FruitonTeam b)
+    {
+        if (a.FruitonIDs.Count != b.FruitonIDs.Count
+            || a.Positions.Count != b.Positions.Count)
+        {
+            return false;
+        }
+        for (var i = 0; i < a.FruitonIDs.Count; i++)
+        {
+            if (a.FruitonIDs[i] != b.FruitonIDs[i])
+                return false;
+        }
+
+        for (var i = 0; i < a.Positions.Count; i++)
+        {
+            if (a.Positions[i].X != b.Positions[i].X
+                || a.Positions[i].Y != b.Positions[i].Y)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private void RemoveCachedData()
     {
         avatar = null;
