@@ -13,6 +13,7 @@ public class LocalPlayer : ClientPlayerBase
     private LazyDictionary<int, List<TargetableAction>> availableActions;
     private readonly BattleViewer battleViewer;
     private readonly GridLayoutManager gridLayoutManager;
+    private bool movedThisTurn;
 
     public LocalPlayer(BattleViewer battleViewer, Player kernelPlayer, Battle battle, string name) 
         : base(kernelPlayer, battle, name)
@@ -24,11 +25,15 @@ public class LocalPlayer : ClientPlayerBase
 
     public void LeftButtonUpLogic(RaycastHit[] hits)
     {
-        if (hits.Length == 0)
+        if (!movedThisTurn)
         {
-            ClearAllAvailableActions();
+            if (hits.Length == 0)
+            {
+                ClearAllAvailableActions();
+            }
+            gridLayoutManager.ResetHighlights();
         }
-        gridLayoutManager.ResetHighlights();
+            
         Func<RaycastHit, bool> isHitGridTile =
             hit => battleViewer.GridLayoutManager.ContainsTile(hit.transform.gameObject);
         // We are only interested in clicks on the tiles.
@@ -46,19 +51,34 @@ public class LocalPlayer : ClientPlayerBase
             // Find the action where the target is the clicked fruiton and perform it (if such action exists).
             performedAnyAction |= TryFindAndPerformAction(AttackAction.ID, tilePosition);
             performedAnyAction |= TryFindAndPerformAction(HealAction.ID, tilePosition);
-            // Check if I clicked on my fruiton in order to take action on him or only to select him.
-            if (!performedAnyAction && hitFruiton.GetComponent<ClientFruiton>().KernelFruiton.owner.id == ID)
+            if (performedAnyAction)
             {
-                battleViewer.GridLayoutManager.HighlightCell(tilePosition.x, tilePosition.y, Color.magenta);
+                movedThisTurn = false;
+                gridLayoutManager.ResetHighlights();
             }
-            availableActions = battleViewer.VisualizeAvailableTargetableActions(tilePosition);
+            if (!movedThisTurn)
+            {
+                // Check if I clicked on my fruiton in order to take action on him or only to select him.
+                if (!performedAnyAction && hitFruiton.GetComponent<ClientFruiton>().KernelFruiton.owner.id == ID)
+                {
+                    battleViewer.GridLayoutManager.HighlightCell(tilePosition.x, tilePosition.y, Color.magenta);
+                }
+                availableActions = battleViewer.VisualizeAvailableTargetableActions(tilePosition);
+            }
+
         }
         // A tile without fruiton was clicked.
         else
         {
             if (!TryFindAndPerformAction(MoveAction.ID, tilePosition))
             {
-                ClearAllAvailableActions();
+                if (!movedThisTurn) ClearAllAvailableActions();
+            }
+            else
+            {
+                availableActions = battleViewer.VisualizeAvailableTargetableActions(tilePosition);
+                battleViewer.GridLayoutManager.HighlightCell(tilePosition.x, tilePosition.y, Color.magenta);
+                movedThisTurn = true;
             }
         }
     }
@@ -87,8 +107,8 @@ public class LocalPlayer : ClientPlayerBase
 
     public void EndTurn()
     {
+        movedThisTurn = false;
         ClearAllAvailableActions();
-        gridLayoutManager.ResetHighlights();
         battle.PerformAction(null, null, EndTurnAction.ID);
     }
 
