@@ -29,9 +29,6 @@ public class GameManager : IOnMessageListener
     }
 
     private static readonly string FRUITON_DB_FILE = "FruitonDb.json";
-
-    private static readonly string LOGIN_KEY = "username";
-    private static readonly string PASSWORD_KEY = "userpassword";
     
     #region Fields
     
@@ -57,12 +54,12 @@ public class GameManager : IOnMessageListener
     {
         get
         {
-            return stayLoggedIn ?? (PlayerPrefs.GetInt("stayloggedin", 0) == 1);
+            return stayLoggedIn ?? (PlayerPrefs.GetInt(PlayerPrefsKeys.StayLoggedIn, 0) == 1);
         }
         set
         {
             stayLoggedIn = value;
-            PlayerPrefs.SetInt("stayloggedin", 1);
+            PlayerPrefs.SetInt(PlayerPrefsKeys.StayLoggedIn, 1);
         }
     }
 
@@ -72,7 +69,7 @@ public class GameManager : IOnMessageListener
         {
             if (loggedPlayerInfo == null)
             {
-                return PlayerPrefs.GetString(LOGIN_KEY, "default_login");
+                return PlayerPrefs.GetString(PlayerPrefsKeys.UserName, "default_login");
             }
             return loggedPlayerInfo.Login;
         }
@@ -84,7 +81,7 @@ public class GameManager : IOnMessageListener
         {
             if (userPassword == null)
             {
-                userPassword = PlayerPrefs.GetString(PASSWORD_KEY, "");
+                userPassword = PlayerPrefs.GetString(PlayerPrefsKeys.UserPassword, "");
             }
             return userPassword;
         }
@@ -93,11 +90,11 @@ public class GameManager : IOnMessageListener
             userPassword = value;
             if (StayLoggedIn)
             {
-                PlayerPrefs.SetString(PASSWORD_KEY, value);
+                PlayerPrefs.SetString(PlayerPrefsKeys.UserPassword, value);
             }
             else
             {
-                PlayerPrefs.SetString(PASSWORD_KEY, "");
+                PlayerPrefs.SetString(PlayerPrefsKeys.UserPassword, "");
             }
             IsUserValid = false;
         }
@@ -270,7 +267,19 @@ public class GameManager : IOnMessageListener
         Initialize();
         PersistIfStayLoggedIn();
 
-        Scenes.Load(Scenes.MAIN_MENU_SCENE);
+        //if (loggedPlayerInfo.Fraction == Fraction.None)
+        //{
+        //    var param = new Dictionary<string, string>
+        //    {
+        //        {Scenes.BATTLE_TYPE, BattleType.TutorialBattle.ToString()},
+        //        {Scenes.GAME_MODE, FindGame.Types.GameMode.Standard.ToString()}
+        //    };
+        //    Scenes.Load(Scenes.BATTLE_SCENE, param);
+        //}
+        //else
+        {
+            Scenes.Load(Scenes.MAIN_MENU_SCENE);
+        }
     }
 
     public void AddFriend(Friend friend)
@@ -385,8 +394,8 @@ public class GameManager : IOnMessageListener
 
     private void Persist()
     {
-        PlayerPrefs.SetString(LOGIN_KEY, UserName);
-        PlayerPrefs.SetString(PASSWORD_KEY, AuthenticationHandler.Instance.LastPassword);
+        PlayerPrefs.SetString(PlayerPrefsKeys.UserName, UserName);
+        PlayerPrefs.SetString(PlayerPrefsKeys.UserPassword, AuthenticationHandler.Instance.LastPassword);
     }
     
 }

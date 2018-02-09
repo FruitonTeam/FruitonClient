@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Linq;
 using fruiton.kernel;
 using haxe.root;
 
@@ -76,7 +77,7 @@ public class OnlineBattle : Battle, IOnMessageListener
         IEnumerable<GameObject> opponentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameReadyMessage.OpponentTeam.FruitonIDs, battleViewer.Board);
         IEnumerable<GameObject> currentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs, battleViewer.Board);
         // The opponent team is obtained from the server with the correctly set positions.
-        battleViewer.InitializeTeam(opponentTeam, kernelPlayer2, gameReadyMessage.OpponentTeam.Positions);
+        battleViewer.InitializeTeam(opponentTeam, kernelPlayer2, gameReadyMessage.OpponentTeam.Positions.ToArray());
 
         GameSettings kernelSettings = GameSettingsFactory.CreateGameSettings(gameReadyMessage.MapId, battleViewer.GameMode);
 
@@ -90,11 +91,15 @@ public class OnlineBattle : Battle, IOnMessageListener
             fruitons.push(fruiton.GetComponent<ClientFruiton>().KernelFruiton);
         }
         isLocalPlayerFirst = gameReadyMessage.StartsFirst;
+        Player player1;
+        Player player2;
+
         // If the local player begins, the game will be started with kernelPlayer1 as first argument.
         if (isLocalPlayerFirst)
         {
-            battleViewer.InitializeTeam(currentTeam, kernelPlayer1, GameManager.Instance.CurrentFruitonTeam.Positions);
-            kernel = new Kernel(kernelPlayer1, kernelPlayer2, fruitons, kernelSettings, false);
+            battleViewer.InitializeTeam(currentTeam, kernelPlayer1, GameManager.Instance.CurrentFruitonTeam.Positions.ToArray());
+            player1 = kernelPlayer1;
+            player2 = kernelPlayer2;
         }
         // If the online opponent begins, we need to flip the positions to the opposite side because we do not receive 
         // the new positions from the server. The first argument has to be the online opponent = kernelPlayer2.
@@ -103,11 +108,13 @@ public class OnlineBattle : Battle, IOnMessageListener
             var width = GameState.WIDTH;
             var height = GameState.HEIGHT;
             var flippedPositions = BattleHelper.FlipCoordinates(GameManager.Instance.CurrentFruitonTeam.Positions, width, height);
-            battleViewer.InitializeTeam(currentTeam, kernelPlayer1, flippedPositions);
-            kernel = new Kernel(kernelPlayer2, kernelPlayer1, fruitons, kernelSettings, false);
+            battleViewer.InitializeTeam(currentTeam, kernelPlayer1, flippedPositions.ToArray());
+            player1 = kernelPlayer2;
+            player2 = kernelPlayer1;
             battleViewer.DisableEndTurnButton();
         }
-        
+        kernel = new Kernel(player1, player2, fruitons, kernelSettings, false, false);
+
         SendReadyMessage();
         battleViewer.InitializePlayersInfo();
         BattleReady();

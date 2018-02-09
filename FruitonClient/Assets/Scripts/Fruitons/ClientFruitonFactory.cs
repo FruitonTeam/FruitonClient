@@ -4,6 +4,7 @@ using fruiton.kernel;
 using Google.Protobuf.Collections;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Spine.Unity;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,7 +25,7 @@ public static class ClientFruitonFactory {
         return result;
     }
 
-    public static IEnumerable<GameObject> CreateClientFruitonTeam(RepeatedField<int> teamIDs, GameObject parent)
+    public static IEnumerable<GameObject> CreateClientFruitonTeam(IEnumerable<int> teamIDs, GameObject parent)
     {
         var result = new List<GameObject>();
         FruitonDatabase fruitonDatabase = GameManager.Instance.FruitonDatabase;

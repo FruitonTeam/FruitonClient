@@ -16,7 +16,8 @@ public enum BattleType
 {
     OnlineBattle,
     OfflineBattle,
-    AIBattle
+    AIBattle,
+    TutorialBattle
 }
 
 public abstract class Battle
@@ -130,7 +131,7 @@ public abstract class Battle
         var timeLeft = (int) (kernel.currentState.turnState.endTime - currentEpochTime);
         if (timeLeft <= 0)
         {
-            if (ActivePlayer is LocalPlayer)
+            if (ActivePlayer is LocalPlayer && battleViewer.battleType != BattleType.TutorialBattle)
                 battleViewer.EndTurn();
             // Else wait for server to send us this event
             return 0;

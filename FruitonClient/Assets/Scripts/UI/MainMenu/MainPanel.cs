@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Cz.Cuni.Mff.Fruiton.Dto;
 using Networking;
 using UI.Chat;
 using UI.Notification;
@@ -61,6 +62,16 @@ namespace UI.MainMenu
             {
                 Scenes.Load(Scenes.BATTLE_SCENE, Scenes.BATTLE_TYPE, Scenes.GetParam(Scenes.BATTLE_TYPE));
             }
+        }
+
+        public void LoadTutorial()
+        {
+            var param = new Dictionary<string, string>
+            {
+                {Scenes.BATTLE_TYPE, BattleType.TutorialBattle.ToString()},
+                {Scenes.GAME_MODE, FindGame.Types.GameMode.Standard.ToString()}
+            };
+            Scenes.Load(Scenes.BATTLE_SCENE, param);
         }
 
         public void Logout()

@@ -3,7 +3,7 @@ using fruiton.kernel.actions;
 using UnityEngine;
 using KAction = fruiton.kernel.actions.Action;
 
-abstract class AIPlayerBase : ClientPlayerBase
+public abstract class AIPlayerBase : ClientPlayerBase
 {
     protected readonly BattleViewer battleViewer;
 

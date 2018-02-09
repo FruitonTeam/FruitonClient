@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class ClientFruiton : MonoBehaviour {
 
-    private TextMesh healthTag;
-    private TextMesh damageTag;
+    public TextMesh HealthTag;
+    public TextMesh DamageTag;
 
     public Fruiton KernelFruiton { get; set; }
 
@@ -17,14 +17,14 @@ public class ClientFruiton : MonoBehaviour {
     private FruitonBattleAnimator animator;
     private GameObject tags;
 
-    private bool isInitialized;
+    public bool IsInitialized;
 
     private void Start()
     {
-        if (!isInitialized)
+        if (!IsInitialized)
         {
             Initialize();
-            isInitialized = true;
+            IsInitialized = true;
         }
     }
 
@@ -42,14 +42,14 @@ public class ClientFruiton : MonoBehaviour {
             {
                 case HEALTH:
                     {
-                        healthTag = child.GetComponentInChildren<TextMesh>();
-                        healthTag.text = KernelFruiton.currentAttributes.hp.ToString();
+                        HealthTag = child.GetComponentInChildren<TextMesh>();
+                        HealthTag.text = KernelFruiton.currentAttributes.hp.ToString();
                     }
                     break;
                 case DAMAGE:
                     {
-                        damageTag = child.GetComponentInChildren<TextMesh>();
-                        damageTag.text = KernelFruiton.currentAttributes.damage.ToString();
+                        DamageTag = child.GetComponentInChildren<TextMesh>();
+                        DamageTag.text = KernelFruiton.currentAttributes.damage.ToString();
                     }
                     break;
             }
@@ -75,16 +75,16 @@ public class ClientFruiton : MonoBehaviour {
     public void UpdateHealthTag()
     {
         int newHp = KernelFruiton.currentAttributes.hp;
-        healthTag.text = newHp.ToString();
-        healthTag.color = GetHighlightColor(KernelFruiton.originalAttributes.hp, newHp);
+        HealthTag.text = newHp.ToString();
+        HealthTag.color = GetHighlightColor(KernelFruiton.originalAttributes.hp, newHp);
     }
 
     public void FlipAround()
     {
-        if (!isInitialized)
+        if (!IsInitialized)
         {
             Initialize();
-            isInitialized = true;
+            IsInitialized = true;
         }
         // Flip (not rotate 180) to make animations play correctly
         animator.SkeletonAnim.Skeleton.FlipX = !animator.SkeletonAnim.Skeleton.FlipX;
@@ -99,14 +99,14 @@ public class ClientFruiton : MonoBehaviour {
 
     public void ModifyAttack(int newAttack)
     {
-        damageTag.text = newAttack.ToString();
-        damageTag.color = GetHighlightColor(KernelFruiton.originalAttributes.damage, newAttack);
+        DamageTag.text = newAttack.ToString();
+        DamageTag.color = GetHighlightColor(KernelFruiton.originalAttributes.damage, newAttack);
     }
 
     public void ModifyHealth(int newHealth)
     {
-        healthTag.text = newHealth.ToString();
-        healthTag.color = GetHighlightColor(KernelFruiton.originalAttributes.hp, newHealth);
+        HealthTag.text = newHealth.ToString();
+        HealthTag.color = GetHighlightColor(KernelFruiton.originalAttributes.hp, newHealth);
     }
 
     private Color GetHighlightColor(int originalValue, int newValue)

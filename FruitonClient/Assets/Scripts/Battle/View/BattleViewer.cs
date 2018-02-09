@@ -1,30 +1,29 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Cz.Cuni.Mff.Fruiton.Dto;
+﻿using Cz.Cuni.Mff.Fruiton.Dto;
 using fruiton.kernel;
-using fruiton.kernel.abilities;
 using fruiton.kernel.actions;
-using fruiton.kernel.effects;
 using fruiton.kernel.events;
 using Google.Protobuf.Collections;
 using Networking;
 using Spine.Unity;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using Action = fruiton.kernel.actions.Action;
 using Fruiton = fruiton.kernel.Fruiton;
+using KAction = fruiton.kernel.actions.Action;
 using KEvent = fruiton.kernel.events.Event;
 using KFruiton = fruiton.kernel.Fruiton;
-using KAction = fruiton.kernel.actions.Action;
 using KVector2 = fruiton.dataStructures.Point;
 using UObject = UnityEngine.Object;
 
 public class BattleViewer : MonoBehaviour
 {
-    private Battle battle;
+    public Battle battle;
+    public BattleType battleType;
+    private Tutorial tutorial;
     private bool isGameStarted;
     public bool IsInputEnabled { get; private set; }
 
@@ -33,6 +32,8 @@ public class BattleViewer : MonoBehaviour
 
     public Button EndTurnButton;
     public Button SurrendButton;
+    public Button TutorialContinueButton;
+    public Button InfoAndroidButton;
     public GameObject PanelLoadingGame;
     public Text TimeCounter;
     public Text MyLoginText;
@@ -42,6 +43,7 @@ public class BattleViewer : MonoBehaviour
     public GameObject Board;
     public MessagePanel GameResultsPanel;
     public GameObject FruitonInfoPanel;
+    public GameObject TutorialPanel;
 
 
     /// <summary> Client fruitons stored at their position. </summary>
@@ -56,10 +58,13 @@ public class BattleViewer : MonoBehaviour
 
     private void Start()
     {
+#if UNITY_ANDROID
+        InfoAndroidButton.gameObject.SetActive(true);
+#endif
         GridLayoutManager = GridLayoutManager.Instance;
         Grid = new GameObject[GridLayoutManager.WidthCount, GridLayoutManager.HeighCount];
 
-        var battleType = (BattleType) Enum.Parse(typeof(BattleType), Scenes.GetParam(Scenes.BATTLE_TYPE));
+        battleType = (BattleType) Enum.Parse(typeof(BattleType), Scenes.GetParam(Scenes.BATTLE_TYPE));
         GameMode = (FindGame.Types.GameMode) Enum.Parse(typeof(FindGame.Types.GameMode), Scenes.GetParam(Scenes.GAME_MODE));
 
         Debug.Log("playing battle = " + battleType);
@@ -72,16 +77,18 @@ public class BattleViewer : MonoBehaviour
                 break;
             case BattleType.OfflineBattle:
                 battle = new OfflineBattle(this);
-                isGameStarted = true;
-                InitializePlayersInfo();
-                SetupSurrenderButton();
+                InitializeOfflineGame();
                 break;
             case BattleType.AIBattle:
                 var aiType = (AIType) Enum.Parse(typeof(AIType), Scenes.GetParam(Scenes.AI_TYPE));
                 battle = new AIBattle(this, aiType);
-                isGameStarted = true;
-                InitializePlayersInfo();
-                SetupSurrenderButton();
+                InitializeOfflineGame();
+                break;
+            case BattleType.TutorialBattle:
+                battle = new AIBattle(this, AIType.Tutorial);
+                TutorialPanel.SetActive(true);
+                InitializeOfflineGame();
+                tutorial = new Tutorial(this);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -96,10 +103,47 @@ public class BattleViewer : MonoBehaviour
             return;
         UpdateTimer();
         battle.Update();
-        if (Input.GetMouseButtonUp(0) && IsInputEnabled)
-            LeftButtonUpLogic();
+        if (battleType == BattleType.TutorialBattle)
+        {
+            tutorial.Update();
+        }
         else
+        {
+            DefaultUpdate();
+        }
+
+    }
+
+    public void DefaultUpdate()
+    {
+        if (Input.GetMouseButtonUp(0) && IsInputEnabled)
+        {
+            HandleLeftButtonUp();
+        }
+        else
+        {
+#if UNITY_STANDALONE || UNITY_EDITOR
             HoverLogic();
+#endif
+        }
+            
+    }
+
+    public void HandleLeftButtonUp()
+    {
+#if UNITY_ANDROID
+        if (InfoAndroidButton.GetComponent<Image>().color == Color.white)
+        {
+            LeftButtonUpLogic();
+        }
+        else
+        {
+            HoverLogic();
+        }  
+#else
+
+        LeftButtonUpLogic();
+#endif
     }
 
     private void OnDisable()
@@ -108,6 +152,13 @@ public class BattleViewer : MonoBehaviour
         {
             battle.OnDisable();
         }
+    }
+
+    private void InitializeOfflineGame()
+    {
+        isGameStarted = true;
+        InitializePlayersInfo();
+        SetupSurrenderButton();
     }
 
     public void SetupSurrenderButton()
@@ -130,13 +181,18 @@ public class BattleViewer : MonoBehaviour
             Debug.Log);
     }
 
-    private void LeftButtonUpLogic()
+    public void LeftButtonUpLogic(RaycastHit[] raycastHits = null)
     {
-        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        battle.LeftButtonUpEvent(Physics.RaycastAll(ray));
+        if (raycastHits == null)
+        {
+            FruitonInfoPanel.SetActive(false);
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            raycastHits = Physics.RaycastAll(ray);
+        }
+        battle.LeftButtonUpEvent(raycastHits);
     }
 
-    private void HoverLogic()
+    public void HoverLogic()
     {
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit[] raycastHits = Physics.RaycastAll(ray);
@@ -147,15 +203,20 @@ public class BattleViewer : MonoBehaviour
             GameObject hitFruiton = Grid[tilePosition.x, tilePosition.y];
             if (hitFruiton != null)
             {
-                var clientFruiton = hitFruiton.GetComponent<ClientFruiton>();
-                Fruiton kernelFruiton = clientFruiton.KernelFruiton;
-                string fruitonInfo = TooltipUtil.GenerateTooltip(kernelFruiton);
-                FruitonInfoPanel.SetActive(true);
-                FruitonInfoPanel.GetComponentInChildren<Text>().text = fruitonInfo.ToString();
+                UpdateAndShowTooltip(hitFruiton);
                 return;
             }
         }
         FruitonInfoPanel.SetActive(false);
+    }
+
+    private void UpdateAndShowTooltip(GameObject fruitonObject)
+    {
+        var clientFruiton = fruitonObject.GetComponent<ClientFruiton>();
+        Fruiton kernelFruiton = clientFruiton.KernelFruiton;
+        var fruitonInfo = TooltipUtil.GenerateTooltip(kernelFruiton);
+        FruitonInfoPanel.SetActive(true);
+        FruitonInfoPanel.GetComponentInChildren<Text>().text = fruitonInfo;
     }
 
     /// <summary>
@@ -184,7 +245,7 @@ public class BattleViewer : MonoBehaviour
     }
 
     public void InitializeTeam(IEnumerable<GameObject> currentTeam, Player player,
-        RepeatedField<Position> fruitonsPositions = null)
+        Position[] fruitonsPositions = null)
     {
         var counter = 0;
         int i = 0, j = 0;
@@ -224,6 +285,7 @@ public class BattleViewer : MonoBehaviour
                 {
                     var obstacle = (GameObject)Instantiate(obstacleResource);
                     Vector3 pos = GridLayoutManager.GetCellPosition(tile.position.x, tile.position.y);
+                    GridLayoutManager.MarkAsObstacle(tile.position.x, tile.position.y);
                     obstacle.transform.position = pos;
                     obstacle.transform.parent = Board.transform;
                 }
@@ -231,7 +293,7 @@ public class BattleViewer : MonoBehaviour
         }
     }
 
-    private void UpdateTimer()
+    public void UpdateTimer()
     {
         var timeLeft = battle.ComputeRemainingTime();
         TimeCounter.text = timeLeft.ToString();
@@ -269,6 +331,13 @@ public class BattleViewer : MonoBehaviour
             ProcessModifyHealthEvent((ModifyHealthEvent) kEvent);
         else if (eventType == typeof(GameOverEvent))
             ProcessGameOverEvent((GameOverEvent) kEvent);
+        else if (eventType == typeof(TimeExpiredEvent))
+            ProcessTimeExpiredEvent((TimeExpiredEvent) kEvent);
+    }
+
+    private void ProcessTimeExpiredEvent(TimeExpiredEvent kEvent)
+    {
+        Debug.Log("Time expired.");
     }
 
     private void ProcessModifyHealthEvent(ModifyHealthEvent kEvent)
@@ -409,6 +478,10 @@ public class BattleViewer : MonoBehaviour
 
     public void EndTurn()
     {
+        if (battleType == BattleType.TutorialBattle)
+        {
+            tutorial.EndAndNextStage();
+        }
         DisableEndTurnButton();
         GridLayoutManager.ResetHighlights();
         battle.EndTurnEvent();
@@ -457,5 +530,15 @@ public class BattleViewer : MonoBehaviour
     public void DisableEndTurnButton()
     {
         EndTurnButton.interactable = false;
+    }
+
+    public void InfoAndroidButtonClick()
+    {
+        if (battleType == BattleType.TutorialBattle)
+        {
+            tutorial.EndAndNextStage();
+        }
+        Color currentColor = InfoAndroidButton.GetComponent<Image>().color;
+        InfoAndroidButton.GetComponent<Image>().color = currentColor == Color.white ? Color.red : Color.white;
     }
 }
