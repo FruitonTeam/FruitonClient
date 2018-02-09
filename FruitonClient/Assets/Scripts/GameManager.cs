@@ -15,6 +15,7 @@ public enum FractionNames { None, GuacamoleGuerrillas, CranberryCrusade, Tzatzik
 public class PlayerOptions
 {
     public int LastSelectedGameMode { get; set; }
+    public int LastSelectedAIMode { get; set; }
 }
 
 public class GameManager : IOnMessageListener

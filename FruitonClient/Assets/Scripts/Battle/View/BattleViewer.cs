@@ -78,6 +78,7 @@ public class BattleViewer : MonoBehaviour
                 break;
             case BattleType.AIBattle:
                 var aiType = (AIType) Enum.Parse(typeof(AIType), Scenes.GetParam(Scenes.AI_TYPE));
+                Debug.Log("Battle vs AI: " + aiType);
                 battle = new AIBattle(this, aiType);
                 isGameStarted = true;
                 InitializePlayersInfo();

@@ -2704,7 +2704,7 @@ GameObject:
   - component: {fileID: 707465272}
   - component: {fileID: 707465271}
   m_Layer: 5
-  m_Name: GameModePanel
+  m_Name: DropdownPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5671,7 +5671,7 @@ MonoBehaviour:
   InputTeamName: {fileID: 793359221}
   WarningText: {fileID: 154514264}
   FilterManager: {fileID: 835430901}
-  GameModePanel: {fileID: 707465269}
+  DropdownPanel: {fileID: 707465269}
 --- !u!1 &1490204446
 GameObject:
   m_ObjectHideFlags: 0
@@ -6421,7 +6421,7 @@ GameObject:
   - component: {fileID: 1595910180}
   - component: {fileID: 1595910179}
   m_Layer: 5
-  m_Name: GameModeSelect
+  m_Name: ModeSelect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
