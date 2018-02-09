@@ -62,7 +62,7 @@ public class BattleViewer : MonoBehaviour
         var battleType = (BattleType) Enum.Parse(typeof(BattleType), Scenes.GetParam(Scenes.BATTLE_TYPE));
         GameMode = (FindGame.Types.GameMode) Enum.Parse(typeof(FindGame.Types.GameMode), Scenes.GetParam(Scenes.GAME_MODE));
 
-        Debug.Log("playing battle = " + battleType);
+        Debug.Log("playing battle: " + battleType + " in mode: " + GameMode);
 
         switch (battleType)
         {
