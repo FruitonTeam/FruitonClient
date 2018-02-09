@@ -91,11 +91,15 @@ public class OnlineBattle : Battle, IOnMessageListener
             fruitons.push(fruiton.GetComponent<ClientFruiton>().KernelFruiton);
         }
         isLocalPlayerFirst = gameReadyMessage.StartsFirst;
+        Player player1;
+        Player player2;
+
         // If the local player begins, the game will be started with kernelPlayer1 as first argument.
         if (isLocalPlayerFirst)
         {
             battleViewer.InitializeTeam(currentTeam, kernelPlayer1, GameManager.Instance.CurrentFruitonTeam.Positions.ToArray());
-            kernel = new Kernel(kernelPlayer1, kernelPlayer2, fruitons, kernelSettings, false);
+            player1 = kernelPlayer1;
+            player2 = kernelPlayer2;
         }
         // If the online opponent begins, we need to flip the positions to the opposite side because we do not receive 
         // the new positions from the server. The first argument has to be the online opponent = kernelPlayer2.
@@ -105,10 +109,12 @@ public class OnlineBattle : Battle, IOnMessageListener
             var height = GameState.HEIGHT;
             var flippedPositions = BattleHelper.FlipCoordinates(GameManager.Instance.CurrentFruitonTeam.Positions, width, height);
             battleViewer.InitializeTeam(currentTeam, kernelPlayer1, flippedPositions.ToArray());
-            kernel = new Kernel(kernelPlayer2, kernelPlayer1, fruitons, kernelSettings, false);
+            player1 = kernelPlayer2;
+            player2 = kernelPlayer1;
             battleViewer.DisableEndTurnButton();
         }
-        
+        kernel = new Kernel(player1, player2, fruitons, kernelSettings, false, false);
+
         SendReadyMessage();
         battleViewer.InitializePlayersInfo();
         BattleReady();

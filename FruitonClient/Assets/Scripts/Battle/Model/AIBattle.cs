@@ -78,7 +78,8 @@ class AIBattle : Battle
         int rndMapId = maps[Random.Range(0, maps.length)];
         GameSettings kernelSettings = GameSettingsFactory.CreateGameSettings(rndMapId, battleViewer.GameMode);
 
-        kernel = new Kernel(kernelPlayer1, kernelPlayer2, fruitons, kernelSettings, false);
+        bool infiniteTurnTime = battleViewer.battleType == BattleType.TutorialBattle;
+        kernel = new Kernel(kernelPlayer1, kernelPlayer2, fruitons, kernelSettings, false, infiniteTurnTime);
         BattleReady();
     }
 

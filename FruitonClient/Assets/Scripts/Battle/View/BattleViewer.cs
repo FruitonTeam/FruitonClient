@@ -22,7 +22,7 @@ using UObject = UnityEngine.Object;
 public class BattleViewer : MonoBehaviour
 {
     public Battle battle;
-    private BattleType battleType;
+    public BattleType battleType;
     private Tutorial tutorial;
     private bool isGameStarted;
     public bool IsInputEnabled { get; private set; }
@@ -101,6 +101,8 @@ public class BattleViewer : MonoBehaviour
     {
         if (!isGameStarted)
             return;
+        UpdateTimer();
+        battle.Update();
         switch (battleType)
         {
             case BattleType.TutorialBattle:
@@ -116,13 +118,10 @@ public class BattleViewer : MonoBehaviour
     public void TutorialUpdate()
     {
         tutorial.Update();
-        battle.Update();
     }
 
     public void DefaultUpdate()
     {
-        UpdateTimer();
-        battle.Update();
         if (Input.GetMouseButtonUp(0) && IsInputEnabled)
         {
             HandleLeftButtonUp();
@@ -338,6 +337,13 @@ public class BattleViewer : MonoBehaviour
             ProcessModifyHealthEvent((ModifyHealthEvent) kEvent);
         else if (eventType == typeof(GameOverEvent))
             ProcessGameOverEvent((GameOverEvent) kEvent);
+        else if (eventType == typeof(TimeExpiredEvent))
+            ProcessTimeExpiredEvent((TimeExpiredEvent) kEvent);
+    }
+
+    private void ProcessTimeExpiredEvent(TimeExpiredEvent kEvent)
+    {
+        Debug.Log("Time expired.");
     }
 
     private void ProcessModifyHealthEvent(ModifyHealthEvent kEvent)

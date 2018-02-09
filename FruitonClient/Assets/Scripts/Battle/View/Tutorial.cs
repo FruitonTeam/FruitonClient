@@ -28,6 +28,7 @@ public class Tutorial
         battleViewer.InfoAndroidButton.enabled = false;
         battleViewer.EndTurnButton.enabled = false;
         battleViewer.SurrendButton.enabled = false;
+        battleViewer.TimeCounter.gameObject.SetActive(false);
     }
 
     private void CreateTutorialStages()
@@ -127,8 +128,9 @@ public class Tutorial
         stages.Enqueue(new TutorialStage(
             text,
             () => new List<GameObject> { battleViewer.TimeCounter.transform.parent.gameObject },
+            startActions:new List<Action> {() => battleViewer.TimeCounter.gameObject.SetActive(true)},
             updateActions: new List<Action> { battleViewer.UpdateTimer },
-            endActions: new List<Action> { () => battleViewer.TimeCounter.text = "" }));
+            endActions: new List<Action> { () => battleViewer.TimeCounter.gameObject.SetActive(false)}));
 
         text = "And the (highly unrecommended!) surrender button. Fight until your last breath!";
         stages.Enqueue(new TutorialStage(
@@ -283,7 +285,7 @@ public class Tutorial
         {
             action();
         }
-        // Check if the typing is continued.
+        // Check if the typing is finished.
         if (TypeChars())
         {
             switch (currentStage.EndCondition)
