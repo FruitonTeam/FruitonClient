@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mime;
 using System.Text;
+using Cz.Cuni.Mff.Fruiton.Dto;
 using fruiton.dataStructures;
 using fruiton.kernel;
 using UnityEngine;
 using UnityEngine.UI;
+using Action = System.Action;
 
 public class Tutorial
 {
@@ -361,7 +363,7 @@ public class Tutorial
     {
         if (stages.Count == 0)
         {
-            Scenes.Load(Scenes.MAIN_MENU_SCENE);
+            FinishTutorial();
             return;
         }
         currentStage = stages.Dequeue();
@@ -370,6 +372,18 @@ public class Tutorial
             action();
         }
         EnqueueString(currentStage.Text);
+    }
+
+    private void FinishTutorial()
+    {
+        if (GameManager.Instance.Fraction == Fraction.None)
+        {
+            Scenes.Load(Scenes.FRACTION_SCENE);
+        }
+        else
+        {
+            Scenes.Load(Scenes.MAIN_MENU_SCENE);
+        }
     }
 
     private void EndStage()

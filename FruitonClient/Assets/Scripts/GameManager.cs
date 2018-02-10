@@ -113,6 +113,12 @@ public class GameManager : IOnMessageListener
         }
     }
 
+    public Fraction Fraction
+    {
+        get { return loggedPlayerInfo.Fraction; }
+    }
+    
+    [Obsolete("Should be deleted, but first check if it does not harm anything.")]
     public FractionNames UserFraction
     {
         get
@@ -267,16 +273,16 @@ public class GameManager : IOnMessageListener
         Initialize();
         PersistIfStayLoggedIn();
 
-        //if (loggedPlayerInfo.Fraction == Fraction.None)
-        //{
-        //    var param = new Dictionary<string, string>
-        //    {
-        //        {Scenes.BATTLE_TYPE, BattleType.TutorialBattle.ToString()},
-        //        {Scenes.GAME_MODE, FindGame.Types.GameMode.Standard.ToString()}
-        //    };
-        //    Scenes.Load(Scenes.BATTLE_SCENE, param);
-        //}
-        //else
+        if (loggedPlayerInfo.Fraction == Fraction.None)
+        {
+            var param = new Dictionary<string, string>
+            {
+                {Scenes.BATTLE_TYPE, BattleType.TutorialBattle.ToString()},
+                {Scenes.GAME_MODE, FindGame.Types.GameMode.Standard.ToString()}
+            };
+            Scenes.Load(Scenes.BATTLE_SCENE, param);
+        }
+        else
         {
             Scenes.Load(Scenes.MAIN_MENU_SCENE);
         }
