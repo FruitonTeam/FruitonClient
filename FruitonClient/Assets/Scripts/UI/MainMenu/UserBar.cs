@@ -4,6 +4,7 @@ using Networking;
 using UI.Chat;
 using UnityEngine;
 using UnityEngine.UI;
+using Util;
 
 namespace UI.MainMenu
 {
@@ -40,18 +41,9 @@ namespace UI.MainMenu
 
             int money = GameManager.Instance.Money;
             MoneyText.text = money != -1 ? money.ToString() : "N/A";
-            PlayerAvatarImage.sprite = LoadCenteredSprite(GameManager.Instance.Avatar);
+            PlayerAvatarImage.sprite = SpriteUtils.TextureToSprite(GameManager.Instance.Avatar);
             
             FriendsText.text = GameManager.Instance.Friends.Count(f => f.Status == Status.Online).ToString();
-        }
-
-        private Sprite LoadCenteredSprite(Texture2D texture)
-        {
-            return Sprite.Create(
-                texture,
-                new Rect(0, 0, texture.width, texture.height),
-                new Vector2(0.5f, 0.5f)
-            );
         }
 
         public void OnFriendAdded()

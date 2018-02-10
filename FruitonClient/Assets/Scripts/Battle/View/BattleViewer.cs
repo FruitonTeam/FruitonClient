@@ -2,7 +2,6 @@
 using fruiton.kernel;
 using fruiton.kernel.actions;
 using fruiton.kernel.events;
-using Google.Protobuf.Collections;
 using Networking;
 using Spine.Unity;
 using System;
@@ -11,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Util;
 using Action = fruiton.kernel.actions.Action;
 using Fruiton = fruiton.kernel.Fruiton;
 using KAction = fruiton.kernel.actions.Action;
@@ -173,11 +173,10 @@ public class BattleViewer : MonoBehaviour
         string login2 = battle.Player2.Name;
         MyLoginText.text = login1;
         OpponentLoginText.text = login2;
-        PlayerHelper.GetAvatar(login1,
-            texture => MyAvatar.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f)),
-            Debug.Log);
+
+        MyAvatar.sprite = SpriteUtils.TextureToSprite(GameManager.Instance.Avatar);
         PlayerHelper.GetAvatar(login2,
-            texture => OpponentAvatar.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f)),
+            texture => OpponentAvatar.sprite = SpriteUtils.TextureToSprite(texture),
             Debug.Log);
     }
 
