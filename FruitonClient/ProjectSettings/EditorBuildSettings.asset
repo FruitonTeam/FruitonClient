@@ -26,3 +26,6 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 21e35236f934a44e9b39e9440a6f2aba
+  - enabled: 1
+    path: Assets/Scenes/FractionScene.unity
+    guid: d714aa17857e62b4cb65943b365a35e3

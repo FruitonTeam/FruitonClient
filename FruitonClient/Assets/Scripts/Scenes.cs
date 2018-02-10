@@ -8,6 +8,7 @@ public class Scenes : MonoBehaviour
     public static readonly string MAIN_MENU_SCENE = "MainMenu";
     public static readonly string TEAMS_MANAGEMENT_SCENE = "TeamsManagementScene";
     public static readonly string BATTLE_SCENE = "BattleScene";
+    public static readonly string FRACTION_SCENE = "FractionScene";
 
     public static readonly string TEAM_MANAGEMENT_STATE = "teamManagementState";
     public static readonly string BATTLE_TYPE = "battleType";
