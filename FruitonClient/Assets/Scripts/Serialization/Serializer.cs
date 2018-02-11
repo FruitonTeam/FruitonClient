@@ -3,6 +3,7 @@ using Google.Protobuf;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Policy;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -12,7 +13,8 @@ public static class Serializer {
 
     private static readonly string FRUITON_TEAMS_PATH = Path.Combine(Application.persistentDataPath, "FruitonTeams.dat");
     private static readonly string AVAILABLE_FRUITONS_PATH = Path.Combine(Application.persistentDataPath, "AvailableFruitons.json");
-    
+    private static readonly string PLAYER_SETTINGS_PATH = Path.Combine(Application.persistentDataPath, "PlayerSettings.json");
+
     #endregion
 
     public static void SaveAvailableFruitons(List<int> availableFruitons)
@@ -86,5 +88,40 @@ public static class Serializer {
             Debug.Log("Fruiton Teams loaded.");
         }
         
+    }
+
+    public static void SavePlayerSettings(PlayerOptions settings)
+    {
+        using (StreamWriter sw = File.CreateText(PLAYER_SETTINGS_PATH))
+        {
+            if (GameManager.Instance.StayLoggedIn)
+            {
+                var js = JsonSerializer.CreateDefault();
+                js.Serialize(sw, settings);
+            }
+            // Else save empty file
+        }
+    }
+
+    public static PlayerOptions LoadPlayerSettings()
+    {
+        if (GameManager.Instance.StayLoggedIn && File.Exists(PLAYER_SETTINGS_PATH))
+        {
+            using (StreamReader sr = File.OpenText(PLAYER_SETTINGS_PATH))
+            {
+                using (JsonReader jr = new JsonTextReader(sr))
+                {
+                    var js = JsonSerializer.CreateDefault();
+                    var settings = js.Deserialize<PlayerOptions>(jr);
+
+                    if (settings == null) // File empty or contents corrupted
+                    {
+                        return new PlayerOptions();
+                    }
+                    return settings;
+                }
+            }
+        }
+        return new PlayerOptions();
     }
 }

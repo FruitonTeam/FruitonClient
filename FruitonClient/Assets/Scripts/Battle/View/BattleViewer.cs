@@ -67,7 +67,7 @@ public class BattleViewer : MonoBehaviour
         battleType = (BattleType) Enum.Parse(typeof(BattleType), Scenes.GetParam(Scenes.BATTLE_TYPE));
         GameMode = (FindGame.Types.GameMode) Enum.Parse(typeof(FindGame.Types.GameMode), Scenes.GetParam(Scenes.GAME_MODE));
 
-        Debug.Log("playing battle = " + battleType);
+        Debug.Log("playing battle: " + battleType + " in mode: " + GameMode);
 
         switch (battleType)
         {
@@ -81,6 +81,7 @@ public class BattleViewer : MonoBehaviour
                 break;
             case BattleType.AIBattle:
                 var aiType = (AIType) Enum.Parse(typeof(AIType), Scenes.GetParam(Scenes.AI_TYPE));
+                Debug.Log("Battle vs AI: " + aiType);
                 battle = new AIBattle(this, aiType);
                 InitializeOfflineGame();
                 break;

@@ -12,6 +12,12 @@ using KFruiton = fruiton.kernel.Fruiton;
 
 public enum FractionNames { None, GuacamoleGuerrillas, CranberryCrusade, TzatzikiTsardom }
 
+public class PlayerOptions
+{
+    public int LastSelectedGameMode { get; set; }
+    public int LastSelectedAIMode { get; set; }
+}
+
 public class GameManager : IOnMessageListener
 {
     private static GameManager instance;
@@ -225,7 +231,9 @@ public class GameManager : IOnMessageListener
     }
 
     public bool IsOnline { get; private set; }
-    
+
+    public PlayerOptions PlayerOptions { get; set; }
+
     #endregion
 
 
@@ -293,12 +301,17 @@ public class GameManager : IOnMessageListener
         Friends.Add(friend);
     }
 
+    public void SavePlayerSettings()
+    {
+        Serializer.SavePlayerSettings(PlayerOptions);
+    }
+
     #endregion
     
     private void Initialize()
     {
+        PlayerOptions = Serializer.LoadPlayerSettings();
         Serializer.DeserializeFruitonTeams();
-                
         FruitonDatabase = new FruitonDatabase(KernelUtils.LoadTextResource(FRUITON_DB_FILE));
         AllFruitons = ClientFruitonFactory.CreateAllKernelFruitons();
         AvailableFruitons = Serializer.LoadAvailableFruitons();
@@ -403,5 +416,4 @@ public class GameManager : IOnMessageListener
         PlayerPrefs.SetString(PlayerPrefsKeys.UserName, UserName);
         PlayerPrefs.SetString(PlayerPrefsKeys.UserPassword, AuthenticationHandler.Instance.LastPassword);
     }
-    
 }

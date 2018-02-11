@@ -12,6 +12,18 @@ using Networking;
 
 public class FruitonTeamsManager : MonoBehaviour
 {
+    private class Option<TEnum>
+    {
+        public string Name { get; private set; }
+        public TEnum Type { get; private set; }
+
+        public Option(string name, TEnum type)
+        {
+            Name = name;
+            Type = type;
+        }
+    }
+
     enum ViewMode
     {
         TeamSelect,
@@ -40,6 +52,7 @@ public class FruitonTeamsManager : MonoBehaviour
     public InputField InputTeamName;
     public Text WarningText;
     public FridgeFilterManager FilterManager;
+    public GameObject DropdownPanel;
 
 
     private ViewMode viewMode;
@@ -52,6 +65,18 @@ public class FruitonTeamsManager : MonoBehaviour
     private Position teamDragGridPosition;
     private KFruiton draggedFruiton;
     private List<FridgeFruiton> fridgeFruitons;
+
+    private readonly List<Option<FindGame.Types.GameMode>> gameModes = new List<Option<FindGame.Types.GameMode>>
+    {
+        new Option<FindGame.Types.GameMode>("Standard", FindGame.Types.GameMode.Standard),
+        new Option<FindGame.Types.GameMode>("Last man standing", FindGame.Types.GameMode.LastManStanding)
+    };
+
+    private readonly List<Option<AIType>> aiModes = new List<Option<AIType>>
+    {
+        new Option<AIType>("Random", AIType.Random),
+        new Option<AIType>("Aggresive", AIType.AggroGreedy)
+    };
 
     /// <summary> true if player is actually editing teams, false if only viewing/picking </summary>
     private bool isInTeamManagement;
@@ -71,12 +96,24 @@ public class FruitonTeamsManager : MonoBehaviour
         {
             ButtonPlay.gameObject.SetActive(false);
             InitializeAllFruitons();
+            DropdownPanel.SetActive(false);
         }
         else
         {
             ButtonNewTeam.gameObject.SetActive(false);
             ButtonEdit.gameObject.SetActive(false);
             ButtonDelete.gameObject.SetActive(false);
+
+            PlayerOptions playerOptions = GameManager.Instance.PlayerOptions;
+            var battleType = (BattleType)Enum.Parse(typeof(BattleType), Scenes.GetParam(Scenes.BATTLE_TYPE));
+            if (battleType == BattleType.AIBattle)
+            {
+                SetupModeDropdown(aiModes, playerOptions.LastSelectedAIMode);
+            }
+            else
+            {
+                SetupModeDropdown(gameModes, playerOptions.LastSelectedGameMode);
+            }
         }
         InitializeTeamGridListeners();
         InitializeFruitonDetailListeners();
@@ -111,6 +148,20 @@ public class FruitonTeamsManager : MonoBehaviour
                     return null;
                 })
         ).SetErrorFontSize(24);
+    }
+
+    private void SetupModeDropdown<TEnum>(IList<Option<TEnum>> options, int selectedIdx)
+    {
+        DropdownPanel.SetActive(true);
+        var dropdown = DropdownPanel.GetComponentInChildren<Dropdown>();
+        dropdown.options.Clear();
+        foreach (Option<TEnum> option in options)
+        {
+            dropdown.options.Add(new Dropdown.OptionData(option.Name));
+        }
+
+        dropdown.value = selectedIdx;
+        dropdown.captionText.text = options[dropdown.value].Name;
     }
 
     void Update()
@@ -261,15 +312,26 @@ public class FruitonTeamsManager : MonoBehaviour
         {
             var param = new Dictionary<string, string>
             {
-                {Scenes.BATTLE_TYPE, Scenes.GetParam(Scenes.BATTLE_TYPE)},
-                {Scenes.GAME_MODE, FindGame.Types.GameMode.Standard.ToString()} // TODO get GameMode from UI (when scene is unlocked)
+                {Scenes.BATTLE_TYPE, Scenes.GetParam(Scenes.BATTLE_TYPE)}
             };
 
             var battleType = (BattleType) Enum.Parse(typeof(BattleType), Scenes.GetParam(Scenes.BATTLE_TYPE));
             if (battleType == BattleType.AIBattle)
             {
-                // TODO get AI type from the UI (when scene is unlocked)
-                param.Add(Scenes.AI_TYPE, AIType.AggroGreedy.ToString());
+                var aiModeDropdown = DropdownPanel.GetComponentInChildren<Dropdown>();
+                AIType aiMode = aiModes[aiModeDropdown.value].Type;
+                GameManager.Instance.PlayerOptions.LastSelectedAIMode = aiModeDropdown.value;
+                GameManager.Instance.SavePlayerSettings();
+                param.Add(Scenes.AI_TYPE, aiMode.ToString());
+                param.Add(Scenes.GAME_MODE, FindGame.Types.GameMode.Standard.ToString());
+            }
+            else
+            {
+                var gameModeDropdown = DropdownPanel.GetComponentInChildren<Dropdown>();
+                FindGame.Types.GameMode gameMode = gameModes[gameModeDropdown.value].Type;
+                GameManager.Instance.PlayerOptions.LastSelectedGameMode = gameModeDropdown.value;
+                GameManager.Instance.SavePlayerSettings();
+                param.Add(Scenes.GAME_MODE, gameMode.ToString());
             }
 
             Scenes.Load(Scenes.BATTLE_SCENE, param);
