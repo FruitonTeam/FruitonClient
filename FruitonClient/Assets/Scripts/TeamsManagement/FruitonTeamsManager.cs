@@ -442,7 +442,7 @@ public class FruitonTeamsManager : MonoBehaviour
     private void InitializeAllFruitons()
     {
         GameManager gameManager = GameManager.Instance;
-        IEnumerable<KFruiton> allFruitons = gameManager.AllFruitons;
+        IEnumerable<KFruiton> allFruitons = gameManager.AllPlayableFruitons;
         fridgeFruitons = new List<FridgeFruiton>();
         var i = 0;
         var templateRectTransform = FridgeFruitonTemplate.gameObject.GetComponent<RectTransform>();
@@ -738,7 +738,7 @@ public class FruitonTeamsManager : MonoBehaviour
                 ResizeScrollContent(teams.Count);
                 break;
             case ViewMode.TeamEdit:
-                ResizeScrollContent(GameManager.Instance.AllFruitons.Count());
+                ResizeScrollContent(GameManager.Instance.AllPlayableFruitons.Count());
                 break;
         }
     }

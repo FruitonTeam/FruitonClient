@@ -35,9 +35,10 @@ public class GameManager : IOnMessageListener
     }
 
     private static readonly string FRUITON_DB_FILE = "FruitonDb.json";
-    
+    private static readonly int AI_FRUITONS_START_INDEX = 1000;
+
     #region Fields
-    
+
     private Texture2D avatar;
     
     private LoggedPlayerInfo loggedPlayerInfo;
@@ -138,6 +139,14 @@ public class GameManager : IOnMessageListener
     }
 
     public IEnumerable<KFruiton> AllFruitons { get; private set; }
+
+    public IEnumerable<KFruiton> AllPlayableFruitons
+    {
+        get
+        {
+            return AllFruitons.Where(fruiton => fruiton.id < AI_FRUITONS_START_INDEX);
+        }
+    }
 
     public FruitonTeamList FruitonTeamList
     {
