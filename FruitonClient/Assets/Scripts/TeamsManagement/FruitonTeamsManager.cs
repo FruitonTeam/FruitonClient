@@ -103,14 +103,15 @@ public class FruitonTeamsManager : MonoBehaviour
             ButtonEdit.gameObject.SetActive(false);
             ButtonDelete.gameObject.SetActive(false);
 
+            PlayerOptions playerOptions = GameManager.Instance.PlayerOptions;
             var battleType = (BattleType)Enum.Parse(typeof(BattleType), Scenes.GetParam(Scenes.BATTLE_TYPE));
             if (battleType == BattleType.AIBattle)
             {
-                SetupAITypeDropdown();
+                SetupModeDropdown(aiModes, playerOptions.LastSelectedAIMode);
             }
             else
             {
-                SetupGameModeDropdown();
+                SetupModeDropdown(gameModes, playerOptions.LastSelectedGameMode);
             }
         }
         InitializeTeamGridListeners();
@@ -148,32 +149,18 @@ public class FruitonTeamsManager : MonoBehaviour
         ).SetErrorFontSize(24);
     }
 
-    private void SetupGameModeDropdown()
+    private void SetupModeDropdown<TEnum>(IList<Option<TEnum>> options, int selectedIdx)
     {
         DropdownPanel.SetActive(true);
         var dropdown = DropdownPanel.GetComponentInChildren<Dropdown>();
         dropdown.options.Clear();
-        foreach (Option<FindGame.Types.GameMode> gameMode in gameModes)
+        foreach (Option<TEnum> option in options)
         {
-            dropdown.options.Add(new Dropdown.OptionData(gameMode.Name));
+            dropdown.options.Add(new Dropdown.OptionData(option.Name));
         }
 
-        dropdown.value = GameManager.Instance.PlayerOptions.LastSelectedGameMode;
-        dropdown.captionText.text = gameModes[dropdown.value].Name;
-    }
-
-    private void SetupAITypeDropdown()
-    {
-        DropdownPanel.SetActive(true);
-        var dropdown = DropdownPanel.GetComponentInChildren<Dropdown>();
-        dropdown.options.Clear();
-        foreach (Option<AIType> aiMode in aiModes)
-        {
-            dropdown.options.Add(new Dropdown.OptionData(aiMode.Name));
-        }
-
-        dropdown.value = GameManager.Instance.PlayerOptions.LastSelectedAIMode;
-        dropdown.captionText.text = aiModes[dropdown.value].Name;
+        dropdown.value = selectedIdx;
+        dropdown.captionText.text = options[dropdown.value].Name;
     }
 
     void Update()
