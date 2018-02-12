@@ -6,6 +6,8 @@ using fruiton.kernel;
 using fruiton.kernel.gameModes;
 using haxe.root;
 
+using ProtoGameMode = Cz.Cuni.Mff.Fruiton.Dto.GameMode;
+
 public class GameSettingsFactory
 {
     public static GameSettings CreateGameSettings(int mapId)
@@ -16,7 +18,7 @@ public class GameSettingsFactory
         return settings;
     }
 
-    public static GameSettings CreateGameSettings(int mapId, FindGame.Types.GameMode gameMode)
+    public static GameSettings CreateGameSettings(int mapId, ProtoGameMode gameMode)
     {
         Array<object> map = MapFactory.makeMap(mapId, GameManager.Instance.FruitonDatabase);
         var settings = GameSettings.createDefault();
@@ -24,10 +26,10 @@ public class GameSettingsFactory
 
         switch (gameMode)
         {
-            case FindGame.Types.GameMode.Standard:
+            case ProtoGameMode.Standard:
                 settings.gameMode = new StandardGameMode();
                 break;
-            case FindGame.Types.GameMode.LastManStanding:
+            case ProtoGameMode.LastManStanding:
                 settings.gameMode = new LastManStandingGameMode();
                 break;
             default:

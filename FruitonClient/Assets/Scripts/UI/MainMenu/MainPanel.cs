@@ -69,7 +69,7 @@ namespace UI.MainMenu
             var param = new Dictionary<string, string>
             {
                 {Scenes.BATTLE_TYPE, BattleType.TutorialBattle.ToString()},
-                {Scenes.GAME_MODE, FindGame.Types.GameMode.Standard.ToString()}
+                {Scenes.GAME_MODE, GameMode.Standard.ToString()}
             };
             Scenes.Load(Scenes.BATTLE_SCENE, param);
         }
