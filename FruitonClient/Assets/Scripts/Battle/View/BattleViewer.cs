@@ -49,7 +49,7 @@ public class BattleViewer : MonoBehaviour
     /// <summary> Client fruitons stored at their position. </summary>
     public GameObject[,] Grid { get; set; }
 
-    public FindGame.Types.GameMode GameMode { get; private set; }
+    public GameMode GameMode { get; private set; }
 
     public BattleViewer()
     {
@@ -65,7 +65,7 @@ public class BattleViewer : MonoBehaviour
         Grid = new GameObject[GridLayoutManager.WidthCount, GridLayoutManager.HeighCount];
 
         battleType = (BattleType) Enum.Parse(typeof(BattleType), Scenes.GetParam(Scenes.BATTLE_TYPE));
-        GameMode = (FindGame.Types.GameMode) Enum.Parse(typeof(FindGame.Types.GameMode), Scenes.GetParam(Scenes.GAME_MODE));
+        GameMode = (GameMode) Enum.Parse(typeof(GameMode), Scenes.GetParam(Scenes.GAME_MODE));
 
         Debug.Log("playing battle: " + battleType + " in mode: " + GameMode);
 
