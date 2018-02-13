@@ -66,10 +66,10 @@ public class FruitonTeamsManager : MonoBehaviour
     private KFruiton draggedFruiton;
     private List<FridgeFruiton> fridgeFruitons;
 
-    private readonly List<Option<FindGame.Types.GameMode>> gameModes = new List<Option<FindGame.Types.GameMode>>
+    private readonly List<Option<GameMode>> gameModes = new List<Option<GameMode>>
     {
-        new Option<FindGame.Types.GameMode>("Standard", FindGame.Types.GameMode.Standard),
-        new Option<FindGame.Types.GameMode>("Last man standing", FindGame.Types.GameMode.LastManStanding)
+        new Option<GameMode>("Standard", GameMode.Standard),
+        new Option<GameMode>("Last man standing", GameMode.LastManStanding)
     };
 
     private readonly List<Option<AIType>> aiModes = new List<Option<AIType>>
@@ -323,12 +323,12 @@ public class FruitonTeamsManager : MonoBehaviour
                 GameManager.Instance.PlayerOptions.LastSelectedAIMode = aiModeDropdown.value;
                 GameManager.Instance.SavePlayerSettings();
                 param.Add(Scenes.AI_TYPE, aiMode.ToString());
-                param.Add(Scenes.GAME_MODE, FindGame.Types.GameMode.Standard.ToString());
+                param.Add(Scenes.GAME_MODE, GameMode.Standard.ToString());
             }
             else
             {
                 var gameModeDropdown = DropdownPanel.GetComponentInChildren<Dropdown>();
-                FindGame.Types.GameMode gameMode = gameModes[gameModeDropdown.value].Type;
+                GameMode gameMode = gameModes[gameModeDropdown.value].Type;
                 GameManager.Instance.PlayerOptions.LastSelectedGameMode = gameModeDropdown.value;
                 GameManager.Instance.SavePlayerSettings();
                 param.Add(Scenes.GAME_MODE, gameMode.ToString());
