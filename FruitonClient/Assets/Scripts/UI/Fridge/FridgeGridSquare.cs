@@ -24,7 +24,6 @@ public class FridgeGridSquare : MonoBehaviour, IPointerDownHandler, IPointerEnte
     private Image background;
     private Color defaultBackgroundColor;
 
-    // Use this for initialization
     void Awake()
     {
         RectTransform = GetComponent<RectTransform>();

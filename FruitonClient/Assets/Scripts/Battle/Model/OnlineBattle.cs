@@ -24,9 +24,10 @@ public class OnlineBattle : Battle, IOnMessageListener
         set { Player2 = value; }
     }
 
-    public OnlineBattle(BattleViewer battleViewer) : base(battleViewer)
+    public OnlineBattle(BattleViewer battleViewer, bool shouldFindGame) : base(battleViewer)
     {
-        FindGame();
+        if (shouldFindGame)
+            FindGame();
     }
 
     private void FindGame()
@@ -67,7 +68,7 @@ public class OnlineBattle : Battle, IOnMessageListener
         }
     }
 
-    private void ProcessMessage(GameReady gameReadyMessage)
+    public void ProcessMessage(GameReady gameReadyMessage)
     {
         var kernelPlayer1 = new Player(0);
         var kernelPlayer2 = new Player(1);

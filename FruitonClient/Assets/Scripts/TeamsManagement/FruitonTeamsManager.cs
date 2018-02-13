@@ -16,15 +16,21 @@ public class FruitonTeamsManager : MonoBehaviour
     {
         public string Name { get; private set; }
         public TEnum Type { get; private set; }
+        public PickMode PickMode { get; private set; }
 
-        public Option(string name, TEnum type)
+        public Option(
+            string name, 
+            TEnum type, 
+            PickMode pickMode = PickMode.StandardPick
+        )
         {
             Name = name;
             Type = type;
+            PickMode = pickMode;
         }
     }
 
-    enum ViewMode
+    private enum ViewMode
     {
         TeamSelect,
         TeamEdit
@@ -69,7 +75,8 @@ public class FruitonTeamsManager : MonoBehaviour
     private readonly List<Option<GameMode>> gameModes = new List<Option<GameMode>>
     {
         new Option<GameMode>("Standard", GameMode.Standard),
-        new Option<GameMode>("Last man standing", GameMode.LastManStanding)
+        new Option<GameMode>("Last man standing", GameMode.LastManStanding),
+        new Option<GameMode>("Draft", GameMode.Standard, PickMode.Draft)
     };
 
     private readonly List<Option<AIType>> aiModes = new List<Option<AIType>>
@@ -325,13 +332,20 @@ public class FruitonTeamsManager : MonoBehaviour
                 param.Add(Scenes.AI_TYPE, aiMode.ToString());
                 param.Add(Scenes.GAME_MODE, GameMode.Standard.ToString());
             }
-            else
+            else // Online battle
             {
                 var gameModeDropdown = DropdownPanel.GetComponentInChildren<Dropdown>();
-                GameMode gameMode = gameModes[gameModeDropdown.value].Type;
+                Option<GameMode> gameMode = gameModes[gameModeDropdown.value];
                 GameManager.Instance.PlayerOptions.LastSelectedGameMode = gameModeDropdown.value;
                 GameManager.Instance.SavePlayerSettings();
-                param.Add(Scenes.GAME_MODE, gameMode.ToString());
+                param.Add(Scenes.GAME_MODE, gameMode.Type.ToString());
+                param.Add(Scenes.PICK_MODE, gameMode.PickMode.ToString());
+
+                if (gameMode.PickMode == PickMode.Draft)
+                {
+                    Scenes.Load(Scenes.DRAFT_SCENE, param);
+                    return;
+                }
             }
 
             Scenes.Load(Scenes.BATTLE_SCENE, param);
@@ -431,12 +445,13 @@ public class FruitonTeamsManager : MonoBehaviour
         FridgeTeamTemplate.SetActive(false);
     }
 
-    private bool IsTeamComplete(FruitonTeam team)
+    private static bool IsTeamComplete(FruitonTeam team)
     {
-        int[] fruitonIDsArray = new int[team.FruitonIDs.Count];
-        team.FruitonIDs.CopyTo(fruitonIDsArray, 0);
-        return FruitonTeamValidator
-            .validateFruitonTeam(new Array<int>(fruitonIDsArray), GameManager.Instance.FruitonDatabase).complete;
+        int[] fruitonIdArray = team.FruitonIDs.ToArray();
+        return FruitonTeamValidator.validateFruitonTeam(
+            new Array<int>(fruitonIdArray),
+            GameManager.Instance.FruitonDatabase
+        ).complete;
     }
 
     private void InitializeAllFruitons()
@@ -715,11 +730,11 @@ public class FruitonTeamsManager : MonoBehaviour
         PanelTooltip.SetActive(false);
     }
 
-    private void SwitchViewMode(ViewMode viewMode)
+    private void SwitchViewMode(ViewMode newViewMode)
     {
-        this.viewMode = viewMode;
+        viewMode = newViewMode;
 
-        var isEditing = viewMode == ViewMode.TeamEdit;
+        var isEditing = newViewMode == ViewMode.TeamEdit;
 
         WrapperFruitons.SetActive(isEditing);
         Filters.SetActive(isEditing);
@@ -732,7 +747,7 @@ public class FruitonTeamsManager : MonoBehaviour
         ButtonDelete.gameObject.SetActive(!isEditing);
         ButtonBack.gameObject.SetActive(!isEditing);
 
-        switch (viewMode)
+        switch (newViewMode)
         {
             case ViewMode.TeamSelect:
                 ResizeScrollContent(teams.Count);
