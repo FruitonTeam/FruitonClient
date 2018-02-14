@@ -92,7 +92,7 @@ public class FruitonTeamsManager : MonoBehaviour
     private TeamManagementState state;
 
     public static readonly int MAX_TEAM_COUNT = 16;
-    private static readonly string CHOOSE_OFFLINE_TEAM = "Choose a team for Player {0}.";
+    private static readonly string CHOOSE_OFFLINE_TEAM = "Team for Player {0}.";
 
 
     /// <summary> true if player is actually editing teams, false if only viewing/picking </summary>
