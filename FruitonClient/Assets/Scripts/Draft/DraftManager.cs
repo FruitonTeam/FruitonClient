@@ -55,7 +55,6 @@ public class DraftManager : MonoBehaviour
         EnemyName.text = "Waiting for opponent";
     }
 
-    // Use this for initialization
     void Start()
     {
         myTeam = new FruitonTeam();
@@ -537,29 +536,8 @@ public class DraftManager : MonoBehaviour
 
     public void GameOver(GameOver gameOver)
     {
-        // TODO merge with GameOver in BattleViewer
-
         ButtonSurrender.interactable = false;
 
-        GameOverPanel.gameObject.SetActive(true);
-        GameOverPanel.OnClose(() => Scenes.Load(Scenes.MAIN_MENU_SCENE));
-        GameOverPanel.ShowInfoMessage(
-            "Game over: " + gameOver.Reason + Environment.NewLine +
-            "Money gain: " + gameOver.Results.Money + Environment.NewLine +
-            "Unlocked fruitons: " + gameOver.Results.UnlockedFruitons + Environment.NewLine +
-            "Unlocked quests: " + string.Join(",",
-            gameOver.Results.Quests.Select(q => q.Name).ToArray())
-        );
-
-        GameManager.Instance.AddMoney(gameOver.Results.Money);
-        GameManager.Instance.UnlockFruitons(gameOver.Results.UnlockedFruitons);
-
-        if (gameOver.Results.Quests != null)
-        {
-            foreach (Quest q in gameOver.Results.Quests)
-            {
-                GameManager.Instance.AddMoney(q.Reward.Money);
-            }
-        }
+        BattleUIUtil.ShowResults(GameOverPanel, gameOver);
     }
 }
