@@ -117,4 +117,15 @@ public class DraftHandler : IOnMessageListener
         if (ConnectionHandler.Instance.IsLogged())
             ConnectionHandler.Instance.SendWebsocketMessage(wrapperMessage);
     }
+
+    public void CancelSearch()
+    {
+        var cancelMessage = new CancelFindingGame();
+        var wrapperMessage = new WrapperMessage
+        {
+            CancelFindingGame = cancelMessage
+        };
+        if (ConnectionHandler.Instance.IsLogged())
+            ConnectionHandler.Instance.SendWebsocketMessage(wrapperMessage);
+    }
 }

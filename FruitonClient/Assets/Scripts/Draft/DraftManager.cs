@@ -99,6 +99,8 @@ public class DraftManager : MonoBehaviour
     {
         EnemyName.text = readyMessage.Opponent.Login;
         LoadingPanel.SetActive(false);
+        ButtonSurrender.onClick.AddListener(Surrender);
+        ButtonSurrender.GetComponentInChildren<Text>().text = "Surrender";
     }
 
     void Update()
@@ -244,6 +246,12 @@ public class DraftManager : MonoBehaviour
 
             Scenes.Load(Scenes.BATTLE_SCENE, param);
         }
+    }
+
+    public void CancelSearch()
+    {
+        draftHandler.CancelSearch();
+        Scenes.Load(Scenes.MAIN_MENU_SCENE);
     }
 
     public void Surrender()
@@ -530,6 +538,9 @@ public class DraftManager : MonoBehaviour
     public void GameOver(GameOver gameOver)
     {
         // TODO merge with GameOver in BattleViewer
+
+        ButtonSurrender.interactable = false;
+
         GameOverPanel.gameObject.SetActive(true);
         GameOverPanel.OnClose(() => Scenes.Load(Scenes.MAIN_MENU_SCENE));
         GameOverPanel.ShowInfoMessage(
