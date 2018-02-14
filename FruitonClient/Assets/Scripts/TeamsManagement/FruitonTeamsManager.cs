@@ -81,8 +81,9 @@ public class FruitonTeamsManager : MonoBehaviour
 
     private readonly List<Option<AIType>> aiModes = new List<Option<AIType>>
     {
-        new Option<AIType>("Random", AIType.Random),
-        new Option<AIType>("Aggresive", AIType.AggroGreedy)
+        new Option<AIType>("Fruiton Bowl", AIType.SportsMen),
+        new Option<AIType>("North Pole", AIType.Santas),
+        new Option<AIType>("Circus", AIType.Clowns)
     };
 
     /// <summary> true if player is actually editing teams, false if only viewing/picking </summary>
@@ -457,7 +458,7 @@ public class FruitonTeamsManager : MonoBehaviour
     private void InitializeAllFruitons()
     {
         GameManager gameManager = GameManager.Instance;
-        IEnumerable<KFruiton> allFruitons = gameManager.AllFruitons;
+        IEnumerable<KFruiton> allFruitons = gameManager.AllPlayableFruitons;
         fridgeFruitons = new List<FridgeFruiton>();
         var i = 0;
         var templateRectTransform = FridgeFruitonTemplate.gameObject.GetComponent<RectTransform>();
@@ -753,7 +754,7 @@ public class FruitonTeamsManager : MonoBehaviour
                 ResizeScrollContent(teams.Count);
                 break;
             case ViewMode.TeamEdit:
-                ResizeScrollContent(GameManager.Instance.AllFruitons.Count());
+                ResizeScrollContent(GameManager.Instance.AllPlayableFruitons.Count());
                 break;
         }
     }
