@@ -28,6 +28,8 @@ namespace Networking
         public static AuthenticationHandler Instance { get; private set; }
 
         public string LastPassword { get; private set; }
+
+        private HttpListener googleLoginHttpListener;
         
         private AuthenticationHandler()
         {
@@ -108,10 +110,17 @@ namespace Networking
         
         public void LoginGoogle()
         {
-            var listener = new HttpListener();
+            if (googleLoginHttpListener == null)
+            {
+                googleLoginHttpListener = new HttpListener();
+            }
 
-            listener.Prefixes.Add("http://*:" + GOOGLE_REDIRECT_PORT + "/");
-            listener.Start();
+            if (!googleLoginHttpListener.IsListening) 
+            {
+                googleLoginHttpListener.Prefixes.Add("http://*:" + GOOGLE_REDIRECT_PORT + "/");
+                googleLoginHttpListener.Start();
+                googleLoginHttpListener.BeginGetContext(ProcessGoogleResult, googleLoginHttpListener);
+            }
 
             Application.OpenURL(
                 "https://accounts.google.com/o/oauth2/v2/auth"
@@ -120,12 +129,11 @@ namespace Networking
                 + "&response_type=code"
                 + "&scope=email%20profile"
             );
-
-            listener.BeginGetContext(ProcessGoogleResult, listener);
         }
 
         private void ProcessGoogleResult(IAsyncResult result)
         {
+            googleLoginHttpListener = null;
             using (var listener = (HttpListener) result.AsyncState)
             {
                 HttpListenerContext context = listener.EndGetContext(result);
