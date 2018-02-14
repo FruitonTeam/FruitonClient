@@ -1,5 +1,7 @@
-﻿using Cz.Cuni.Mff.Fruiton.Dto;
+﻿using System;
+using Cz.Cuni.Mff.Fruiton.Dto;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
 using UnityEngine.UI;
 using KFruiton = fruiton.kernel.Fruiton;
@@ -26,8 +28,13 @@ public class DraftManager : MonoBehaviour
     public Text EnemyName;
     public Text MyName;
     public GameObject LoadingPanel;
+    public Text TimeToPickText;
+    public Text TimeToPickLabel;
+    public Text OpponetTurnToPickText;
+    public MessagePanel GameOverPanel;
 
 
+    private readonly float pickTimeFrame = 2.0f;
     private FruitonTeam myTeam;
     private FruitonTeam enemyTeam;
     private bool isDragging;
@@ -39,6 +46,7 @@ public class DraftManager : MonoBehaviour
     private DraftHandler draftHandler;
     private bool isMyTurnToDraft;
     private Position currentDraftPosition;
+    private DateTime pickTimeEnd;
 
     void Awake()
     {
@@ -95,6 +103,9 @@ public class DraftManager : MonoBehaviour
 
     void Update()
     {
+        double pickTimeLeft = Math.Max(0, (pickTimeEnd - DateTime.Now).TotalSeconds);
+        TimeToPickText.text = Math.Floor(pickTimeLeft).ToString(CultureInfo.InvariantCulture);
+        
         // drag and drop (or adding from fruiton detail window) logic
         if (isDragging)
         {
@@ -151,6 +162,7 @@ public class DraftManager : MonoBehaviour
                 DragAndDropFruiton.gameObject.SetActive(false);
                 DragAndDropBarrier.gameObject.SetActive(false);
                 MyTeamGrid.CancelHighlights();
+                //MyTeamGrid.HighlightAvailable();
                 ScrollRect.horizontal = true;
 
                 if (dropGridPosition != null)
@@ -191,16 +203,26 @@ public class DraftManager : MonoBehaviour
         isMyTurnToDraft = true;
         currentDraftPosition = request.Position;
         MyTeamGrid.AvailablePositions = new List<Position> {currentDraftPosition};
+        MyTeamGrid.CancelHighlights();
         MyTeamGrid.AllowEdit = true;
         MyName.color = Color.red;
+        float pickTimeLeft = request.SecondsToPick - pickTimeFrame;
+        pickTimeEnd = DateTime.Now.AddSeconds(pickTimeLeft);
+        OpponetTurnToPickText.gameObject.SetActive(false);
+        TimeToPickText.gameObject.SetActive(true);
+        TimeToPickLabel.gameObject.SetActive(true);
     }
 
     public void TurnOffDrafting()
     {
         isMyTurnToDraft = false;
         MyTeamGrid.AvailablePositions = null;
+        MyTeamGrid.CancelHighlights();
         MyTeamGrid.AllowEdit = false;
         MyName.color = Color.black;
+        OpponetTurnToPickText.gameObject.SetActive(true);
+        TimeToPickText.gameObject.SetActive(false);
+        TimeToPickLabel.gameObject.SetActive(false);
     }
     
 
@@ -213,8 +235,6 @@ public class DraftManager : MonoBehaviour
 
     public void LoadBattle()
     {
-        // TODO implement battle loading
-        // TODO implement correct draft handling in battle scene
         if (GameManager.Instance.CurrentFruitonTeam != null)
         {
             var param = new Dictionary<string, string>
@@ -228,7 +248,7 @@ public class DraftManager : MonoBehaviour
 
     public void Surrender()
     {
-        // TODO implement surrender
+        draftHandler.SendSurrender();
         Scenes.Load(Scenes.MAIN_MENU_SCENE);
     }
 
@@ -270,6 +290,26 @@ public class DraftManager : MonoBehaviour
             }
         });
         MyTeamGrid.OnMouseExitSquare.AddListener(square =>
+        {
+            if (!isDragging)
+            {
+                square.CancelHighlight();
+                HideTooltip();
+            }
+        });
+
+        EnemyTeamGrid.OnMouseEnterSquare.AddListener(square =>
+        {
+            if (!isDragging)
+            {
+                square.Highlight(new Color(1, 1, 0.8f));
+                if (square.KernelFruiton != null)
+                {
+                    ShowTooltip(square.KernelFruiton, 1);
+                }
+            }
+        });
+        EnemyTeamGrid.OnMouseExitSquare.AddListener(square =>
         {
             if (!isDragging)
             {
@@ -485,5 +525,30 @@ public class DraftManager : MonoBehaviour
     void OnDisable()
     {
         draftHandler.StopListening();
+    }
+
+    public void GameOver(GameOver gameOver)
+    {
+        // TODO merge with GameOver in BattleViewer
+        GameOverPanel.gameObject.SetActive(true);
+        GameOverPanel.OnClose(() => Scenes.Load(Scenes.MAIN_MENU_SCENE));
+        GameOverPanel.ShowInfoMessage(
+            "Game over: " + gameOver.Reason + Environment.NewLine +
+            "Money gain: " + gameOver.Results.Money + Environment.NewLine +
+            "Unlocked fruitons: " + gameOver.Results.UnlockedFruitons + Environment.NewLine +
+            "Unlocked quests: " + string.Join(",",
+            gameOver.Results.Quests.Select(q => q.Name).ToArray())
+        );
+
+        GameManager.Instance.AddMoney(gameOver.Results.Money);
+        GameManager.Instance.UnlockFruitons(gameOver.Results.UnlockedFruitons);
+
+        if (gameOver.Results.Quests != null)
+        {
+            foreach (Quest q in gameOver.Results.Quests)
+            {
+                GameManager.Instance.AddMoney(q.Reward.Money);
+            }
+        }
     }
 }

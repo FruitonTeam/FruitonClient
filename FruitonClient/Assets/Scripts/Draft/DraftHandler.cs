@@ -19,6 +19,7 @@ public class DraftHandler : IOnMessageListener
         ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.DraftResult, this);
         ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.DraftReady, this);
         ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.GameReady, this);
+        ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.GameOver, this);
     }
     public void StopListening()
     {
@@ -26,6 +27,7 @@ public class DraftHandler : IOnMessageListener
         ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.DraftResult, this);
         ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.DraftReady, this);
         ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.GameReady, this);
+        ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.GameOver, this);
     }
 
     public void OnMessage(WrapperMessage message)
@@ -44,7 +46,15 @@ public class DraftHandler : IOnMessageListener
             case WrapperMessage.MessageOneofCase.GameReady:
                 ProcessMessage(message.GameReady);
                 break;
+            case WrapperMessage.MessageOneofCase.GameOver:
+                ProcessMessage(message.GameOver);
+                break;
         }
+    }
+
+    private void ProcessMessage(GameOver gameOver)
+    {
+        draftManager.GameOver(gameOver);
     }
 
     private void ProcessMessage(GameReady gameReady)
@@ -95,5 +105,16 @@ public class DraftHandler : IOnMessageListener
             DraftResponse = draftResponse
         };
         ConnectionHandler.Instance.SendWebsocketMessage(wrapperMessage);
+    }
+
+    public void SendSurrender()
+    {
+        var draftSurrender = new DraftSurrenderMessage();
+        var wrapperMessage = new WrapperMessage
+        {
+            DraftSurrenderMessage = draftSurrender
+        };
+        if (ConnectionHandler.Instance.IsLogged())
+            ConnectionHandler.Instance.SendWebsocketMessage(wrapperMessage);
     }
 }

@@ -25,8 +25,36 @@ public class FridgeTeamGrid : MonoBehaviour
     public UnityEvent<KFruiton, Position> OnBeginDragFromTeam { get; private set; }
     public UnityEvent<FridgeGridSquare> OnMouseEnterSquare { get; private set; }
     public UnityEvent<FridgeGridSquare> OnMouseExitSquare { get; private set; }
-    public List<Position> AvailablePositions { get; set; }
-    
+
+    private List<Position> availablePositions;
+
+    public List<Position> AvailablePositions
+    {
+        get { return availablePositions; }
+        set
+        {
+            availablePositions = value;
+
+            for (var x = 0; x < gridSquares.GetLength(0); x++)
+            {
+                for (var y = 0; y < gridSquares.GetLength(1); y++)
+                {
+                    FridgeGridSquare square = gridSquares[x, y];
+                    if (availablePositions != null 
+                        && availablePositions.Contains(GetBattlePositionFromGridPosition(x, y)))
+                    {
+                        square.SecondaryBgColor = Color.blue;
+                        square.SwitchDefaultBgColor();
+                    }
+                    else
+                    {
+                        square.ResetDefaultBgColor();
+                    }
+                }
+            }
+        }
+    }
+
 
     private int squareSize;
     private RectTransform rectTransform;
@@ -62,6 +90,20 @@ public class FridgeTeamGrid : MonoBehaviour
     public void ResetTeam()
     {
         ClearFruitons();
+    }
+
+    public void HighlightAvailable()
+    {
+        if (AvailablePositions != null)
+        {
+            foreach (Position pos in AvailablePositions)
+            {
+                Debug.Log("BattlePos: " + pos.X + " " + pos.Y);
+                Position gridPos = GetGridPositionFromBattlePosition(pos.X, pos.Y);
+                Debug.Log("GridPos: " + gridPos.X + " " + gridPos.Y);
+                gridSquares[gridPos.X, gridPos.Y].Highlight(Color.blue);
+            }
+        }
     }
 
     public bool HighlightAvailableSquares(int fruitonType, bool swapping = false)
@@ -209,6 +251,15 @@ public class FridgeTeamGrid : MonoBehaviour
         {
             X = y + 2,
             Y = x
+        };
+    }
+
+    private static Position GetGridPositionFromBattlePosition(int x, int y)
+    {
+        return new Position
+        {
+            X = y,
+            Y = x - 2
         };
     }
 }
