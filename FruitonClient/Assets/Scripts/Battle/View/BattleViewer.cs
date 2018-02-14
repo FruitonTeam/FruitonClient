@@ -363,7 +363,7 @@ public class BattleViewer : MonoBehaviour
 
     private void ProcessDeathEvent(DeathEvent kEvent)
     {
-        var killedPos = kEvent.target;
+        var killedPos = kEvent.fruiton.position;
         var killed = Grid[killedPos.x, killedPos.y];
         Destroy(killed);
         Grid[killedPos.x, killedPos.y] = null;

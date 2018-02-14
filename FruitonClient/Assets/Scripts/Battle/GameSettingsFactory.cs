@@ -5,7 +5,6 @@ using fruiton.fruitDb.factories;
 using fruiton.kernel;
 using fruiton.kernel.gameModes;
 using haxe.root;
-
 using ProtoGameMode = Cz.Cuni.Mff.Fruiton.Dto.GameMode;
 
 public class GameSettingsFactory

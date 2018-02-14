@@ -74,8 +74,9 @@ public class FruitonTeamsManager : MonoBehaviour
 
     private readonly List<Option<AIType>> aiModes = new List<Option<AIType>>
     {
-        new Option<AIType>("Random", AIType.Random),
-        new Option<AIType>("Aggresive", AIType.AggroGreedy)
+        new Option<AIType>("Fruiton Bowl", AIType.SportsMen),
+        new Option<AIType>("North Pole", AIType.Santas),
+        new Option<AIType>("Circus", AIType.Clowns)
     };
 
     /// <summary> true if player is actually editing teams, false if only viewing/picking </summary>
