@@ -19,15 +19,47 @@ class OnMouseExitSquare : UnityEvent<FridgeGridSquare>
 
 public class FridgeTeamGrid : MonoBehaviour
 {
-    public bool AllowEdit = false;
+    public bool AllowEdit;
+    public bool IsMirrored;
     public FridgeGridSquare GridSquareTemplate;
     public UnityEvent<KFruiton, Position> OnBeginDragFromTeam { get; private set; }
     public UnityEvent<FridgeGridSquare> OnMouseEnterSquare { get; private set; }
     public UnityEvent<FridgeGridSquare> OnMouseExitSquare { get; private set; }
 
+    private List<Position> availablePositions;
+
+    public List<Position> AvailablePositions
+    {
+        get { return availablePositions; }
+        set
+        {
+            availablePositions = value;
+
+            for (var x = 0; x < gridSquares.GetLength(0); x++)
+            {
+                for (var y = 0; y < gridSquares.GetLength(1); y++)
+                {
+                    FridgeGridSquare square = gridSquares[x, y];
+                    if (availablePositions != null 
+                        && availablePositions.Contains(GetBattlePositionFromGridPosition(x, y)))
+                    {
+                        square.SecondaryBgColor = Color.blue;
+                        square.SwitchDefaultBgColor();
+                    }
+                    else
+                    {
+                        square.ResetDefaultBgColor();
+                    }
+                }
+            }
+        }
+    }
+
+
     private int squareSize;
     private RectTransform rectTransform;
     private FridgeGridSquare[,] gridSquares;
+    
 
 
     void Awake()
@@ -49,7 +81,7 @@ public class FridgeTeamGrid : MonoBehaviour
             var fruitonId = team.FruitonIDs[i];
             var pos = team.Positions[i];
             var kernelFruiton = FruitonFactory.makeFruiton(fruitonId, GameManager.Instance.FruitonDatabase);
-            var x = pos.Y;
+            var x = IsMirrored ? 1 - pos.Y : pos.Y;
             var y = pos.X - 2;
             gridSquares[x, y].SetFruiton(kernelFruiton);
         }
@@ -60,22 +92,41 @@ public class FridgeTeamGrid : MonoBehaviour
         ClearFruitons();
     }
 
+    public void HighlightAvailable()
+    {
+        if (AvailablePositions != null)
+        {
+            foreach (Position pos in AvailablePositions)
+            {
+                Debug.Log("BattlePos: " + pos.X + " " + pos.Y);
+                Position gridPos = GetGridPositionFromBattlePosition(pos.X, pos.Y);
+                Debug.Log("GridPos: " + gridPos.X + " " + gridPos.Y);
+                gridSquares[gridPos.X, gridPos.Y].Highlight(Color.blue);
+            }
+        }
+    }
+
     public bool HighlightAvailableSquares(int fruitonType, bool swapping = false)
     {
         bool isAnySquareAvailable = false;
 
-        foreach (var square in gridSquares)
+        for (var x = 0; x < gridSquares.GetLength(0); x++)
         {
-            if (square.FruitonType == fruitonType)
+            for (var y = 0; y < gridSquares.GetLength(1); y++)
             {
-                if (square.IsEmpty || swapping)
+                var square = gridSquares[x, y];
+                if (square.FruitonType == fruitonType
+                    && (AvailablePositions == null || AvailablePositions.Contains(GetBattlePositionFromGridPosition(x, y))))
                 {
-                    square.Highlight(Color.green);
-                    isAnySquareAvailable = true;
-                }
-                else
-                {
-                    square.Highlight(Color.red);
+                    if (square.IsEmpty || swapping)
+                    {
+                        square.Highlight(Color.green);
+                        isAnySquareAvailable = true;
+                    }
+                    else
+                    {
+                        square.Highlight(Color.red);
+                    }
                 }
             }
         }
@@ -85,14 +136,16 @@ public class FridgeTeamGrid : MonoBehaviour
 
     public List<Position> GetAvailableSquares(KFruiton fruiton)
     {
-        List<Position> result = new List<Position>();
-        for (int i = 0; i < 2; i++)
+        var result = new List<Position>();
+        for (int x = 0; x < gridSquares.GetLength(0); x++)
         {
-            for (int j = 0; j < 5; j++)
+            for (int y = 0; y < gridSquares.GetLength(1); y++)
             {
-                if (gridSquares[i, j].IsEmpty && gridSquares[i, j].FruitonType == fruiton.type)
+                if (gridSquares[x, y].IsEmpty 
+                    && gridSquares[x, y].FruitonType == fruiton.type
+                    && (AvailablePositions == null || AvailablePositions.Contains(GetBattlePositionFromGridPosition(x, y))))
                 {
-                    result.Add(GetBattlePositionFromGridPosition(i, j));
+                    result.Add(GetBattlePositionFromGridPosition(x, y));
                 }
             }
         }
@@ -142,32 +195,35 @@ public class FridgeTeamGrid : MonoBehaviour
 
     private void InitGridFruitons()
     {
-        for (int i = 0; i < 2; i++)
+        for (int x = 0; x < 2; x++)
         {
-            for (int j = 0; j < 5; j++)
+            for (int y = 0; y < 5; y++)
             {
                 var gridFruitonObject = Instantiate(GridSquareTemplate);
                 gridFruitonObject.transform.SetParent(GridSquareTemplate.transform.parent);
                 gridFruitonObject.transform.localScale = GridSquareTemplate.transform.localScale;
                 gridFruitonObject.GetComponent<RectTransform>().localPosition =
-                    new Vector3(i * squareSize, -j * squareSize, 0);
+                    new Vector3(x * squareSize, -y * squareSize, 0);
 
                 var square = gridFruitonObject.GetComponent<FridgeGridSquare>();
-                square.SetFruitonType(i == 0 ? (j == 2 ? 1 : 2) : 3); // sorry :(
-                var x = i;
-                var y = j;
+                if (IsMirrored)
+                    square.SetFruitonType(x == 1 ? (y == 2 ? 1 : 2) : 3);
+                else
+                    square.SetFruitonType(x == 0 ? (y == 2 ? 1 : 2) : 3);
+                var xLoc = x;
+                var yLoc = y;
                 square.OnBeginDrag.AddListener(() =>
                 {
                     if (AllowEdit)
                     {
-                        OnBeginDragFromTeam.Invoke(square.KernelFruiton, GetBattlePositionFromGridPosition(x, y));
+                        OnBeginDragFromTeam.Invoke(square.KernelFruiton, GetBattlePositionFromGridPosition(xLoc, yLoc));
                         square.ClearFruiton();
                     }
                 });
                 square.OnMouseEnter.AddListener(() => OnMouseEnterSquare.Invoke(square));
                 square.OnMouseExit.AddListener(() => OnMouseExitSquare.Invoke(square));
 
-                gridSquares[i, j] = square;
+                gridSquares[x, y] = square;
             }
         }
         GridSquareTemplate.gameObject.SetActive(false);
@@ -195,6 +251,15 @@ public class FridgeTeamGrid : MonoBehaviour
         {
             X = y + 2,
             Y = x
+        };
+    }
+
+    private static Position GetGridPositionFromBattlePosition(int x, int y)
+    {
+        return new Position
+        {
+            X = y,
+            Y = x - 2
         };
     }
 }

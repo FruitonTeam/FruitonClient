@@ -18,19 +18,22 @@ public class FridgeGridSquare : MonoBehaviour, IPointerDownHandler, IPointerEnte
     public UnityEvent OnMouseEnter { get; private set; }
     public UnityEvent OnMouseExit { get; private set; }
 
+    private Color primaryBgColor;
+    public Color SecondaryBgColor { get; set; }
+
     private static Sprite[] typeIconSprites;
 
     private SkeletonGraphic spineSkeleton;
     private Image background;
     private Color defaultBackgroundColor;
 
-    // Use this for initialization
     void Awake()
     {
         RectTransform = GetComponent<RectTransform>();
         spineSkeleton = GetComponentInChildren<SkeletonGraphic>();
         background = GetComponentInChildren<Image>();
         defaultBackgroundColor = GetComponentInChildren<Image>().color;
+        primaryBgColor = defaultBackgroundColor;
         OnBeginDrag = new UnityEvent();
         OnMouseEnter = new UnityEvent();
         OnMouseExit = new UnityEvent();
@@ -43,6 +46,19 @@ public class FridgeGridSquare : MonoBehaviour, IPointerDownHandler, IPointerEnte
                 typeIconSprites[i] = Resources.Load<Sprite>("Images/UI/Icons/" + FridgeFruiton.TypeNames[i] + "_256");
             }
         }
+    }
+
+    public void SwitchDefaultBgColor()
+    {
+        if (defaultBackgroundColor == primaryBgColor)
+            defaultBackgroundColor = SecondaryBgColor;
+        else
+            defaultBackgroundColor = primaryBgColor;
+    }
+
+    public void ResetDefaultBgColor()
+    {
+        defaultBackgroundColor = primaryBgColor;
     }
 
     public void SetFruiton(Fruiton fruiton)
