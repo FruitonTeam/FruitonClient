@@ -10,6 +10,15 @@ using fruiton.kernel.fruitonTeam;
 using haxe.root;
 using Networking;
 
+public enum TeamManagementState
+{
+    TEAM_MANAGEMENT,
+    ONLINE_CHOOSE,
+    LOCAL_CHOOSE_FIRST,
+    LOCAL_CHOOSE_SECOND,
+    AI_CHOOSE
+}
+
 public class FruitonTeamsManager : MonoBehaviour
 {
     private class Option<TEnum>
@@ -53,6 +62,7 @@ public class FruitonTeamsManager : MonoBehaviour
     public Text WarningText;
     public FridgeFilterManager FilterManager;
     public GameObject DropdownPanel;
+    public Text LocalDuelHeadline;
 
 
     private ViewMode viewMode;
@@ -79,43 +89,68 @@ public class FruitonTeamsManager : MonoBehaviour
         new Option<AIType>("Circus", AIType.Clowns)
     };
 
-    /// <summary> true if player is actually editing teams, false if only viewing/picking </summary>
-    private bool isInTeamManagement;
-
-    /// <summary> Name of scene param, true if player is actually editing teams, false if only viewing/picking</summary>
-    public static readonly string TEAM_MANAGEMENT_STATE = "teamManagementState";
+    private TeamManagementState state;
 
     public static readonly int MAX_TEAM_COUNT = 16;
+    private static readonly string CHOOSE_OFFLINE_TEAM = "Choose a team for Player {0}.";
+
+
+    /// <summary> true if player is actually editing teams, false if only viewing/picking </summary>
+    private bool isInTeamManagement
+    {
+        get { return state == TeamManagementState.TEAM_MANAGEMENT; }
+    }
+
+    private FruitonTeam CurrentFruitonTeam
+    {
+        get
+        {
+            if (state == TeamManagementState.LOCAL_CHOOSE_SECOND)
+            {
+                return GameManager.Instance.OfflineOpponentTeam;
+            }
+            return GameManager.Instance.CurrentFruitonTeam;
+        }
+        set
+        {
+            if (state == TeamManagementState.LOCAL_CHOOSE_SECOND)
+            {
+                GameManager.Instance.OfflineOpponentTeam = value;
+            }
+            else
+            {
+                GameManager.Instance.CurrentFruitonTeam = value;
+            }
+            
+        }
+    }
 
     // Use this for initialization
     void Start()
     {
-        isInTeamManagement = bool.Parse(Scenes.GetParam(TEAM_MANAGEMENT_STATE));
+        state = (TeamManagementState) Enum.Parse(typeof(TeamManagementState), Scenes.GetParam(Scenes.TEAM_MANAGEMENT_STATE));
         InitializeTeams(isInTeamManagement);
         SwitchViewMode(viewMode);
-        if (isInTeamManagement)
-        {
-            ButtonPlay.gameObject.SetActive(false);
-            InitializeAllFruitons();
-            DropdownPanel.SetActive(false);
-        }
-        else
-        {
-            ButtonNewTeam.gameObject.SetActive(false);
-            ButtonEdit.gameObject.SetActive(false);
-            ButtonDelete.gameObject.SetActive(false);
 
-            PlayerOptions playerOptions = GameManager.Instance.PlayerOptions;
-            var battleType = (BattleType)Enum.Parse(typeof(BattleType), Scenes.GetParam(Scenes.BATTLE_TYPE));
-            if (battleType == BattleType.AIBattle)
-            {
-                SetupModeDropdown(aiModes, playerOptions.LastSelectedAIMode);
-            }
-            else
-            {
-                SetupModeDropdown(gameModes, playerOptions.LastSelectedGameMode);
-            }
+        switch (state)
+        {
+            case TeamManagementState.ONLINE_CHOOSE:
+                OnlineChooseStart();
+                break;
+            case TeamManagementState.TEAM_MANAGEMENT:
+                TeamManagementStart();
+                break;
+            case TeamManagementState.LOCAL_CHOOSE_FIRST:
+                LocalChooseStart();
+                break;
+            case TeamManagementState.LOCAL_CHOOSE_SECOND:
+                LocalChooseSecondStart();
+                break;
+            case TeamManagementState.AI_CHOOSE:
+                AIChooseStart();
+                break;
         }
+
         InitializeTeamGridListeners();
         InitializeFruitonDetailListeners();
         if (viewMode == ViewMode.TeamSelect)
@@ -149,6 +184,53 @@ public class FruitonTeamsManager : MonoBehaviour
                     return null;
                 })
         ).SetErrorFontSize(24);
+    }
+
+    private void AIChooseStart()
+    {
+        CommonChooseStart();
+        PlayerOptions playerOptions = GameManager.Instance.PlayerOptions;
+        SetupModeDropdown(aiModes, playerOptions.LastSelectedAIMode);
+    }
+
+    private void OnlineChooseStart()
+    {
+        PlayerOptions playerOptions = GameManager.Instance.PlayerOptions;
+        SetupModeDropdown(gameModes, playerOptions.LastSelectedGameMode);
+        CommonChooseStart();
+    }
+
+    private void LocalChooseSecondStart()
+    {
+        ButtonPlay.GetComponentInChildren<Text>().text = "Play";
+        CommonChooseStart();
+        PlayerOptions playerOptions = GameManager.Instance.PlayerOptions;
+        SetupModeDropdown(gameModes, playerOptions.LastSelectedGameMode);
+        LocalDuelHeadline.text = String.Format(CHOOSE_OFFLINE_TEAM, 2);
+    }
+
+    private void LocalChooseStart()
+    {
+        ButtonPlay.GetComponentInChildren<Text>().text = "Next";
+        PlayerOptions playerOptions = GameManager.Instance.PlayerOptions;
+        SetupModeDropdown(gameModes, playerOptions.LastSelectedGameMode);
+        CommonChooseStart();
+        LocalDuelHeadline.text = String.Format(CHOOSE_OFFLINE_TEAM, 1);
+    }
+
+    private void TeamManagementStart()
+    {
+        ButtonPlay.gameObject.SetActive(false);
+        InitializeAllFruitons();
+        DropdownPanel.SetActive(false);
+        ButtonBack.GetComponentInChildren<Text>().text = "Back";
+    }
+
+    private void CommonChooseStart()
+    {
+        ButtonNewTeam.gameObject.SetActive(false);
+        ButtonEdit.gameObject.SetActive(false);
+        ButtonDelete.gameObject.SetActive(false);
     }
 
     private void SetupModeDropdown<TEnum>(IList<Option<TEnum>> options, int selectedIdx)
@@ -309,34 +391,67 @@ public class FruitonTeamsManager : MonoBehaviour
 
     public void LoadBattle()
     {
-        if (GameManager.Instance.CurrentFruitonTeam != null)
+        switch (state)
         {
-            var param = new Dictionary<string, string>
+            case TeamManagementState.LOCAL_CHOOSE_SECOND:
+            case TeamManagementState.ONLINE_CHOOSE:
+                PlayDefault();
+                break;
+            case TeamManagementState.TEAM_MANAGEMENT:
+                break;
+            case TeamManagementState.LOCAL_CHOOSE_FIRST:
+                ReloadForSecondTeam();
+                break;
+            case TeamManagementState.AI_CHOOSE:
+                PlayAI();
+                break;
+        }
+    }
+
+    private void ReloadForSecondTeam()
+    {
+        var param = new Dictionary<string, string>
+            {
+                {Scenes.BATTLE_TYPE, Scenes.GetParam(Scenes.BATTLE_TYPE)},
+                {Scenes.TEAM_MANAGEMENT_STATE, TeamManagementState.LOCAL_CHOOSE_SECOND.ToString()},
+                {Scenes.GAME_MODE, GetAndSaveGameMode().ToString() }
+            };
+        Scenes.Load(Scenes.TEAMS_MANAGEMENT_SCENE, param);
+    }
+
+    private void PlayAI()
+    {
+        var param = new Dictionary<string, string>
             {
                 {Scenes.BATTLE_TYPE, Scenes.GetParam(Scenes.BATTLE_TYPE)}
             };
+        var aiModeDropdown = DropdownPanel.GetComponentInChildren<Dropdown>();
+        AIType aiMode = aiModes[aiModeDropdown.value].Type;
+        GameManager.Instance.PlayerOptions.LastSelectedAIMode = aiModeDropdown.value;
+        GameManager.Instance.SavePlayerSettings();
+        param.Add(Scenes.AI_TYPE, aiMode.ToString());
+        param.Add(Scenes.GAME_MODE, GameMode.Standard.ToString());
+        Scenes.Load(Scenes.BATTLE_SCENE, param);
+    }
 
-            var battleType = (BattleType) Enum.Parse(typeof(BattleType), Scenes.GetParam(Scenes.BATTLE_TYPE));
-            if (battleType == BattleType.AIBattle)
+    private void PlayDefault()
+    {
+        var param = new Dictionary<string, string>
             {
-                var aiModeDropdown = DropdownPanel.GetComponentInChildren<Dropdown>();
-                AIType aiMode = aiModes[aiModeDropdown.value].Type;
-                GameManager.Instance.PlayerOptions.LastSelectedAIMode = aiModeDropdown.value;
-                GameManager.Instance.SavePlayerSettings();
-                param.Add(Scenes.AI_TYPE, aiMode.ToString());
-                param.Add(Scenes.GAME_MODE, GameMode.Standard.ToString());
-            }
-            else
-            {
-                var gameModeDropdown = DropdownPanel.GetComponentInChildren<Dropdown>();
-                GameMode gameMode = gameModes[gameModeDropdown.value].Type;
-                GameManager.Instance.PlayerOptions.LastSelectedGameMode = gameModeDropdown.value;
-                GameManager.Instance.SavePlayerSettings();
-                param.Add(Scenes.GAME_MODE, gameMode.ToString());
-            }
+                {Scenes.BATTLE_TYPE, Scenes.GetParam(Scenes.BATTLE_TYPE)}
+            };
+        GameMode gameMode = GetAndSaveGameMode();
+        param.Add(Scenes.GAME_MODE, gameMode.ToString());
+        Scenes.Load(Scenes.BATTLE_SCENE, param);
+    }
 
-            Scenes.Load(Scenes.BATTLE_SCENE, param);
-        }
+    private GameMode GetAndSaveGameMode()
+    {
+        var gameModeDropdown = DropdownPanel.GetComponentInChildren<Dropdown>();
+        GameMode gameMode = gameModes[gameModeDropdown.value].Type;
+        GameManager.Instance.PlayerOptions.LastSelectedGameMode = gameModeDropdown.value;
+        GameManager.Instance.SavePlayerSettings();
+        return gameMode;
     }
 
     public void ReturnToMenu()
@@ -673,7 +788,7 @@ public class FruitonTeamsManager : MonoBehaviour
         if (isInvalidIndex)
         {
             selectedTeamIndex = -1;
-            GameManager.Instance.CurrentFruitonTeam = null;
+            CurrentFruitonTeam = null;
             TeamGrid.ResetTeam();
             return;
         }
@@ -687,7 +802,7 @@ public class FruitonTeamsManager : MonoBehaviour
         selectedTeamIndex = index;
         var newTeam = teams[selectedTeamIndex].KernelTeam;
         InputTeamName.text = newTeam.Name;
-        GameManager.Instance.CurrentFruitonTeam = newTeam;
+        CurrentFruitonTeam = newTeam;
         TeamGrid.LoadTeam(newTeam);
     }
 

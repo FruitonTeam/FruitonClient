@@ -158,7 +158,7 @@ public class BattleViewer : MonoBehaviour
     private void InitializeOfflineGame()
     {
         isGameStarted = true;
-        InitializePlayersInfo();
+        InitializePlayersInfo(false);
         SetupSurrenderButton();
     }
 
@@ -168,17 +168,21 @@ public class BattleViewer : MonoBehaviour
         SurrendButton.onClick.AddListener(Surrender);
     }
 
-    public void InitializePlayersInfo()
+    public void InitializePlayersInfo(bool loadImages = true)
     {
         string login1 = battle.Player1.Name;
         string login2 = battle.Player2.Name;
         MyLoginText.text = login1;
         OpponentLoginText.text = login2;
+        
+        if (loadImages)
+        {
+            MyAvatar.sprite = SpriteUtils.TextureToSprite(GameManager.Instance.Avatar);
+            PlayerHelper.GetAvatar(login2,
+                texture => OpponentAvatar.sprite = SpriteUtils.TextureToSprite(texture),
+                Debug.Log);
+        }
 
-        MyAvatar.sprite = SpriteUtils.TextureToSprite(GameManager.Instance.Avatar);
-        PlayerHelper.GetAvatar(login2,
-            texture => OpponentAvatar.sprite = SpriteUtils.TextureToSprite(texture),
-            Debug.Log);
     }
 
     public void LeftButtonUpLogic(RaycastHit[] raycastHits = null)

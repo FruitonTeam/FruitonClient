@@ -57,6 +57,8 @@ public class GameManager : IOnMessageListener
     /// </summary>
     public FruitonTeam CurrentFruitonTeam { get; set; }
 
+    public FruitonTeam OfflineOpponentTeam { get; set; }
+
     public bool StayLoggedIn
     {
         get
