@@ -69,10 +69,14 @@ public class BattleViewer : MonoBehaviour
 
         Debug.Log("playing battle: " + battleType + " in mode: " + GameMode);
 
+        // We come from draft
+        object gameReady;
+        bool comeFromDraft = Scenes.TryGetObjParam(Scenes.GAME_READY_MSG, out gameReady);
+
         switch (battleType)
         {
             case BattleType.OnlineBattle:
-                battle = new OnlineBattle(this);
+                battle = new OnlineBattle(this, !comeFromDraft);
                 PanelLoadingGame.SetActive(true);
                 break;
             case BattleType.OfflineBattle:
@@ -96,6 +100,12 @@ public class BattleViewer : MonoBehaviour
         }
 
         battle.OnEnable();
+
+        if (comeFromDraft)
+        {
+            Debug.Assert(battleType == BattleType.OnlineBattle);
+            ((OnlineBattle)battle).ProcessMessage((GameReady)gameReady);
+        }
     }
 
     private void Update()
@@ -505,23 +515,7 @@ public class BattleViewer : MonoBehaviour
 
     public void GameOver(GameOver gameOverMessage)
     {
-        GameResultsPanel.OnClose(() => Scenes.Load(Scenes.MAIN_MENU_SCENE));
-        GameResultsPanel.ShowInfoMessage("Game over: " + gameOverMessage.Reason + Environment.NewLine +
-                                         "Money gain: " + gameOverMessage.Results.Money + Environment.NewLine +
-                                         "Unlocked fruitons: " + gameOverMessage.Results.UnlockedFruitons + Environment.NewLine +
-                                         "Unlocked quests: " + string.Join(",", 
-                                             gameOverMessage.Results.Quests.Select(q => q.Name).ToArray()));
-        
-        GameManager.Instance.AddMoney(gameOverMessage.Results.Money);
-        GameManager.Instance.UnlockFruitons(gameOverMessage.Results.UnlockedFruitons);
-
-        if (gameOverMessage.Results.Quests != null)
-        {
-            foreach (Quest q in gameOverMessage.Results.Quests)
-            {
-                GameManager.Instance.AddMoney(q.Reward.Money);
-            }
-        }
+        BattleUIUtil.ShowResults(GameResultsPanel, gameOverMessage);
         
         Debug.Log("Game over, reason: " + gameOverMessage.Reason + ", result: " + gameOverMessage.Results);
     }

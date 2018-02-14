@@ -22,7 +22,9 @@ public class FridgeFilterManager : MonoBehaviour
     {
         OnFilterUpdated = new UnityEvent();
         FilterInput.onValueChanged.AddListener(text => { ApplyFilters(); });
-        ShowNotOwnedButton.onClick.AddListener(ToggleShowNotOwned);
+        if (ShowNotOwnedButton != null)
+            ShowNotOwnedButton.onClick.AddListener(ToggleShowNotOwned);
+
         typeColors = new Color[4];
         for (int i = 1; i < 4; i++)
         {

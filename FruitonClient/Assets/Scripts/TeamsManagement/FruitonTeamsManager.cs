@@ -25,15 +25,21 @@ public class FruitonTeamsManager : MonoBehaviour
     {
         public string Name { get; private set; }
         public TEnum Type { get; private set; }
-
-        public Option(string name, TEnum type)
+        public PickMode PickMode { get; private set; }
+        
+        public Option(
+            string name,
+            TEnum type,
+            PickMode pickMode = PickMode.StandardPick
+        )
         {
             Name = name;
             Type = type;
+            PickMode = pickMode;
         }
     }
 
-    enum ViewMode
+    private enum ViewMode
     {
         TeamSelect,
         TeamEdit
@@ -79,7 +85,8 @@ public class FruitonTeamsManager : MonoBehaviour
     private readonly List<Option<GameMode>> gameModes = new List<Option<GameMode>>
     {
         new Option<GameMode>("Standard", GameMode.Standard),
-        new Option<GameMode>("Last man standing", GameMode.LastManStanding)
+        new Option<GameMode>("Last man standing", GameMode.LastManStanding),
+        new Option<GameMode>("Draft", GameMode.Standard, PickMode.Draft)
     };
 
     private readonly List<Option<AIType>> aiModes = new List<Option<AIType>>
@@ -440,8 +447,16 @@ public class FruitonTeamsManager : MonoBehaviour
             {
                 {Scenes.BATTLE_TYPE, Scenes.GetParam(Scenes.BATTLE_TYPE)}
             };
-        GameMode gameMode = GetAndSaveGameMode();
-        param.Add(Scenes.GAME_MODE, gameMode.ToString());
+        var gameModeDropdown = DropdownPanel.GetComponentInChildren<Dropdown>();
+        Option<GameMode> gameMode = gameModes[gameModeDropdown.value];
+        param.Add(Scenes.GAME_MODE, gameMode.Type.ToString());
+        param.Add(Scenes.PICK_MODE, gameMode.PickMode.ToString());
+
+        if (gameMode.PickMode == PickMode.Draft)
+        {
+            Scenes.Load(Scenes.DRAFT_SCENE, param);
+            return;
+        }
         Scenes.Load(Scenes.BATTLE_SCENE, param);
     }
 
