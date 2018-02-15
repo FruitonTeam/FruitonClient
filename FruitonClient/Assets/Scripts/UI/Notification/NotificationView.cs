@@ -30,9 +30,12 @@ namespace UI.Notification
         public void StartAnimation()
         {
             IsAnimationCompleted = false;
-            
+
+            var canvas = gameObject.GetComponentInParent<Canvas>();
+            float size = -gameObject.GetComponent<RectTransform>().rect.height * canvas.scaleFactor;
+
             iTween.MoveTo(gameObject, iTween.Hash(
-                "position", gameObject.transform.position + new Vector3(0, -gameObject.GetComponent<RectTransform>().rect.height),
+                "position", gameObject.transform.position + new Vector3(0, size),
                 "time", ANIMATION_TIME,
                 "easetype", iTween.EaseType.easeOutExpo
             ));
