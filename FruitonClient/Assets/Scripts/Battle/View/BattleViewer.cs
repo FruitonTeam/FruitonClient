@@ -392,6 +392,10 @@ public class BattleViewer : MonoBehaviour
 
     private void ProcessEndTurnEvent(EndTurnEvent kEvent)
     {
+        var endTurnObject = EndTurnButton.gameObject;
+        float zEulerAngles = endTurnObject.transform.eulerAngles.z;
+        float rotateToZ = zEulerAngles == 0 ? -180 : 0;
+        iTween.RotateTo(endTurnObject, rotateToZ * Vector3.forward, 1);
         HighlightNameTags(battle.IsPlayerActive(battle.Player1));
         HighlightEndTurnButton(false);
     }
