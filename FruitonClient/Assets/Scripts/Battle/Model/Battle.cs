@@ -126,6 +126,11 @@ public abstract class Battle
         return performedAction;
     }
 
+    public List<KAction> GetAllAvailableActions()
+    {
+        return kernel.getAllValidActions().CastToList<KAction>();
+    }
+
     public int ComputeRemainingTime()
     {
         var currentEpochTime = (int) (DateTime.UtcNow - Constants.EPOCH_START).TotalSeconds;

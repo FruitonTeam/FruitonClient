@@ -93,6 +93,10 @@ public class LocalPlayer : ClientPlayerBase
             var performedAction = performedActions[0];
             battle.PerformAction(performedAction.getContext().source, performedAction.getContext().target,
                 ((Action)performedAction).getId());
+            if (battle.GetAllAvailableActions().All(action => action.GetType() == typeof(EndTurnAction)))
+            {
+                battleViewer.HighlightEndTurnButton(true);
+            }
         }
         return success;
     }

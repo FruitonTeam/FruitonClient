@@ -127,6 +127,20 @@ public class BattleViewer : MonoBehaviour
         }
     }
 
+    public void HighlightEndTurnButton(bool highlight)
+    {
+        string prefabName;
+        if (highlight)
+        {
+            prefabName = "Circle"; 
+        }
+        else
+        {
+            prefabName = "CircleYellow";
+        }
+        EndTurnButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/UI/Battle/" + prefabName);
+    }
+
     private void Update()
     {
         if (!isGameStarted)
@@ -373,6 +387,7 @@ public class BattleViewer : MonoBehaviour
     private void ProcessEndTurnEvent(EndTurnEvent kEvent)
     {
         HighlightNameTags(battle.IsPlayerActive(battle.Player1));
+        HighlightEndTurnButton(false);
     }
 
     private void ProcessTimeExpiredEvent(TimeExpiredEvent kEvent)
@@ -428,8 +443,13 @@ public class BattleViewer : MonoBehaviour
     {
         KVector2 damagedPosition = kEvent.target;
         GameObject damaged = Grid[damagedPosition.x, damagedPosition.y];
-        damaged.GetComponent<ClientFruiton>().TakeDamage(kEvent.damage);
-        ShowFloatingText(damaged.transform.position, -kEvent.damage);
+        Vector3 damagedWorldPosition = GridLayoutManager.GetCellPosition(damagedPosition.x, damagedPosition.y);
+        if (damaged != null)
+        {
+            damaged.GetComponent<ClientFruiton>().TakeDamage(kEvent.damage);
+        }
+        
+        ShowFloatingText(damagedWorldPosition, -kEvent.damage);
     }
 
     private void ProcessMoveEvent(MoveEvent moveEvent)
@@ -463,6 +483,11 @@ public class BattleViewer : MonoBehaviour
     private void ShowFloatingText(Vector3 position, int amount)
     {
         GameObject floatingText = Instantiate(Resources.Load<GameObject>("Models/Battle/TextChange"));
+        if (battleType == BattleType.OnlineBattle && !((OnlineBattle)battle).IsLocalPlayerFirst)
+        {
+            Vector3 eulerAngles = floatingText.transform.eulerAngles;
+            floatingText.transform.eulerAngles = new Vector3(eulerAngles.x, -eulerAngles.y, eulerAngles.z);
+        }
         floatingText.transform.position = position;
         floatingText.transform.parent = GridLayoutManager.transform;
         bool heal = amount > 0;
