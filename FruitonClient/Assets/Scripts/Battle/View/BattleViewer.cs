@@ -389,6 +389,13 @@ public class BattleViewer : MonoBehaviour
 
     private void ProcessHealEvent(HealEvent kEvent)
     {
+        KVector2 healerPosition = kEvent.source;
+        GameObject attacker = Grid[healerPosition.x, healerPosition.y];
+        attacker.GetComponentInChildren<BoyFighterBattleAnimator>().Cast(() => AfterHealAnimation(kEvent));
+    }
+
+    private void AfterHealAnimation(HealEvent kEvent)
+    {
         KVector2 kEventPosition = kEvent.target;
         var clientFruiton = Grid[kEventPosition.x, kEventPosition.y].GetComponent<ClientFruiton>();
         clientFruiton.ReceiveHeal(kEvent.heal);
@@ -412,8 +419,15 @@ public class BattleViewer : MonoBehaviour
 
     private void ProcessAttackEvent(AttackEvent kEvent)
     {
-        var damagedPosition = kEvent.target;
-        var damaged = Grid[damagedPosition.x, damagedPosition.y];
+        KVector2 attackerPosition = kEvent.source;
+        GameObject attacker = Grid[attackerPosition.x, attackerPosition.y];
+        attacker.GetComponentInChildren<BoyFighterBattleAnimator>().Attack(() => AfterAttackAnimation(kEvent));
+    }
+
+    private void AfterAttackAnimation(AttackEvent kEvent)
+    {
+        KVector2 damagedPosition = kEvent.target;
+        GameObject damaged = Grid[damagedPosition.x, damagedPosition.y];
         damaged.GetComponent<ClientFruiton>().TakeDamage(kEvent.damage);
         ShowFloatingText(damaged.transform.position, -kEvent.damage);
     }
