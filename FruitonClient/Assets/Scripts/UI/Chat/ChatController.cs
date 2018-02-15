@@ -14,7 +14,24 @@ namespace UI.Chat
 {
     public class ChatController : MonoBehaviour, IOnItemSelectedListener, IOnMessageListener
     {
+        /// <summary>
+        /// Approximate character limit for single text gameObject in Unity
+        /// </summary>
         static readonly int GAME_OBJECT_TEXT_LIMIT = 3000;
+
+        static readonly string MESSAGE_COLOR_SENT_OLD = "#585850";
+        static readonly string MESSAGE_COLOR_SENT_NEW = "#443328";
+        static readonly string MESSAGE_COLOR_RECEIVED_OLD = "#333344";
+        static readonly string MESSAGE_COLOR_RECEIVED_NEW = "#222266";
+
+        /// <summary>
+        /// Time format for messages received on the same day as they were sent
+        /// </summary>
+        private static readonly string TIME_FORMAT_TODAY = "HH:mm";
+        /// <summary>
+        /// Time format for messages that were sent day before or earlier
+        /// </summary>
+        private static readonly string TIME_FORMAT_OLDER = "dd.MM.yyyy HH:mm";
 
         public static ChatController Instance { get; private set; }
 
@@ -342,13 +359,18 @@ namespace UI.Chat
 
         public void OnItemSelected(int index)
         {
+            string friendName = FriendListController.GetFriend(index);
+            if (friendName == FriendName.text)
+            {
+                return;
+            }
+
             foreach (var chatText in ChatTexts)
             {
                 Destroy(chatText.gameObject);
             }
             ChatTexts.Clear();
 
-            string friendName = FriendListController.GetFriend(index);
             FriendName.text = friendName;
 
             if (records.ContainsKey(friendName))
@@ -367,6 +389,8 @@ namespace UI.Chat
                 CreateNewChatText();
             }
 
+            Canvas.ForceUpdateCanvases();
+            ScrollRect.verticalNormalizedPosition = 0;
 
             if (ConnectionHandler.Instance.IsLogged())
             {
@@ -611,29 +635,29 @@ namespace UI.Chat
             {
                 if (old)
                 {
-                    color = "#585850";
+                    color = MESSAGE_COLOR_SENT_OLD;
                 }
                 else
                 {
-                    color = "#443328";
+                    color = MESSAGE_COLOR_SENT_NEW;
                 }
             }
             else
             {
                 if (old)
                 {
-                    color = "#333344";
+                    color = MESSAGE_COLOR_RECEIVED_OLD;
                 }
                 else
                 {
-                    color = "#222266";
+                    color = MESSAGE_COLOR_RECEIVED_NEW;
                 }
             }
             var time = unixTimeStart.AddSeconds(long.Parse(msg.Timestamp)).ToLocalTime();
-            var timeFormat = "dd.MM.yyyy HH:mm";
+            var timeFormat = TIME_FORMAT_OLDER;
             if (time.Date == DateTime.Today)
             {
-                timeFormat = "HH:mm";
+                timeFormat = TIME_FORMAT_TODAY;
             }
             return new StringBuilder("<color=")
                 .Append(color)
