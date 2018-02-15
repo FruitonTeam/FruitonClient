@@ -5,7 +5,6 @@ using Cz.Cuni.Mff.Fruiton.Dto;
 using fruiton.kernel;
 using fruiton.kernel.actions;
 using fruiton.kernel.events;
-using haxe.root;
 using UnityEngine;
 using KEvent = fruiton.kernel.events.Event;
 using KVector2 = fruiton.dataStructures.Point;

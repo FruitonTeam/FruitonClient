@@ -7,7 +7,6 @@ using System;
 using System.Linq;
 using fruiton.kernel;
 using fruiton.kernel.fruitonTeam;
-using haxe.root;
 using Networking;
 
 public enum TeamManagementState
@@ -568,7 +567,7 @@ public class FruitonTeamsManager : MonoBehaviour
         int[] fruitonIDsArray = new int[team.FruitonIDs.Count];
         team.FruitonIDs.CopyTo(fruitonIDsArray, 0);
         return FruitonTeamValidator
-            .validateFruitonTeam(new Array<int>(fruitonIDsArray), GameManager.Instance.FruitonDatabase).complete;
+            .validateFruitonTeam(new haxe.root.Array<int>(fruitonIDsArray), GameManager.Instance.FruitonDatabase).complete;
     }
 
     private void InitializeAllFruitons()
