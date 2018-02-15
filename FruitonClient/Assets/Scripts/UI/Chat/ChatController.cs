@@ -8,7 +8,6 @@ using Networking;
 using UI.Notification;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.VR.WSA.Input;
 using WebSocketSharp;
 
 namespace UI.Chat
