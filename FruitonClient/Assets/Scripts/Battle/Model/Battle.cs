@@ -69,6 +69,7 @@ public abstract class Battle
                 clientFruitons[clientFruiton.KernelFruiton.id] = clientFruiton;
             }
         }
+        battleViewer.HighlightNameTags(IsPlayerActive(Player1));
     }
 
     private void PerformAction(KAction performedAction)
@@ -170,7 +171,7 @@ public abstract class Battle
         return pass;
     }
 
-    private bool IsPlayerActive(ClientPlayerBase player)
+    public bool IsPlayerActive(ClientPlayerBase player)
     {
         return player.ID == kernel.currentState.get_activePlayer().id;
     }

@@ -44,6 +44,11 @@ public class BattleViewer : MonoBehaviour
     public MessagePanel GameResultsPanel;
     public GameObject FruitonInfoPanel;
     public GameObject TutorialPanel;
+    public GameObject MyPanel;
+    public GameObject OpponentPanel;
+
+    private static readonly Color forestDark = new Color(25 / 255f, 39 / 255f, 13 / 255f);
+    private static readonly Color forestGreen = new Color(37 / 255f, 89 / 255f, 31 / 255f);
 
 
     /// <summary> Client fruitons stored at their position. </summary>
@@ -105,6 +110,20 @@ public class BattleViewer : MonoBehaviour
         {
             Debug.Assert(battleType == BattleType.OnlineBattle);
             ((OnlineBattle)battle).ProcessMessage((GameReady)gameReady);
+        }
+    }
+
+    public void HighlightNameTags(bool firstsTurn)
+    {
+        if (firstsTurn)
+        {
+            MyPanel.GetComponent<Image>().color = forestGreen;
+            OpponentPanel.GetComponent<Image>().color = forestDark;
+        }
+        else
+        {
+            MyPanel.GetComponent<Image>().color = forestDark;
+            OpponentPanel.GetComponent<Image>().color = forestGreen;
         }
     }
 
@@ -332,21 +351,28 @@ public class BattleViewer : MonoBehaviour
     {
         var eventType = kEvent.GetType();
         if (eventType == typeof(MoveEvent))
-            ProcessMoveEvent((MoveEvent) kEvent);
+            ProcessMoveEvent((MoveEvent)kEvent);
         else if (eventType == typeof(AttackEvent))
-            ProcessAttackEvent((AttackEvent) kEvent);
+            ProcessAttackEvent((AttackEvent)kEvent);
         else if (eventType == typeof(DeathEvent))
-            ProcessDeathEvent((DeathEvent) kEvent);
+            ProcessDeathEvent((DeathEvent)kEvent);
         else if (eventType == typeof(ModifyAttackEvent))
-            ProcessModifyAttackEvent((ModifyAttackEvent) kEvent);
+            ProcessModifyAttackEvent((ModifyAttackEvent)kEvent);
         else if (eventType == typeof(HealEvent))
-            ProcessHealEvent((HealEvent) kEvent);
+            ProcessHealEvent((HealEvent)kEvent);
         else if (eventType == typeof(ModifyHealthEvent))
-            ProcessModifyHealthEvent((ModifyHealthEvent) kEvent);
+            ProcessModifyHealthEvent((ModifyHealthEvent)kEvent);
         else if (eventType == typeof(GameOverEvent))
-            ProcessGameOverEvent((GameOverEvent) kEvent);
+            ProcessGameOverEvent((GameOverEvent)kEvent);
         else if (eventType == typeof(TimeExpiredEvent))
-            ProcessTimeExpiredEvent((TimeExpiredEvent) kEvent);
+            ProcessTimeExpiredEvent((TimeExpiredEvent)kEvent);
+        else if (eventType == typeof(EndTurnEvent))
+            ProcessEndTurnEvent((EndTurnEvent)kEvent);
+    }
+
+    private void ProcessEndTurnEvent(EndTurnEvent kEvent)
+    {
+        HighlightNameTags(battle.IsPlayerActive(battle.Player1));
     }
 
     private void ProcessTimeExpiredEvent(TimeExpiredEvent kEvent)
@@ -366,6 +392,7 @@ public class BattleViewer : MonoBehaviour
         KVector2 kEventPosition = kEvent.target;
         var clientFruiton = Grid[kEventPosition.x, kEventPosition.y].GetComponent<ClientFruiton>();
         clientFruiton.ReceiveHeal(kEvent.heal);
+        ShowFloatingText(clientFruiton.transform.position, kEvent.heal);
     }
 
     private void ProcessModifyAttackEvent(ModifyAttackEvent kEvent)
@@ -388,6 +415,7 @@ public class BattleViewer : MonoBehaviour
         var damagedPosition = kEvent.target;
         var damaged = Grid[damagedPosition.x, damagedPosition.y];
         damaged.GetComponent<ClientFruiton>().TakeDamage(kEvent.damage);
+        ShowFloatingText(damaged.transform.position, -kEvent.damage);
     }
 
     private void ProcessMoveEvent(MoveEvent moveEvent)
@@ -416,6 +444,18 @@ public class BattleViewer : MonoBehaviour
             }
         };
         GameOver(message);
+    }
+
+    private void ShowFloatingText(Vector3 position, int amount)
+    {
+        GameObject floatingText = Instantiate(Resources.Load<GameObject>("Models/Battle/TextChange"));
+        floatingText.transform.position = position;
+        floatingText.transform.parent = GridLayoutManager.transform;
+        bool heal = amount > 0;
+        string sign = heal ? "+" : "";
+        var textMesh = floatingText.GetComponent<TextMesh>();
+        textMesh.text = sign + amount;
+        textMesh.color = heal ? Color.green : Color.red;
     }
 
     private IEnumerator MoveCoroutine(Vector3 from, Vector3 to, GameObject movedObject)
