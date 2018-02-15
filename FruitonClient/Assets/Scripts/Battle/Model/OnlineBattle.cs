@@ -70,6 +70,7 @@ public class OnlineBattle : Battle, IOnMessageListener
 
     public void ProcessMessage(GameReady gameReadyMessage)
     {
+        battleViewer.DisableCancelFindButton();
         var kernelPlayer1 = new Player(0);
         var kernelPlayer2 = new Player(1);
         LocalPlayer = new LocalPlayer(battleViewer, kernelPlayer1, this, gameManager.UserName);
