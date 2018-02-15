@@ -8,6 +8,7 @@ using Cz.Cuni.Mff.Fruiton.Dto;
 using fruiton.dataStructures;
 using fruiton.kernel;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Action = System.Action;
 
@@ -269,6 +270,10 @@ public class Tutorial
 
     public void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Scenes.Load(Scenes.FRACTION_SCENE);
+        }
         if (!isInitialized)
         {
             foreach (GameObject gameObject in battleViewer.Grid)

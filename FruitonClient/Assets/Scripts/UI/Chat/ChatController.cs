@@ -25,14 +25,18 @@ namespace UI.Chat
 
         public GameObject ChatPanel;
 
+        public GameObject ChatWindow;
+        public Text ChatTip;
+
         public ScrollRect ScrollRect;
 
         private readonly Dictionary<string, string> friendMessages = new Dictionary<string, string>();
 
         private readonly List<IOnFriendAddedListener> onFriendAddedListeners = new List<IOnFriendAddedListener>();
 
-        private RectTransform ChatPanelRect;
-
+#if UNITY_ANDROID
+        private RectTransform chatPanelRect;
+#endif
         public void Init()
         {
             foreach (Friend f in GameManager.Instance.Friends)
@@ -51,14 +55,14 @@ namespace UI.Chat
         
         void Start()
         {
-            ChatPanelRect = ChatPanel.GetComponent<RectTransform>();
+            chatPanelRect = ChatPanel.GetComponent<RectTransform>();
 
             FriendName.text = "";
             ChatText.text = "";
 
             MessageInput.enabled = false;
             MessageInput.text = "";
-            // don't allow user to put newlines at the beggining of the message
+            // don't allow user to put newlines at the beginning of the message
             MessageInput.onValueChanged.AddListener(text =>
             {
                 if (text == "\n")
@@ -104,11 +108,7 @@ namespace UI.Chat
             {
                 if (MessageInput.isFocused)
                 {
-                    if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
-                    {
-                        MessageInput.text += "\n";
-                    }
-                    else
+                    if (!(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)))
                     {
                         OnSendClick();
                     }
@@ -122,11 +122,11 @@ namespace UI.Chat
 #if UNITY_ANDROID
             if (TouchScreenKeyboard.visible)
             {
-                ChatPanelRect.offsetMin = new Vector2(ChatPanelRect.offsetMin.x, GetKeyboardSize());
+                chatPanelRect.offsetMin = new Vector2(chatPanelRect.offsetMin.x, GetKeyboardSize());
             }
             else
             {
-                ChatPanelRect.offsetMin = new Vector2(ChatPanelRect.offsetMin.x, 0);
+                chatPanelRect.offsetMin = new Vector2(chatPanelRect.offsetMin.x, 0);
             }
 #endif
         }
@@ -148,6 +148,11 @@ namespace UI.Chat
             if (GameManager.Instance.IsOnline)
             {
                 Instance.ChatPanel.SetActive(true);
+                Instance.ChatWindow.SetActive(false);
+                if (Instance.friendMessages.Count == 0)
+                {
+                    Instance.ChatTip.text = "You don't have any friends :(";
+                }
             }
         }
 
@@ -288,6 +293,7 @@ namespace UI.Chat
                 });
             FriendListController.AddItem(friendToAdd, status);
             friendMessages[friendToAdd] = "";
+            ChatTip.text = "Select a friend to challenge or chat with";
         }
 
         private IEnumerator CancelMessageTextSelection()
@@ -320,6 +326,7 @@ namespace UI.Chat
             {
                 FocusOnInput();
             }
+            ChatWindow.SetActive(true);
         }
 
         public void OnMessage(WrapperMessage message)
