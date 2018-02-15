@@ -151,7 +151,10 @@ namespace UI.Chat
             if (GameManager.Instance.IsOnline)
             {
                 Instance.ChatPanel.SetActive(true);
-                Instance.ChatWindow.SetActive(false);
+                if (Instance.FriendName.text == "")
+                {
+                    Instance.ChatWindow.SetActive(false);
+                }
                 if (Instance.friendMessages.Count == 0)
                 {
                     Instance.ChatTip.text = "You don't have any friends :(";
