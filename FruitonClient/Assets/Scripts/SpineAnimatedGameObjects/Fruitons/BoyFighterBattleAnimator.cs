@@ -1,11 +1,35 @@
+using System;
+
 public class BoyFighterBattleAnimator : FruitonBattleAnimator
 {
+    private Action nextCompleteAction;
 
-    public void Attack()
+    public void Attack(Action completeAction = null)
     {
-        //skeletonAnim.AnimationState.SetAnimation(5, "startWalk", false);
-        //skeletonAnim.AnimationState.AddAnimation(5, "walk", true, 0);
-        SkeletonAnim.AnimationState.SetAnimation(5, "05_attack", false);
-        SkeletonAnim.AnimationState.AddAnimation(5, "05_attack", false, 0);
+        PlayAnimationOnce("05_attack", completeAction);
+    }
+
+    public void Cast(Action completeAction = null)
+    {
+        PlayAnimationOnce("06_cast", completeAction);
+    }
+
+    private void PlayAnimationOnce(string name, Action completeAction)
+    {
+        nextCompleteAction = completeAction;
+        SkeletonAnim.AnimationState.SetAnimation(5, name, false);
+        SkeletonAnim.AnimationState.Complete += delegate {
+            CompleteAction();
+        };
+    }
+
+    private void CompleteAction()
+    {
+        if (nextCompleteAction != null)
+        {
+            SkeletonAnim.AnimationState.SetAnimation(5, "01_Idle", true);
+            nextCompleteAction();
+            nextCompleteAction = null;
+        }
     }
 }

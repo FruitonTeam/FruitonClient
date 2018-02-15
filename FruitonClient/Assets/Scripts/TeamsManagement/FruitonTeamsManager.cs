@@ -227,6 +227,7 @@ public class FruitonTeamsManager : MonoBehaviour
 
     private void TeamManagementStart()
     {
+        LocalDuelHeadline.gameObject.SetActive(false);
         ButtonPlay.gameObject.SetActive(false);
         InitializeAllFruitons();
         DropdownPanel.SetActive(false);
