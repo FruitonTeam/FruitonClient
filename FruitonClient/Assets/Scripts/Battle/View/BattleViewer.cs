@@ -34,6 +34,7 @@ public class BattleViewer : MonoBehaviour
     public Button SurrendButton;
     public Button TutorialContinueButton;
     public Button InfoAndroidButton;
+    public Button CancelFindBattleButton;
     public GameObject PanelLoadingGame;
     public Text TimeCounter;
     public Text MyLoginText;
@@ -59,6 +60,11 @@ public class BattleViewer : MonoBehaviour
     public BattleViewer()
     {
         IsInputEnabled = true;
+    }
+
+    public void DisableCancelFindButton()
+    {
+        CancelFindBattleButton.interactable = false;
     }
 
     private void Start()
