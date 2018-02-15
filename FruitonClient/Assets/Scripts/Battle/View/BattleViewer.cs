@@ -47,8 +47,8 @@ public class BattleViewer : MonoBehaviour
     public GameObject MyPanel;
     public GameObject OpponentPanel;
 
-    private static readonly Color forestDark = new Color(25 / 255f, 39 / 255f, 13 / 255f);
-    private static readonly Color forestGreen = new Color(37 / 255f, 89 / 255f, 31 / 255f);
+    private static readonly Color FOREST_DARK = new Color(25 / 255f, 39 / 255f, 13 / 255f);
+    private static readonly Color FOREST_GREEN = new Color(37 / 255f, 89 / 255f, 31 / 255f);
 
 
     /// <summary> Client fruitons stored at their position. </summary>
@@ -117,13 +117,13 @@ public class BattleViewer : MonoBehaviour
     {
         if (firstsTurn)
         {
-            MyPanel.GetComponent<Image>().color = forestGreen;
-            OpponentPanel.GetComponent<Image>().color = forestDark;
+            MyPanel.GetComponent<Image>().color = FOREST_GREEN;
+            OpponentPanel.GetComponent<Image>().color = FOREST_DARK;
         }
         else
         {
-            MyPanel.GetComponent<Image>().color = forestDark;
-            OpponentPanel.GetComponent<Image>().color = forestGreen;
+            MyPanel.GetComponent<Image>().color = FOREST_DARK;
+            OpponentPanel.GetComponent<Image>().color = FOREST_GREEN;
         }
     }
 

@@ -2,7 +2,7 @@ using System;
 
 public class BoyFighterBattleAnimator : FruitonBattleAnimator
 {
-    private Action NextCompleteAction;
+    private Action nextCompleteAction;
 
     public void Attack(Action completeAction = null)
     {
@@ -16,7 +16,7 @@ public class BoyFighterBattleAnimator : FruitonBattleAnimator
 
     private void PlayAnimationOnce(string name, Action completeAction)
     {
-        NextCompleteAction = completeAction;
+        nextCompleteAction = completeAction;
         SkeletonAnim.AnimationState.SetAnimation(5, name, false);
         SkeletonAnim.AnimationState.Complete += delegate {
             CompleteAction();
@@ -25,11 +25,11 @@ public class BoyFighterBattleAnimator : FruitonBattleAnimator
 
     private void CompleteAction()
     {
-        if (NextCompleteAction != null)
+        if (nextCompleteAction != null)
         {
             SkeletonAnim.AnimationState.SetAnimation(5, "01_Idle", true);
-            NextCompleteAction();
-            NextCompleteAction = null;
+            nextCompleteAction();
+            nextCompleteAction = null;
         }
     }
 }
