@@ -57,8 +57,9 @@ namespace UI.Chat
         
         void Start()
         {
+#if UNITY_ANDROID
             chatPanelRect = ChatPanel.GetComponent<RectTransform>();
-
+#endif
             FriendName.text = "";
             ChatText.text = "";
 
