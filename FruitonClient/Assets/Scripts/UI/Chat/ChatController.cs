@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Cz.Cuni.Mff.Fruiton.Dto;
 using Networking;
@@ -24,10 +25,20 @@ namespace UI.Chat
 
         public GameObject ChatPanel;
 
+        public GameObject ChatWindow;
+        public Text ChatTip;
+
+        public Dropdown FriendActionsDropdown;
+
+        public ScrollRect ScrollRect;
+
         private readonly Dictionary<string, string> friendMessages = new Dictionary<string, string>();
 
         private readonly List<IOnFriendAddedListener> onFriendAddedListeners = new List<IOnFriendAddedListener>();
-        
+
+#if UNITY_ANDROID
+        private RectTransform chatPanelRect;
+#endif
         public void Init()
         {
             foreach (Friend f in GameManager.Instance.Friends)
@@ -46,12 +57,24 @@ namespace UI.Chat
         
         void Start()
         {
+#if UNITY_ANDROID
+            chatPanelRect = ChatPanel.GetComponent<RectTransform>();
+#endif
             FriendName.text = "";
             ChatText.text = "";
 
             MessageInput.enabled = false;
             MessageInput.text = "";
-            
+            // don't allow user to put newlines at the beginning of the message
+            MessageInput.onValueChanged.AddListener(text =>
+            {
+                if (text == "\n")
+                {
+                    MessageInput.text = "";
+                }
+            });
+
+
             FriendListController.SetOnItemSelectedListener(this);
 
             if (GameManager.Instance.IsOnline)
@@ -77,6 +100,40 @@ namespace UI.Chat
             }
         }
 
+        private void Update()
+        {
+            if (!ChatPanel.activeInHierarchy)
+            {
+                return;
+            }
+
+            if(Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+            {
+                if (MessageInput.isFocused)
+                {
+                    if (!(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)))
+                    {
+                        OnSendClick();
+                    }
+                }
+                else if (AddFriendInput.isFocused)
+                {
+                    OnAddFriendClick();
+                }
+            }
+
+#if UNITY_ANDROID
+            if (TouchScreenKeyboard.visible)
+            {
+                chatPanelRect.offsetMin = new Vector2(chatPanelRect.offsetMin.x, GetKeyboardSize());
+            }
+            else
+            {
+                chatPanelRect.offsetMin = new Vector2(chatPanelRect.offsetMin.x, 0);
+            }
+#endif
+        }
+
         public void Clear()
         {
             FriendName.text = "";
@@ -94,6 +151,14 @@ namespace UI.Chat
             if (GameManager.Instance.IsOnline)
             {
                 Instance.ChatPanel.SetActive(true);
+                if (Instance.FriendName.text == "")
+                {
+                    Instance.ChatWindow.SetActive(false);
+                }
+                if (Instance.friendMessages.Count == 0)
+                {
+                    Instance.ChatTip.text = "You don't have any friends :(";
+                }
             }
         }
 
@@ -108,10 +173,14 @@ namespace UI.Chat
             {
                 return;
             }
-
+            var message = MessageInput.text.TrimEnd(' ', '\n', '\r');
+            if (message.Length == 0)
+            {
+                return;
+            }
             var chatMessage = new ChatMessage
             {
-                Message = MessageInput.text,
+                Message = message,
                 Recipient = FriendName.text,
                 Sender = GameManager.Instance.UserName
             };
@@ -127,10 +196,11 @@ namespace UI.Chat
                 ChatText.text += "\n";
             }
 
-            ChatText.text += "You: " + MessageInput.text;
+            ChatText.text += "<color=#444455><b>You</b>: " + message +"</color>";
 
             MessageInput.text = ""; // reset the input field
-            FocusOnInput();
+            Canvas.ForceUpdateCanvases();
+            ScrollRect.verticalNormalizedPosition = 0;
         }
 
         void FocusOnInput()
@@ -172,6 +242,28 @@ namespace UI.Chat
                     Debug.LogWarning("No user with name " + friendToAdd);
                 }
             }, err => { Debug.LogWarning("Error while checking player existence" + err); });
+        }
+
+        public void OnDropdownOption(int option)
+        {
+            // 0 - show profile
+            // 1 - challenge
+            // 2 - delete
+            // 3 - ignore
+            switch (option)
+            {
+                case 3:
+                    return;
+                case 0:
+                    ConnectionHandler.Instance.OpenUrlAuthorized("profile/" + Uri.EscapeDataString(FriendName.text));
+                    break;
+                default:
+                    // TODO: self-explanatory
+                    Debug.LogWarning("THIS FEATURE IS NOT IMPLEMENTED YET");
+                    break;
+            }
+            // reset dropdown value to make it work like a button
+            FriendActionsDropdown.value = 3;
         }
 
         private void SendFriendRequest(string friendToAdd)
@@ -229,6 +321,13 @@ namespace UI.Chat
                 });
             FriendListController.AddItem(friendToAdd, status);
             friendMessages[friendToAdd] = "";
+            ChatTip.text = "Select a friend to challenge or chat with";
+        }
+
+        private IEnumerator CancelMessageTextSelection()
+        {
+            yield return 0;
+            MessageInput.MoveTextEnd(false);
         }
 
         public void OnItemSelected(int index)
@@ -255,6 +354,7 @@ namespace UI.Chat
             {
                 FocusOnInput();
             }
+            ChatWindow.SetActive(true);
         }
 
         public void OnMessage(WrapperMessage message)
@@ -311,6 +411,7 @@ namespace UI.Chat
 
         private void AppendNewMessage(string friend, string message)
         {
+            var textToAppend = "<color=black><b>" + friend + "</b>: " + message+"</color>";
             if (friend == FriendName.text)
             {
                 // update current chat
@@ -318,7 +419,12 @@ namespace UI.Chat
                 {
                     ChatText.text += "\n";
                 }
-                ChatText.text += friend + ": " + message;
+                ChatText.text += textToAppend;
+                if (ScrollRect.verticalNormalizedPosition <= 0)
+                {
+                    Canvas.ForceUpdateCanvases();
+                    ScrollRect.verticalNormalizedPosition = 0;
+                }
             }
             else
             {
@@ -326,7 +432,7 @@ namespace UI.Chat
                 {
                     friendMessages[friend] += "\n";
                 }
-                friendMessages[friend] += friend + ": " + message;
+                friendMessages[friend] += textToAppend;
                 FriendListController.IncrementUnreadCount(friend);
             }
         }
@@ -345,6 +451,23 @@ namespace UI.Chat
         {
             void OnFriendAdded();
         }
-        
+
+#if UNITY_ANDROID
+
+        private int GetKeyboardSize()
+        {
+            using (AndroidJavaClass UnityClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+            {
+                AndroidJavaObject View = UnityClass.GetStatic<AndroidJavaObject>("currentActivity").Get<AndroidJavaObject>("mUnityPlayer").Call<AndroidJavaObject>("getView");
+
+                using (AndroidJavaObject Rct = new AndroidJavaObject("android.graphics.Rect"))
+                {
+                    View.Call("getWindowVisibleDisplayFrame", Rct);
+
+                    return Screen.height - Rct.Call<int>("height");
+                }
+            }
+        }
+#endif
     }
 }
