@@ -13,11 +13,11 @@ public class OfflineBattle : Battle
         var kernelPlayer1 = new Player(0);
         var kernelPlayer2 = new Player(1);
         string login = GameManager.Instance.UserName;
-        Player1 = new LocalPlayer(battleViewer, kernelPlayer1, this, login);
-        Player2 = new LocalPlayer(battleViewer, kernelPlayer2, this, login);
+        Player1 = new LocalPlayer(battleViewer, kernelPlayer1, this, "Player 1");
+        Player2 = new LocalPlayer(battleViewer, kernelPlayer2, this, "Player 2");
 
         IEnumerable<GameObject> currentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs, battleViewer.Board);
-        IEnumerable<GameObject> opponentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs, battleViewer.Board);
+        IEnumerable<GameObject> opponentTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.OfflineOpponentTeam.FruitonIDs, battleViewer.Board);
 
         RepeatedField<Position> coords = gameManager.CurrentFruitonTeam.Positions;
         battleViewer.InitializeTeam(currentTeam, kernelPlayer1, coords.ToArray());

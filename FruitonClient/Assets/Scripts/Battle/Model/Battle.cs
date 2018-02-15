@@ -69,6 +69,7 @@ public abstract class Battle
                 clientFruitons[clientFruiton.KernelFruiton.id] = clientFruiton;
             }
         }
+        battleViewer.HighlightNameTags(IsPlayerActive(Player1));
     }
 
     private void PerformAction(KAction performedAction)
@@ -125,6 +126,11 @@ public abstract class Battle
         return performedAction;
     }
 
+    public List<KAction> GetAllAvailableActions()
+    {
+        return kernel.getAllValidActions().CastToList<KAction>();
+    }
+
     public int ComputeRemainingTime()
     {
         var currentEpochTime = (int) (DateTime.UtcNow - Constants.EPOCH_START).TotalSeconds;
@@ -170,7 +176,7 @@ public abstract class Battle
         return pass;
     }
 
-    private bool IsPlayerActive(ClientPlayerBase player)
+    public bool IsPlayerActive(ClientPlayerBase player)
     {
         return player.ID == kernel.currentState.get_activePlayer().id;
     }

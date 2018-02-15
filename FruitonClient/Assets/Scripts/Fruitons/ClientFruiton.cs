@@ -95,6 +95,9 @@ public class ClientFruiton : MonoBehaviour {
             spriteLocPos.y,
             -spriteLocPos.z);
         tags.transform.Rotate(0, 180, 0);
+        Transform spineModel = transform.GetChild(0);
+        Vector3 oldEulerAngles = spineModel.eulerAngles;
+        spineModel.eulerAngles = new Vector3(-oldEulerAngles.x, oldEulerAngles.y, oldEulerAngles.z);
     }
 
     public void ModifyAttack(int newAttack)

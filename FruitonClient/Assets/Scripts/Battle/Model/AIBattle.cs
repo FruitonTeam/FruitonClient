@@ -12,8 +12,9 @@ using Random = UnityEngine.Random;
 
 enum AIType
 {
-    Random,
-    AggroGreedy,
+    Santas,
+    SportsMen,
+    Clowns,
     Tutorial
 }
 
@@ -33,30 +34,28 @@ class AIBattle : Battle
     public AIBattle(BattleViewer battleViewer, AIType aiType)
         : base(battleViewer)
     {
+        int[] aiTeamIDs;
+
         var kernelPlayer1 = new Player(0);
         var kernelPlayer2 = new Player(1);
         HumanPlayer = new LocalPlayer(battleViewer, kernelPlayer1, this, GameManager.Instance.UserName);
-        AiPlayer = CreateAI(aiType, battleViewer, kernelPlayer2, this);
+        AiPlayer = CreateAI(aiType, battleViewer, kernelPlayer2, this, out aiTeamIDs);
 
         IEnumerable<GameObject> humanTeam;
-        IEnumerable<GameObject> aiTeam;
         IEnumerable<Position> coords;
         IEnumerable<Position> flippedCoords;
-
+        IEnumerable<GameObject> aiTeam = ClientFruitonFactory.CreateClientFruitonTeam(aiTeamIDs, battleViewer.Board);
 
         if (aiType == AIType.Tutorial)
         {
             int[] humanTeamIDs = {2, 5, 15, 14, 12, 17, 21, 21, 30, 25};
-            int[] aiTeamIDs = {1001, 1002, 1002, 1002, 1002, 1003, 1003, 1003, 1003, 1003};
             humanTeam = ClientFruitonFactory.CreateClientFruitonTeam(humanTeamIDs, battleViewer.Board);
-            aiTeam = ClientFruitonFactory.CreateClientFruitonTeam(aiTeamIDs, battleViewer.Board);
             coords = FruitonTeamsManager.CreatePositionsForArtificialTeam(humanTeam.Select(gameObject =>
             gameObject.GetComponent<ClientFruiton>().KernelFruiton));
         }
         else
         {
             humanTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs, battleViewer.Board);
-            aiTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs, battleViewer.Board);
             coords = gameManager.CurrentFruitonTeam.Positions;
         }
         battleViewer.InitializeTeam(humanTeam, kernelPlayer1, coords.ToArray());
@@ -88,15 +87,21 @@ class AIBattle : Battle
         AiPlayer.Update();
     }
 
-    private static AIPlayerBase CreateAI(AIType type, BattleViewer battleViewer, Player kernelPlayer, Battle battle)
+    private static AIPlayerBase CreateAI(AIType type, BattleViewer battleViewer, Player kernelPlayer, Battle battle, out int[] teamIds)
     {
         switch (type)
         {
-            case AIType.Random:
-                return new RandomAIPlayer(battleViewer, kernelPlayer, battle);
-            case AIType.AggroGreedy:
+            case AIType.Clowns:
+                teamIds = AITeams.Clowns;
+                return new AggroGreedyAIPlayer(battleViewer, kernelPlayer, battle);
+            case AIType.Santas:
+                teamIds = AITeams.Santas;
+                return new AggroGreedyAIPlayer(battleViewer, kernelPlayer, battle);
+            case AIType.SportsMen:
+                teamIds = AITeams.SportsMen;
                 return new AggroGreedyAIPlayer(battleViewer, kernelPlayer, battle);
             case AIType.Tutorial:
+                teamIds = AITeams.Tutorial;
                 return new TutorialPlayer(battleViewer, kernelPlayer, battle);
             default:
                 throw new ArgumentOutOfRangeException("type", type, null);

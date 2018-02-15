@@ -10,7 +10,7 @@ using haxe.root;
 
 public class OnlineBattle : Battle, IOnMessageListener
 {
-    private bool isLocalPlayerFirst;
+    public bool IsLocalPlayerFirst;
 
     private ClientPlayerBase LocalPlayer
     {
@@ -24,9 +24,10 @@ public class OnlineBattle : Battle, IOnMessageListener
         set { Player2 = value; }
     }
 
-    public OnlineBattle(BattleViewer battleViewer) : base(battleViewer)
+    public OnlineBattle(BattleViewer battleViewer, bool shouldFindGame) : base(battleViewer)
     {
-        FindGame();
+        if (shouldFindGame)
+            FindGame();
     }
 
     private void FindGame()
@@ -67,8 +68,9 @@ public class OnlineBattle : Battle, IOnMessageListener
         }
     }
 
-    private void ProcessMessage(GameReady gameReadyMessage)
+    public void ProcessMessage(GameReady gameReadyMessage)
     {
+        battleViewer.DisableCancelFindButton();
         var kernelPlayer1 = new Player(0);
         var kernelPlayer2 = new Player(1);
         LocalPlayer = new LocalPlayer(battleViewer, kernelPlayer1, this, gameManager.UserName);
@@ -90,12 +92,12 @@ public class OnlineBattle : Battle, IOnMessageListener
         {
             fruitons.push(fruiton.GetComponent<ClientFruiton>().KernelFruiton);
         }
-        isLocalPlayerFirst = gameReadyMessage.StartsFirst;
+        IsLocalPlayerFirst = gameReadyMessage.StartsFirst;
         Player player1;
         Player player2;
 
         // If the local player begins, the game will be started with kernelPlayer1 as first argument.
-        if (isLocalPlayerFirst)
+        if (IsLocalPlayerFirst)
         {
             battleViewer.InitializeTeam(currentTeam, kernelPlayer1, GameManager.Instance.CurrentFruitonTeam.Positions.ToArray());
             player1 = kernelPlayer1;
@@ -134,7 +136,7 @@ public class OnlineBattle : Battle, IOnMessageListener
     private void ProcessMessage(GameStarts gameStartsMessage)
     {
         kernel.startGame();
-        battleViewer.StartOnlineGame(isLocalPlayerFirst);
+        battleViewer.StartOnlineGame(IsLocalPlayerFirst);
     }
 
     private void ProcessMessage(GameOver gameOverMessage)

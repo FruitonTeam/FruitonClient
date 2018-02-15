@@ -34,6 +34,7 @@ public class BattleViewer : MonoBehaviour
     public Button SurrendButton;
     public Button TutorialContinueButton;
     public Button InfoAndroidButton;
+    public Button CancelFindBattleButton;
     public GameObject PanelLoadingGame;
     public Text TimeCounter;
     public Text MyLoginText;
@@ -44,6 +45,11 @@ public class BattleViewer : MonoBehaviour
     public MessagePanel GameResultsPanel;
     public GameObject FruitonInfoPanel;
     public GameObject TutorialPanel;
+    public GameObject MyPanel;
+    public GameObject OpponentPanel;
+
+    private static readonly Color FOREST_DARK = new Color(25 / 255f, 39 / 255f, 13 / 255f);
+    private static readonly Color FOREST_GREEN = new Color(37 / 255f, 89 / 255f, 31 / 255f);
 
 
     /// <summary> Client fruitons stored at their position. </summary>
@@ -54,6 +60,11 @@ public class BattleViewer : MonoBehaviour
     public BattleViewer()
     {
         IsInputEnabled = true;
+    }
+
+    public void DisableCancelFindButton()
+    {
+        CancelFindBattleButton.interactable = false;
     }
 
     private void Start()
@@ -69,10 +80,14 @@ public class BattleViewer : MonoBehaviour
 
         Debug.Log("playing battle: " + battleType + " in mode: " + GameMode);
 
+        // We come from draft
+        object gameReady;
+        bool comeFromDraft = Scenes.TryGetObjParam(Scenes.GAME_READY_MSG, out gameReady);
+
         switch (battleType)
         {
             case BattleType.OnlineBattle:
-                battle = new OnlineBattle(this);
+                battle = new OnlineBattle(this, !comeFromDraft);
                 PanelLoadingGame.SetActive(true);
                 break;
             case BattleType.OfflineBattle:
@@ -96,6 +111,40 @@ public class BattleViewer : MonoBehaviour
         }
 
         battle.OnEnable();
+
+        if (comeFromDraft)
+        {
+            Debug.Assert(battleType == BattleType.OnlineBattle);
+            ((OnlineBattle)battle).ProcessMessage((GameReady)gameReady);
+        }
+    }
+
+    public void HighlightNameTags(bool firstsTurn)
+    {
+        if (firstsTurn)
+        {
+            MyPanel.GetComponent<Image>().color = FOREST_GREEN;
+            OpponentPanel.GetComponent<Image>().color = FOREST_DARK;
+        }
+        else
+        {
+            MyPanel.GetComponent<Image>().color = FOREST_DARK;
+            OpponentPanel.GetComponent<Image>().color = FOREST_GREEN;
+        }
+    }
+
+    public void HighlightEndTurnButton(bool highlight)
+    {
+        string prefabName;
+        if (highlight)
+        {
+            prefabName = "Circle"; 
+        }
+        else
+        {
+            prefabName = "CircleYellow";
+        }
+        EndTurnButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/UI/Battle/" + prefabName);
     }
 
     private void Update()
@@ -158,7 +207,7 @@ public class BattleViewer : MonoBehaviour
     private void InitializeOfflineGame()
     {
         isGameStarted = true;
-        InitializePlayersInfo();
+        InitializePlayersInfo(false);
         SetupSurrenderButton();
     }
 
@@ -168,17 +217,21 @@ public class BattleViewer : MonoBehaviour
         SurrendButton.onClick.AddListener(Surrender);
     }
 
-    public void InitializePlayersInfo()
+    public void InitializePlayersInfo(bool loadImages = true)
     {
         string login1 = battle.Player1.Name;
         string login2 = battle.Player2.Name;
         MyLoginText.text = login1;
         OpponentLoginText.text = login2;
+        
+        if (loadImages)
+        {
+            MyAvatar.sprite = SpriteUtils.TextureToSprite(GameManager.Instance.Avatar);
+            PlayerHelper.GetAvatar(login2,
+                texture => OpponentAvatar.sprite = SpriteUtils.TextureToSprite(texture),
+                Debug.Log);
+        }
 
-        MyAvatar.sprite = SpriteUtils.TextureToSprite(GameManager.Instance.Avatar);
-        PlayerHelper.GetAvatar(login2,
-            texture => OpponentAvatar.sprite = SpriteUtils.TextureToSprite(texture),
-            Debug.Log);
     }
 
     public void LeftButtonUpLogic(RaycastHit[] raycastHits = null)
@@ -318,21 +371,33 @@ public class BattleViewer : MonoBehaviour
     {
         var eventType = kEvent.GetType();
         if (eventType == typeof(MoveEvent))
-            ProcessMoveEvent((MoveEvent) kEvent);
+            ProcessMoveEvent((MoveEvent)kEvent);
         else if (eventType == typeof(AttackEvent))
-            ProcessAttackEvent((AttackEvent) kEvent);
+            ProcessAttackEvent((AttackEvent)kEvent);
         else if (eventType == typeof(DeathEvent))
-            ProcessDeathEvent((DeathEvent) kEvent);
+            ProcessDeathEvent((DeathEvent)kEvent);
         else if (eventType == typeof(ModifyAttackEvent))
-            ProcessModifyAttackEvent((ModifyAttackEvent) kEvent);
+            ProcessModifyAttackEvent((ModifyAttackEvent)kEvent);
         else if (eventType == typeof(HealEvent))
-            ProcessHealEvent((HealEvent) kEvent);
+            ProcessHealEvent((HealEvent)kEvent);
         else if (eventType == typeof(ModifyHealthEvent))
-            ProcessModifyHealthEvent((ModifyHealthEvent) kEvent);
+            ProcessModifyHealthEvent((ModifyHealthEvent)kEvent);
         else if (eventType == typeof(GameOverEvent))
-            ProcessGameOverEvent((GameOverEvent) kEvent);
+            ProcessGameOverEvent((GameOverEvent)kEvent);
         else if (eventType == typeof(TimeExpiredEvent))
-            ProcessTimeExpiredEvent((TimeExpiredEvent) kEvent);
+            ProcessTimeExpiredEvent((TimeExpiredEvent)kEvent);
+        else if (eventType == typeof(EndTurnEvent))
+            ProcessEndTurnEvent((EndTurnEvent)kEvent);
+    }
+
+    private void ProcessEndTurnEvent(EndTurnEvent kEvent)
+    {
+        var endTurnObject = EndTurnButton.gameObject;
+        float zEulerAngles = endTurnObject.transform.eulerAngles.z;
+        float rotateToZ = zEulerAngles == 0 ? -180 : 0;
+        iTween.RotateTo(endTurnObject, rotateToZ * Vector3.forward, 1);
+        HighlightNameTags(battle.IsPlayerActive(battle.Player1));
+        HighlightEndTurnButton(false);
     }
 
     private void ProcessTimeExpiredEvent(TimeExpiredEvent kEvent)
@@ -349,9 +414,17 @@ public class BattleViewer : MonoBehaviour
 
     private void ProcessHealEvent(HealEvent kEvent)
     {
+        KVector2 healerPosition = kEvent.source;
+        GameObject attacker = Grid[healerPosition.x, healerPosition.y];
+        attacker.GetComponentInChildren<BoyFighterBattleAnimator>().Cast(() => AfterHealAnimation(kEvent));
+    }
+
+    private void AfterHealAnimation(HealEvent kEvent)
+    {
         KVector2 kEventPosition = kEvent.target;
         var clientFruiton = Grid[kEventPosition.x, kEventPosition.y].GetComponent<ClientFruiton>();
         clientFruiton.ReceiveHeal(kEvent.heal);
+        ShowFloatingText(clientFruiton.transform.position, kEvent.heal);
     }
 
     private void ProcessModifyAttackEvent(ModifyAttackEvent kEvent)
@@ -363,7 +436,7 @@ public class BattleViewer : MonoBehaviour
 
     private void ProcessDeathEvent(DeathEvent kEvent)
     {
-        var killedPos = kEvent.target;
+        var killedPos = kEvent.fruiton.position;
         var killed = Grid[killedPos.x, killedPos.y];
         Destroy(killed);
         Grid[killedPos.x, killedPos.y] = null;
@@ -371,9 +444,22 @@ public class BattleViewer : MonoBehaviour
 
     private void ProcessAttackEvent(AttackEvent kEvent)
     {
-        var damagedPosition = kEvent.target;
-        var damaged = Grid[damagedPosition.x, damagedPosition.y];
-        damaged.GetComponent<ClientFruiton>().TakeDamage(kEvent.damage);
+        KVector2 attackerPosition = kEvent.source;
+        GameObject attacker = Grid[attackerPosition.x, attackerPosition.y];
+        attacker.GetComponentInChildren<BoyFighterBattleAnimator>().Attack(() => AfterAttackAnimation(kEvent));
+    }
+
+    private void AfterAttackAnimation(AttackEvent kEvent)
+    {
+        KVector2 damagedPosition = kEvent.target;
+        GameObject damaged = Grid[damagedPosition.x, damagedPosition.y];
+        Vector3 damagedWorldPosition = GridLayoutManager.GetCellPosition(damagedPosition.x, damagedPosition.y);
+        if (damaged != null)
+        {
+            damaged.GetComponent<ClientFruiton>().TakeDamage(kEvent.damage);
+        }
+        
+        ShowFloatingText(damagedWorldPosition, -kEvent.damage);
     }
 
     private void ProcessMoveEvent(MoveEvent moveEvent)
@@ -402,6 +488,23 @@ public class BattleViewer : MonoBehaviour
             }
         };
         GameOver(message);
+    }
+
+    private void ShowFloatingText(Vector3 position, int amount)
+    {
+        GameObject floatingText = Instantiate(Resources.Load<GameObject>("Models/Battle/TextChange"));
+        if (battleType == BattleType.OnlineBattle && !((OnlineBattle)battle).IsLocalPlayerFirst)
+        {
+            Vector3 eulerAngles = floatingText.transform.eulerAngles;
+            floatingText.transform.eulerAngles = new Vector3(eulerAngles.x, -eulerAngles.y, eulerAngles.z);
+        }
+        floatingText.transform.position = position;
+        floatingText.transform.parent = GridLayoutManager.transform;
+        bool heal = amount > 0;
+        string sign = heal ? "+" : "";
+        var textMesh = floatingText.GetComponent<TextMesh>();
+        textMesh.text = sign + amount;
+        textMesh.color = heal ? Color.green : Color.red;
     }
 
     private IEnumerator MoveCoroutine(Vector3 from, Vector3 to, GameObject movedObject)
@@ -501,23 +604,7 @@ public class BattleViewer : MonoBehaviour
 
     public void GameOver(GameOver gameOverMessage)
     {
-        GameResultsPanel.OnClose(() => Scenes.Load(Scenes.MAIN_MENU_SCENE));
-        GameResultsPanel.ShowInfoMessage("Game over: " + gameOverMessage.Reason + Environment.NewLine +
-                                         "Money gain: " + gameOverMessage.Results.Money + Environment.NewLine +
-                                         "Unlocked fruitons: " + gameOverMessage.Results.UnlockedFruitons + Environment.NewLine +
-                                         "Unlocked quests: " + string.Join(",", 
-                                             gameOverMessage.Results.Quests.Select(q => q.Name).ToArray()));
-        
-        GameManager.Instance.AddMoney(gameOverMessage.Results.Money);
-        GameManager.Instance.UnlockFruitons(gameOverMessage.Results.UnlockedFruitons);
-
-        if (gameOverMessage.Results.Quests != null)
-        {
-            foreach (Quest q in gameOverMessage.Results.Quests)
-            {
-                GameManager.Instance.AddMoney(q.Reward.Money);
-            }
-        }
+        BattleUIUtil.ShowResults(GameResultsPanel, gameOverMessage);
         
         Debug.Log("Game over, reason: " + gameOverMessage.Reason + ", result: " + gameOverMessage.Results);
     }

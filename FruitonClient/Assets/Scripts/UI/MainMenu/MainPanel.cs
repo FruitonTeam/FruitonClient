@@ -28,29 +28,29 @@ namespace UI.MainMenu
 
         public void TeamManagementContinue()
         {
-            Scenes.Load(Scenes.TEAMS_MANAGEMENT_SCENE, FruitonTeamsManager.TEAM_MANAGEMENT_STATE, bool.TrueString);
+            Scenes.Load(Scenes.TEAMS_MANAGEMENT_SCENE, Scenes.TEAM_MANAGEMENT_STATE, TeamManagementState.TEAM_MANAGEMENT.ToString());
         }
 
         public void TeamSelectionContinueOnline()
         {
-            TeamSelectionContinue(BattleType.OnlineBattle);
+            TeamSelectionContinue(BattleType.OnlineBattle, TeamManagementState.ONLINE_CHOOSE);
         }
 
         public void TeamSelectionContinueOffline()
         {
-            TeamSelectionContinue(BattleType.OfflineBattle);
+            TeamSelectionContinue(BattleType.OfflineBattle, TeamManagementState.LOCAL_CHOOSE_FIRST);
         }
 
         public void TeamSelectionContinueAI()
         {
-            TeamSelectionContinue(BattleType.AIBattle);
+            TeamSelectionContinue(BattleType.AIBattle, TeamManagementState.AI_CHOOSE);
         }
 
-        private void TeamSelectionContinue(BattleType battleType)
+        private void TeamSelectionContinue(BattleType battleType, TeamManagementState state)
         {
             var parameters = new Dictionary<string, string>
             {
-                {Scenes.TEAM_MANAGEMENT_STATE, bool.FalseString},
+                {Scenes.TEAM_MANAGEMENT_STATE, state.ToString()},
                 {Scenes.BATTLE_TYPE, battleType.ToString()}
             };
             Scenes.Load(Scenes.TEAMS_MANAGEMENT_SCENE, parameters);
