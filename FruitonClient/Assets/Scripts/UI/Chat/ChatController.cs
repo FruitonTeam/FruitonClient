@@ -28,6 +28,8 @@ namespace UI.Chat
         public GameObject ChatWindow;
         public Text ChatTip;
 
+        public Dropdown FriendActionsDropdown;
+
         public ScrollRect ScrollRect;
 
         private readonly Dictionary<string, string> friendMessages = new Dictionary<string, string>();
@@ -236,6 +238,28 @@ namespace UI.Chat
                     Debug.LogWarning("No user with name " + friendToAdd);
                 }
             }, err => { Debug.LogWarning("Error while checking player existence" + err); });
+        }
+
+        public void OnDropdownOption(int option)
+        {
+            // 0 - show profile
+            // 1 - challenge
+            // 2 - delete
+            // 3 - ignore
+            switch (option)
+            {
+                case 3:
+                    return;
+                case 0:
+                    ConnectionHandler.Instance.OpenUrlAuthorized("profile/" + Uri.EscapeDataString(FriendName.text));
+                    break;
+                default:
+                    // TODO: self-explanatory
+                    Debug.LogWarning("THIS FEATURE IS NOT IMPLEMENTED YET");
+                    break;
+            }
+            // reset dropdown value to make it work like a button
+            FriendActionsDropdown.value = 3;
         }
 
         private void SendFriendRequest(string friendToAdd)
