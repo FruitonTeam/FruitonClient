@@ -30,7 +30,7 @@ namespace Networking
             }
         }
 
-        public IEnumerator Connect()
+        public IEnumerator Connect(Action onSucessAction = null, Action onErrorAction = null)
         {
             socket = new WebSocketSharp.WebSocket(url.ToString());
             socket.AddRequestHeader(XAuthTokenHeaderKey, loginToken);
@@ -39,11 +39,19 @@ namespace Networking
             {
                 Debug.Log("Opened WebSocket connection");
                 isConnected = true;
+                if (onSucessAction != null)
+                {
+                    TaskManager.Instance.RunOnMainThread(onSucessAction);
+                }
             };
             socket.OnError += (sender, e) =>
             {
                 Debug.LogError("WebSocket: " + e.Message);
                 error = e.Message;
+                if (onErrorAction != null)
+                {
+                    TaskManager.Instance.RunOnMainThread(onErrorAction);
+                }
             };
             socket.ConnectAsync();
 

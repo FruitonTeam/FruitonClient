@@ -7,6 +7,7 @@ using UI.Chat;
 using UI.Notification;
 using UnityEngine;
 using Util;
+using Diagnostics = System.Diagnostics;
 
 namespace Networking
 {
@@ -16,16 +17,22 @@ namespace Networking
     public class ConnectionHandler : MonoBehaviour, IOnMessageListener
     {
         private readonly string XAuthTokenHeaderKey = "x-auth-token";
-        
+
+        private static readonly string SERVER_IP = "195.113.20.59";
+
         private static readonly string URL_WEB = "http://prak.mff.cuni.cz:8050/fruiton/";
+
         //private static readonly string URL_WEB = "http://localhost:8050/";
-        
+
         private static readonly string URL_WS = "ws://prak.mff.cuni.cz:8050/fruiton/socket";
         //private static readonly string URL_WS = "ws://localhost:8050/socket";
 
         private static readonly string URL_API = URL_WEB + "api/";
-        
-        private WebSocket webSocket;
+
+        // When reconnecting, wait for ping for this amount of seconds only.
+        private float pingTimer = 5;
+
+        public WebSocket webSocket;
 
         private string token;
 
@@ -36,6 +43,41 @@ namespace Networking
 
         private ConnectionHandler()
         {
+        }
+        
+        // Check if connection is alive.
+        public void CheckConnection()
+        {
+            // Not connected yet.
+            if (webSocket == null) return;
+            
+            if (!webSocket.IsAlive())
+            {
+                StartCoroutine(PingServer());
+            }
+            else
+            {
+                Debug.Log("Websocket OK");
+            }
+        }
+
+        private IEnumerator PingServer()
+        {
+            Ping ping = new Ping(SERVER_IP);
+            while (pingTimer > 0 && !ping.isDone)
+            {
+                pingTimer -= Time.deltaTime;
+                yield return null;
+            }
+            pingTimer = 5;
+            if (ping.isDone)
+            {
+                Reconnect();
+            }
+            else
+            {
+                UnableToReconnect();
+            }
         }
 
         public void OpenUrlAuthorized(string pageName)
@@ -105,10 +147,7 @@ namespace Networking
         {
             this.token = token;
             webSocket = new WebSocket(new Uri(URL_WS), token);
-            
-            StartCoroutine(webSocket.Connect());
-    
-            OnConnected();
+            StartCoroutine(webSocket.Connect(OnConnected));
         }
 
         private void OnConnected()
@@ -166,7 +205,12 @@ namespace Networking
 
         public void Reconnect()
         {
-            // TODO: implement
+            StartCoroutine(webSocket.Connect(OnConnected, UnableToReconnect));
+        }
+
+        private void UnableToReconnect()
+        {
+            Scenes.Load(Scenes.LOGIN_SCENE);
         }
 
         private void Update()
