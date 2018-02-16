@@ -382,19 +382,17 @@ public class GameManager : IOnMessageListener
         FruitonDatabase = new FruitonDatabase(KernelUtils.LoadTextResource(FRUITON_DB_FILE));
         AllFruitons = ClientFruitonFactory.CreateAllKernelFruitons();
 
-        switch (connectionMode)
+        if (IsInTrial)
         {
-            case ConnectionMode.Trial:
-                AvailableFruitons = AllPlayableFruitons.Select(fruiton => fruiton.id).ToList();
-                FruitonTeamList = new FruitonTeamList();
-                loggedPlayerInfo = new LoggedPlayerInfo();
-                break;
-            case ConnectionMode.Offline:
-            case ConnectionMode.Online:
-                PlayerOptions = Serializer.LoadPlayerSettings();
-                Serializer.DeserializeFruitonTeams();
-                AvailableFruitons = Serializer.LoadAvailableFruitons();
-                break;
+            AvailableFruitons = AllPlayableFruitons.Select(fruiton => fruiton.id).ToList();
+            FruitonTeamList = new FruitonTeamList();
+            loggedPlayerInfo = new LoggedPlayerInfo();
+        }
+        else
+        {
+            PlayerOptions = Serializer.LoadPlayerSettings();
+            Serializer.DeserializeFruitonTeams();
+            AvailableFruitons = Serializer.LoadAvailableFruitons();
         }
 
         if (IsOnline)
