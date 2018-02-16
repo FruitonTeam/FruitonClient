@@ -12,6 +12,7 @@ namespace UI.Chat
             public int UnreadMessages;
             public Status OnlineStatus;
             public Texture Avatar;
+            public bool IsFriend;
         }
 
         public Image Background;
@@ -22,8 +23,11 @@ namespace UI.Chat
 
         public RawImage Avatar;
 
-        public Color Color;
+        public Color FriendColor;
+        public Color NearbyPlayerColor;
         public Color SelectedColor;
+
+        private bool isFriend;
 
         public override void Select(bool selected)
         {
@@ -34,17 +38,18 @@ namespace UI.Chat
             }
             else
             {
-                Background.color = Color;
+                Background.color = isFriend ? FriendColor : NearbyPlayerColor;
             }
         }
 
         public override void OnLoad(object data)
         {
             var itemData = (FriendItemData) data;
+            isFriend = itemData.IsFriend;
             FriendName.text = itemData.Name;
-            Background.color = Color;
+            Background.color = isFriend ? FriendColor : NearbyPlayerColor;
             UnreadCount.text = itemData.UnreadMessages.ToString();
-            StatusText.text = itemData.OnlineStatus.ToString();
+            StatusText.text = isFriend ? itemData.OnlineStatus.ToString() : "Nearby player";
             if (itemData.Avatar != null)
             {
                 Avatar.texture = itemData.Avatar;
