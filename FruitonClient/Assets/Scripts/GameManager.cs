@@ -146,7 +146,7 @@ public class GameManager : IOnMessageListener
     {
         get
         {
-            return AllFruitons.Where(fruiton => fruiton.id < AI_FRUITONS_START_INDEX);
+            return AllFruitons.Where(fruiton => fruiton.dbId < AI_FRUITONS_START_INDEX);
         }
     }
 

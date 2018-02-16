@@ -22,6 +22,11 @@ public class GridLayoutManager : MonoBehaviour {
     private GameObject[,] SpawnedGrid;
     private GridCellType[,] SpawnedGridType;
 
+    public static GameObject[,] MakeNewGrid()
+    {
+        return new GameObject[Instance.WidthCount, Instance.HeighCount];
+    }
+
     void Awake()
     {
         if (Instance == null)

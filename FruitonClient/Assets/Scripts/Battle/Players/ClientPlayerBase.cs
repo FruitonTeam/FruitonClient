@@ -14,7 +14,7 @@ public abstract class ClientPlayerBase
 
     public string Name { get; private set; }
 
-    public int ID { get; private set; }
+    public int ID { get; set; }
 
     public abstract void ProcessOpponentAction(EndTurnAction action);
     public abstract void ProcessOpponentAction(TargetableAction action);

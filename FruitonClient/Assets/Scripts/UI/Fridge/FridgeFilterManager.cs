@@ -36,11 +36,12 @@ public class FridgeFilterManager : MonoBehaviour
 
     public void UpdateAvailableFruitons(List<int> availableIds)
     {
+        Debug.Log("updating available fruitons");
         var idSet = new HashSet<int>(availableIds);
 
         foreach (var fruiton in AllFruitons)
         {
-            fruiton.IsOwned = idSet.Contains(fruiton.KernelFruiton.id);
+            fruiton.IsOwned = idSet.Contains(fruiton.KernelFruiton.dbId);
         }
         ApplyFilters();
     }

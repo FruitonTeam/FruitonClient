@@ -43,23 +43,21 @@ public class ClientFruiton : MonoBehaviour {
                 case HEALTH:
                     {
                         HealthTag = child.GetComponentInChildren<TextMesh>();
-                        HealthTag.text = KernelFruiton.currentAttributes.hp.ToString();
+                        UpdateHealthTag();
                     }
                     break;
                 case DAMAGE:
                     {
                         DamageTag = child.GetComponentInChildren<TextMesh>();
-                        DamageTag.text = KernelFruiton.currentAttributes.damage.ToString();
+                        UpdateDamageTag();
                     }
                     break;
             }
         }
 
         animator = GetComponentInChildren<FruitonBattleAnimator>();
-        if (animator != null) // TODO remove when all is Spine
-        {
-            animator.Initialize();
-        }
+        
+        animator.Initialize();
     }
 
     public void TakeDamage(int damage)
@@ -77,6 +75,13 @@ public class ClientFruiton : MonoBehaviour {
         int newHp = KernelFruiton.currentAttributes.hp;
         HealthTag.text = newHp.ToString();
         HealthTag.color = GetHighlightColor(KernelFruiton.originalAttributes.hp, newHp);
+    }
+
+    public void UpdateDamageTag()
+    {
+        int currentDamage = KernelFruiton.currentAttributes.damage;
+        DamageTag.text = currentDamage.ToString();
+        DamageTag.color = GetHighlightColor(KernelFruiton.originalAttributes.damage, currentDamage);
     }
 
     public void FlipAround()

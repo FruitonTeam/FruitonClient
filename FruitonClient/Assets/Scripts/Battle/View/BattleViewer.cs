@@ -50,10 +50,11 @@ public class BattleViewer : MonoBehaviour
 
     private static readonly Color FOREST_DARK = new Color(25 / 255f, 39 / 255f, 13 / 255f);
     private static readonly Color FOREST_GREEN = new Color(37 / 255f, 89 / 255f, 31 / 255f);
+    private Coroutine moveCoroutine;
 
 
     /// <summary> Client fruitons stored at their position. </summary>
-    public GameObject[,] Grid { get; set; }
+    public GameObject[,] FruitonsGrid { get; set; }
 
     public GameMode GameMode { get; private set; }
 
@@ -73,7 +74,7 @@ public class BattleViewer : MonoBehaviour
         InfoAndroidButton.gameObject.SetActive(true);
 #endif
         GridLayoutManager = GridLayoutManager.Instance;
-        Grid = new GameObject[GridLayoutManager.WidthCount, GridLayoutManager.HeighCount];
+        FruitonsGrid = GridLayoutManager.MakeNewGrid();
 
         battleType = (BattleType) Enum.Parse(typeof(BattleType), Scenes.GetParam(Scenes.BATTLE_TYPE));
         GameMode = (GameMode) Enum.Parse(typeof(GameMode), Scenes.GetParam(Scenes.GAME_MODE));
@@ -253,7 +254,7 @@ public class BattleViewer : MonoBehaviour
         if (!tileHit.Equals(default(RaycastHit)))
         {
             KVector2 tilePosition = GridLayoutManager.GetIndicesOfTile(tileHit.transform.gameObject);
-            GameObject hitFruiton = Grid[tilePosition.x, tilePosition.y];
+            GameObject hitFruiton = FruitonsGrid[tilePosition.x, tilePosition.y];
             if (hitFruiton != null)
             {
                 UpdateAndShowTooltip(hitFruiton);
@@ -281,12 +282,7 @@ public class BattleViewer : MonoBehaviour
     {
         if (!isLocalPlayerFirst)
         {
-            foreach (var fruiton in Grid)
-                if (fruiton != null)
-                {
-                    var clientFruiton = fruiton.GetComponent<ClientFruiton>();
-                    clientFruiton.FlipAround();
-                }
+            FlipFruitons();
             Vector3 oldPosition = Camera.main.transform.position;
             Camera.main.transform.position = new Vector3(-oldPosition.x, oldPosition.y, oldPosition.z);
             Vector3 oldEulerAngles = Camera.main.transform.eulerAngles;
@@ -297,8 +293,24 @@ public class BattleViewer : MonoBehaviour
         SetupSurrenderButton();
     }
 
-    public void InitializeTeam(IEnumerable<GameObject> currentTeam, Player player,
-        Position[] fruitonsPositions = null)
+    public void FlipFruitons()
+    {
+        foreach (GameObject fruiton in FruitonsGrid)
+        {
+            if (fruiton != null)
+            {
+                var clientFruiton = fruiton.GetComponent<ClientFruiton>();
+                clientFruiton.FlipAround();
+            }
+        }
+    }
+
+    public void InitializeTeam(
+        IEnumerable<GameObject> currentTeam, 
+        Player player, 
+        bool isPlayerLeft,
+        Position[] fruitonsPositions = null
+    )
     {
         var counter = 0;
         int i = 0, j = 0;
@@ -306,7 +318,7 @@ public class BattleViewer : MonoBehaviour
         {
             var kernelFruiton = clientFruiton.GetComponent<ClientFruiton>().KernelFruiton;
             var anim = clientFruiton.GetComponentInChildren<SkeletonAnimation>();
-            if (player.id == 0)
+            if (isPlayerLeft)
             {
                 anim.Skeleton.FlipX = true;
             }
@@ -320,7 +332,7 @@ public class BattleViewer : MonoBehaviour
                 j = currentPosition.Y;
                 counter++;
             }
-            Grid[i, j] = clientFruiton;
+            FruitonsGrid[i, j] = clientFruiton;
             kernelFruiton.position = new KVector2(i, j);
             var cellPosition = GridLayoutManager.GetCellPosition(i, j);
             clientFruiton.transform.position = cellPosition;
@@ -408,21 +420,21 @@ public class BattleViewer : MonoBehaviour
     private void ProcessModifyHealthEvent(ModifyHealthEvent kEvent)
     {
         KVector2 kEventPosition = kEvent.position;
-        var clientFruiton = Grid[kEventPosition.x, kEventPosition.y].GetComponent<ClientFruiton>();
+        var clientFruiton = FruitonsGrid[kEventPosition.x, kEventPosition.y].GetComponent<ClientFruiton>();
         clientFruiton.ModifyHealth(kEvent.newHealth);
     }
 
     private void ProcessHealEvent(HealEvent kEvent)
     {
         KVector2 healerPosition = kEvent.source;
-        GameObject attacker = Grid[healerPosition.x, healerPosition.y];
+        GameObject attacker = FruitonsGrid[healerPosition.x, healerPosition.y];
         attacker.GetComponentInChildren<BoyFighterBattleAnimator>().Cast(() => AfterHealAnimation(kEvent));
     }
 
     private void AfterHealAnimation(HealEvent kEvent)
     {
         KVector2 kEventPosition = kEvent.target;
-        var clientFruiton = Grid[kEventPosition.x, kEventPosition.y].GetComponent<ClientFruiton>();
+        var clientFruiton = FruitonsGrid[kEventPosition.x, kEventPosition.y].GetComponent<ClientFruiton>();
         clientFruiton.ReceiveHeal(kEvent.heal);
         ShowFloatingText(clientFruiton.transform.position, kEvent.heal);
     }
@@ -430,29 +442,29 @@ public class BattleViewer : MonoBehaviour
     private void ProcessModifyAttackEvent(ModifyAttackEvent kEvent)
     {
         KVector2 kEventPosition = kEvent.position;
-        var clientFruiton = Grid[kEventPosition.x, kEventPosition.y].GetComponent<ClientFruiton>();
+        var clientFruiton = FruitonsGrid[kEventPosition.x, kEventPosition.y].GetComponent<ClientFruiton>();
         clientFruiton.ModifyAttack(kEvent.newAttack);
     }
 
     private void ProcessDeathEvent(DeathEvent kEvent)
     {
         var killedPos = kEvent.fruiton.position;
-        var killed = Grid[killedPos.x, killedPos.y];
+        var killed = FruitonsGrid[killedPos.x, killedPos.y];
         Destroy(killed);
-        Grid[killedPos.x, killedPos.y] = null;
+        FruitonsGrid[killedPos.x, killedPos.y] = null;
     }
 
     private void ProcessAttackEvent(AttackEvent kEvent)
     {
         KVector2 attackerPosition = kEvent.source;
-        GameObject attacker = Grid[attackerPosition.x, attackerPosition.y];
+        GameObject attacker = FruitonsGrid[attackerPosition.x, attackerPosition.y];
         attacker.GetComponentInChildren<BoyFighterBattleAnimator>().Attack(() => AfterAttackAnimation(kEvent));
     }
 
     private void AfterAttackAnimation(AttackEvent kEvent)
     {
         KVector2 damagedPosition = kEvent.target;
-        GameObject damaged = Grid[damagedPosition.x, damagedPosition.y];
+        GameObject damaged = FruitonsGrid[damagedPosition.x, damagedPosition.y];
         Vector3 damagedWorldPosition = GridLayoutManager.GetCellPosition(damagedPosition.x, damagedPosition.y);
         if (damaged != null)
         {
@@ -467,11 +479,11 @@ public class BattleViewer : MonoBehaviour
         IsInputEnabled = false;
         KVector2 from = moveEvent.from;
         KVector2 to = moveEvent.to;
-        GameObject movedObject = Grid[from.x, from.y];
-        Grid[to.x, to.y] = movedObject;
-        Grid[from.x, from.y] = null;
+        GameObject movedObject = FruitonsGrid[from.x, from.y];
+        FruitonsGrid[to.x, to.y] = movedObject;
+        FruitonsGrid[from.x, from.y] = null;
         Vector3 toPosition = GridLayoutManager.GetCellPosition(to.x, to.y);
-        StartCoroutine(MoveCoroutine(movedObject.transform.position, toPosition, movedObject));
+        moveCoroutine = StartCoroutine(MoveCoroutine(movedObject.transform.position, toPosition, movedObject));
         GridLayoutManager.ResetHighlights();
     }
 
@@ -627,5 +639,20 @@ public class BattleViewer : MonoBehaviour
         }
         Color currentColor = InfoAndroidButton.GetComponent<Image>().color;
         InfoAndroidButton.GetComponent<Image>().color = currentColor == Color.white ? Color.red : Color.white;
+    }
+
+    public void CorrectView()
+    {
+        if (moveCoroutine != null)
+            StopCoroutine(moveCoroutine);
+        IsInputEnabled = true;
+
+        foreach (GameObject o in FruitonsGrid)
+        {
+            if (o != null)
+                Destroy(o);
+        }
+        FruitonsGrid = GridLayoutManager.MakeNewGrid();
+        GridLayoutManager.ResetHighlights();
     }
 }
