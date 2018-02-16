@@ -16,6 +16,7 @@ public class PlayerOptions
 {
     public int LastSelectedGameMode { get; set; }
     public int LastSelectedAIMode { get; set; }
+    public int LastSelectedLocalGameMode { get; set; }
 }
 
 public class GameManager : IOnMessageListener
