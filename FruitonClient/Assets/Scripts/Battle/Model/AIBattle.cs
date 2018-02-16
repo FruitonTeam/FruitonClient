@@ -58,9 +58,9 @@ class AIBattle : Battle
             humanTeam = ClientFruitonFactory.CreateClientFruitonTeam(gameManager.CurrentFruitonTeam.FruitonIDs, battleViewer.Board);
             coords = gameManager.CurrentFruitonTeam.Positions;
         }
-        battleViewer.InitializeTeam(humanTeam, kernelPlayer1, coords.ToArray());
+        battleViewer.InitializeTeam(humanTeam, kernelPlayer1, kernelPlayer1.id == 0, coords.ToArray());
         flippedCoords = BattleHelper.FlipCoordinates(coords, GameState.WIDTH, GameState.HEIGHT);
-        battleViewer.InitializeTeam(aiTeam, kernelPlayer2, flippedCoords.ToArray());
+        battleViewer.InitializeTeam(aiTeam, kernelPlayer2, kernelPlayer2.id == 0, flippedCoords.ToArray());
 
         var fruitons = new Array<object>();
         foreach (var fruiton in humanTeam)
@@ -77,7 +77,7 @@ class AIBattle : Battle
         GameSettings kernelSettings = GameSettingsFactory.CreateGameSettings(rndMapId, battleViewer.GameMode);
 
         bool infiniteTurnTime = battleViewer.battleType == BattleType.TutorialBattle;
-        kernel = new Kernel(kernelPlayer1, kernelPlayer2, fruitons, kernelSettings, false, infiniteTurnTime);
+        Kernel = new Kernel(kernelPlayer1, kernelPlayer2, fruitons, kernelSettings, false, infiniteTurnTime);
         BattleReady();
     }
 

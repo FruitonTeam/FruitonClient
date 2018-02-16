@@ -28,17 +28,24 @@ public static class ClientFruitonFactory {
     public static IEnumerable<GameObject> CreateClientFruitonTeam(IEnumerable<int> teamIDs, GameObject parent)
     {
         var result = new List<GameObject>();
-        FruitonDatabase fruitonDatabase = GameManager.Instance.FruitonDatabase;
         foreach (int id in teamIDs)
         {
-            Fruiton kernelFruiton = FruitonFactory.makeFruiton(id, fruitonDatabase);
-            var newFruitonObject = UnityEngine.Object.Instantiate(Resources.Load("Models/Battle/BoyFighter", typeof(GameObject))) as GameObject;
-            newFruitonObject.GetComponentInChildren<SkeletonAnimation>().skeleton.SetSkin(kernelFruiton.model);
-            newFruitonObject.AddComponent<ClientFruiton>().KernelFruiton = kernelFruiton;
-            newFruitonObject.transform.parent = parent.transform;
+            GameObject newFruitonObject = CreateClientFruiton(id, parent);
             result.Add(newFruitonObject);
         }
         return result;
+    }
+
+    public static GameObject CreateClientFruiton(int id, GameObject parent)
+    {
+        FruitonDatabase fruitonDatabase = GameManager.Instance.FruitonDatabase;
+        Fruiton kernelFruiton = FruitonFactory.makeFruiton(id, fruitonDatabase);
+        var newFruitonObject = UnityEngine.Object.Instantiate(Resources.Load("Models/Battle/BoyFighter", typeof(GameObject))) as GameObject;
+        newFruitonObject.GetComponentInChildren<SkeletonAnimation>().skeleton.SetSkin(kernelFruiton.model);
+        newFruitonObject.AddComponent<ClientFruiton>().KernelFruiton = kernelFruiton;
+        newFruitonObject.transform.parent = parent.transform;
+
+        return newFruitonObject;
     }
 
 }

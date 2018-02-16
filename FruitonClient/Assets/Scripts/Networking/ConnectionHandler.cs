@@ -17,11 +17,11 @@ namespace Networking
     {
         private readonly string XAuthTokenHeaderKey = "x-auth-token";
         
-        private static readonly string URL_WEB = "http://prak.mff.cuni.cz:8050/fruiton/";
-        //private static readonly string URL_WEB = "http://localhost:8050/";
+        //private static readonly string URL_WEB = "http://prak.mff.cuni.cz:8050/fruiton/";
+        private static readonly string URL_WEB = "http://localhost:8050/";
         
-        private static readonly string URL_WS = "ws://prak.mff.cuni.cz:8050/fruiton/socket";
-        //private static readonly string URL_WS = "ws://localhost:8050/socket";
+        //private static readonly string URL_WS = "ws://prak.mff.cuni.cz:8050/fruiton/socket";
+        private static readonly string URL_WS = "ws://localhost:8050/socket";
 
         private static readonly string URL_API = URL_WEB + "api/";
         

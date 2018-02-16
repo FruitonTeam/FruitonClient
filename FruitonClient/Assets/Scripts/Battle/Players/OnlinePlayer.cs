@@ -1,4 +1,5 @@
 ﻿using Cz.Cuni.Mff.Fruiton.Dto;
+using fruiton.dataStructures;
 using fruiton.kernel;
 using fruiton.kernel.actions;
 using Networking;
@@ -22,7 +23,15 @@ public class OnlinePlayer : ClientPlayerBase, IOnMessageListener
 
     private void ProcessMessage(ProtoAction protoAction)
     {
-        battle.PerformAction(protoAction.From.ToKernelPosition(), protoAction.To.ToKernelPosition(), protoAction.Id);
+        var from = new Point(-1, -1);
+        var to = new Point(-1, -1);
+
+        if (protoAction.From != null)
+            from = protoAction.From.ToKernelPosition();
+        if (protoAction.To != null)
+            to = protoAction.To.ToKernelPosition();
+
+        battle.PerformAction(from, to, protoAction.Id);
     }
 
     public override void ProcessOpponentAction(EndTurnAction action)

@@ -6,6 +6,7 @@ using fruiton.kernel;
 using fruiton.kernel.actions;
 using fruiton.kernel.events;
 using UnityEngine;
+using Event = fruiton.kernel.events.Event;
 using KEvent = fruiton.kernel.events.Event;
 using KVector2 = fruiton.dataStructures.Point;
 using KAction = fruiton.kernel.actions.Action;
@@ -22,7 +23,7 @@ public enum BattleType
 public abstract class Battle
 {
     protected GameManager gameManager;
-    protected Kernel kernel;
+    public Kernel Kernel { get; protected set; }
     protected BattleViewer battleViewer;
     protected Dictionary<int, ClientFruiton> clientFruitons;
 
@@ -56,10 +57,10 @@ public abstract class Battle
     /// </summary>
     protected void BattleReady()
     {
-        battleViewer.InitializeMap(kernel.currentState.field.field.CastToList2D<Tile>());
+        battleViewer.InitializeMap(Kernel.currentState.field.field.CastToList2D<Tile>());
 
         clientFruitons = new Dictionary<int, ClientFruiton>();
-        foreach (GameObject fruitonObject in battleViewer.Grid)
+        foreach (GameObject fruitonObject in battleViewer.FruitonsGrid)
         {
             ClientFruiton clientFruiton;
             if (fruitonObject != null &&
@@ -73,16 +74,16 @@ public abstract class Battle
 
     private void PerformAction(KAction performedAction)
     {
-        List<KEvent> events = kernel.performAction(performedAction).CastToList<KEvent>();
+        List<KEvent> events = Kernel.performAction(performedAction).CastToList<KEvent>();
 
-        for (int i = 0; i < kernel.currentState.fruitons.length; i++)
+        for (int i = 0; i < Kernel.currentState.fruitons.length; i++)
         {
-            KFruiton fruiton = kernel.currentState.fruitons[i] as KFruiton;
-            var clientFruiton = clientFruitons[fruiton.id];
+            var fruiton = Kernel.currentState.fruitons[i] as KFruiton;
+            ClientFruiton clientFruiton = clientFruitons[fruiton.id];
             clientFruiton.KernelFruiton = fruiton;
         }
 
-        foreach (var item in events)
+        foreach (Event item in events)
         {
             battleViewer.ProcessEvent(item);
         }
@@ -120,20 +121,20 @@ public abstract class Battle
     private TTargetableAction GetTargetableAction<TTargetableAction>(KVector2 from, KVector2 to)
         where TTargetableAction : KAction, TargetableAction
     {
-        var allValidActionsFrom = kernel.getAllValidActionsFrom(from).CastToList<KAction>().OfType<TTargetableAction>();
+        var allValidActionsFrom = Kernel.getAllValidActionsFrom(from).CastToList<KAction>().OfType<TTargetableAction>();
         var performedAction = allValidActionsFrom.SingleOrDefault(x => x.getContext().target.equalsTo(to));
         return performedAction;
     }
 
     public List<KAction> GetAllAvailableActions()
     {
-        return kernel.getAllValidActions().CastToList<KAction>();
+        return Kernel.getAllValidActions().CastToList<KAction>();
     }
 
     public int ComputeRemainingTime()
     {
         var currentEpochTime = (int) (DateTime.UtcNow - Constants.EPOCH_START).TotalSeconds;
-        var timeLeft = (int) (kernel.currentState.turnState.endTime - currentEpochTime);
+        var timeLeft = (int) (Kernel.currentState.turnState.endTime - currentEpochTime);
         if (timeLeft <= 0)
         {
             if (ActivePlayer is LocalPlayer && battleViewer.battleType != BattleType.TutorialBattle)
@@ -177,12 +178,12 @@ public abstract class Battle
 
     public bool IsPlayerActive(ClientPlayerBase player)
     {
-        return player.ID == kernel.currentState.get_activePlayer().id;
+        return player.ID == Kernel.currentState.get_activePlayer().id;
     }
 
     public List<KAction> GetAllValidActionFrom(KVector2 position)
     {
-        return kernel.getAllValidActionsFrom(position).CastToList<KAction>();
+        return Kernel.getAllValidActionsFrom(position).CastToList<KAction>();
     }
 
     public List<KVector2> ComputePossibleAttacks(KVector2 potentialPosition, KFruiton kernelFruiton)
@@ -196,11 +197,11 @@ public abstract class Battle
             foreach (var attack in attacks)
             {
                 var target = ((AttackActionContext) attack.actionContext).target;
-                if (kernel.currentState.field.exists(target))
+                if (Kernel.currentState.field.exists(target))
                 {
-                    var potentialTarget = kernel.currentState.field.get(target).fruiton;
+                    var potentialTarget = Kernel.currentState.field.get(target).fruiton;
                     if (potentialTarget != null &&
-                        potentialTarget.owner.id != kernel.currentState.get_activePlayer().id)
+                        potentialTarget.owner.id != Kernel.currentState.get_activePlayer().id)
                         possibleAttacks.Add(potentialTarget.position);
                 }
             }
@@ -210,7 +211,7 @@ public abstract class Battle
 
     public KFruiton GetFruiton(KVector2 position)
     {
-        return kernel.currentState.field.get(position).fruiton;
+        return Kernel.currentState.field.get(position).fruiton;
     }
 
     public virtual void OnEnable()
@@ -227,6 +228,6 @@ public abstract class Battle
 
     public Kernel GetKernelClone()
     {
-        return kernel.clone();
+        return Kernel.clone();
     }
 }
