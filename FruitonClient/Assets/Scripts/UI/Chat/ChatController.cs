@@ -89,7 +89,7 @@ namespace UI.Chat
 
         private readonly Dictionary<string, ChatRecord> chatRecords = new Dictionary<string, ChatRecord>();
 
-        private readonly List<IOnFriendAddedListener> onFriendAddedListeners = new List<IOnFriendAddedListener>();
+        private readonly List<IOnFriendsChangedListener> onFriendsChangedListeners = new List<IOnFriendsChangedListener>();
         /// <summary>
         /// List of text gameObjects that are used to display chat messages
         /// </summary>
@@ -304,6 +304,7 @@ namespace UI.Chat
 
         public void OnDropdownOption(int option)
         {
+            FriendActionsDropdown.value = 3;
             // 0 - show profile
             // 1 - challenge
             // 2 - delete
@@ -315,13 +316,25 @@ namespace UI.Chat
                 case 0:
                     ConnectionHandler.Instance.OpenUrlAuthorized("profile/" + Uri.EscapeDataString(FriendName.text));
                     break;
+                case 2:
+                    FriendRemoval removalMessage = new FriendRemoval
+                    {
+                        Login = FriendName.text
+                    };
+
+                    WrapperMessage ws = new WrapperMessage
+                    {
+                        FriendRemoval = removalMessage
+                    };
+                    ConnectionHandler.Instance.SendWebsocketMessage(ws);
+                    OnFriendRemoval(removalMessage);
+                    break;
                 default:
                     // TODO: self-explanatory
                     Debug.LogWarning("THIS FEATURE IS NOT IMPLEMENTED YET");
                     break;
             }
             // reset dropdown value to make it work like a button
-            FriendActionsDropdown.value = 3;
         }
 
         private void SendFriendRequest(string friendToAdd)
@@ -360,7 +373,7 @@ namespace UI.Chat
             };
             GameManager.Instance.AddFriend(f);
 
-            foreach (IOnFriendAddedListener listener in onFriendAddedListeners)
+            foreach (IOnFriendsChangedListener listener in onFriendsChangedListeners)
             {
                 listener.OnFriendAdded();
             }
@@ -397,6 +410,7 @@ namespace UI.Chat
                 // TODO:
                 Debug.Log("Feature not implemented yet");
                 ChatWindow.SetActive(false);
+                FriendName.text = "";
                 return;
             }
 
@@ -449,6 +463,9 @@ namespace UI.Chat
                 case WrapperMessage.MessageOneofCase.FriendRequestResult:
                     OnFriendRequestResult(message.FriendRequestResult);
                     break;
+                case WrapperMessage.MessageOneofCase.FriendRemoval:
+                    OnFriendRemoval(message.FriendRemoval);
+                    break;
                 case WrapperMessage.MessageOneofCase.OnlineStatusChange:
                     OnOnlineStatusChange(message.OnlineStatusChange);
                     break;
@@ -489,6 +506,24 @@ namespace UI.Chat
             {
                 // if we get this message then the other friend must have accepted it in his game so he is online
                 AddFriend(message.FriendToAdd, Status.Online);
+            }
+        }
+
+        private void OnFriendRemoval(FriendRemoval message)
+        {
+            var friend = message.Login;
+            FriendListController.RemoveItem(friend);
+            chatRecords.Remove(friend);
+            if (friend == FriendName.text)
+            {
+                // Unity dropdown crashed if we disable chat window without closing the dropdown first
+                StartCoroutine(CloseChatWindowWithDelay());
+                FriendName.text = "";
+            }
+            GameManager.Instance.RemoveFriend(friend);
+            foreach (IOnFriendsChangedListener listener in onFriendsChangedListeners)
+            {
+                listener.OnFriendRemoved();
             }
         }
 
@@ -719,20 +754,31 @@ namespace UI.Chat
                 .Append("</color>");
         }
 
-        public void AddListener(IOnFriendAddedListener listener)
+        private IEnumerator CloseChatWindowWithDelay()
         {
-            onFriendAddedListeners.Add(listener);
+            yield return 1;
+            FriendActionsDropdown.Hide();
+            yield return new WaitForSecondsRealtime(0.3f);
+            ChatWindow.SetActive(false);
         }
 
-        public void RemoveListener(IOnFriendAddedListener listener)
+        public void AddListener(IOnFriendsChangedListener listener)
         {
-            onFriendAddedListeners.Remove(listener);
+            onFriendsChangedListeners.Add(listener);
         }
 
-        public interface IOnFriendAddedListener
+        public void RemoveListener(IOnFriendsChangedListener listener)
+        {
+            onFriendsChangedListeners.Remove(listener);
+        }
+
+        public interface IOnFriendsChangedListener
         {
             void OnFriendAdded();
+            void OnFriendRemoved();
         }
+        
+
 
 #if UNITY_ANDROID
 

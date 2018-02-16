@@ -314,6 +314,11 @@ public class GameManager : IOnMessageListener
         Friends.Add(friend);
     }
 
+    public void RemoveFriend(string friend)
+    {
+        Friends.Remove(Friends.First(f => f.Login == friend));
+    }
+
     public void SavePlayerSettings()
     {
         Serializer.SavePlayerSettings(PlayerOptions);

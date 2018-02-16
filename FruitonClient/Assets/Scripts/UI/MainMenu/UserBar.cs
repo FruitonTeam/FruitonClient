@@ -8,7 +8,7 @@ using Util;
 
 namespace UI.MainMenu
 {
-    public class UserBar : MonoBehaviour, ChatController.IOnFriendAddedListener, IOnMessageListener
+    public class UserBar : MonoBehaviour, ChatController.IOnFriendsChangedListener, IOnMessageListener
     {
         public Text PlayerNameText;
         public Image PlayerAvatarImage;
@@ -47,6 +47,11 @@ namespace UI.MainMenu
         }
 
         public void OnFriendAdded()
+        {
+            FriendsText.text = GameManager.Instance.Friends.Count(f => f.Status == Status.Online).ToString();
+        }
+
+        public void OnFriendRemoved()
         {
             FriendsText.text = GameManager.Instance.Friends.Count(f => f.Status == Status.Online).ToString();
         }

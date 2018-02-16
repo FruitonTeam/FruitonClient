@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using Cz.Cuni.Mff.Fruiton.Dto;
 using UnityEngine;
 
@@ -29,6 +30,12 @@ namespace UI.Chat
 
             if (isFriend)
             {
+                // when adding friend we need remove user with same login from list
+                // if they are already there as a nearby player
+                if (Data.Exists(d => d.Name == friendName))
+                {
+                    RemoveItem(friendName);
+                }
                 Data.Add(itemData);
                 RecyclableList.AddItem(ListItem);
             }
