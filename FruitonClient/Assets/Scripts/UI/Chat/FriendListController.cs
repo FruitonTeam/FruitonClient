@@ -17,18 +17,38 @@ namespace UI.Chat
             RecyclableList.gameObject.SetActive(true);
         }
 
-        public void AddItem(string friendName, Status status)
+        public void AddItem(string friendName, Status status, bool isFriend = true)
         {
             var itemData = new FriendListItem.FriendItemData
             {
                 Name = friendName,
                 UnreadMessages = 0,
-                OnlineStatus = status
+                OnlineStatus = status,
+                IsFriend = isFriend
             };
 
-            Data.Add(itemData);
+            if (isFriend)
+            {
+                Data.Add(itemData);
+                RecyclableList.AddItem(ListItem);
+            }
+            else
+            {
+                Data.Insert(0, itemData);
+                RecyclableList.InsertItem(0, ListItem);
+            }
+        }
 
-            RecyclableList.AddItem(ListItem);
+        public void RemoveItem(string nameToRemove)
+        {
+            int index = Data.FindIndex(data => data.Name == nameToRemove);
+            if (index < 0)
+            {
+                Debug.LogError("Couldn't remove " + nameToRemove + " from contact list (not found)");
+                return;
+            }
+            Data.RemoveAt(index);
+            RecyclableList.RemoveItemAt(index);
         }
 
         public string GetFriend(int index)
