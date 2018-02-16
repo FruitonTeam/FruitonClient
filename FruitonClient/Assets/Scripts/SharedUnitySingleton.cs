@@ -31,11 +31,9 @@ public class SharedUnitySingleton : MonoBehaviour
             !GameManager.Instance.IsOnline ||
             SceneManager.GetActiveScene().name == Scenes.LOGIN_SCENE) return;
         connectionCheckTimeLeft -= Time.deltaTime;
-        ConnectionHandler.Instance.DebugUpdate(Time.deltaTime);
         
         if (connectionCheckTimeLeft < 0)
         {
-            Debug.Log("Check connection.");
             connectionCheckTimeLeft = CONNECTION_CHECK_INTERVAL;
             ConnectionHandler.Instance.CheckConnection();
         }

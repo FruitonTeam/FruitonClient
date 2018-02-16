@@ -210,7 +210,7 @@ namespace Networking
 
         private void UnableToReconnect()
         {
-            Scenes.Load(Scenes.LOGIN_SCENE);
+            Scenes.Load(Scenes.LOGIN_SCENE, Scenes.DISCONNECTED, true);
         }
 
         private void Update()
