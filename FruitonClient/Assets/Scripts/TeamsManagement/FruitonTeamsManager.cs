@@ -608,7 +608,7 @@ public class FruitonTeamsManager : MonoBehaviour
     private void AddFruitonToTeam(KFruiton fruiton, Position position)
     {
         var team = teams[selectedTeamIndex].KernelTeam;
-        team.FruitonIDs.Add(fruiton.id);
+        team.FruitonIDs.Add(fruiton.dbId);
         team.Positions.Add(position);
         TeamGrid.AddFruitonAt(fruiton, position);
     }

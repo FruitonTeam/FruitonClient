@@ -74,8 +74,6 @@ public class OnlineBattle : Battle, IOnMessageListener
 
     public void ProcessMessage(GameReady gameReadyMessage)
     {
-        // TODO remove before merge - uncomment for testing
-        //GameManager.Instance.CurrentFruitonTeam.Positions[0] = new Position {X = 4, Y = 4};
         battleViewer.DisableCancelFindButton();
         var kernelPlayer1 = new Player(0);
         var kernelPlayer2 = new Player(1);

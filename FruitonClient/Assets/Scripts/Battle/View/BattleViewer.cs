@@ -643,7 +643,8 @@ public class BattleViewer : MonoBehaviour
 
     public void CorrectView()
     {
-        StopCoroutine(moveCoroutine);
+        if (moveCoroutine != null)
+            StopCoroutine(moveCoroutine);
         IsInputEnabled = true;
 
         foreach (GameObject o in FruitonsGrid)

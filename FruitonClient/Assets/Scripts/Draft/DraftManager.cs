@@ -365,10 +365,10 @@ public class DraftManager : MonoBehaviour
     {
         if (isMyTurnToDraft)
         {
-            team.FruitonIDs.Add(fruiton.id);
+            team.FruitonIDs.Add(fruiton.dbId);
             team.Positions.Add(position);
             MyTeamGrid.AddFruitonAt(fruiton, position);
-            draftHandler.SendDraftResponse(fruiton.id);
+            draftHandler.SendDraftResponse(fruiton.dbId);
         }
     }
 
