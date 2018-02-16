@@ -1,14 +1,13 @@
 ﻿using Cz.Cuni.Mff.Fruiton.Dto;
 using System.Collections;
 using System.Collections.Generic;
-using haxe.root;
 using UnityEngine;
 
 using KVector2 = fruiton.dataStructures.Point;
 
 public static class KernelCastExtensions {
 
-    public static List<T> ToList<T>(this Array<T> array)
+    public static List<T> ToList<T>(this haxe.root.Array<T> array)
     {
         var list = new List<T>(array.length);
         for (int i = 0; i < array.length; i++)
@@ -18,7 +17,7 @@ public static class KernelCastExtensions {
         return list;
     }
 
-    public static List<TOut> CastToList<TOut, TIn>(this Array<TIn> array)
+    public static List<TOut> CastToList<TOut, TIn>(this haxe.root.Array<TIn> array)
         where TIn : class
         where TOut : TIn
     {
@@ -30,19 +29,19 @@ public static class KernelCastExtensions {
         return list;
     }
 
-    public static List<TOut> CastToList<TOut>(this Array<object> array)
+    public static List<TOut> CastToList<TOut>(this haxe.root.Array<object> array)
     {
         return array.CastToList<TOut, object>();
     }
 
-    public static List<List<TOut>> CastToList2D<TOut>(this Array<object> array)
+    public static List<List<TOut>> CastToList2D<TOut>(this haxe.root.Array<object> array)
         where TOut : class
     {
         var list = new List<List<TOut>>(array.length);
         for (int i = 0; i < array.length; i++)
         {
             list.Add(new List<TOut>());
-            var inner = (Array<object>) array[i];
+            var inner = (haxe.root.Array<object>) array[i];
             for (int j = 0; j < inner.length; j++)
             {
                 list[i].Add((TOut)inner[j]);

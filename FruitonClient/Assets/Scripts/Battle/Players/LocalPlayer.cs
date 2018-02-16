@@ -13,7 +13,11 @@ public class LocalPlayer : ClientPlayerBase
     private LazyDictionary<int, List<TargetableAction>> availableActions;
     private readonly BattleViewer battleViewer;
     private readonly GridLayoutManager gridLayoutManager;
-    private bool movedThisTurn;
+
+    private bool didMoveThisTurn
+    {
+        get { return battle.Kernel.currentState.turnState.moveCount <= 0; }
+    }
 
     public LocalPlayer(BattleViewer battleViewer, Player kernelPlayer, Battle battle, string name) 
         : base(kernelPlayer, battle, name)
@@ -25,7 +29,7 @@ public class LocalPlayer : ClientPlayerBase
 
     public void LeftButtonUpLogic(RaycastHit[] hits)
     {
-        if (!movedThisTurn)
+        if (!didMoveThisTurn)
         {
             if (hits.Length == 0)
             {
@@ -42,7 +46,7 @@ public class LocalPlayer : ClientPlayerBase
         GameObject hitTile = hits.FirstOrDefault(isHitGridTile).transform.gameObject;
         if (hitTile.Equals(default(GameObject))) return;
         Point tilePosition = battleViewer.GridLayoutManager.GetIndicesOfTile(hitTile);
-        GameObject hitFruiton = battleViewer.Grid[tilePosition.x, tilePosition.y];
+        GameObject hitFruiton = battleViewer.FruitonsGrid[tilePosition.x, tilePosition.y];
         
         // A tile with a fruiton was clicked.
         if(hitFruiton != null)
@@ -53,10 +57,9 @@ public class LocalPlayer : ClientPlayerBase
             performedAnyAction |= TryFindAndPerformAction(HealAction.ID, tilePosition);
             if (performedAnyAction)
             {
-                movedThisTurn = false;
                 gridLayoutManager.ResetHighlights();
             }
-            if (!movedThisTurn)
+            if (!didMoveThisTurn)
             {
                 // Check if I clicked on my fruiton in order to take action on him or only to select him.
                 if (!performedAnyAction && hitFruiton.GetComponent<ClientFruiton>().KernelFruiton.owner.id == ID)
@@ -72,13 +75,12 @@ public class LocalPlayer : ClientPlayerBase
         {
             if (!TryFindAndPerformAction(MoveAction.ID, tilePosition))
             {
-                if (!movedThisTurn) ClearAllAvailableActions();
+                if (!didMoveThisTurn) ClearAllAvailableActions();
             }
             else
             {
                 availableActions = battleViewer.VisualizeAvailableTargetableActions(tilePosition);
                 battleViewer.GridLayoutManager.HighlightCell(tilePosition.x, tilePosition.y, Color.magenta);
-                movedThisTurn = true;
             }
         }
     }
@@ -101,7 +103,7 @@ public class LocalPlayer : ClientPlayerBase
         return success;
     }
 
-    private void ClearAllAvailableActions()
+    public void ClearAllAvailableActions()
     {
         foreach (List<TargetableAction> actions in availableActions.Values)
         {
@@ -111,7 +113,6 @@ public class LocalPlayer : ClientPlayerBase
 
     public void EndTurn()
     {
-        movedThisTurn = false;
         ClearAllAvailableActions();
         battle.PerformAction(null, null, EndTurnAction.ID);
     }

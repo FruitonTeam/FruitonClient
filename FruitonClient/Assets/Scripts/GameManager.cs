@@ -17,6 +17,7 @@ public class PlayerOptions
 {
     public int LastSelectedGameMode { get; set; }
     public int LastSelectedAIMode { get; set; }
+    public int LastSelectedLocalGameMode { get; set; }
 }
 
 public class GameManager : IOnMessageListener
@@ -156,7 +157,7 @@ public class GameManager : IOnMessageListener
     {
         get
         {
-            return AllFruitons.Where(fruiton => fruiton.id < AI_FRUITONS_START_INDEX);
+            return AllFruitons.Where(fruiton => fruiton.dbId < AI_FRUITONS_START_INDEX);
         }
     }
 
@@ -362,6 +363,11 @@ public class GameManager : IOnMessageListener
     public void AddFriend(Friend friend)
     {
         Friends.Add(friend);
+    }
+
+    public void RemoveFriend(string friend)
+    {
+        Friends.Remove(Friends.First(f => f.Login == friend));
     }
 
     public void SavePlayerSettings()

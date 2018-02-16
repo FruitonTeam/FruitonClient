@@ -230,7 +230,7 @@ public class Tutorial
     private List<GameObject> GetObjectsRelativeToFruitons(Func<ClientFruiton, GameObject> filter)
     {
         List<GameObject> result = new List<GameObject>();
-        foreach (GameObject gameObject in battleViewer.Grid)
+        foreach (GameObject gameObject in battleViewer.FruitonsGrid)
         {
             if (gameObject == null) continue;
             ClientFruiton kernelFruiton = gameObject.GetComponent<ClientFruiton>();
@@ -247,7 +247,7 @@ public class Tutorial
     private List<GameObject> FilterFruitons(bool returnTiles, params Func<ClientFruiton, bool>[] filters)
     {
         List<GameObject> result = new List<GameObject>();
-        foreach (GameObject gameObject in battleViewer.Grid)
+        foreach (GameObject gameObject in battleViewer.FruitonsGrid)
         {
             if (gameObject == null) continue;
             ClientFruiton clientFruiton = gameObject.GetComponent<ClientFruiton>();
@@ -276,7 +276,7 @@ public class Tutorial
         }
         if (!isInitialized)
         {
-            foreach (GameObject gameObject in battleViewer.Grid)
+            foreach (GameObject gameObject in battleViewer.FruitonsGrid)
             {
                 if (gameObject == null) continue;
                 ClientFruiton clientFruiton = gameObject.GetComponent<ClientFruiton>();

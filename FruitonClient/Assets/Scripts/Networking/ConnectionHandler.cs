@@ -162,7 +162,10 @@ namespace Networking
                 RegisterListener(WrapperMessage.MessageOneofCase.FriendRequest, FeedbackNotificationManager.Instance);
                 RegisterListener(WrapperMessage.MessageOneofCase.ChatMessage, ChatController.Instance);
                 RegisterListener(WrapperMessage.MessageOneofCase.FriendRequestResult, ChatController.Instance);
-                RegisterListener(WrapperMessage.MessageOneofCase.OnlineStatusChange, ChatController.Instance);                
+                RegisterListener(WrapperMessage.MessageOneofCase.FriendRemoval, ChatController.Instance);
+                RegisterListener(WrapperMessage.MessageOneofCase.OnlineStatusChange, ChatController.Instance);
+                RegisterListener(WrapperMessage.MessageOneofCase.PlayersOnSameNetworkOnline, ChatController.Instance);
+                RegisterListener(WrapperMessage.MessageOneofCase.PlayerOnSameNetworkOffline, ChatController.Instance);
             }
         }
 

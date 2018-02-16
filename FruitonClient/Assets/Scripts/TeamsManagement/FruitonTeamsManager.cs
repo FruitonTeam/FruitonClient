@@ -7,7 +7,6 @@ using System;
 using System.Linq;
 using fruiton.kernel;
 using fruiton.kernel.fruitonTeam;
-using haxe.root;
 using Networking;
 
 public enum TeamManagementState
@@ -87,6 +86,12 @@ public class FruitonTeamsManager : MonoBehaviour
         new Option<GameMode>("Standard", GameMode.Standard),
         new Option<GameMode>("Last man standing", GameMode.LastManStanding),
         new Option<GameMode>("Draft", GameMode.Standard, PickMode.Draft)
+    };
+
+    private readonly List<Option<GameMode>> localGameModes = new List<Option<GameMode>>
+    {
+        new Option<GameMode>("Standard", GameMode.Standard),
+        new Option<GameMode>("Last man standing", GameMode.LastManStanding)
     };
 
     private readonly List<Option<AIType>> aiModes = new List<Option<AIType>>
@@ -212,7 +217,7 @@ public class FruitonTeamsManager : MonoBehaviour
         ButtonPlay.GetComponentInChildren<Text>().text = "Play";
         CommonChooseStart();
         PlayerOptions playerOptions = GameManager.Instance.PlayerOptions;
-        SetupModeDropdown(gameModes, playerOptions.LastSelectedGameMode);
+        SetupModeDropdown(localGameModes, playerOptions.LastSelectedLocalGameMode);
         LocalDuelHeadline.text = String.Format(CHOOSE_OFFLINE_TEAM, 2);
     }
 
@@ -220,7 +225,7 @@ public class FruitonTeamsManager : MonoBehaviour
     {
         ButtonPlay.GetComponentInChildren<Text>().text = "Next";
         PlayerOptions playerOptions = GameManager.Instance.PlayerOptions;
-        SetupModeDropdown(gameModes, playerOptions.LastSelectedGameMode);
+        SetupModeDropdown(localGameModes, playerOptions.LastSelectedGameMode);
         CommonChooseStart();
         LocalDuelHeadline.text = String.Format(CHOOSE_OFFLINE_TEAM, 1);
     }
@@ -418,21 +423,22 @@ public class FruitonTeamsManager : MonoBehaviour
 
     private void ReloadForSecondTeam()
     {
+        var battleType = (BattleType)Enum.Parse(typeof (BattleType), Scenes.GetParam(Scenes.BATTLE_TYPE));
         var param = new Dictionary<string, string>
-            {
-                {Scenes.BATTLE_TYPE, Scenes.GetParam(Scenes.BATTLE_TYPE)},
-                {Scenes.TEAM_MANAGEMENT_STATE, TeamManagementState.LOCAL_CHOOSE_SECOND.ToString()},
-                {Scenes.GAME_MODE, GetAndSaveGameMode().ToString() }
-            };
+        {
+            {Scenes.BATTLE_TYPE, Scenes.GetParam(Scenes.BATTLE_TYPE)},
+            {Scenes.TEAM_MANAGEMENT_STATE, TeamManagementState.LOCAL_CHOOSE_SECOND.ToString()},
+            {Scenes.GAME_MODE, GetAndSaveGameMode(battleType).ToString()}
+        };
         Scenes.Load(Scenes.TEAMS_MANAGEMENT_SCENE, param);
     }
 
     private void PlayAI()
     {
         var param = new Dictionary<string, string>
-            {
-                {Scenes.BATTLE_TYPE, Scenes.GetParam(Scenes.BATTLE_TYPE)}
-            };
+        {
+            {Scenes.BATTLE_TYPE, Scenes.GetParam(Scenes.BATTLE_TYPE)}
+        };
         var aiModeDropdown = DropdownPanel.GetComponentInChildren<Dropdown>();
         AIType aiMode = aiModes[aiModeDropdown.value].Type;
         GameManager.Instance.PlayerOptions.LastSelectedAIMode = aiModeDropdown.value;
@@ -444,13 +450,14 @@ public class FruitonTeamsManager : MonoBehaviour
 
     private void PlayDefault()
     {
+        var battleType = (BattleType)Enum.Parse(typeof(BattleType), Scenes.GetParam(Scenes.BATTLE_TYPE));
         var param = new Dictionary<string, string>
-            {
-                {Scenes.BATTLE_TYPE, Scenes.GetParam(Scenes.BATTLE_TYPE)}
-            };
+        {
+            {Scenes.BATTLE_TYPE, Scenes.GetParam(Scenes.BATTLE_TYPE)}
+        };
         var gameModeDropdown = DropdownPanel.GetComponentInChildren<Dropdown>();
         Option<GameMode> gameMode = gameModes[gameModeDropdown.value];
-        param.Add(Scenes.GAME_MODE, gameMode.Type.ToString());
+        param.Add(Scenes.GAME_MODE, GetAndSaveGameMode(battleType).ToString());
         param.Add(Scenes.PICK_MODE, gameMode.PickMode.ToString());
 
         if (gameMode.PickMode == PickMode.Draft)
@@ -461,11 +468,16 @@ public class FruitonTeamsManager : MonoBehaviour
         Scenes.Load(Scenes.BATTLE_SCENE, param);
     }
 
-    private GameMode GetAndSaveGameMode()
+    private GameMode GetAndSaveGameMode(BattleType battleType)
     {
         var gameModeDropdown = DropdownPanel.GetComponentInChildren<Dropdown>();
         GameMode gameMode = gameModes[gameModeDropdown.value].Type;
-        GameManager.Instance.PlayerOptions.LastSelectedGameMode = gameModeDropdown.value;
+
+        if (battleType == BattleType.OfflineBattle)
+            GameManager.Instance.PlayerOptions.LastSelectedLocalGameMode = gameModeDropdown.value;
+        else if (battleType == BattleType.OnlineBattle)
+            GameManager.Instance.PlayerOptions.LastSelectedGameMode = gameModeDropdown.value;
+
         GameManager.Instance.SavePlayerSettings();
         return gameMode;
     }
@@ -568,7 +580,7 @@ public class FruitonTeamsManager : MonoBehaviour
         int[] fruitonIDsArray = new int[team.FruitonIDs.Count];
         team.FruitonIDs.CopyTo(fruitonIDsArray, 0);
         return FruitonTeamValidator
-            .validateFruitonTeam(new Array<int>(fruitonIDsArray), GameManager.Instance.FruitonDatabase).complete;
+            .validateFruitonTeam(new haxe.root.Array<int>(fruitonIDsArray), GameManager.Instance.FruitonDatabase).complete;
     }
 
     private void InitializeAllFruitons()
@@ -612,7 +624,7 @@ public class FruitonTeamsManager : MonoBehaviour
     private void AddFruitonToTeam(KFruiton fruiton, Position position)
     {
         var team = teams[selectedTeamIndex].KernelTeam;
-        team.FruitonIDs.Add(fruiton.id);
+        team.FruitonIDs.Add(fruiton.dbId);
         team.Positions.Add(position);
         TeamGrid.AddFruitonAt(fruiton, position);
     }

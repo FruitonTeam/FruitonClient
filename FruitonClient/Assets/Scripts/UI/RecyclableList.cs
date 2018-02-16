@@ -171,7 +171,7 @@ namespace UI
 
             for (int i = 0; i < itemsToInstantiate; i++)
             {
-                ListItemBase item = CreateNewItem(listItemPrefab, i, itemSize);
+                ListItemBase item = CreateNewItem(listItemPrefab, i);
                 item.OnSelected = HandleOnSelectedHandler;
                 item.Index = i;
 
@@ -196,37 +196,19 @@ namespace UI
             });
         }
 
-        private ListItemBase CreateNewItem(ListItemBase prefab, int index, float dimension)
+        private ListItemBase CreateNewItem(ListItemBase prefab, int index)
         {
             GameObject instance = Instantiate(prefab.gameObject, Vector3.zero, Quaternion.identity);
             instance.transform.SetParent(content.transform);
             instance.transform.localScale = Vector3.one;
             instance.SetActive(true);
 
-            float position = index * (dimension + spacing) + dimension / 2;
+            var item = instance.GetComponent<ListItemBase>();
+            item.Index = index;
 
-            var rectTransform = instance.GetComponent<RectTransform>();
+            ResetItemPosition(item);
 
-            switch (scrollOrientation)
-            {
-                case ScrollOrientation.HORIZONTAL:
-                    rectTransform.anchorMin = new Vector2(0, 0);
-                    rectTransform.anchorMax = new Vector2(0, 1);
-                    rectTransform.anchoredPosition = new Vector2(position, 0);
-                    rectTransform.offsetMin = new Vector2(rectTransform.offsetMin.x, 0);
-                    rectTransform.offsetMax = new Vector2(rectTransform.offsetMax.x, 0);
-                    break;
-
-                case ScrollOrientation.VERTICAL:
-                    rectTransform.anchorMin = new Vector2(0, 1);
-                    rectTransform.anchorMax = new Vector2(1, 1);
-                    rectTransform.anchoredPosition = new Vector2(0, -position);
-                    rectTransform.offsetMin = new Vector2(0, rectTransform.offsetMin.y);
-                    rectTransform.offsetMax = new Vector2(0, rectTransform.offsetMax.y);
-                    break;
-            }
-
-            return instance.GetComponent<ListItemBase>();
+            return item;
         }
 
 
@@ -527,9 +509,8 @@ namespace UI
             if (itemsTotal < 2 * itemsVisible)
             {
                 int i = itemsList.Count;
-                ListItemBase item = CreateNewItem(listItemPrefab, i, itemSize);
+                ListItemBase item = CreateNewItem(listItemPrefab, i);
                 item.OnSelected = HandleOnSelectedHandler;
-                item.Index = i;
 
                 itemsList.Add(item);
 
@@ -543,6 +524,84 @@ namespace UI
             content.sizeDelta = new Vector2(0, itemSize * itemsTotal + spacing * (itemsTotal - 1));
         }
 
+        public void InsertItem(int index, ListItemBase listItemPrefab)
+        {
+            if (itemsTotal < 2 * itemsVisible)
+            {
+                ListItemBase item = CreateNewItem(listItemPrefab, index);
+                item.OnSelected = HandleOnSelectedHandler;
+
+                itemsList.Insert(index, item);
+                ReindexItems(index);
+
+                ItemLoaded(item);
+            }
+
+            itemsTotal++;
+            lastItemIndex = itemsList.Count - 1;
+            itemsToRecycleAfter++;
+
+            content.sizeDelta = new Vector2(0, itemSize * itemsTotal + spacing * (itemsTotal - 1));
+        }
+
+        public void RemoveItemAt(int index)
+        {
+            if (itemsTotal < 2 * itemsVisible)
+            {
+                Destroy(itemsList[index].gameObject);
+                itemsList.RemoveAt(index);
+                ReindexItems(index);
+            }
+
+            itemsTotal--;
+            lastItemIndex = itemsList.Count - 1;
+            itemsToRecycleAfter--;
+            content.sizeDelta = new Vector2(0, itemSize * itemsTotal + spacing * (itemsTotal - 1));
+        }
+
+        /// <summary>
+        /// Set indices and positions of items according to their order in list
+        /// </summary>
+        /// <param name="startIndex">index from which the reindexing starts</param>
+        private void ReindexItems(int startIndex)
+        {
+            for (int i = startIndex; i < itemsList.Count; i++)
+            {
+                itemsList[i].Index = i;
+                ResetItemPosition(itemsList[i]);
+            }
+        }
+
+        /// <summary>
+        /// Resets positions of an list item according to its index
+        /// </summary>
+        /// <param name="item">item to be reset</param>
+        private void ResetItemPosition(ListItemBase item)
+        {
+            float position = item.Index * (itemSize + spacing) + itemSize / 2;
+
+            var rectTransform = item.gameObject.GetComponent<RectTransform>();
+
+            switch (scrollOrientation)
+            {
+                case ScrollOrientation.HORIZONTAL:
+                    rectTransform.anchorMin = new Vector2(0, 0);
+                    rectTransform.anchorMax = new Vector2(0, 1);
+                    rectTransform.anchoredPosition = new Vector2(position, 0);
+                    rectTransform.offsetMin = new Vector2(rectTransform.offsetMin.x, 0);
+                    rectTransform.offsetMax = new Vector2(rectTransform.offsetMax.x, 0);
+                    break;
+
+                case ScrollOrientation.VERTICAL:
+                    rectTransform.anchorMin = new Vector2(0, 1);
+                    rectTransform.anchorMax = new Vector2(1, 1);
+                    rectTransform.anchoredPosition = new Vector2(0, -position);
+                    rectTransform.offsetMin = new Vector2(0, rectTransform.offsetMin.y);
+                    rectTransform.offsetMax = new Vector2(0, rectTransform.offsetMax.y);
+                    break;
+            }
+        }
+        
         public void NotifyDataChanged()
         {
             foreach (ListItemBase item in itemsList)
