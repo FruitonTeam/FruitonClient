@@ -17,6 +17,7 @@ public class Scenes : MonoBehaviour
     public static readonly string PICK_MODE = "pickMode";
     public static readonly string AI_TYPE = "aiType";
     public static readonly string GAME_READY_MSG = "gameReadyMsg";
+    public static readonly string DISCONNECTED = "disconnected";
 
     public static Dictionary<string, string> Parameters { get; private set; }
     public static Dictionary<string, object> ObjParams { get; private set; }
@@ -35,6 +36,12 @@ public class Scenes : MonoBehaviour
     public static void Load(string sceneName, string paramKey, string paramValue)
     {
         Parameters = new Dictionary<string, string> {{paramKey, paramValue}};
+        SceneManager.LoadScene(sceneName);
+    }
+
+    public static void Load(string sceneName, string paramKey, object paramValue)
+    {
+        ObjParams = new Dictionary<string, object> { { paramKey, paramValue } };
         SceneManager.LoadScene(sceneName);
     }
 
@@ -64,6 +71,23 @@ public class Scenes : MonoBehaviour
         if (ObjParams == null) return false;
 
         return ObjParams.TryGetValue(paramKey, out value);
+    }
+
+    public static bool TryGetGenericParam<T>(string paramKey, out T value)
+    {
+        value = default(T);
+        if (ObjParams == null) return false;
+
+        object result;
+        if (ObjParams.TryGetValue(paramKey, out result) && result is T)
+        {
+            value = (T)result;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public void LoadMainMenu()

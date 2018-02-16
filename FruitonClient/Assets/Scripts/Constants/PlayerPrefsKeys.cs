@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class PlayerPrefsKeys
 {
-    public static readonly string StayLoggedIn = "stayloggedin";
-    public static readonly string UserName = "username";
-    public static readonly string UserPassword = "userpassword";
+    public static readonly string STAY_LOGGED_IN = "stayloggedin";
+    public static readonly string USER_NAME = "username";
+    public static readonly string USER_PASSWORD = "userpassword";
 }

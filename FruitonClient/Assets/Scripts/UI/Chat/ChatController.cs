@@ -1,20 +1,42 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Cz.Cuni.Mff.Fruiton.Dto;
 using Networking;
 using UI.Notification;
 using UnityEngine;
 using UnityEngine.UI;
+using WebSocketSharp;
 
 namespace UI.Chat
 {
     public class ChatController : MonoBehaviour, IOnItemSelectedListener, IOnMessageListener
     {
-        
+        /// <summary>
+        /// Approximate character limit for single text gameObject in Unity
+        /// </summary>
+        static readonly int GAME_OBJECT_TEXT_LIMIT = 3000;
+
+        static readonly string MESSAGE_COLOR_SENT_OLD = "#585850";
+        static readonly string MESSAGE_COLOR_SENT_NEW = "#443328";
+        static readonly string MESSAGE_COLOR_RECEIVED_OLD = "#333344";
+        static readonly string MESSAGE_COLOR_RECEIVED_NEW = "#222266";
+
+        /// <summary>
+        /// Time format for messages received on the same day as they were sent
+        /// </summary>
+        private static readonly string TIME_FORMAT_TODAY = "HH:mm";
+        /// <summary>
+        /// Time format for messages that were sent day before or earlier
+        /// </summary>
+        private static readonly string TIME_FORMAT_OLDER = "dd.MM.yyyy HH:mm";
+
         public static ChatController Instance { get; private set; }
-        
-        public Text ChatText;
+
+        public GameObject LoadingIndicator;
+        public Text ChatTextTemplate;
         public InputField MessageInput;
 
         public InputField AddFriendInput;
@@ -31,10 +53,16 @@ namespace UI.Chat
         public Dropdown FriendActionsDropdown;
 
         public ScrollRect ScrollRect;
+        public RectTransform ScrollContent;
 
-        private readonly Dictionary<string, string> friendMessages = new Dictionary<string, string>();
+        private readonly Dictionary<string, ChatRecord> records = new Dictionary<string, ChatRecord>();
 
         private readonly List<IOnFriendAddedListener> onFriendAddedListeners = new List<IOnFriendAddedListener>();
+        /// <summary>
+        /// List of text gameObjects that are used to display chat messages
+        /// </summary>
+        private readonly List<Text> ChatTexts = new List<Text>();
+        private readonly DateTime unixTimeStart = new DateTime(1970, 1, 1, 0, 0, 0, System.DateTimeKind.Utc);
 
 #if UNITY_ANDROID
         private RectTransform chatPanelRect;
@@ -45,7 +73,7 @@ namespace UI.Chat
             {
                 AddFriendToList(f.Login, f.Status);
             }
-            
+
             PlayerHelper.GetFriendRequests(requests =>
             {
                 foreach (string friendRequestLogin in requests)
@@ -54,14 +82,14 @@ namespace UI.Chat
                 }
             }, Debug.LogError);
         }
-        
+
         void Start()
         {
 #if UNITY_ANDROID
             chatPanelRect = ChatPanel.GetComponent<RectTransform>();
 #endif
             FriendName.text = "";
-            ChatText.text = "";
+            ChatTextTemplate.gameObject.SetActive(false);
 
             MessageInput.enabled = false;
             MessageInput.text = "";
@@ -74,6 +102,14 @@ namespace UI.Chat
                 }
             });
 
+            ScrollRect.onValueChanged.AddListener(_ =>
+            {
+                // even if scrollbar is at the top sometimes it returns just 0.9999999 instead of 1
+                if (ScrollRect.verticalNormalizedPosition >= 0.999) 
+                {
+                    LoadPreviousMessages(FriendName.text);
+                }
+            });
 
             FriendListController.SetOnItemSelectedListener(this);
 
@@ -82,7 +118,7 @@ namespace UI.Chat
                 ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.ChatMessage, this);
                 ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.FriendRequestResult, this);
                 ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.OnlineStatusChange, this);
-                
+
                 Init();
             }
         }
@@ -107,7 +143,7 @@ namespace UI.Chat
                 return;
             }
 
-            if(Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             {
                 if (MessageInput.isFocused)
                 {
@@ -137,11 +173,10 @@ namespace UI.Chat
         public void Clear()
         {
             FriendName.text = "";
-            ChatText.text = "";
 
             MessageInput.enabled = false;
             MessageInput.text = "";
-            
+
             FriendListController.Clear();
             FriendListController.SetOnItemSelectedListener(this);
         }
@@ -151,11 +186,11 @@ namespace UI.Chat
             if (GameManager.Instance.IsOnline)
             {
                 Instance.ChatPanel.SetActive(true);
-                if (Instance.FriendName.text == "")
+                if (Instance.FriendName.text.IsNullOrEmpty())
                 {
                     Instance.ChatWindow.SetActive(false);
                 }
-                if (Instance.friendMessages.Count == 0)
+                if (Instance.records.Count == 0)
                 {
                     Instance.ChatTip.text = "You don't have any friends :(";
                 }
@@ -166,7 +201,7 @@ namespace UI.Chat
         {
             ChatPanel.SetActive(false);
         }
-        
+
         public void OnSendClick()
         {
             if (!MessageInput.IsActive())
@@ -182,7 +217,8 @@ namespace UI.Chat
             {
                 Message = message,
                 Recipient = FriendName.text,
-                Sender = GameManager.Instance.UserName
+                Sender = GameManager.Instance.UserName,
+                Timestamp = ((long)(DateTime.UtcNow - unixTimeStart).TotalSeconds).ToString()
             };
             var wsMessage = new WrapperMessage
             {
@@ -190,13 +226,7 @@ namespace UI.Chat
             };
 
             ConnectionHandler.Instance.SendWebsocketMessage(wsMessage);
-
-            if (ChatText.text != "")
-            {
-                ChatText.text += "\n";
-            }
-
-            ChatText.text += "<color=#444455><b>You</b>: " + message +"</color>";
+            AppendNewMessage(chatMessage);
 
             MessageInput.text = ""; // reset the input field
             Canvas.ForceUpdateCanvases();
@@ -282,17 +312,14 @@ namespace UI.Chat
 
         public void AddFriend(string friendToAdd)
         {
-            PlayerHelper.IsOnline(friendToAdd, 
-                isOnline =>
-                {
-                    AddFriend(friendToAdd, isOnline ? Status.Online : Status.Offline);
-                }, error =>
+            PlayerHelper.IsOnline(friendToAdd,
+                isOnline => { AddFriend(friendToAdd, isOnline ? Status.Online : Status.Offline); }, error =>
                 {
                     Debug.LogError("Could not check if user is online " + error);
                     AddFriend(friendToAdd, Status.Offline);
                 });
         }
-        
+
         public void AddFriend(string friendToAdd, Status status)
         {
             AddFriendToList(friendToAdd, status);
@@ -320,7 +347,7 @@ namespace UI.Chat
                                      ". Default avatar will be used.");
                 });
             FriendListController.AddItem(friendToAdd, status);
-            friendMessages[friendToAdd] = "";
+            records[friendToAdd] = new ChatRecord();
             ChatTip.text = "Select a friend to challenge or chat with";
         }
 
@@ -332,23 +359,38 @@ namespace UI.Chat
 
         public void OnItemSelected(int index)
         {
-            string oldName = FriendName.text;
-            if (ChatText.text != "")
+            string friendName = FriendListController.GetFriend(index);
+            if (friendName == FriendName.text)
             {
-                friendMessages[oldName] = ChatText.text;
+                return;
             }
 
-            string friendName = FriendListController.GetFriend(index);
+            foreach (var chatText in ChatTexts)
+            {
+                Destroy(chatText.gameObject);
+            }
+            ChatTexts.Clear();
+
             FriendName.text = friendName;
 
-            if (friendMessages.ContainsKey(friendName))
+            if (records.ContainsKey(friendName))
             {
-                ChatText.text = friendMessages[friendName];
+                foreach (var messages in records[friendName].Messages)
+                {
+                    CreateNewChatText(messages);
+                }
+                if (records[friendName].LastMessageId == null)
+                {
+                    LoadPreviousMessages(friendName);
+                }
             }
             else
             {
-                ChatText.text = "";
+                CreateNewChatText();
             }
+
+            Canvas.ForceUpdateCanvases();
+            ScrollRect.verticalNormalizedPosition = 0;
 
             if (ConnectionHandler.Instance.IsLogged())
             {
@@ -392,7 +434,7 @@ namespace UI.Chat
                 return;
             }
 
-            AppendNewMessage(from, chatMessage.Message);
+            AppendNewMessage(chatMessage);
         }
 
         private void OnFriendRequestResult(FriendRequestResult message)
@@ -409,32 +451,223 @@ namespace UI.Chat
             FriendListController.ChangeOnlineStatus(message.Login, message.Status);
         }
 
-        private void AppendNewMessage(string friend, string message)
+        private void AppendNewMessage(ChatMessage msg)
         {
-            var textToAppend = "<color=black><b>" + friend + "</b>: " + message+"</color>";
+            var sender = msg.Sender;
+            var friend = sender == GameManager.Instance.UserName ? msg.Recipient : sender;
+            var textToAppend = FormatChatMessage(msg).ToString();
+            var addToNewString = false;
+
             if (friend == FriendName.text)
             {
                 // update current chat
-                if (ChatText.text != "")
+                var lastChatText =  ChatTexts.Last();
+                if(lastChatText.text.Length + msg.Message.Length > GAME_OBJECT_TEXT_LIMIT)
                 {
-                    ChatText.text += "\n";
+                    addToNewString = true;
+                    lastChatText = CreateNewChatText();
                 }
-                ChatText.text += textToAppend;
+                if (lastChatText.text != "")
+                {
+                    lastChatText.text += "\n";
+                }
+                lastChatText.text += textToAppend;
                 if (ScrollRect.verticalNormalizedPosition <= 0)
                 {
                     Canvas.ForceUpdateCanvases();
                     ScrollRect.verticalNormalizedPosition = 0;
                 }
             }
+
+            // append message to chat records
+            var last = records[friend].Messages.Count - 1;
+            if (addToNewString || records[friend].Messages[last].Length + msg.Message.Length > GAME_OBJECT_TEXT_LIMIT)
+            {
+                records[friend].Messages.Add("");
+                last++;
+            }
+            if (records[friend].Messages[last] != "")
+            {
+                records[friend].Messages[last] += "\n";
+            }
+            records[friend].Messages[last] += textToAppend;
+            FriendListController.IncrementUnreadCount(friend);
+        }
+
+        /// <summary>
+        /// Adds messages to the beggining of chat
+        /// </summary>
+        /// <param name="friendName">friend that messages belong to</param>
+        /// <param name="messages">text messages to add</param>
+        /// <returns>height of prepended gameObject, 0 if chat with given friend isn't active</returns>
+        private float PrependOldMessages(string friendName, string messages)
+        {
+            var height = 0f;
+            if (FriendName.text == friendName)
+            {
+                var addedChatText = CreateNewChatText(messages, true);
+                Canvas.ForceUpdateCanvases();
+                height = addedChatText.GetComponent<RectTransform>().rect.height;
+            }
+            records[friendName].Messages.Insert(0, messages);
+            return height;
+        }
+
+        /// <summary>
+        /// Creates new text gameObject for chat messages
+        /// </summary>
+        /// <param name="messages">messages to insert to the gameObject</param>
+        /// <param name="old">true if messages were loaded from previous sessions</param>
+        /// <returns></returns>
+        private Text CreateNewChatText(string messages = "", bool old = false)
+        {
+            var newTextBlock = Instantiate(ChatTextTemplate);
+            newTextBlock.gameObject.SetActive(true);
+            newTextBlock.text = messages;
+            newTextBlock.transform.SetParent(ChatTextTemplate.transform.parent, false);
+            if (old)
+            {
+                // put old messages at the top (after loading indicator)
+                newTextBlock.transform.SetSiblingIndex(1);
+                ChatTexts.Insert(0, newTextBlock);
+            }
             else
             {
-                if (friendMessages[friend] != "")
-                {
-                    friendMessages[friend] += "\n";
-                }
-                friendMessages[friend] += textToAppend;
-                FriendListController.IncrementUnreadCount(friend);
+                ChatTexts.Add(newTextBlock);
             }
+            return newTextBlock;
+        }
+
+        /// <summary>
+        /// Load messages from previous session with a friend
+        /// </summary>
+        private void LoadPreviousMessages(string friendName)
+        {
+            var record = records[friendName];
+            if (record.Loading || record.LoadedEveryMessage)
+            {
+                return;
+            }
+            record.Loading = true;
+            RefreshLoadingIndicator();
+            if (record.LastMessageId == null)
+            {
+                PlayerHelper.GetMessagesWith(friendName, 0,
+                    (msgs, page) => OnLoadMessagesSuccess(friendName, msgs, true),
+                    error => OnLoadMessagesError(friendName, error));
+            }
+            else
+            {
+                PlayerHelper.GetMessagesBefore(record.LastMessageId, 0,
+                    (msgs, page) => OnLoadMessagesSuccess(friendName, msgs),
+                    error => OnLoadMessagesError(friendName, error));
+
+            }
+        }
+
+        private void OnLoadMessagesSuccess(string friendName, ChatMessages msgs, bool initialLoad = false)
+        {
+            records[friendName].Loading = false;
+            RefreshLoadingIndicator();
+
+            if (msgs.Messages.Count == 0)
+            {
+                records[friendName].LoadedEveryMessage = true;
+                return;
+            }
+
+            var loadedMessages = new StringBuilder();
+            bool first = true;
+            var loadedMessagesHeight = 0f;
+            foreach (var msg in msgs.Messages.Reverse())
+            {
+                if (!first)
+                {
+                    loadedMessages.AppendLine();
+                }
+                else
+                {
+                    records[friendName].LastMessageId = msg.Id;
+                }
+                first = false;
+                var newMessage = FormatChatMessage(msg, true);
+                if (loadedMessages.Length + newMessage.Length > GAME_OBJECT_TEXT_LIMIT)
+                {
+                    loadedMessagesHeight += PrependOldMessages(friendName, loadedMessages.ToString());
+                    loadedMessages = new StringBuilder();
+                }
+                loadedMessages.Append(newMessage);
+            }
+            loadedMessagesHeight += PrependOldMessages(friendName, loadedMessages.ToString());
+
+            if (initialLoad)
+            {
+                Canvas.ForceUpdateCanvases();
+                ScrollRect.verticalNormalizedPosition = 0;
+            }
+            else
+            {
+                ScrollContent.anchoredPosition = new Vector2(0, loadedMessagesHeight);
+            }
+        }
+
+        private void OnLoadMessagesError(string friendName, string error)
+        {
+            {
+                records[friendName].Loading = false;
+                RefreshLoadingIndicator();
+                Debug.LogError("Failed to load chat history: " + error);
+            }
+        }
+
+        /// <summary>
+        /// Shows or hides loading indicator based on the status of current conversation
+        /// </summary>
+        private void RefreshLoadingIndicator()
+        {
+            LoadingIndicator.SetActive(records[FriendName.text].Loading);
+        }
+
+        private StringBuilder FormatChatMessage(ChatMessage msg, bool old=false)
+        {
+            string color;
+            if (msg.Sender == GameManager.Instance.UserName)
+            {
+                if (old)
+                {
+                    color = MESSAGE_COLOR_SENT_OLD;
+                }
+                else
+                {
+                    color = MESSAGE_COLOR_SENT_NEW;
+                }
+            }
+            else
+            {
+                if (old)
+                {
+                    color = MESSAGE_COLOR_RECEIVED_OLD;
+                }
+                else
+                {
+                    color = MESSAGE_COLOR_RECEIVED_NEW;
+                }
+            }
+            var time = unixTimeStart.AddSeconds(long.Parse(msg.Timestamp)).ToLocalTime();
+            var timeFormat = TIME_FORMAT_OLDER;
+            if (time.Date == DateTime.Today)
+            {
+                timeFormat = TIME_FORMAT_TODAY;
+            }
+            return new StringBuilder("<color=")
+                .Append(color)
+                .Append("><b>")
+                .Append(msg.Sender)
+                .Append("</b> [")
+                .Append(time.ToString(timeFormat))
+                .Append("]: ")
+                .Append(msg.Message)
+                .Append("</color>");
         }
 
         public void AddListener(IOnFriendAddedListener listener)
@@ -458,7 +691,8 @@ namespace UI.Chat
         {
             using (AndroidJavaClass UnityClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
             {
-                AndroidJavaObject View = UnityClass.GetStatic<AndroidJavaObject>("currentActivity").Get<AndroidJavaObject>("mUnityPlayer").Call<AndroidJavaObject>("getView");
+                AndroidJavaObject View =
+UnityClass.GetStatic<AndroidJavaObject>("currentActivity").Get<AndroidJavaObject>("mUnityPlayer").Call<AndroidJavaObject>("getView");
 
                 using (AndroidJavaObject Rct = new AndroidJavaObject("android.graphics.Rect"))
                 {

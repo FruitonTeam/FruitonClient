@@ -29,7 +29,16 @@ public class LoginPanel : MainMenuPanel
 
     private void Start()
     {
-        GameManager.Instance.AutomaticLogin();
+        bool disconnected;
+        if (Scenes.TryGetGenericParam(Scenes.DISCONNECTED, out disconnected) && disconnected)
+        {
+            PanelManager.Instance.ShowErrorMessage("Internet connection lost. Reconnect or continue offline.");
+        }
+        else
+        {
+            GameManager.Instance.AutomaticLogin();
+        }
+        
     }
 
     public void LoginGoogle()

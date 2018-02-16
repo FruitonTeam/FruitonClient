@@ -63,12 +63,12 @@ public class GameManager : IOnMessageListener
     {
         get
         {
-            return stayLoggedIn ?? (PlayerPrefs.GetInt(PlayerPrefsKeys.StayLoggedIn, 0) == 1);
+            return stayLoggedIn ?? (PlayerPrefs.GetInt(PlayerPrefsKeys.STAY_LOGGED_IN, 0) == 1);
         }
         set
         {
             stayLoggedIn = value;
-            PlayerPrefs.SetInt(PlayerPrefsKeys.StayLoggedIn, 1);
+            PlayerPrefs.SetInt(PlayerPrefsKeys.STAY_LOGGED_IN, 1);
         }
     }
 
@@ -78,7 +78,7 @@ public class GameManager : IOnMessageListener
         {
             if (loggedPlayerInfo == null)
             {
-                return PlayerPrefs.GetString(PlayerPrefsKeys.UserName, "default_login");
+                return PlayerPrefs.GetString(PlayerPrefsKeys.USER_NAME, "default_login");
             }
             return loggedPlayerInfo.Login;
         }
@@ -90,7 +90,7 @@ public class GameManager : IOnMessageListener
         {
             if (userPassword == null)
             {
-                userPassword = PlayerPrefs.GetString(PlayerPrefsKeys.UserPassword, "");
+                userPassword = PlayerPrefs.GetString(PlayerPrefsKeys.USER_PASSWORD, "");
             }
             return userPassword;
         }
@@ -99,11 +99,11 @@ public class GameManager : IOnMessageListener
             userPassword = value;
             if (StayLoggedIn)
             {
-                PlayerPrefs.SetString(PlayerPrefsKeys.UserPassword, value);
+                PlayerPrefs.SetString(PlayerPrefsKeys.USER_PASSWORD, value);
             }
             else
             {
-                PlayerPrefs.SetString(PlayerPrefsKeys.UserPassword, "");
+                PlayerPrefs.SetString(PlayerPrefsKeys.USER_PASSWORD, "");
             }
             IsUserValid = false;
         }
@@ -268,6 +268,7 @@ public class GameManager : IOnMessageListener
             PanelManager.Instance.ShowLoadingIndicator();
             AuthenticationHandler.Instance.LoginBasic(UserName, UserPassword);
         }
+
     }
 
     public void LoginOffline()
@@ -424,7 +425,7 @@ public class GameManager : IOnMessageListener
 
     private void Persist()
     {
-        PlayerPrefs.SetString(PlayerPrefsKeys.UserName, UserName);
-        PlayerPrefs.SetString(PlayerPrefsKeys.UserPassword, AuthenticationHandler.Instance.LastPassword);
+        PlayerPrefs.SetString(PlayerPrefsKeys.USER_NAME, UserName);
+        PlayerPrefs.SetString(PlayerPrefsKeys.USER_PASSWORD, AuthenticationHandler.Instance.LastPassword);
     }
 }
