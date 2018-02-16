@@ -1,4 +1,5 @@
-﻿using Cz.Cuni.Mff.Fruiton.Dto;
+﻿using System.Collections.Generic;
+using Cz.Cuni.Mff.Fruiton.Dto;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,6 +7,15 @@ namespace UI.Chat
 {
     public class FriendListItem : ListItemBase
     {
+        static Dictionary<Status, string> StatusNameMap = new Dictionary<Status, string>
+        {
+            {Status.Online, "Online"},
+            {Status.Offline, "Offline"},
+            {Status.InBattle, "In Battle"},
+            {Status.InMatchmaking, "Looking for an opponent"},
+            {Status.MainMenu, "Chilling in menu"}
+        };
+
         public class FriendItemData
         {
             public string Name;
@@ -25,6 +35,7 @@ namespace UI.Chat
 
         public Color FriendColor;
         public Color NearbyPlayerColor;
+        public Color OfflineColor;
         public Color SelectedColor;
 
         private bool isFriend;
@@ -38,7 +49,7 @@ namespace UI.Chat
             }
             else
             {
-                Background.color = isFriend ? FriendColor : NearbyPlayerColor;
+                Background.color = GetStatusColor();
             }
         }
 
@@ -47,13 +58,22 @@ namespace UI.Chat
             var itemData = (FriendItemData) data;
             isFriend = itemData.IsFriend;
             FriendName.text = itemData.Name;
-            Background.color = isFriend ? FriendColor : NearbyPlayerColor;
             UnreadCount.text = itemData.UnreadMessages.ToString();
-            StatusText.text = isFriend ? itemData.OnlineStatus.ToString() : "Nearby player";
+            StatusText.text = isFriend ? StatusNameMap[itemData.OnlineStatus] : "Nearby player";
+            Background.color = GetStatusColor();
             if (itemData.Avatar != null)
             {
                 Avatar.texture = itemData.Avatar;
             }
+        }
+
+        private Color GetStatusColor()
+        {
+            if (StatusText.text == StatusNameMap[Status.Offline])
+            {
+                return OfflineColor;
+            }
+            return isFriend ? FriendColor : NearbyPlayerColor;
         }
     }
 }
