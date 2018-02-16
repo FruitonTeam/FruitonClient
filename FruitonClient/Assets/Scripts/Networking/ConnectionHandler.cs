@@ -6,6 +6,7 @@ using Google.Protobuf;
 using UI.Chat;
 using UI.Notification;
 using UnityEngine;
+using UnityEngine.Networking;
 using Util;
 using Diagnostics = System.Diagnostics;
 
@@ -93,18 +94,18 @@ namespace Networking
 
             if (string.IsNullOrEmpty(www.error))
             {
-                success.Invoke(www.text);
+                success(www.text);
             }
             else
             {
-                error.Invoke(www.text);
+                error(www.text);
             }
         }
 
         public IEnumerator Post(
-            string query, 
-            Action<string> success, 
-            Action<string> error, 
+            string query,
+            Action<string> success,
+            Action<string> error,
             byte[] body = null,
             Dictionary<string, string> headers = null
         ) {
@@ -113,11 +114,11 @@ namespace Networking
 
             if (string.IsNullOrEmpty(www.error))
             {
-                success.Invoke(www.text);
+                success(www.text);
             }
             else
             {
-                error.Invoke(www.error);
+                error(www.error);
             }
         }
 

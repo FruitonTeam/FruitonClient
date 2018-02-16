@@ -76,6 +76,7 @@ namespace UI.MainMenu
 
         public void Logout()
         {
+            GameManager.Instance.Logout();
             ConnectionHandler.Instance.Logout();
             PlayerPrefs.SetString("username", "");
             PlayerPrefs.SetString("userpassword", "");

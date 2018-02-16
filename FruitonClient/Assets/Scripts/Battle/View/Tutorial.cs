@@ -381,7 +381,7 @@ public class Tutorial
 
     private void FinishTutorial()
     {
-        if (GameManager.Instance.Fraction == Fraction.None)
+        if (GameManager.Instance.IsOnline && GameManager.Instance.Fraction == Fraction.None)
         {
             Scenes.Load(Scenes.FRACTION_SCENE);
         }

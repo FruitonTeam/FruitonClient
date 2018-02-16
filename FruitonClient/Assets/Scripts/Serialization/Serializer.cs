@@ -6,6 +6,7 @@ using System.IO;
 using System.Security.Policy;
 using Newtonsoft.Json;
 using UnityEngine;
+using System;
 
 public static class Serializer {
 
@@ -64,14 +65,18 @@ public static class Serializer {
     public static void SerializeFruitonTeams()
     {
         GameManager gameManager = GameManager.Instance;
+        
         byte[] binaryData = GetBinaryData(gameManager.FruitonTeamList);
         using (FileStream file = File.Create(FRUITON_TEAMS_PATH))
         {
-            if (gameManager.StayLoggedIn)
+            if (gameManager.IsInTrial || !gameManager.StayLoggedIn)
+            {
+                file.Write(new byte[0], 0, 0);
+            }
+            else
             {
                 file.Write(binaryData, 0, binaryData.Length);
             }
-            // Else save empty file
         }
     }
 

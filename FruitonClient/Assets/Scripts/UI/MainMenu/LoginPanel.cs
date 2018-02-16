@@ -1,4 +1,5 @@
 ﻿using Networking;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class LoginPanel : MainMenuPanel
@@ -36,7 +37,7 @@ public class LoginPanel : MainMenuPanel
         }
         else
         {
-            GameManager.Instance.AutomaticLogin();
+            GameManager.Instance.AutomaticLogin();            
         }
         
     }
@@ -49,6 +50,12 @@ public class LoginPanel : MainMenuPanel
     // called after pressing Login Button
     public void LoginContinue()
     {
+        if (Application.internetReachability == NetworkReachability.NotReachable)
+        {
+            PanelManager.Instance.ShowErrorMessage("No internet connection. " +
+                "Check your connection or practice in trial mode while offline.");
+            return;
+        }
         GameManager gameManager = GameManager.Instance;
         PanelManager panelManager = PanelManager.Instance;
 

@@ -46,6 +46,7 @@ namespace Networking
                     {
                         var fruitons = JsonConvert.DeserializeObject<List<int>>(jsonString);
                         GameManager.Instance.AvailableFruitons = fruitons;
+                        Serializer.SaveAvailableFruitons(fruitons);
                         success(fruitons);
                     },
                     error
@@ -71,6 +72,7 @@ namespace Networking
 
         public static void UploadFruitonTeam(FruitonTeam fruitonTeam, Action<string> success, Action<string> error)
         {
+            if (GameManager.Instance.IsInTrial) return;
             byte[] body = Serializer.GetBinaryData(fruitonTeam);
             ConnectionHandler.Instance.StartCoroutine(
                 ConnectionHandler.Instance.Post(
