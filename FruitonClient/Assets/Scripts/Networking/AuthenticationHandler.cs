@@ -210,7 +210,7 @@ namespace Networking
 
         public void LoginOffline()
         {
-            GameManager.Instance.LoginOffline();    
+            GameManager.Instance.LoginOffline();
         }
         
         public void OnMessage(WrapperMessage message)

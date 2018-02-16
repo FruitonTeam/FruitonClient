@@ -16,6 +16,8 @@ static class BattleUIUtil
                 gameOver.Results.Quests.Select(q => q.Name).ToArray())
         );
 
+        if (!GameManager.Instance.IsOnline) return;
+
         GameManager.Instance.AddMoney(gameOver.Results.Money);
         GameManager.Instance.UnlockFruitons(gameOver.Results.UnlockedFruitons);
 

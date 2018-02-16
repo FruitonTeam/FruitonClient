@@ -11,6 +11,7 @@ using Util;
 using KFruiton = fruiton.kernel.Fruiton;
 
 public enum FractionNames { None, GuacamoleGuerrillas, CranberryCrusade, TzatzikiTsardom }
+public enum ConnectionMode { Offline, Trial, Online }
 
 public class PlayerOptions
 {
@@ -45,7 +46,7 @@ public class GameManager : IOnMessageListener
     private LoggedPlayerInfo loggedPlayerInfo;
     
     private string userPassword;
-    private bool? stayLoggedIn;
+    private bool? stayLoggedIn = null;
     /// <summary> The list of the Fruiton Teams of the current user. </summary>
     private FruitonTeamList fruitonTeamList;
 
@@ -69,7 +70,7 @@ public class GameManager : IOnMessageListener
         set
         {
             stayLoggedIn = value;
-            PlayerPrefs.SetInt(PlayerPrefsKeys.STAY_LOGGED_IN, 1);
+            PlayerPrefs.SetInt(PlayerPrefsKeys.STAY_LOGGED_IN, stayLoggedIn.Value ? 1 : 0);
         }
     }
 
@@ -108,6 +109,15 @@ public class GameManager : IOnMessageListener
             }
             IsUserValid = false;
         }
+    }
+
+    public void Logout()
+    {
+        loggedPlayerInfo = null;
+        UserPassword = "";
+        avatar = null;
+        FruitonTeamList = null;
+        StayLoggedIn = false;
     }
 
     public bool IsUserValid
@@ -176,6 +186,7 @@ public class GameManager : IOnMessageListener
                 if (!AvailableFruitons.Contains(fruiton))
                 {
                     AvailableFruitons.Add(fruiton);
+                    Serializer.SaveAvailableFruitons(AvailableFruitons);
                 }
             }
         }
@@ -242,15 +253,41 @@ public class GameManager : IOnMessageListener
         }
     }
 
-    public bool IsOnline { get; private set; }
+    public bool IsOnline
+    {
+        get
+        {
+            return connectionMode == ConnectionMode.Online;
+        }
+    }
+    public ConnectionMode connectionMode;
 
-    public PlayerOptions PlayerOptions { get; set; }
+    private PlayerOptions playerOptions = new PlayerOptions();
+    public PlayerOptions PlayerOptions
+    {
+        get
+        {
+            return playerOptions;
+        }
+        set
+        {
+            playerOptions = value;
+        }
+    }
+
+    public bool IsInTrial
+    {
+        get
+        {
+            return connectionMode == ConnectionMode.Trial;
+        }
+    }
 
     #endregion
 
 
     #region Public
-    
+
     public void OnMessage(WrapperMessage message)
     {
         OnlineStatusChange onlineStatusChange = message.OnlineStatusChange;
@@ -267,21 +304,35 @@ public class GameManager : IOnMessageListener
         if (StayLoggedIn && HasRememberedUser())
         {
             PanelManager.Instance.ShowLoadingIndicator();
-            AuthenticationHandler.Instance.LoginBasic(UserName, UserPassword);
+            if (Application.internetReachability == NetworkReachability.NotReachable)
+            {
+                LoginOffline();
+            }
+            else
+            {
+                AuthenticationHandler.Instance.LoginBasic(UserName, UserPassword);
+            }
         }
 
     }
 
     public void LoginOffline()
     {
-        IsOnline = false;
+        if (HasRememberedUser())
+        {
+            connectionMode = ConnectionMode.Offline;
+        }
+        else
+        {
+            connectionMode = ConnectionMode.Trial;
+        }
         Initialize();
         Scenes.Load(Scenes.MAIN_MENU_SCENE);
     }
 
     public void OnLoggedIn(LoggedPlayerInfo playerInfo)
     {
-        IsOnline = true;
+        connectionMode = ConnectionMode.Online;
         
         RemoveCachedData();
         
@@ -328,11 +379,21 @@ public class GameManager : IOnMessageListener
     
     private void Initialize()
     {
-        PlayerOptions = Serializer.LoadPlayerSettings();
-        Serializer.DeserializeFruitonTeams();
         FruitonDatabase = new FruitonDatabase(KernelUtils.LoadTextResource(FRUITON_DB_FILE));
         AllFruitons = ClientFruitonFactory.CreateAllKernelFruitons();
-        AvailableFruitons = Serializer.LoadAvailableFruitons();
+
+        if (IsInTrial)
+        {
+            AvailableFruitons = AllPlayableFruitons.Select(fruiton => fruiton.id).ToList();
+            FruitonTeamList = new FruitonTeamList();
+            loggedPlayerInfo = new LoggedPlayerInfo();
+        }
+        else
+        {
+            PlayerOptions = Serializer.LoadPlayerSettings();
+            Serializer.DeserializeFruitonTeams();
+            AvailableFruitons = Serializer.LoadAvailableFruitons();
+        }
 
         if (IsOnline)
         {
