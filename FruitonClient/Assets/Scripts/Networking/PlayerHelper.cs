@@ -1,7 +1,6 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections.Generic;
-using System.Text;
 using Cz.Cuni.Mff.Fruiton.Dto;
 using Newtonsoft.Json;
 using Util;
@@ -59,10 +58,9 @@ namespace Networking
             ConnectionHandler.Instance.StartCoroutine(
                 ConnectionHandler.Instance.Get(
                     "secured/getAllFruitonTeams",
-                    protobufString =>
+                    bytes =>
                     {
-                        byte[] protoMessage = Encoding.UTF8.GetBytes(protobufString);
-                        FruitonTeamList fruitomTeamList = FruitonTeamList.Parser.ParseFrom(protoMessage);
+                        FruitonTeamList fruitomTeamList = FruitonTeamList.Parser.ParseFrom(bytes);
                         success(fruitomTeamList);
                     },
                     error
@@ -130,10 +128,9 @@ namespace Networking
             ConnectionHandler.Instance.StartCoroutine(
                 ConnectionHandler.Instance.Get(
                     "secured/getAllMessagesWithUser?otherUserLogin=" + login + "&page=" + page,
-                    protobufString =>
+                    bytes =>
                     {
-                        byte[] protoMessage = Encoding.UTF8.GetBytes(protobufString);
-                        ChatMessages chatMessages = ChatMessages.Parser.ParseFrom(protoMessage);
+                        ChatMessages chatMessages = ChatMessages.Parser.ParseFrom(bytes);
                         success(chatMessages, page);
                     },
                     error
@@ -147,10 +144,9 @@ namespace Networking
             ConnectionHandler.Instance.StartCoroutine(
                 ConnectionHandler.Instance.Get(
                     "secured/getAllMessagesBefore?messageId=" + messageId + "&page=" + page,
-                    protobufString =>
+                    bytes =>
                     {
-                        byte[] protoMessage = Encoding.UTF8.GetBytes(protobufString);
-                        ChatMessages chatMessages = ChatMessages.Parser.ParseFrom(protoMessage);
+                        ChatMessages chatMessages = ChatMessages.Parser.ParseFrom(bytes);
                         success(chatMessages, page);
                     },
                     error
