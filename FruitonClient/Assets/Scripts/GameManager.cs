@@ -290,7 +290,7 @@ public class GameManager : IOnMessageListener
 
     public void OnMessage(WrapperMessage message)
     {
-        OnlineStatusChange onlineStatusChange = message.OnlineStatusChange;
+        StatusChange onlineStatusChange = message.StatusChange;
         Friends.Single(f => f.Login == onlineStatusChange.Login).Status = onlineStatusChange.Status;
     }
 

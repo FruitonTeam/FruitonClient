@@ -466,8 +466,8 @@ namespace UI.Chat
                 case WrapperMessage.MessageOneofCase.FriendRemoval:
                     OnFriendRemoval(message.FriendRemoval);
                     break;
-                case WrapperMessage.MessageOneofCase.OnlineStatusChange:
-                    OnOnlineStatusChange(message.OnlineStatusChange);
+                case WrapperMessage.MessageOneofCase.StatusChange:
+                    OnOnlineStatusChange(message.StatusChange);
                     break;
                 case WrapperMessage.MessageOneofCase.PlayersOnSameNetworkOnline:
                     OnPlayersOnSameNetworkOnline(message.PlayersOnSameNetworkOnline);
@@ -527,7 +527,7 @@ namespace UI.Chat
             }
         }
 
-        private void OnOnlineStatusChange(OnlineStatusChange message)
+        private void OnOnlineStatusChange(StatusChange message)
         {
             FriendListController.ChangeOnlineStatus(message.Login, message.Status);
         }

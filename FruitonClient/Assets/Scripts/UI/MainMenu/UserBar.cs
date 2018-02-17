@@ -21,13 +21,13 @@ namespace UI.MainMenu
         {
             Load();
             ChatController.Instance.AddListener(this);
-            ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.OnlineStatusChange, this);
+            ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.StatusChange, this);
         }
 
         private void OnDisable()
         {
             ChatController.Instance.RemoveListener(this);
-            ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.OnlineStatusChange, this);
+            ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.StatusChange, this);
         }
 
         public void Refresh()
@@ -58,11 +58,11 @@ namespace UI.MainMenu
 
         public void OnMessage(WrapperMessage message)
         {
-            if (message.OnlineStatusChange.Status == Status.Online)
+            if (message.StatusChange.Status == Status.Online)
             {
                 FriendsText.text = (int.Parse(FriendsText.text) + 1).ToString();
             }
-            else
+            else if (message.StatusChange.Status == Status.Offline)
             {
                 FriendsText.text = (int.Parse(FriendsText.text) - 1).ToString();
             }
