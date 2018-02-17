@@ -101,6 +101,22 @@ namespace Networking
                 error(www.text);
             }
         }
+        
+        public IEnumerator Get(string query, Action<byte[]> success, Action<string> error)
+        {
+            var www = new WWW(URL_API + query, null, AuthHeader());
+            Debug.Log("www: " + URL_API + query);
+            yield return www;
+
+            if (string.IsNullOrEmpty(www.error))
+            {
+                success(www.bytes);
+            }
+            else
+            {
+                error(www.text);
+            }
+        }
 
         public IEnumerator Post(
             string query,
