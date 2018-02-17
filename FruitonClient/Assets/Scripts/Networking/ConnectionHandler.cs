@@ -108,7 +108,7 @@ namespace Networking
             }
             else
             {
-                error(www.error);
+                error(www.text);
             }
         }
 
