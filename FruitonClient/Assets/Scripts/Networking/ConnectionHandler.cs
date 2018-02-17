@@ -88,23 +88,33 @@ namespace Networking
         
         public IEnumerator Get(string query, Action<string> success, Action<string> error)
         {
-            return Get(query, www => success(www.text), error);
-        }
-        
-        public IEnumerator Get(string query, Action<byte[]> success, Action<string> error)
-        {
-            return Get(query, www => success(www.bytes), error);
-        }
-
-        private IEnumerator Get(string query, Action<WWW> success, Action<string> error)
-        {
             var www = new WWW(URL_API + query, null, AuthHeader());
             Debug.Log("www: " + URL_API + query);
             yield return www;
 
             if (string.IsNullOrEmpty(www.error))
             {
-                success(www);
+                success(www.text);
+            }
+            else
+            {
+                error(www.text);
+            }
+        }
+
+        public IEnumerator Post(
+            string query,
+            Action<string> success,
+            Action<string> error,
+            byte[] body = null,
+            Dictionary<string, string> headers = null
+        ) {
+            var www = new WWW(URL_API + query, body, AuthHeader(headers));
+            yield return www;
+
+            if (string.IsNullOrEmpty(www.error))
+            {
+                success(www.text);
             }
             else
             {
