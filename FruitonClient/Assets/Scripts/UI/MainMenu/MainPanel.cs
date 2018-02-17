@@ -111,5 +111,23 @@ namespace UI.MainMenu
             TodoButton.interactable = false;
         }
 
+        /// <summary>
+        /// Try connecting to the server in offline mode.
+        /// </summary>
+        public void Connect()
+        {
+            PanelManager panelManager = PanelManager.Instance;
+            panelManager.ShowLoadingIndicator();
+            if (Application.internetReachability == NetworkReachability.NotReachable)
+            {
+                panelManager.HideLoadingIndicator();
+                panelManager.ShowErrorMessage("No internet connection.");
+            }
+            else
+            {
+                AuthenticationHandler.Instance.LoginBasic(GameManager.Instance.UserName, GameManager.Instance.UserPassword);
+            } 
+        }
+
     }
 }
