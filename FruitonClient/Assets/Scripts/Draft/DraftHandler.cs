@@ -59,16 +59,7 @@ public class DraftHandler : IOnMessageListener
 
     private void ProcessMessage(GameReady gameReady)
     {
-        var param = new Dictionary<string, string>
-        {
-            {Scenes.BATTLE_TYPE, BattleType.OnlineBattle.ToString()},
-            {Scenes.GAME_MODE, GameMode.Standard.ToString()}
-        };
-        var objParam = new Dictionary<string, object>
-        {
-            {Scenes.GAME_READY_MSG, gameReady}
-        };
-        Scenes.Load(Scenes.BATTLE_SCENE, param, objParam);
+        draftManager.LoadBattle(gameReady);
     }
 
     private void ProcessMessage(DraftReady draftReady)
