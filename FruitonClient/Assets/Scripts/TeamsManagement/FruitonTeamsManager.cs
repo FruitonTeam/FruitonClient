@@ -80,6 +80,7 @@ public class FruitonTeamsManager : MonoBehaviour
     private Position teamDragGridPosition;
     private KFruiton draggedFruiton;
     private List<FridgeFruiton> fridgeFruitons;
+    private bool canPlayWithoutTeamSelected;
 
     private readonly List<Option<GameMode>> gameModes = new List<Option<GameMode>>
     {
@@ -209,6 +210,10 @@ public class FruitonTeamsManager : MonoBehaviour
     {
         PlayerOptions playerOptions = GameManager.Instance.PlayerOptions;
         SetupModeDropdown(gameModes, playerOptions.LastSelectedGameMode);
+        var dropdown = DropdownPanel.GetComponentInChildren<Dropdown>();
+        dropdown.onValueChanged.AddListener(ModeDropDownChanged);
+        var gameMode = gameModes[dropdown.value];
+        canPlayWithoutTeamSelected = gameMode.PickMode == PickMode.Draft;
         CommonChooseStart();
     }
 
@@ -807,13 +812,13 @@ public class FruitonTeamsManager : MonoBehaviour
 
     private void SelectTeam(int index)
     {
-        var isInvalidIndex = index < 0 || index >= teams.Count;
+        var isValidTeamIndex = IsValidTeamIndex(index);
 
-        ButtonPlay.interactable = !isInvalidIndex;
-        ButtonEdit.interactable = !isInvalidIndex;
-        ButtonDelete.interactable = !isInvalidIndex;
+        ButtonPlay.interactable = isValidTeamIndex || canPlayWithoutTeamSelected;
+        ButtonEdit.interactable = isValidTeamIndex;
+        ButtonDelete.interactable = isValidTeamIndex;
 
-        if (isInvalidIndex)
+        if (!isValidTeamIndex)
         {
             selectedTeamIndex = -1;
             CurrentFruitonTeam = null;
@@ -832,6 +837,11 @@ public class FruitonTeamsManager : MonoBehaviour
         InputTeamName.text = newTeam.Name;
         CurrentFruitonTeam = newTeam;
         TeamGrid.LoadTeam(newTeam);
+    }
+
+    private bool IsValidTeamIndex(int index)
+    {
+        return index >= 0 && index < teams.Count;
     }
 
     private void ShowDetail(FridgeFruiton fruiton)
@@ -946,5 +956,14 @@ public class FruitonTeamsManager : MonoBehaviour
             result.Add(new Position { X = i, Y = j });
         }
         return result;
+    }
+
+    private void ModeDropDownChanged(int newSelection)
+    {
+        var dropdown = DropdownPanel.GetComponentInChildren<Dropdown>();
+        var gameMode = gameModes[dropdown.value];
+        canPlayWithoutTeamSelected = gameMode.PickMode == PickMode.Draft;
+        ButtonPlay.interactable = canPlayWithoutTeamSelected
+            || IsValidTeamIndex(selectedTeamIndex);
     }
 }
