@@ -19,6 +19,7 @@ public abstract class TeamsManagerBase : MonoBehaviour
     public Image DragAndDropBarrier;
     public FridgeDndFruiton DragAndDropFruiton;
     public Text WarningText;
+    public GameObject Filters;
 
     protected List<FridgeFruiton> fridgeFruitons;
     protected KFruiton draggedFruiton;
@@ -29,7 +30,7 @@ public abstract class TeamsManagerBase : MonoBehaviour
 
     protected abstract bool ShouldBeginDrag(FridgeFruiton fruiton);
     protected abstract void AddToTeamButtonListener();
-    protected abstract void OnBeginDragFromTeamListener(KFruiton fruiton, Position positon);
+    protected abstract void OnBeginDragFromTeamListener(KFruiton fruiton, Position position);
     protected abstract void ProcessStopDrag(Position dropGridPosition);
 
     protected virtual Position ProcessDropGridPosition(Position dropGridPosition)

@@ -1,17 +1,16 @@
-﻿using System;
-using Cz.Cuni.Mff.Fruiton.Dto;
+﻿using Cz.Cuni.Mff.Fruiton.Dto;
+using Networking;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using KFruiton = fruiton.kernel.Fruiton;
-using System.Linq;
-using Networking;
 
 public class DraftManager : TeamsManagerBase
 {
     public FridgeTeamGrid EnemyTeamGrid;
-    public GameObject Filters;
     public Button ButtonSurrender;
     public Text EnemyName;
     public Text MyName;
@@ -209,7 +208,7 @@ public class DraftManager : TeamsManagerBase
         }
     }
 
-    protected override void OnBeginDragFromTeamListener(KFruiton fruiton, Position positon)
+    protected override void OnBeginDragFromTeamListener(KFruiton fruiton, Position position)
     {
         // Dragging from team is disabled in draft mode
     }
