@@ -246,7 +246,7 @@ namespace UI.Chat
                 Message = message,
                 Recipient = FriendName.text,
                 Sender = GameManager.Instance.UserName,
-                Timestamp = ((long)(DateTime.UtcNow - unixTimeStart).TotalSeconds).ToString()
+                Timestamp = (long) (DateTime.UtcNow - unixTimeStart).TotalSeconds
             };
             var wsMessage = new WrapperMessage
             {
@@ -737,7 +737,7 @@ namespace UI.Chat
             {
                 color = old ? MESSAGE_COLOR_RECEIVED_OLD : MESSAGE_COLOR_RECEIVED_NEW;
             }
-            var time = unixTimeStart.AddSeconds(long.Parse(msg.Timestamp)).ToLocalTime();
+            var time = unixTimeStart.AddSeconds(msg.Timestamp).ToLocalTime();
             var timeFormat = TIME_FORMAT_OLDER;
             if (time.Date == DateTime.Today)
             {
