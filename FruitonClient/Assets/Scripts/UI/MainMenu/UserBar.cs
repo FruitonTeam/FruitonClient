@@ -58,12 +58,14 @@ namespace UI.MainMenu
 
         public void OnMessage(WrapperMessage message)
         {
-            RecountOnlineFriends();
-        }
-
-        private void RecountOnlineFriends()
-        {
-            FriendsText.text = GameManager.Instance.Friends.Count(f => f.Status != Status.Offline).ToString();
+            if (message.OnlineStatusChange.Status == Status.Online)
+            {
+                FriendsText.text = (int.Parse(FriendsText.text) + 1).ToString();
+            }
+            else
+            {
+                FriendsText.text = (int.Parse(FriendsText.text) - 1).ToString();
+            }
         }
     }
 }
