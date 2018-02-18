@@ -48,24 +48,22 @@ namespace UI.MainMenu
 
         public void OnFriendAdded()
         {
-            FriendsText.text = GameManager.Instance.Friends.Count(f => f.Status == Status.Online).ToString();
+            RecountOnlineFriends();
         }
 
         public void OnFriendRemoved()
         {
-            FriendsText.text = GameManager.Instance.Friends.Count(f => f.Status == Status.Online).ToString();
+            RecountOnlineFriends();
         }
 
         public void OnMessage(WrapperMessage message)
         {
-            if (message.StatusChange.Status == Status.Online)
-            {
-                FriendsText.text = (int.Parse(FriendsText.text) + 1).ToString();
-            }
-            else if (message.StatusChange.Status == Status.Offline)
-            {
-                FriendsText.text = (int.Parse(FriendsText.text) - 1).ToString();
-            }
+            RecountOnlineFriends();
+        }
+
+        private void RecountOnlineFriends()
+        {
+            FriendsText.text = GameManager.Instance.Friends.Count(f => f.Status == Status.Online).ToString();
         }
     }
 }

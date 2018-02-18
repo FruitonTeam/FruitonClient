@@ -30,7 +30,7 @@ namespace UI.Chat
             /// </summary>
             public string LastMessageId;
             /// <summary>
-            /// Indicates whether the game is currently loading older mesagges for given friend
+            /// Indicates whether the game is currently loading older messages for given friend
             /// </summary>
             public bool Loading;
             /// <summary>
@@ -304,6 +304,7 @@ namespace UI.Chat
 
         public void OnDropdownOption(int option)
         {
+            // reset dropdown value to make it work like a button
             FriendActionsDropdown.value = 3;
             // 0 - show profile
             // 1 - challenge
@@ -334,7 +335,6 @@ namespace UI.Chat
                     Debug.LogWarning("THIS FEATURE IS NOT IMPLEMENTED YET");
                     break;
             }
-            // reset dropdown value to make it work like a button
         }
 
         private void SendFriendRequest(string friendToAdd)
@@ -467,7 +467,7 @@ namespace UI.Chat
                     OnFriendRemoval(message.FriendRemoval);
                     break;
                 case WrapperMessage.MessageOneofCase.StatusChange:
-                    OnOnlineStatusChange(message.StatusChange);
+                    OnStatusChange(message.StatusChange);
                     break;
                 case WrapperMessage.MessageOneofCase.PlayersOnSameNetworkOnline:
                     OnPlayersOnSameNetworkOnline(message.PlayersOnSameNetworkOnline);
@@ -527,9 +527,10 @@ namespace UI.Chat
             }
         }
 
-        private void OnOnlineStatusChange(StatusChange message)
+        private void OnStatusChange(StatusChange message)
         {
-            FriendListController.ChangeOnlineStatus(message.Login, message.Status);
+            GameManager.Instance.Friends.First(f => f.Login == message.Login).Status = message.Status;
+            FriendListController.ChangeStatus(message.Login, message.Status);
         }
 
         private void OnPlayersOnSameNetworkOnline(PlayersOnSameNetworkOnline message)

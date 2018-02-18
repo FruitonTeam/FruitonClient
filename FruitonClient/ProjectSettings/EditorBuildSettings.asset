@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/TestScenes/TestInitProjectScene.unity
     guid: c2ca380d51f918c4ea3c24d54cb942f0
   - enabled: 1
+    path: Assets/Scenes/InitialScene.unity
+    guid: ec9bc693c1bde564badd9356351470e1
+  - enabled: 1
     path: Assets/Scenes/Login.unity
     guid: 99c9c09b4a6dea3429da0d064fc940d4
   - enabled: 1
