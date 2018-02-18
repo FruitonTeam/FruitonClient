@@ -24,7 +24,7 @@ namespace UI.Chat
             {
                 Name = friendName,
                 UnreadMessages = 0,
-                OnlineStatus = status,
+                Status = status,
                 IsFriend = isFriend
             };
 
@@ -113,15 +113,15 @@ namespace UI.Chat
         {
             int index = Data.FindIndex(data => data.Name == friend);
             var changedData = Data[index];
-            var oldStatus = changedData.OnlineStatus;
-            changedData.OnlineStatus = newStatus;
+            var oldStatus = changedData.Status;
+            changedData.Status = newStatus;
             if (oldStatus != Status.Offline && newStatus == Status.Offline)
             {
                 // if friend went offline we roll every online friend that's after them
                 // in the list 1 place forward until we reach offline friend or end of the list
                 for (int i = index; i < Data.Count; i++)
                 {
-                    if (i+1 == Data.Count || Data[i+1].OnlineStatus == Status.Offline)
+                    if (i+1 == Data.Count || Data[i+1].Status == Status.Offline)
                     {
                         Data[i] = changedData;
                         break;
@@ -132,10 +132,10 @@ namespace UI.Chat
             else if (oldStatus == Status.Offline && newStatus != Status.Offline)
             {
                 // if user came online we roll every offline friend in front of him 1 place behind
-                // until we reach first online friend of beggining of the list
-                for (int i = index; i < Data.Count; i--)
+                // until we reach first online friend of beginning of the list
+                for (int i = index; i >= 0; i--)
                 {
-                    if (i == 0 || Data[i - 1].OnlineStatus != Status.Offline)
+                    if (i == 0 || Data[i - 1].Status != Status.Offline)
                     {
                         Data[i] = changedData;
                         break;

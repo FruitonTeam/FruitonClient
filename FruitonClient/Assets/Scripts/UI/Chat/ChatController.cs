@@ -529,6 +529,7 @@ namespace UI.Chat
 
         private void OnStatusChange(StatusChange message)
         {
+            GameManager.Instance.Friends.First(f => f.Login == message.Login).Status = message.Status;
             FriendListController.ChangeStatus(message.Login, message.Status);
         }
 

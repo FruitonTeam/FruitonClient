@@ -63,7 +63,7 @@ namespace UI.MainMenu
 
         private void RecountOnlineFriends()
         {
-            FriendsText.text = GameManager.Instance.Friends.Count(f => f.Status == Status.Online).ToString();
+            FriendsText.text = GameManager.Instance.Friends.Count(f => f.Status != Status.Offline).ToString();
         }
     }
 }

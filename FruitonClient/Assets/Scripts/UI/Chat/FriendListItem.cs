@@ -5,22 +5,29 @@ using UnityEngine.UI;
 
 namespace UI.Chat
 {
+    static class StatusExtensions
+    {
+        public static string GetDescription(this Status status)
+        {
+            switch (status)
+            {
+                case Status.Online: return "Online";
+                case Status.Offline: return "Offline";
+                case Status.InBattle: return "In Battle";
+                case Status.InMatchmaking: return "Looking for an opponent";
+                case Status.MainMenu: return "Chilling in menu";
+            }
+            return status.ToString();
+        }
+    }
+
     public class FriendListItem : ListItemBase
     {
-        static Dictionary<Status, string> StatusNameMap = new Dictionary<Status, string>
-        {
-            {Status.Online, "Online"},
-            {Status.Offline, "Offline"},
-            {Status.InBattle, "In Battle"},
-            {Status.InMatchmaking, "Looking for an opponent"},
-            {Status.MainMenu, "Chilling in menu"}
-        };
-
         public class FriendItemData
         {
             public string Name;
             public int UnreadMessages;
-            public Status OnlineStatus;
+            public Status Status;
             public Texture Avatar;
             public bool IsFriend;
         }
@@ -59,7 +66,7 @@ namespace UI.Chat
             isFriend = itemData.IsFriend;
             FriendName.text = itemData.Name;
             UnreadCount.text = itemData.UnreadMessages.ToString();
-            StatusText.text = isFriend ? StatusNameMap[itemData.OnlineStatus] : "Nearby player";
+            StatusText.text = isFriend ? itemData.Status.GetDescription() : "Nearby player";
             Background.color = GetStatusColor();
             if (itemData.Avatar != null)
             {
@@ -69,7 +76,7 @@ namespace UI.Chat
 
         private Color GetStatusColor()
         {
-            if (StatusText.text == StatusNameMap[Status.Offline])
+            if (StatusText.text == Status.Offline.GetDescription())
             {
                 return OfflineColor;
             }
