@@ -3141,7 +3141,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 979022330}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.7738848
+  m_Size: 0.9020979
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5721,22 +5721,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ScrollRect: {fileID: 624609885}
-  TeamGrid: {fileID: 1668753500}
-  DragAndDropBarrier: {fileID: 806003303}
-  FridgeFruitonTemplate: {fileID: 1512248358}
-  DragAndDropFruiton: {fileID: 566035292}
-  FridgeTeamTemplate: {fileID: 760528485}
-  WrapperFruitons: {fileID: 72902314}
-  WrapperTeams: {fileID: 1558470229}
   PanelTooltip: {fileID: 223290279}
-  Filters: {fileID: 835430899}
+  MyTeamGrid: {fileID: 1668753500}
   FruitonDetail: {fileID: 38442768}
-  ScrollContentRectTransform: {fileID: 1628496010}
+  FridgeFruitonTemplate: {fileID: 1512248358}
+  WrapperFruitons: {fileID: 72902314}
   TooltipPanelPositions:
   - {fileID: 323482012}
   - {fileID: 1517069856}
   - {fileID: 1073132502}
   - {fileID: 0}
+  FilterManager: {fileID: 835430901}
+  ScrollContentRectTransform: {fileID: 1628496010}
+  DragAndDropBarrier: {fileID: 806003303}
+  DragAndDropFruiton: {fileID: 566035292}
+  WarningText: {fileID: 154514264}
+  FridgeTeamTemplate: {fileID: 760528485}
+  WrapperTeams: {fileID: 1558470229}
+  Filters: {fileID: 835430899}
   ButtonPlay: {fileID: 1047841751}
   ButtonNewTeam: {fileID: 788561468}
   ButtonDelete: {fileID: 1788876557}
@@ -5744,8 +5746,6 @@ MonoBehaviour:
   ButtonBack: {fileID: 1386296705}
   ButtonDone: {fileID: 634479294}
   InputTeamName: {fileID: 793359221}
-  WarningText: {fileID: 154514264}
-  FilterManager: {fileID: 835430901}
   DropdownPanel: {fileID: 707465269}
   LocalDuelHeadline: {fileID: 513947110}
 --- !u!1 &1490204446
@@ -6903,6 +6903,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AllowEdit: 0
+  IsMirrored: 0
   GridSquareTemplate: {fileID: 1592733754}
 --- !u!1 &1704506119
 GameObject:
