@@ -495,4 +495,26 @@ public class GameManager : IOnMessageListener
         PlayerPrefs.SetString(PlayerPrefsKeys.USER_NAME, UserName);
         PlayerPrefs.SetString(PlayerPrefsKeys.USER_PASSWORD, AuthenticationHandler.Instance.LastPassword);
     }
+
+    private void CompleteQuest(string completedQuestName)
+    {
+        Quest completedQuest = Quests.FirstOrDefault(quest => quest.Name == completedQuestName);
+        if (completedQuest == null)
+        {
+            throw new ArgumentNullException(
+                String.Join(" ", new string[] { "Quest", completedQuestName, "not found." }));
+        }
+        else
+        {
+            Quests.Remove(completedQuest);
+        }
+    }
+
+    public void CompleteQuests(IEnumerable<string> completedQuestsNames)
+    {
+        foreach (string questName in completedQuestsNames)
+        {
+            CompleteQuest(questName);
+        }
+    }
 }

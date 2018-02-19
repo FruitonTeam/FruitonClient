@@ -2,6 +2,7 @@
 using fruiton.kernel;
 using fruiton.kernel.actions;
 using fruiton.kernel.events;
+using Google.Protobuf.Collections;
 using Networking;
 using Spine.Unity;
 using System;
@@ -617,8 +618,9 @@ public class BattleViewer : MonoBehaviour
     public void GameOver(GameOver gameOverMessage)
     {
         BattleUIUtil.ShowResults(GameResultsPanel, gameOverMessage);
-        
-        Debug.Log("Game over, reason: " + gameOverMessage.Reason + ", result: " + gameOverMessage.Results);
+        GameResults results = gameOverMessage.Results;
+        GameManager.Instance.CompleteQuests(results.Quests.Select(quest => quest.Name));
+        Debug.Log("Game over, reason: " + gameOverMessage.Reason + ", result: " + results);
     }
 
     public void EnableEndTurnButton()
