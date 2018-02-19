@@ -19,12 +19,13 @@ public class TutorialStage
     private float currentScale = 1;
     private bool decreasing = false;
     private Dictionary<GameObject, Vector3> originalScales;
+    private float scalingRate;
 
     // Color attributes
     private float timer;
     private Dictionary<GameObject, Color> originalColors;
 
-    private static readonly Color BlackColor = Color.black;
+    private static readonly Color BLACK_COLOR = Color.black;
 
     /// <summary> What will be writen to the user. </summary>
     public string Text;
@@ -46,7 +47,8 @@ public class TutorialStage
         List<Action> updateActions = null,
         List<Action> endActions = null,
         StageEndCondition endCondition = StageEndCondition.ButtonContinueClick,
-        bool scaleHighlight = true)
+        bool scaleHighlight = true,
+        float scalingRate = 0.5f)
     {
         Text = text;
         GetHighlightedObjects = highlightedObjects ?? (() => new List<GameObject>());
@@ -54,6 +56,7 @@ public class TutorialStage
         UpdateActions = updateActions ?? new List<Action>();
         EndActions = endActions ?? new List<Action>();
         EndCondition = endCondition;
+        this.scalingRate = scalingRate;
 
         if (scaleHighlight)
         {
@@ -90,16 +93,16 @@ public class TutorialStage
 
     private void ScaleUpdate()
     {
-        float speed = Time.deltaTime;
+        float speed = scalingRate * Time.deltaTime;
         if (decreasing)
         {
             currentScale -= speed;
-            if (currentScale < 0.8f) decreasing = false;
+            if (currentScale < 0.9f) decreasing = false;
         }
         else
         {
-            currentScale += Time.deltaTime;
-            if (currentScale > 1.2f) decreasing = true;
+            currentScale += speed;
+            if (currentScale > 1.1f) decreasing = true;
         }
         foreach (KeyValuePair<GameObject, Vector3> kvPair in originalScales)
         {
@@ -120,7 +123,7 @@ public class TutorialStage
                 Color originalColor = originalColors[highlightedObject];
                 Color currentColor = highlightedObject.GetComponent<Renderer>().material.color;
                 highlightedObject.GetComponent<Renderer>().material.color = currentColor == originalColor
-                    ? BlackColor
+                    ? BLACK_COLOR
                     : originalColor;
             }
             timer = 0;

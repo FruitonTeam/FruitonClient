@@ -83,7 +83,8 @@ public class Tutorial
         TutorialStage descriptionStage = new TutorialStage(
             text,
             () => new List<GameObject> { battleViewer.FruitonInfoPanel },
-            endActions: new List<Action> { () => battleViewer.FruitonInfoPanel.SetActive(false) });
+            endActions: new List<Action> { () => battleViewer.FruitonInfoPanel.SetActive(false) },
+            scalingRate: 0.2f);
 
 #if UNITY_ANDROID
         text = "To see the detailed decription of a fruiton, switch to the \"Info mode\" first.";
