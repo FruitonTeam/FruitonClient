@@ -42,8 +42,7 @@ namespace UI.MainMenu
             int money = GameManager.Instance.Money;
             MoneyText.text = money != -1 ? money.ToString() : "N/A";
             PlayerAvatarImage.sprite = SpriteUtils.TextureToSprite(GameManager.Instance.Avatar);
-            
-            FriendsText.text = GameManager.Instance.Friends.Count(f => f.Status == Status.Online).ToString();
+            RecountOnlineFriends();
         }
 
         public void OnFriendAdded()
@@ -63,7 +62,7 @@ namespace UI.MainMenu
 
         private void RecountOnlineFriends()
         {
-            FriendsText.text = GameManager.Instance.Friends.Count(f => f.Status == Status.Online).ToString();
+            FriendsText.text = GameManager.Instance.Friends.Count(f => f.Status != Status.Offline).ToString();
         }
     }
 }

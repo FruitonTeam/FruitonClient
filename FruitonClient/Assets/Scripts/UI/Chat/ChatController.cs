@@ -67,6 +67,8 @@ namespace UI.Chat
 
         public static ChatController Instance { get; private set; }
 
+        public string SelectedPlayerLogin;
+
         public GameObject LoadingIndicator;
         public Text ChatTextTemplate;
         public InputField MessageInput;
@@ -223,6 +225,7 @@ namespace UI.Chat
                     Instance.ChatTip.text = "You don't have any friends :(";
                 }
             }
+            ChallengeController.Instance.Hide();
         }
 
         public void Hide()
@@ -312,10 +315,11 @@ namespace UI.Chat
             // 3 - ignore
             switch (option)
             {
-                case 3:
-                    return;
                 case 0:
                     ConnectionHandler.Instance.OpenUrlAuthorized("profile/" + Uri.EscapeDataString(FriendName.text));
+                    break;
+                case 1:
+                    ChallengeController.Instance.Show();
                     break;
                 case 2:
                     FriendRemoval removalMessage = new FriendRemoval
@@ -330,10 +334,8 @@ namespace UI.Chat
                     ConnectionHandler.Instance.SendWebsocketMessage(ws);
                     OnFriendRemoval(removalMessage);
                     break;
-                default:
-                    // TODO: self-explanatory
-                    Debug.LogWarning("THIS FEATURE IS NOT IMPLEMENTED YET");
-                    break;
+                case 3:
+                    return;
             }
         }
 
@@ -354,7 +356,7 @@ namespace UI.Chat
         public void AddFriend(string friendToAdd)
         {
             PlayerHelper.IsOnline(friendToAdd,
-                isOnline => { AddFriend(friendToAdd, isOnline ? Status.Online : Status.Offline); },
+                isOnline => { AddFriend(friendToAdd, isOnline ? Status.MainMenu : Status.Offline); },
                 error =>
                 {
                     Debug.LogError("Could not check if user is online " + error);
@@ -405,14 +407,17 @@ namespace UI.Chat
         {
             string login = FriendListController.GetFriend(index);
 
+            SelectedPlayerLogin = login;
+
             if (!chatRecords.ContainsKey(login))
             {
-                // TODO:
-                Debug.Log("Feature not implemented yet");
                 ChatWindow.SetActive(false);
+                ChallengeController.Instance.Show();
                 FriendName.text = "";
                 return;
             }
+
+            ChallengeController.Instance.Hide();
 
             if (login == FriendName.text)
             {
@@ -505,7 +510,7 @@ namespace UI.Chat
             if (message.FriendshipAccepted)
             {
                 // if we get this message then the other friend must have accepted it in his game so he is online
-                AddFriend(message.FriendToAdd, Status.Online);
+                AddFriend(message.FriendToAdd, Status.MainMenu);
             }
         }
 
@@ -539,7 +544,7 @@ namespace UI.Chat
             {
                 if (!chatRecords.ContainsKey(login))
                 {
-                    AddContactToList(login, Status.Online, false);
+                    AddContactToList(login, Status.MainMenu, false);
                 }
             }
         }

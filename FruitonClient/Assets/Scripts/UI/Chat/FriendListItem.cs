@@ -11,7 +11,6 @@ namespace UI.Chat
         {
             switch (status)
             {
-                case Status.Online: return "Online";
                 case Status.Offline: return "Offline";
                 case Status.InBattle: return "In Battle";
                 case Status.InMatchmaking: return "Looking for an opponent";

@@ -17,7 +17,8 @@ public enum BattleType
     OnlineBattle,
     OfflineBattle,
     AIBattle,
-    TutorialBattle
+    TutorialBattle,
+    ChallengeBattle
 }
 
 public abstract class Battle
