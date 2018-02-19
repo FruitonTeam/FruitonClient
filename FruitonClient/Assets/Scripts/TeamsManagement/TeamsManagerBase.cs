@@ -57,19 +57,18 @@ public abstract class TeamsManagerBase : MonoBehaviour
         // drag and drop (or adding from fruiton detail window) logic
         if (isDragging)
         {
-            Vector3 dndPosition = Vector3.left * 1000.0f;
-            Vector3 pointerPosition = Vector3.left * 1000.0f;
 #if UNITY_ANDROID
+            Vector3 pointerPosition = Vector3.left * 1000.0f;
+            Vector3 dndPosition = Vector3.left * 1000.0f;
             if (Input.touchCount > 0)
             {
                 var touchPos = Input.GetTouch(0).position;
                 pointerPosition = new Vector3(touchPos.x, touchPos.y, 0) + new Vector3(-1, 1, 0) * 50;
                 dndPosition = pointerPosition + new Vector3(-1, 1, 0) * 100;
             }
-#endif
-#if UNITY_STANDALONE || UNITY_EDITOR
-            pointerPosition = Input.mousePosition;
-            dndPosition = Input.mousePosition + Vector3.down * 50;
+#elif UNITY_STANDALONE || UNITY_EDITOR
+            Vector3 pointerPosition = Input.mousePosition;
+            Vector3 dndPosition = Input.mousePosition + Vector3.down * 50;
 #endif
             DragAndDropFruiton.transform.position = dndPosition;
 
