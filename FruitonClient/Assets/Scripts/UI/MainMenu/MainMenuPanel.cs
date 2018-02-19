@@ -7,14 +7,6 @@ public class MainMenuPanel : MonoBehaviour
     public bool Mobile = false;
     public Button ConnectButton;
 
-    protected virtual void Start()
-    {
-        if (GameManager.Instance.connectionMode != ConnectionMode.Offline)
-        {
-            ConnectButton.gameObject.SetActive(false);
-        }
-    }
-
     public virtual void SetPanelActive(bool toggle)
     {
         if (toggle)
