@@ -384,7 +384,7 @@ public class GameManager : IOnMessageListener
 
         if (IsInTrial)
         {
-            AvailableFruitons = AllPlayableFruitons.Select(fruiton => fruiton.id).ToList();
+            AvailableFruitons = AllPlayableFruitons.Select(fruiton => fruiton.dbId).ToList();
             FruitonTeamList = new FruitonTeamList();
             loggedPlayerInfo = new LoggedPlayerInfo();
         }
