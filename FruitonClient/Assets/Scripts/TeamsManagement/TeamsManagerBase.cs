@@ -166,7 +166,10 @@ public abstract class TeamsManagerBase : MonoBehaviour
         FilterManager.AllFruitons = fridgeFruitons;
         FilterManager.OnFilterUpdated.AddListener(ReindexFruitons);
         FilterManager.UpdateAvailableFruitons(gameManager.AvailableFruitons);
-        PlayerHelper.GetAvailableFruitons(FilterManager.UpdateAvailableFruitons, Debug.Log);
+        if (gameManager.IsOnline)
+        {
+            PlayerHelper.GetAvailableFruitons(FilterManager.UpdateAvailableFruitons, Debug.Log);
+        }
     }
 
     private void BeginFruitonDrag(FridgeFruiton fruiton)
