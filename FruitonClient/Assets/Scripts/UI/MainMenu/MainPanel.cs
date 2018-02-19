@@ -16,6 +16,14 @@ namespace UI.MainMenu
         public Button MarketButton;
         public Button TodoButton;
 
+        private void Start()
+        {
+            if (GameManager.Instance.connectionMode != ConnectionMode.Offline)
+            {
+                ConnectButton.gameObject.SetActive(false);
+            }
+        }
+
         public void OnlineContinue()
         {
             PanelManager.Instance.SwitchPanels(MenuPanel.Online);
