@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Cz.Cuni.Mff.Fruiton.Dto;
 using Networking;
 using UI.Chat;
@@ -12,8 +13,10 @@ namespace UI.Notification
 
         public static FeedbackNotificationManager Instance { get; private set; }
 
-        private readonly Queue<FeedBackNotificationData> notificationQueue = 
+        private Queue<FeedBackNotificationData> notificationQueue = 
                 new Queue<FeedBackNotificationData>();
+
+        private int currentNotificationId;
         
         public FeedbackNotificationView View;
 
@@ -23,7 +26,9 @@ namespace UI.Notification
             {
                 return;
             }
-            View.SetData(notificationQueue.Dequeue());
+            var nextNofitication = notificationQueue.Dequeue();
+            currentNotificationId = nextNofitication.Id;
+            View.SetData(nextNofitication);
             View.StartAnimation();
         }
 
@@ -86,14 +91,36 @@ namespace UI.Notification
             }
         }
 
-        public void Show(string title, string text, System.Action accept, System.Action decline)
+        public int Show(string title, string text, System.Action accept, System.Action decline)
         {
-            notificationQueue.Enqueue(new FeedBackNotificationData(null, title, text, accept, decline));
+            var notification = new FeedBackNotificationData(null, title, text, accept, decline);
+            notificationQueue.Enqueue(notification);
+            return notification.Id;
         }
         
-        public void Show(Texture image, string title, string text, System.Action accept, System.Action decline)
+        public int Show(Texture image, string title, string text, System.Action accept, System.Action decline)
         {
-            notificationQueue.Enqueue(new FeedBackNotificationData(image, title, text, accept, decline));
+            var notification = new FeedBackNotificationData(image, title, text, accept, decline);
+            notificationQueue.Enqueue(notification);
+            return notification.Id;
+        }
+
+        public void RemoveNotification(int notificationId)
+        {
+            if (notificationId == currentNotificationId)
+            {
+                View.Hide();
+            }
+            notificationQueue = new Queue<FeedBackNotificationData>(notificationQueue.Where(n => n.Id != notificationId));
+        }
+
+        public void RemoveNotifications(ICollection<int> notificationIds)
+        {
+            if (notificationIds.Contains(currentNotificationId))
+            {
+                View.Hide();
+            }
+            notificationQueue = new Queue<FeedBackNotificationData>(notificationQueue.Where(n => !notificationIds.Contains(n.Id)));
         }
 
         public void Clear()
@@ -104,15 +131,18 @@ namespace UI.Notification
 
         public class FeedBackNotificationData : NotificationManager.NotificationData
         {
-            
+            private static int idCounter;
+
             public System.Action Accept { get; private set; }
             public System.Action Decline { get; private set; }
+            public int Id { get; private set; }
 
             public FeedBackNotificationData(Texture image, string header, string text, System.Action accept, System.Action decline) 
                     : base(image, header, text)
             {
                 Accept = accept;
                 Decline = decline;
+                Id = idCounter++;
             }
         }
       
