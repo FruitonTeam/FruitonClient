@@ -8,6 +8,7 @@ using UI.Chat;
 using UI.Notification;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using WebSocketSharp;
 
 public class ChallengeController : MonoBehaviour, IOnMessageListener
@@ -24,14 +25,23 @@ public class ChallengeController : MonoBehaviour, IOnMessageListener
         }
     }
 
+    private static readonly string CHALLENGE_FRIEND_TEXT = "You are about to challenge {0}.\nChoose a game mode:";
+    private static readonly string CHALLENGE_NEARBY_PLAYER_TEXT = "To challenge {0}\nchoose a game mode:";
+
+    private const int CHALLENGE_MODE_STANDARD_PREMADE = 0;
+    private const int CHALLENGE_MODE_STANDARD_DRAFT = 1;
+    private const int CHALLENGE_MODE_LMS_PREMADE = 2;
+    private const int CHALLENGE_MODE_LMS_DRAFT = 3;
+
     public static ChallengeController Instance { get; private set; }
 
     public bool IsChallengeActive { get; private set; }
 
     public GameObject ChallengePanel;
     public Texture2D ChallengeImage;
+    public Text ChallengeText;
 
-    private Challenge ownChallenge;
+    private Challenge myChallenge;
     private Challenge currentEnemyChallenge;
 
     private readonly List<ChallengeData> enemyChallenges = new List<ChallengeData>();
@@ -56,13 +66,14 @@ public class ChallengeController : MonoBehaviour, IOnMessageListener
             ChatController.Instance.Hide();
             if (scene.name == Scenes.MAIN_MENU_SCENE)
             {
+                // if user goes to main menu any ongoing challenge is cancelled
                 IsChallengeActive = false;
-                if (ownChallenge != null)
+                if (AmIChallenging())
                 {
                     SendRevokeChallenge();
-                    ownChallenge = null;
+                    myChallenge = null;
                 }
-                if (currentEnemyChallenge != null)
+                else if (AmIBeingChallenged())
                 {
                     SendChallengeResult(currentEnemyChallenge.ChallengeFrom, false);
                     currentEnemyChallenge = null;
@@ -70,29 +81,38 @@ public class ChallengeController : MonoBehaviour, IOnMessageListener
             }
             else if (scene.name == Scenes.BATTLE_SCENE)
             {
+                // if user enters battle scene during standard pick challenge
+                // it means they chose their team and we need to send message about it to server
                 IsChallengeActive = false;
-                if (ownChallenge != null)
+                if (AmIChallenging())
                 {
-                    ownChallenge.Team = GameManager.Instance.CurrentFruitonTeam;
-                    if (ownChallenge.PickMode == PickMode.StandardPick)
+                    if (myChallenge.PickMode == PickMode.StandardPick)
                     {
+                        myChallenge.Team = GameManager.Instance.CurrentFruitonTeam;
                         SendChallengeRequest();
+                        CancelAllChallengeNotifications();
                     }
                 }
-                else if (currentEnemyChallenge != null)
+                else if (AmIBeingChallenged())
                 {
                     if (currentEnemyChallenge.PickMode == PickMode.StandardPick)
                     {
-                        SendChallengeResult(currentEnemyChallenge.ChallengeFrom, true);
+                        SendChallengeResult(currentEnemyChallenge.ChallengeFrom, true, GameManager.Instance.CurrentFruitonTeam);
+                        CancelAllChallengeNotifications();
                     }
                 }
                 else
                 {
+                    // if users isn't participating in any challenge and enters the battle scene
+                    // server removes all of their pending challenge requests
+                    // so we need to remove them from notifications
                     CancelAllChallengeNotifications();
                 }
             }
             else if (scene.name == Scenes.DRAFT_SCENE)
             {
+                // when user enters draft scene all unanswered challenges are removed by the server
+                // so we remove them from notifications
                 CancelAllChallengeNotifications();
             }
         };
@@ -101,6 +121,9 @@ public class ChallengeController : MonoBehaviour, IOnMessageListener
     public void Show()
     {
         ChallengePanel.SetActive(true);
+        ChallengeText.text = String.Format(
+            ChatController.Instance.IsSelectedPlayerFriend ? CHALLENGE_FRIEND_TEXT : CHALLENGE_NEARBY_PLAYER_TEXT,
+            ChatController.Instance.SelectedPlayerLogin);
     }
 
     public void Hide()
@@ -110,22 +133,18 @@ public class ChallengeController : MonoBehaviour, IOnMessageListener
 
     public void OnChallengeModeChosen(int modeId)
     {
-        // 0 - Standard Premade
-        // 1 - Standard Draft
-        // 2 - LMS Premade
-        // 3 - LMS Draft
         switch (modeId)
         {
-            case 0:
+            case CHALLENGE_MODE_STANDARD_PREMADE:
                 InitiateChallenge(GameMode.Standard, PickMode.StandardPick);
                 break;
-            case 1:
+            case CHALLENGE_MODE_STANDARD_DRAFT:
                 InitiateChallenge(GameMode.Standard, PickMode.Draft);
                 break;
-            case 2:
+            case CHALLENGE_MODE_LMS_PREMADE:
                 InitiateChallenge(GameMode.LastManStanding, PickMode.StandardPick);
                 break;
-            case 3:
+            case CHALLENGE_MODE_LMS_DRAFT:
                 InitiateChallenge(GameMode.LastManStanding, PickMode.Draft);
                 break;
         }
@@ -159,7 +178,7 @@ public class ChallengeController : MonoBehaviour, IOnMessageListener
     {
         IsChallengeActive = true;
 
-        ownChallenge = new Challenge
+        myChallenge = new Challenge
         {
             GameMode = gameMode,
             PickMode = pickMode,
@@ -228,8 +247,8 @@ public class ChallengeController : MonoBehaviour, IOnMessageListener
         if (!challengeResult.ChallengeAccepted)
         {
             Scenes.Load(Scenes.MAIN_MENU_SCENE);
-            NotificationManager.Instance.Show(ChallengeImage, "Challenge canceled!", ownChallenge.ChallengeFor + " declined your challenge");
-            ownChallenge = null;
+            NotificationManager.Instance.Show(ChallengeImage, "Challenge canceled!", myChallenge.ChallengeFor + " declined your challenge");
+            myChallenge = null;
         }
     }
 
@@ -243,12 +262,13 @@ public class ChallengeController : MonoBehaviour, IOnMessageListener
         enemyChallenges.RemoveAt(index);
     }
 
-    private void SendChallengeResult(string enemyLogin, bool accepted)
+    private void SendChallengeResult(string enemyLogin, bool accepted, FruitonTeam fruitonTeam = null)
     {
         var challengeResult = new ChallengeResult
         {
             ChallengeFrom = enemyLogin,
-            ChallengeAccepted = accepted
+            ChallengeAccepted = accepted,
+            Team = fruitonTeam
         };
         var wsMessage = new WrapperMessage
         {
@@ -261,7 +281,7 @@ public class ChallengeController : MonoBehaviour, IOnMessageListener
     {
         var wsMessage = new WrapperMessage
         {
-            Challenge = ownChallenge
+            Challenge = myChallenge
         };
         ConnectionHandler.Instance.SendWebsocketMessage(wsMessage);
     }
@@ -275,4 +295,13 @@ public class ChallengeController : MonoBehaviour, IOnMessageListener
         ConnectionHandler.Instance.SendWebsocketMessage(wsMessage);
     }
 
+    private bool AmIChallenging()
+    {
+        return myChallenge != null;
+    }
+
+    private bool AmIBeingChallenged()
+    {
+        return currentEnemyChallenge != null;
+    }
 }

@@ -14,7 +14,6 @@ namespace UI.Chat
 {
     public class ChatController : MonoBehaviour, IOnItemSelectedListener, IOnMessageListener
     {
-
         /// <summary>
         /// Stores chat history with a friend and additional chat status information
         /// </summary>
@@ -56,6 +55,11 @@ namespace UI.Chat
         static readonly string MESSAGE_COLOR_RECEIVED_OLD = "#333344";
         static readonly string MESSAGE_COLOR_RECEIVED_NEW = "#222266";
 
+        const int DROPDOWN_SHOW_PROFILE = 0;
+        const int DROPDOWN_CHALLENGE = 1;
+        const int DROPDOWN_DELETE_FRIEND=  2;
+        const int DROPDOWN_CANCEL = 3;
+
         /// <summary>
         /// Time format for messages received on the same day as they were sent
         /// </summary>
@@ -67,7 +71,8 @@ namespace UI.Chat
 
         public static ChatController Instance { get; private set; }
 
-        public string SelectedPlayerLogin;
+        public string SelectedPlayerLogin { get; private set; }
+        public bool IsSelectedPlayerFriend { get; private set; }
 
         public GameObject LoadingIndicator;
         public Text ChatTextTemplate;
@@ -308,20 +313,16 @@ namespace UI.Chat
         public void OnDropdownOption(int option)
         {
             // reset dropdown value to make it work like a button
-            FriendActionsDropdown.value = 3;
-            // 0 - show profile
-            // 1 - challenge
-            // 2 - delete
-            // 3 - ignore
+            FriendActionsDropdown.value = DROPDOWN_CANCEL;
             switch (option)
             {
-                case 0:
+                case DROPDOWN_SHOW_PROFILE:
                     ConnectionHandler.Instance.OpenUrlAuthorized("profile/" + Uri.EscapeDataString(FriendName.text));
                     break;
-                case 1:
+                case DROPDOWN_CHALLENGE:
                     ChallengeController.Instance.Show();
                     break;
-                case 2:
+                case DROPDOWN_DELETE_FRIEND:
                     FriendRemoval removalMessage = new FriendRemoval
                     {
                         Login = FriendName.text
@@ -334,7 +335,7 @@ namespace UI.Chat
                     ConnectionHandler.Instance.SendWebsocketMessage(ws);
                     OnFriendRemoval(removalMessage);
                     break;
-                case 3:
+                case DROPDOWN_CANCEL:
                     return;
             }
         }
@@ -408,8 +409,9 @@ namespace UI.Chat
             string login = FriendListController.GetFriend(index);
 
             SelectedPlayerLogin = login;
+            IsSelectedPlayerFriend = chatRecords.ContainsKey(login);
 
-            if (!chatRecords.ContainsKey(login))
+            if (!IsSelectedPlayerFriend)
             {
                 ChatWindow.SetActive(false);
                 ChallengeController.Instance.Show();
