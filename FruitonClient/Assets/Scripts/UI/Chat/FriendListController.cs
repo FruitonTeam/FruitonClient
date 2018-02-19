@@ -24,7 +24,7 @@ namespace UI.Chat
             {
                 Name = friendName,
                 UnreadMessages = 0,
-                OnlineStatus = status,
+                Status = status,
                 IsFriend = isFriend
             };
 
@@ -36,8 +36,23 @@ namespace UI.Chat
                 {
                     RemoveItem(friendName);
                 }
-                Data.Add(itemData);
-                RecyclableList.AddItem(ListItem);
+                if (status == Status.Offline)
+                {
+                    // offline friends are added to the bottom
+                    Data.Add(itemData);
+                    RecyclableList.AddItem(ListItem);
+                }
+                else
+                {
+                    // online friends are added right behind nearby players
+                    var firstFriendIndex = Data.FindIndex(p => p.IsFriend);
+                    if (firstFriendIndex < 0)
+                    {
+                        firstFriendIndex = 0;
+                    }
+                    Data.Insert(firstFriendIndex, itemData);
+                    RecyclableList.InsertItem(firstFriendIndex, ListItem);
+                }
             }
             else
             {
@@ -94,14 +109,38 @@ namespace UI.Chat
             RecyclableList.NotifyDataChanged();
         }
 
-        public void ChangeOnlineStatus(string friend, Status newStatus)
+        public void ChangeStatus(string friend, Status newStatus)
         {
-            foreach (FriendListItem.FriendItemData friendData in Data)
+            int index = Data.FindIndex(data => data.Name == friend);
+            var changedData = Data[index];
+            var oldStatus = changedData.Status;
+            changedData.Status = newStatus;
+            if (oldStatus != Status.Offline && newStatus == Status.Offline)
             {
-                if (friendData.Name.Equals(friend))
+                // if friend went offline we roll every online friend that's after them
+                // in the list 1 place forward until we reach offline friend or end of the list
+                for (int i = index; i < Data.Count; i++)
                 {
-                    friendData.OnlineStatus = newStatus;
-                    break;
+                    if (i+1 == Data.Count || Data[i+1].Status == Status.Offline)
+                    {
+                        Data[i] = changedData;
+                        break;
+                    }
+                    Data[i] = Data[i + 1];
+                }
+            }
+            else if (oldStatus == Status.Offline && newStatus != Status.Offline)
+            {
+                // if user came online we roll every offline friend in front of him 1 place behind
+                // until we reach first online friend of beginning of the list
+                for (int i = index; i >= 0; i--)
+                {
+                    if (i == 0 || Data[i - 1].Status != Status.Offline)
+                    {
+                        Data[i] = changedData;
+                        break;
+                    }
+                    Data[i] = Data[i - 1];
                 }
             }
             RecyclableList.NotifyDataChanged();

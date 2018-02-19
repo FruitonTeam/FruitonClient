@@ -521,7 +521,7 @@ namespace UI
             lastItemIndex = itemsList.Count - 1;
             itemsToRecycleAfter++;
 
-            content.sizeDelta = new Vector2(0, itemSize * itemsTotal + spacing * (itemsTotal - 1));
+            ResizeContentToFitItems();
         }
 
         public void InsertItem(int index, ListItemBase listItemPrefab)
@@ -541,7 +541,7 @@ namespace UI
             lastItemIndex = itemsList.Count - 1;
             itemsToRecycleAfter++;
 
-            content.sizeDelta = new Vector2(0, itemSize * itemsTotal + spacing * (itemsTotal - 1));
+            ResizeContentToFitItems();
         }
 
         public void RemoveItemAt(int index)
@@ -556,6 +556,11 @@ namespace UI
             itemsTotal--;
             lastItemIndex = itemsList.Count - 1;
             itemsToRecycleAfter--;
+            ResizeContentToFitItems();
+        }
+
+        private void ResizeContentToFitItems()
+        {
             content.sizeDelta = new Vector2(0, itemSize * itemsTotal + spacing * (itemsTotal - 1));
         }
 
