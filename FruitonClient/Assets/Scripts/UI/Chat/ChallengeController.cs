@@ -222,7 +222,7 @@ public class ChallengeController : MonoBehaviour, IOnMessageListener
         {
             var parameters = new Dictionary<string, string>
             {
-                {Scenes.BATTLE_TYPE, BattleType.OnlineBattle.ToString()},
+                {Scenes.BATTLE_TYPE, BattleType.ChallengeBattle.ToString()},
                 {Scenes.TEAM_MANAGEMENT_STATE, TeamManagementState.CHALLENGE_CHOOSE.ToString()}
             };
             Scenes.Load(Scenes.TEAMS_MANAGEMENT_SCENE, parameters);
@@ -253,7 +253,7 @@ public class ChallengeController : MonoBehaviour, IOnMessageListener
                     currentEnemyChallenge = challenge;
                     var parameters = new Dictionary<string, string>
                     {
-                        {Scenes.BATTLE_TYPE, BattleType.OnlineBattle.ToString()},
+                        {Scenes.BATTLE_TYPE, BattleType.ChallengeBattle.ToString()},
                         {Scenes.TEAM_MANAGEMENT_STATE, TeamManagementState.CHALLENGE_CHOOSE.ToString()}
                     };
                     Scenes.Load(Scenes.TEAMS_MANAGEMENT_SCENE, parameters);

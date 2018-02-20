@@ -102,6 +102,10 @@ public class BattleViewer : MonoBehaviour
                 battle = new AIBattle(this, aiType);
                 InitializeOfflineGame();
                 break;
+            case BattleType.ChallengeBattle:
+                battle = new OnlineBattle(this, false);
+                PanelLoadingGame.SetActive(true);
+                break;
             case BattleType.TutorialBattle:
                 battle = new AIBattle(this, AIType.Tutorial);
                 TutorialPanel.SetActive(true);

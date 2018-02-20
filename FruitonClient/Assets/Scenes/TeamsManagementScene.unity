@@ -2726,7 +2726,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 857693925}
   m_HandleRect: {fileID: 857693924}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -3141,7 +3141,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 979022330}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.9020979
+  m_Size: 0.9025519
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5736,9 +5736,9 @@ MonoBehaviour:
   DragAndDropBarrier: {fileID: 806003303}
   DragAndDropFruiton: {fileID: 566035292}
   WarningText: {fileID: 154514264}
+  Filters: {fileID: 835430899}
   FridgeTeamTemplate: {fileID: 760528485}
   WrapperTeams: {fileID: 1558470229}
-  Filters: {fileID: 835430899}
   ButtonPlay: {fileID: 1047841751}
   ButtonNewTeam: {fileID: 788561468}
   ButtonDelete: {fileID: 1788876557}
@@ -6818,7 +6818,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0.00012207031, y: 471.00003}
+  m_AnchoredPosition: {x: 0.00012207031, y: 0}
   m_SizeDelta: {x: 1001, y: 471}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1668753496

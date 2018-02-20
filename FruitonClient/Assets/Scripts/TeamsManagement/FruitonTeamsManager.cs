@@ -223,7 +223,6 @@ public class FruitonTeamsManager : TeamsManagerBase
     private void ChallengeChooseStart()
     {
         ButtonPlay.GetComponentInChildren<Text>().text = "Select";
-        PlayerOptions playerOptions = GameManager.Instance.PlayerOptions;
         CommonChooseStart();
         DropdownPanel.SetActive(false);
         LocalDuelHeadline.text = CHOOSE_CHALLENGE_TEAM_TITLE;

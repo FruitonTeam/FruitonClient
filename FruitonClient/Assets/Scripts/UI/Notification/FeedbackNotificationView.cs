@@ -6,7 +6,7 @@ namespace UI.Notification
 {
     public class FeedbackNotificationView : MonoBehaviour
     {
-        private static readonly float ANIMATION_TIME = 3.0f;
+        private static readonly float ANIMATION_TIME = 1f;
 
         public RawImage Image;
         public Text Header;
