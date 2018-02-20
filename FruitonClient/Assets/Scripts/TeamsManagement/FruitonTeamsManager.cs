@@ -87,7 +87,7 @@ public class FruitonTeamsManager : TeamsManagerBase
 
     public static readonly int MAX_TEAM_COUNT = 16;
     private static readonly string CHOOSE_OFFLINE_TEAM_TITLE = "Team for Player {0}.";
-    private static readonly string CHOOSE_CHALLENGE_TEAM_TITLE = "Selected a team to use in challenge";
+    private static readonly string CHOOSE_CHALLENGE_TEAM_TITLE = "Selecte a team to use in challenge";
 
 
     /// <summary> true if player is actually editing teams, false if only viewing/picking </summary>
