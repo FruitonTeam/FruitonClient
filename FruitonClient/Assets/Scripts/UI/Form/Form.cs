@@ -13,7 +13,7 @@ public class Form : MonoBehaviour
 
     private GameObject errorPanel;
     private Text errorTextComponent;
-    private List<FormControl> formControls;
+    private FormControl[] formControls;
     private Button submitOverlay;
     private List<Validator.GlobalValidator> globalValidators;
     private bool valid;
@@ -34,8 +34,7 @@ public class Form : MonoBehaviour
         SubmitButton.onClick.AddListener(SubmitForm);
 
         globalValidators = new List<Validator.GlobalValidator>();
-        this.formControls = new List<FormControl>();
-        this.formControls.AddRange(formControls);
+        this.formControls = formControls;
 
         foreach (var control in formControls)
         {
@@ -268,13 +267,13 @@ public class Form : MonoBehaviour
                 tabIndex++;
             }
 
-            if (tabIndex >= formControls.Count)
+            if (tabIndex >= formControls.Length)
             {
                 tabIndex = 0;
             }
             else if (tabIndex < 0)
             {
-                tabIndex = formControls.Count - 1;
+                tabIndex = formControls.Length - 1;
             }
 
             formControls[tabIndex].Selectable.Select();
