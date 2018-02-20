@@ -39,7 +39,7 @@ public static class TooltipUtil
             fruitonInfo.Append("\n<b>Effects</b>\n");
             foreach (Effect effect in effects)
             {
-                fruitonInfo.Append(effect.text).Append("\n");
+                fruitonInfo.Append(effect.getDescription()).Append("\n");
             }
         }
 
