@@ -73,9 +73,9 @@ namespace UI.Chat
             RecyclableList.RemoveItemAt(index);
         }
 
-        public string GetFriend(int index)
+        public FriendListItem.FriendItemData GetFriend(int index)
         {
-            return Data[index].Name;
+            return Data[index];
         }
 
         public List<string> GetAllFriends()
@@ -112,6 +112,10 @@ namespace UI.Chat
         public void ChangeStatus(string friend, Status newStatus)
         {
             int index = Data.FindIndex(data => data.Name == friend);
+            if (index < 0)
+            {
+                return;
+            }
             var changedData = Data[index];
             var oldStatus = changedData.Status;
             changedData.Status = newStatus;

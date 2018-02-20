@@ -197,6 +197,9 @@ namespace Networking
                 RegisterListener(WrapperMessage.MessageOneofCase.StatusChange, ChatController.Instance);
                 RegisterListener(WrapperMessage.MessageOneofCase.PlayersOnSameNetworkOnline, ChatController.Instance);
                 RegisterListener(WrapperMessage.MessageOneofCase.PlayerOnSameNetworkOffline, ChatController.Instance);
+                RegisterListener(WrapperMessage.MessageOneofCase.Challenge, ChallengeController.Instance);
+                RegisterListener(WrapperMessage.MessageOneofCase.ChallengeResult, ChallengeController.Instance);
+                RegisterListener(WrapperMessage.MessageOneofCase.RevokeChallenge, ChallengeController.Instance);
             }
         }
 

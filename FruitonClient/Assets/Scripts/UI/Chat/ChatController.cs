@@ -14,7 +14,6 @@ namespace UI.Chat
 {
     public class ChatController : MonoBehaviour, IOnItemSelectedListener, IOnMessageListener
     {
-
         /// <summary>
         /// Stores chat history with a friend and additional chat status information
         /// </summary>
@@ -56,6 +55,11 @@ namespace UI.Chat
         static readonly string MESSAGE_COLOR_RECEIVED_OLD = "#333344";
         static readonly string MESSAGE_COLOR_RECEIVED_NEW = "#222266";
 
+        const int DROPDOWN_SHOW_PROFILE = 0;
+        public const int DROPDOWN_CHALLENGE = 1;
+        const int DROPDOWN_DELETE_FRIEND=  2;
+        const int DROPDOWN_CANCEL = 3;
+
         /// <summary>
         /// Time format for messages received on the same day as they were sent
         /// </summary>
@@ -66,6 +70,10 @@ namespace UI.Chat
         private static readonly string TIME_FORMAT_OLDER = "dd.MM.yyyy HH:mm";
 
         public static ChatController Instance { get; private set; }
+
+        public string SelectedPlayerLogin { get; private set; }
+        public bool IsSelectedPlayerFriend { get; private set; }
+        public bool IsSelectedPlayerInMenu { get; private set; }
 
         public GameObject LoadingIndicator;
         public Text ChatTextTemplate;
@@ -223,6 +231,7 @@ namespace UI.Chat
                     Instance.ChatTip.text = "You don't have any friends :(";
                 }
             }
+            ChallengeController.Instance.Hide();
         }
 
         public void Hide()
@@ -305,19 +314,16 @@ namespace UI.Chat
         public void OnDropdownOption(int option)
         {
             // reset dropdown value to make it work like a button
-            FriendActionsDropdown.value = 3;
-            // 0 - show profile
-            // 1 - challenge
-            // 2 - delete
-            // 3 - ignore
+            FriendActionsDropdown.value = DROPDOWN_CANCEL;
             switch (option)
             {
-                case 3:
-                    return;
-                case 0:
+                case DROPDOWN_SHOW_PROFILE:
                     ConnectionHandler.Instance.OpenUrlAuthorized("profile/" + Uri.EscapeDataString(FriendName.text));
                     break;
-                case 2:
+                case DROPDOWN_CHALLENGE:
+                    ChallengeController.Instance.Show();
+                    break;
+                case DROPDOWN_DELETE_FRIEND:
                     FriendRemoval removalMessage = new FriendRemoval
                     {
                         Login = FriendName.text
@@ -330,10 +336,8 @@ namespace UI.Chat
                     ConnectionHandler.Instance.SendWebsocketMessage(ws);
                     OnFriendRemoval(removalMessage);
                     break;
-                default:
-                    // TODO: self-explanatory
-                    Debug.LogWarning("THIS FEATURE IS NOT IMPLEMENTED YET");
-                    break;
+                case DROPDOWN_CANCEL:
+                    return;
             }
         }
 
@@ -354,7 +358,7 @@ namespace UI.Chat
         public void AddFriend(string friendToAdd)
         {
             PlayerHelper.IsOnline(friendToAdd,
-                isOnline => { AddFriend(friendToAdd, isOnline ? Status.Online : Status.Offline); },
+                isOnline => { AddFriend(friendToAdd, isOnline ? Status.MainMenu : Status.Offline); },
                 error =>
                 {
                     Debug.LogError("Could not check if user is online " + error);
@@ -393,7 +397,7 @@ namespace UI.Chat
             {
                 chatRecords[login] = new ChatRecord();
             }
-            ChatTip.text = "Select a friend to challenge or chat with";
+            ChatTip.text = "Select a player to challenge or chat with a friend";
         }
 
         private void RemoveFromContactList(string login)
@@ -403,16 +407,22 @@ namespace UI.Chat
 
         public void OnItemSelected(int index)
         {
-            string login = FriendListController.GetFriend(index);
+            var friend = FriendListController.GetFriend(index);
+            var login = friend.Name;
 
-            if (!chatRecords.ContainsKey(login))
+            SelectedPlayerLogin = login;
+            IsSelectedPlayerFriend = chatRecords.ContainsKey(login);
+            IsSelectedPlayerInMenu = friend.Status == Status.MainMenu;
+
+            if (!IsSelectedPlayerFriend)
             {
-                // TODO:
-                Debug.Log("Feature not implemented yet");
                 ChatWindow.SetActive(false);
+                ChallengeController.Instance.Show();
                 FriendName.text = "";
                 return;
             }
+
+            ChallengeController.Instance.Hide();
 
             if (login == FriendName.text)
             {
@@ -505,7 +515,7 @@ namespace UI.Chat
             if (message.FriendshipAccepted)
             {
                 // if we get this message then the other friend must have accepted it in his game so he is online
-                AddFriend(message.FriendToAdd, Status.Online);
+                AddFriend(message.FriendToAdd, Status.MainMenu);
             }
         }
 
@@ -529,8 +539,17 @@ namespace UI.Chat
 
         private void OnStatusChange(StatusChange message)
         {
-            GameManager.Instance.Friends.First(f => f.Login == message.Login).Status = message.Status;
             FriendListController.ChangeStatus(message.Login, message.Status);
+            var friend = GameManager.Instance.Friends.FirstOrDefault(f => f.Login == message.Login);
+            if (friend != null)
+            {
+                friend.Status = message.Status;
+            }
+            if (message.Login == SelectedPlayerLogin)
+            {
+                IsSelectedPlayerInMenu = message.Status == Status.MainMenu;
+                ChallengeController.Instance.Refresh();
+            }
         }
 
         private void OnPlayersOnSameNetworkOnline(PlayersOnSameNetworkOnline message)
@@ -539,7 +558,7 @@ namespace UI.Chat
             {
                 if (!chatRecords.ContainsKey(login))
                 {
-                    AddContactToList(login, Status.Online, false);
+                    AddContactToList(login, Status.MainMenu, false);
                 }
             }
         }
@@ -761,6 +780,11 @@ namespace UI.Chat
             FriendActionsDropdown.Hide();
             yield return new WaitForSecondsRealtime(0.3f);
             ChatWindow.SetActive(false);
+        }
+
+        private void SetChallengeFriendOptionActive(bool value)
+        {
+            FriendActionsDropdown.GetComponentsInChildren<Toggle>(true)[DROPDOWN_CHALLENGE].interactable = value;
         }
 
         public void AddListener(IOnFriendsChangedListener listener)

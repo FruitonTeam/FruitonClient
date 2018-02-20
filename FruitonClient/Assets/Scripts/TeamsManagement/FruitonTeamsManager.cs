@@ -15,7 +15,8 @@ public enum TeamManagementState
     ONLINE_CHOOSE,
     LOCAL_CHOOSE_FIRST,
     LOCAL_CHOOSE_SECOND,
-    AI_CHOOSE
+    AI_CHOOSE,
+    CHALLENGE_CHOOSE
 }
 
 public class FruitonTeamsManager : TeamsManagerBase
@@ -85,7 +86,8 @@ public class FruitonTeamsManager : TeamsManagerBase
     private TeamManagementState state;
 
     public static readonly int MAX_TEAM_COUNT = 16;
-    private static readonly string CHOOSE_OFFLINE_TEAM = "Team for Player {0}.";
+    private static readonly string CHOOSE_OFFLINE_TEAM_TITLE = "Team for Player {0}.";
+    private static readonly string CHOOSE_CHALLENGE_TEAM_TITLE = "Select a team to use in challenge";
 
 
     /// <summary> true if player is actually editing teams, false if only viewing/picking </summary>
@@ -141,6 +143,9 @@ public class FruitonTeamsManager : TeamsManagerBase
                 break;
             case TeamManagementState.AI_CHOOSE:
                 AIChooseStart();
+                break;
+            case TeamManagementState.CHALLENGE_CHOOSE:
+                ChallengeChooseStart();
                 break;
         }
 
@@ -203,7 +208,7 @@ public class FruitonTeamsManager : TeamsManagerBase
         CommonChooseStart();
         PlayerOptions playerOptions = GameManager.Instance.PlayerOptions;
         SetupModeDropdown(localGameModes, playerOptions.LastSelectedLocalGameMode);
-        LocalDuelHeadline.text = String.Format(CHOOSE_OFFLINE_TEAM, 2);
+        LocalDuelHeadline.text = String.Format(CHOOSE_OFFLINE_TEAM_TITLE, 2);
     }
 
     private void LocalChooseStart()
@@ -212,7 +217,15 @@ public class FruitonTeamsManager : TeamsManagerBase
         PlayerOptions playerOptions = GameManager.Instance.PlayerOptions;
         SetupModeDropdown(localGameModes, playerOptions.LastSelectedLocalGameMode);
         CommonChooseStart();
-        LocalDuelHeadline.text = String.Format(CHOOSE_OFFLINE_TEAM, 1);
+        LocalDuelHeadline.text = String.Format(CHOOSE_OFFLINE_TEAM_TITLE, 1);
+    }
+
+    private void ChallengeChooseStart()
+    {
+        ButtonPlay.GetComponentInChildren<Text>().text = "Select";
+        CommonChooseStart();
+        DropdownPanel.SetActive(false);
+        LocalDuelHeadline.text = CHOOSE_CHALLENGE_TEAM_TITLE;
     }
 
     private void TeamManagementStart()
@@ -306,6 +319,7 @@ public class FruitonTeamsManager : TeamsManagerBase
         {
             case TeamManagementState.LOCAL_CHOOSE_SECOND:
             case TeamManagementState.ONLINE_CHOOSE:
+            case TeamManagementState.CHALLENGE_CHOOSE:
                 PlayDefault();
                 break;
             case TeamManagementState.TEAM_MANAGEMENT:

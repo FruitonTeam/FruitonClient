@@ -54,7 +54,10 @@ public class DraftManager : TeamsManagerBase
         ScrollRect.gameObject.SetActive(true);
 
         TurnOffDrafting();
-        FindGame();
+        if (!ChallengeController.Instance.IsChallengeActive)
+        {
+            FindGame();
+        }
     }
 
     private void FindGame()
@@ -70,7 +73,6 @@ public class DraftManager : TeamsManagerBase
         {
             FindGame = findGameMessage
         };
-        Debug.Log(GameManager.Instance.CurrentFruitonTeam);
         connectionHandler.SendWebsocketMessage(wrapperMessage);
     }
 
