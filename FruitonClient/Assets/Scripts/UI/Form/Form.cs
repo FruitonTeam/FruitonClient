@@ -18,7 +18,6 @@ public class Form : MonoBehaviour
     private List<Validator.GlobalValidator> globalValidators;
     private bool valid;
     private int errorFontSize;
-    private Button.ButtonClickedEvent onSubmitButtonClick;
 
 
     public Form SetInputs(Button submitButton, params FormControl[] formControls)
@@ -109,8 +108,8 @@ public class Form : MonoBehaviour
             for (int i = 0; i < SubmitButton.onClick.GetPersistentEventCount(); i++)
             {
                 SendMessage(
-                    onSubmitButtonClick.GetPersistentMethodName(i),
-                    onSubmitButtonClick.GetPersistentTarget(i)
+                    SubmitButton.onClick.GetPersistentMethodName(i),
+                    SubmitButton.onClick.GetPersistentTarget(i)
                 );
             }
         }
