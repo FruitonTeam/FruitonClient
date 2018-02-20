@@ -55,10 +55,11 @@ namespace UI.Chat
         static readonly string MESSAGE_COLOR_RECEIVED_OLD = "#333344";
         static readonly string MESSAGE_COLOR_RECEIVED_NEW = "#222266";
 
-        const int DROPDOWN_SHOW_PROFILE = 0;
+        public const int DROPDOWN_SHOW_PROFILE = 0;
         public const int DROPDOWN_CHALLENGE = 1;
-        const int DROPDOWN_DELETE_FRIEND=  2;
-        const int DROPDOWN_CANCEL = 3;
+        public const int DROPDOWN_OFFER_FRUITON = 2;
+        public const int DROPDOWN_DELETE_FRIEND =  3;
+        public const int DROPDOWN_CANCEL = 4;
 
         /// <summary>
         /// Time format for messages received on the same day as they were sent
@@ -331,6 +332,9 @@ namespace UI.Chat
                     break;
                 case DROPDOWN_CHALLENGE:
                     ChallengeController.Instance.Show();
+                    break;
+                case DROPDOWN_OFFER_FRUITON:
+                    Scenes.Load(Scenes.LOCAL_TRADE_SCENE, Scenes.OFFERED_PLAYER_LOGIN, SelectedPlayerLogin);
                     break;
                 case DROPDOWN_DELETE_FRIEND:
                     FriendRemoval removalMessage = new FriendRemoval

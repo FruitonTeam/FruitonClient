@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using KFruiton = fruiton.kernel.Fruiton;
 
-public class DraftManager : TeamsManagerBase
+public class DraftManager : TeamManagerBase
 {
     public FridgeTeamGrid EnemyTeamGrid;
     public Button ButtonSurrender;
