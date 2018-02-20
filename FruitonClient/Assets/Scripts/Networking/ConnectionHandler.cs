@@ -32,6 +32,8 @@ namespace Networking
 
         private static readonly string URL_API = URL_WEB + "api/";
 
+        private static readonly string SERVER_DOWN_MESSAGE = "Server unreachable. Please check your internet connection and try again later.";
+
         // When reconnecting, wait for ping for this amount of seconds only.
         private float pingTimer = 5;
 
@@ -144,7 +146,10 @@ namespace Networking
             }
             else
             {
-                error(www.error);
+                // if response doesn't contain any headers
+                // we can assume that the request didn't reach the server
+                // which means that the server is probably down
+                error(www.responseHeaders.Count > 0 ? www.text : SERVER_DOWN_MESSAGE);
             }
         }
 
