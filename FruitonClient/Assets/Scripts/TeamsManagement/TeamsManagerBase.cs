@@ -241,7 +241,7 @@ public abstract class TeamsManagerBase : MonoBehaviour
         }
     }
 
-    private void ReindexFruitons()
+    protected void ReindexFruitons()
     {
         int newIndex = 0;
         foreach (var fruiton in fridgeFruitons)
