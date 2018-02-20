@@ -2132,7 +2132,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1702182534}
   m_HandleRect: {fileID: 1702182533}
   m_Direction: 0
-  m_Value: 0
+  m_Value: 0.0000012207031
   m_Size: 0.95888156
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -3889,7 +3889,11 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: New Text
+  m_Text: 'frefre will be notified about your
+
+    asdsadasd
+
+    asdasd'
 --- !u!222 &990119235
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3911,8 +3915,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 225, y: -60}
-  m_SizeDelta: {x: 250, y: 30}
+  m_AnchoredPosition: {x: 221, y: -68.8}
+  m_SizeDelta: {x: 242, y: 47.7}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1016991653
 GameObject:
@@ -4399,7 +4403,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 694285840}
   m_HandleRect: {fileID: 694285839}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -5381,6 +5385,8 @@ MonoBehaviour:
   FriendActionsDropdown: {fileID: 931947497}
   ScrollRect: {fileID: 1593210392}
   ScrollContent: {fileID: 1571329345}
+  NotificationIconYes: {fileID: 2800000, guid: 18239a2655fd6d548be816b0d6bbb766, type: 3}
+  NotificationIconNo: {fileID: 2800000, guid: a5933622a38a54e4babbf93afbdb430f, type: 3}
 --- !u!114 &1371693376
 MonoBehaviour:
   m_ObjectHideFlags: 0
