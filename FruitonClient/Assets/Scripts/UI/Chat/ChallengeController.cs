@@ -27,6 +27,7 @@ public class ChallengeController : MonoBehaviour, IOnMessageListener
 
     private static readonly string CHALLENGE_FRIEND_TEXT = "You are about to challenge {0}.\nChoose a game mode:";
     private static readonly string CHALLENGE_NEARBY_PLAYER_TEXT = "To challenge {0}\nchoose a game mode:";
+    private static readonly string CHALLENGE_PLAYER_BUSY_TEXT = "You cannot challenge {0} right now. Wait for them to return to main menu then try again.";
 
     private const int CHALLENGE_MODE_STANDARD_PREMADE = 0;
     private const int CHALLENGE_MODE_STANDARD_DRAFT = 1;
@@ -38,6 +39,7 @@ public class ChallengeController : MonoBehaviour, IOnMessageListener
     public bool IsChallengeActive { get; private set; }
 
     public GameObject ChallengePanel;
+    public GameObject ChallengeButtons;
     public Texture2D ChallengeImage;
     public Text ChallengeText;
 
@@ -121,14 +123,38 @@ public class ChallengeController : MonoBehaviour, IOnMessageListener
     public void Show()
     {
         ChallengePanel.SetActive(true);
+        var challengeText = CHALLENGE_FRIEND_TEXT;
+        ChallengeButtons.SetActive(ChatController.Instance.IsSelectedPlayerInMenu);
+        if (ChatController.Instance.IsSelectedPlayerInMenu)
+        {
+            challengeText = ChatController.Instance.IsSelectedPlayerFriend
+                ? CHALLENGE_FRIEND_TEXT
+                : CHALLENGE_NEARBY_PLAYER_TEXT;
+        }
+        else
+        {
+            challengeText = CHALLENGE_PLAYER_BUSY_TEXT;
+        }
         ChallengeText.text = String.Format(
-            ChatController.Instance.IsSelectedPlayerFriend ? CHALLENGE_FRIEND_TEXT : CHALLENGE_NEARBY_PLAYER_TEXT,
+            challengeText,
             ChatController.Instance.SelectedPlayerLogin);
     }
 
     public void Hide()
     {
         ChallengePanel.SetActive(false);
+    }
+
+    public void Refresh()
+    {
+        if (ChallengePanel.activeInHierarchy)
+        {
+            Show();
+        }
+        else
+        {
+            Hide();
+        }
     }
 
     public void OnChallengeModeChosen(int modeId)

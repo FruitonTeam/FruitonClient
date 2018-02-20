@@ -73,9 +73,9 @@ namespace UI.Chat
             RecyclableList.RemoveItemAt(index);
         }
 
-        public string GetFriend(int index)
+        public FriendListItem.FriendItemData GetFriend(int index)
         {
-            return Data[index].Name;
+            return Data[index];
         }
 
         public List<string> GetAllFriends()

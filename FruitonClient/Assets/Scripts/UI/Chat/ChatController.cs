@@ -56,7 +56,7 @@ namespace UI.Chat
         static readonly string MESSAGE_COLOR_RECEIVED_NEW = "#222266";
 
         const int DROPDOWN_SHOW_PROFILE = 0;
-        const int DROPDOWN_CHALLENGE = 1;
+        public const int DROPDOWN_CHALLENGE = 1;
         const int DROPDOWN_DELETE_FRIEND=  2;
         const int DROPDOWN_CANCEL = 3;
 
@@ -73,6 +73,7 @@ namespace UI.Chat
 
         public string SelectedPlayerLogin { get; private set; }
         public bool IsSelectedPlayerFriend { get; private set; }
+        public bool IsSelectedPlayerInMenu { get; private set; }
 
         public GameObject LoadingIndicator;
         public Text ChatTextTemplate;
@@ -406,10 +407,12 @@ namespace UI.Chat
 
         public void OnItemSelected(int index)
         {
-            string login = FriendListController.GetFriend(index);
+            var friend = FriendListController.GetFriend(index);
+            var login = friend.Name;
 
             SelectedPlayerLogin = login;
             IsSelectedPlayerFriend = chatRecords.ContainsKey(login);
+            IsSelectedPlayerInMenu = friend.Status == Status.MainMenu;
 
             if (!IsSelectedPlayerFriend)
             {
@@ -536,8 +539,17 @@ namespace UI.Chat
 
         private void OnStatusChange(StatusChange message)
         {
-            GameManager.Instance.Friends.First(f => f.Login == message.Login).Status = message.Status;
             FriendListController.ChangeStatus(message.Login, message.Status);
+            var friend = GameManager.Instance.Friends.FirstOrDefault(f => f.Login == message.Login);
+            if (friend != null)
+            {
+                friend.Status = message.Status;
+            }
+            if (message.Login == SelectedPlayerLogin)
+            {
+                IsSelectedPlayerInMenu = message.Status == Status.MainMenu;
+                ChallengeController.Instance.Refresh();
+            }
         }
 
         private void OnPlayersOnSameNetworkOnline(PlayersOnSameNetworkOnline message)
@@ -768,6 +780,11 @@ namespace UI.Chat
             FriendActionsDropdown.Hide();
             yield return new WaitForSecondsRealtime(0.3f);
             ChatWindow.SetActive(false);
+        }
+
+        private void SetChallengeFriendOptionActive(bool value)
+        {
+            FriendActionsDropdown.GetComponentsInChildren<Toggle>(true)[DROPDOWN_CHALLENGE].interactable = value;
         }
 
         public void AddListener(IOnFriendsChangedListener listener)
