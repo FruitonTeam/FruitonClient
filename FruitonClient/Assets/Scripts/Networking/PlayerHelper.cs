@@ -153,6 +153,21 @@ namespace Networking
                 )
             );
         }
+
+        public static void GetPlayerStatus(string login, Action<Status> success, Action<string> error)
+        {
+            ConnectionHandler.Instance.StartCoroutine(
+                ConnectionHandler.Instance.Get(
+                    "player/status?login=" + login,
+                    text =>
+                    {
+                        Status status = (Status) int.Parse(text);
+                        success(status);
+                    },
+                    error
+                )
+            );
+        }
         
     }
 }

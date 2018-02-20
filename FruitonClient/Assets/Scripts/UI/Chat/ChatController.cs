@@ -357,11 +357,11 @@ namespace UI.Chat
 
         public void AddFriend(string friendToAdd)
         {
-            PlayerHelper.IsOnline(friendToAdd,
-                isOnline => { AddFriend(friendToAdd, isOnline ? Status.MainMenu : Status.Offline); },
+            PlayerHelper.GetPlayerStatus(friendToAdd,
+                status => { AddFriend(friendToAdd, status); },
                 error =>
                 {
-                    Debug.LogError("Could not check if user is online " + error);
+                    Debug.LogError("Could not get player's status " + error);
                     AddFriend(friendToAdd, Status.Offline);
                 });
         }
@@ -514,8 +514,7 @@ namespace UI.Chat
         {
             if (message.FriendshipAccepted)
             {
-                // if we get this message then the other friend must have accepted it in his game so he is online
-                AddFriend(message.FriendToAdd, Status.MainMenu);
+                AddFriend(message.FriendToAdd);
             }
         }
 
