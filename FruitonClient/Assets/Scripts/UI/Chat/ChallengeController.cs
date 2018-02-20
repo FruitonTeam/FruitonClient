@@ -63,61 +63,7 @@ public class ChallengeController : MonoBehaviour, IOnMessageListener
 
     void Start()
     {
-        SceneManager.sceneLoaded += (scene, mode) =>
-        {
-            ChatController.Instance.Hide();
-            if (scene.name == Scenes.MAIN_MENU_SCENE)
-            {
-                // if user goes to main menu any ongoing challenge is cancelled
-                IsChallengeActive = false;
-                if (AmIChallenging())
-                {
-                    SendRevokeChallenge();
-                    myChallenge = null;
-                }
-                else if (AmIBeingChallenged())
-                {
-                    SendChallengeResult(currentEnemyChallenge.ChallengeFrom, false);
-                    currentEnemyChallenge = null;
-                }
-            }
-            else if (scene.name == Scenes.BATTLE_SCENE)
-            {
-                // if user enters battle scene during standard pick challenge
-                // it means they chose their team and we need to send message about it to server
-                IsChallengeActive = false;
-                if (AmIChallenging())
-                {
-                    if (myChallenge.PickMode == PickMode.StandardPick)
-                    {
-                        myChallenge.Team = GameManager.Instance.CurrentFruitonTeam;
-                        SendChallengeRequest();
-                        CancelAllChallengeNotifications();
-                    }
-                }
-                else if (AmIBeingChallenged())
-                {
-                    if (currentEnemyChallenge.PickMode == PickMode.StandardPick)
-                    {
-                        SendChallengeResult(currentEnemyChallenge.ChallengeFrom, true, GameManager.Instance.CurrentFruitonTeam);
-                        CancelAllChallengeNotifications();
-                    }
-                }
-                else
-                {
-                    // if users isn't participating in any challenge and enters the battle scene
-                    // server removes all of their pending challenge requests
-                    // so we need to remove them from notifications
-                    CancelAllChallengeNotifications();
-                }
-            }
-            else if (scene.name == Scenes.DRAFT_SCENE)
-            {
-                // when user enters draft scene all unanswered challenges are removed by the server
-                // so we remove them from notifications
-                CancelAllChallengeNotifications();
-            }
-        };
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     public void Show()
@@ -286,6 +232,62 @@ public class ChallengeController : MonoBehaviour, IOnMessageListener
             return;
         }
         enemyChallenges.RemoveAt(index);
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        ChatController.Instance.Hide();
+        if (scene.name == Scenes.MAIN_MENU_SCENE)
+        {
+            // if user goes to main menu any ongoing challenge is cancelled
+            IsChallengeActive = false;
+            if (AmIChallenging())
+            {
+                SendRevokeChallenge();
+                myChallenge = null;
+            }
+            else if (AmIBeingChallenged())
+            {
+                SendChallengeResult(currentEnemyChallenge.ChallengeFrom, false);
+                currentEnemyChallenge = null;
+            }
+        }
+        else if (scene.name == Scenes.BATTLE_SCENE)
+        {
+            // if user enters battle scene during standard pick challenge
+            // it means they chose their team and we need to send message about it to server
+            IsChallengeActive = false;
+            if (AmIChallenging())
+            {
+                if (myChallenge.PickMode == PickMode.StandardPick)
+                {
+                    myChallenge.Team = GameManager.Instance.CurrentFruitonTeam;
+                    SendChallengeRequest();
+                    CancelAllChallengeNotifications();
+                }
+            }
+            else if (AmIBeingChallenged())
+            {
+                if (currentEnemyChallenge.PickMode == PickMode.StandardPick)
+                {
+                    SendChallengeResult(currentEnemyChallenge.ChallengeFrom, true, GameManager.Instance.CurrentFruitonTeam);
+                    CancelAllChallengeNotifications();
+                }
+            }
+            else
+            {
+                // if users isn't participating in any challenge and enters the battle scene
+                // server removes all of their pending challenge requests
+                // so we need to remove them from notifications
+                CancelAllChallengeNotifications();
+            }
+        }
+        else if (scene.name == Scenes.DRAFT_SCENE)
+        {
+            // when user enters draft scene all unanswered challenges are removed by the server
+            // so we remove them from notifications
+            CancelAllChallengeNotifications();
+        }
     }
 
     private void SendChallengeResult(string enemyLogin, bool accepted, FruitonTeam fruitonTeam = null)
