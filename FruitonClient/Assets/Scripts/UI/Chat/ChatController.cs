@@ -397,7 +397,7 @@ namespace UI.Chat
             {
                 chatRecords[login] = new ChatRecord();
             }
-            ChatTip.text = "Select a friend to challenge or chat with";
+            ChatTip.text = "Select a player to challenge or chat with a friend";
         }
 
         private void RemoveFromContactList(string login)
