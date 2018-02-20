@@ -9,35 +9,34 @@ using UnityEngine.UI;
 
 public class Form : MonoBehaviour
 {
+    public Button SubmitButton;
+
     private GameObject errorPanel;
     private Text errorTextComponent;
-    private FormControl[] controls;
+    private FormControl[] formControls;
     private Button submitOverlay;
-    private Button submitButton;
     private List<Validator.GlobalValidator> globalValidators;
     private bool valid;
     private int errorFontSize;
 
+
     public Form SetInputs(Button submitButton, params FormControl[] formControls)
     {
+        SubmitButton = submitButton;
+        // disable persistent event listeners - ones that are set in editor
+        // to block button's original funcionality while the form is not in valid state
+        for (int i = 0; i < SubmitButton.onClick.GetPersistentEventCount(); i++)
+        {
+            SubmitButton.onClick.SetPersistentListenerState(i, UnityEventCallState.Off);
+        }
+        // add our own onClick listener - it triggers validation
+        // and then invokes all persistent listeners if the form is valid
+        SubmitButton.onClick.AddListener(SubmitForm);
+
         globalValidators = new List<Validator.GlobalValidator>();
+        this.formControls = formControls;
 
-        // create overlay over submit buttton to catch clicks
-        this.submitButton = submitButton;
-        this.submitButton.enabled = true;
-        submitOverlay = GameObject.Instantiate(this.submitButton, this.submitButton.transform.parent);
-        submitOverlay.onClick.RemoveAllListeners();
-        // disables persistent event listeners - ones that are set in editor
-        submitOverlay.onClick.SetPersistentListenerState(0, UnityEventCallState.Off);
-        submitOverlay.image.color = new Color(0, 0, 1, 0.0f);
-        submitOverlay.onClick.AddListener(SubmitForm);
-        // set original button as a parent to mirror its active/disablede state
-        submitOverlay.transform.SetParent(submitButton.transform, true);
-        submitOverlay.gameObject.SetActive(true);
-
-        controls = formControls;
-
-        foreach (var control in controls)
+        foreach (var control in formControls)
         {
             if (control.InputField != null)
             {
@@ -70,7 +69,7 @@ public class Form : MonoBehaviour
 
     public void ResetForm()
     {
-        foreach (var control in controls)
+        foreach (var control in formControls)
         {
             if (control.InputField != null)
             {
@@ -84,7 +83,7 @@ public class Form : MonoBehaviour
 
     public void SetValue(string controlName, string value)
     {
-        foreach (var control in controls)
+        foreach (var control in formControls)
         {
             if (control.Name == controlName)
             {
@@ -95,16 +94,23 @@ public class Form : MonoBehaviour
 
     void SubmitForm()
     {
-        foreach (var control in controls)
+        foreach (var control in formControls)
         {
             control.Touched = true;
         }
 
         valid = ValidateForm();
-        submitButton.enabled = valid;
+
         if (valid)
         {
-            submitButton.onClick.Invoke();
+            // invoke all persistent listeners
+            for (int i = 0; i < SubmitButton.onClick.GetPersistentEventCount(); i++)
+            {
+                SendMessage(
+                    SubmitButton.onClick.GetPersistentMethodName(i),
+                    SubmitButton.onClick.GetPersistentTarget(i)
+                );
+            }
         }
     }
 
@@ -113,7 +119,7 @@ public class Form : MonoBehaviour
         var values = new Dictionary<string, string>();
         var errors = new Dictionary<string, string>();
 
-        foreach (var control in controls)
+        foreach (var control in formControls)
         {
             if (control.InputField != null)
             {
@@ -127,7 +133,7 @@ public class Form : MonoBehaviour
             globalValidator(values, errors);
         }
 
-        foreach (var control in controls)
+        foreach (var control in formControls)
         {
             if (control.InputField == null)
             {
@@ -168,7 +174,7 @@ public class Form : MonoBehaviour
     {
         if (errorPanel == null)
         {
-            errorPanel = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/FormErrorPanel"));
+            errorPanel = (GameObject) GameObject.Instantiate(Resources.Load("Prefabs/FormErrorPanel"));
             errorTextComponent = errorPanel.GetComponentInChildren<Text>(true);
             errorPanel.SetActive(false);
         }
@@ -177,7 +183,7 @@ public class Form : MonoBehaviour
         errorPanel.SetActive(false);
 
 
-        foreach (var control in controls)
+        foreach (var control in formControls)
         {
             if (control.InputField == null)
             {
@@ -207,7 +213,9 @@ public class Form : MonoBehaviour
                 {
                     errorPanel.SetActive(true);
                     errorTextComponent.text = error;
-                    errorTextComponent.fontSize =  errorFontSize > 0 ? errorFontSize : inputField.GetComponentInChildren<Text>().fontSize;
+                    errorTextComponent.fontSize = errorFontSize > 0
+                        ? errorFontSize
+                        : inputField.GetComponentInChildren<Text>().fontSize;
 
                     var errorRt = errorPanel.GetComponent<RectTransform>();
                     var fieldRt = inputField.GetComponent<RectTransform>();
@@ -241,7 +249,7 @@ public class Form : MonoBehaviour
         {
             GameObject selected = EventSystem.current.currentSelectedGameObject;
             var tabIndex = 0;
-            foreach (var control in controls)
+            foreach (var control in formControls)
             {
                 if (control.Selectable.gameObject == selected)
                 {
@@ -259,16 +267,16 @@ public class Form : MonoBehaviour
                 tabIndex++;
             }
 
-            if (tabIndex >= controls.Length)
+            if (tabIndex >= formControls.Length)
             {
                 tabIndex = 0;
             }
             else if (tabIndex < 0)
             {
-                tabIndex = controls.Length - 1;
+                tabIndex = formControls.Length - 1;
             }
 
-            controls[tabIndex].Selectable.Select();
+            formControls[tabIndex].Selectable.Select();
         }
 
         if (Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Return))
