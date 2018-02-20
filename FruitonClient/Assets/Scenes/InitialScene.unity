@@ -2132,7 +2132,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1702182534}
   m_HandleRect: {fileID: 1702182533}
   m_Direction: 0
-  m_Value: 0
+  m_Value: 0.0000012207031
   m_Size: 0.95888156
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -4399,7 +4399,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 694285840}
   m_HandleRect: {fileID: 694285839}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -5381,6 +5381,8 @@ MonoBehaviour:
   FriendActionsDropdown: {fileID: 931947497}
   ScrollRect: {fileID: 1593210392}
   ScrollContent: {fileID: 1571329345}
+  NotificationIconYes: {fileID: 2800000, guid: 18239a2655fd6d548be816b0d6bbb766, type: 3}
+  NotificationIconNo: {fileID: 2800000, guid: a5933622a38a54e4babbf93afbdb430f, type: 3}
 --- !u!114 &1371693376
 MonoBehaviour:
   m_ObjectHideFlags: 0
