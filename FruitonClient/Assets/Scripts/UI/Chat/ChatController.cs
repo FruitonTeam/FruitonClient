@@ -279,7 +279,7 @@ namespace UI.Chat
 
         public void OnAddFriendClick()
         {
-            string friendToAdd = AddFriendInput.text;
+            string friendToAdd = AddFriendInput.text.Trim();
             AddFriendInput.text = "";
 
             if (friendToAdd == "")
@@ -294,7 +294,7 @@ namespace UI.Chat
 
             if (GameManager.Instance.UserName.Equals(friendToAdd))
             {
-                // TODO: show message that user cannot add himself as a friend
+                NotificationManager.Instance.Show("No.","You cannot add yourself as a friend!");
                 return;
             }
 
@@ -303,12 +303,17 @@ namespace UI.Chat
                 if (exists)
                 {
                     SendFriendRequest(friendToAdd);
+                    NotificationManager.Instance.Show("Friend request sent!", friendToAdd + " will be notified about your request");
                 }
                 else
                 {
-                    Debug.LogWarning("No user with name " + friendToAdd);
+                    NotificationManager.Instance.Show("User not found!", "User with name " + friendToAdd + " does not exist!");
                 }
-            }, err => { Debug.LogWarning("Error while checking player existence" + err); });
+            }, err =>
+            {
+                NotificationManager.Instance.Show("User not found!",
+                    "Couldn't find user named " + friendToAdd + "!");
+            });
         }
 
         public void OnDropdownOption(int option)
