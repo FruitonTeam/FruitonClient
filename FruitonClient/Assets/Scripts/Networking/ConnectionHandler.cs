@@ -6,9 +6,7 @@ using Google.Protobuf;
 using UI.Chat;
 using UI.Notification;
 using UnityEngine;
-using UnityEngine.Networking;
 using Util;
-using Diagnostics = System.Diagnostics;
 
 namespace Networking
 {
@@ -17,7 +15,11 @@ namespace Networking
     /// </summary>
     public class ConnectionHandler : MonoBehaviour, IOnMessageListener
     {
-        private readonly string XAuthTokenHeaderKey = "x-auth-token";
+        private static readonly string X_AUTH_TOKEN_HEADER_KEY = "x-auth-token";
+
+        private static readonly string SET_COOKIE_KEY = "SET-COOKIE";
+
+        private static readonly string COOKIE_KEY = "Cookie";
 
         private static readonly string SERVER_IP = "195.113.20.59";
 
@@ -36,6 +38,8 @@ namespace Networking
         public WebSocket webSocket;
 
         private string token;
+
+        private string cookies;
 
         private Dictionary<WrapperMessage.MessageOneofCase, List<IOnMessageListener>> listeners =
             new Dictionary<WrapperMessage.MessageOneofCase, List<IOnMessageListener>>();
@@ -83,7 +87,7 @@ namespace Networking
 
         public void OpenUrlAuthorized(string pageName)
         {
-            Application.OpenURL(URL_WEB + pageName + "?" + XAuthTokenHeaderKey + "=" + token);
+            Application.OpenURL(URL_WEB + pageName + "?" + X_AUTH_TOKEN_HEADER_KEY + "=" + token);
         }
         
         public IEnumerator Get(string query, Action<string> success, Action<string> error)
@@ -98,9 +102,11 @@ namespace Networking
 
         private IEnumerator Get(string query, Action<WWW> success, Action<string> error)
         {
-            var www = new WWW(URL_API + query, null, AuthHeader());
+            var www = new WWW(URL_API + query, null, GetRequestHeaders());
             Debug.Log("www: " + URL_API + query);
             yield return www;
+
+            SetCookies(www);
 
             if (string.IsNullOrEmpty(www.error))
             {
@@ -112,6 +118,14 @@ namespace Networking
             }
         }
 
+        private void SetCookies(WWW www)
+        {
+            if (www.responseHeaders.ContainsKey(SET_COOKIE_KEY))
+            {
+                cookies = www.responseHeaders[SET_COOKIE_KEY];
+            }
+        }
+
         public IEnumerator Post(
             string query,
             Action<string> success,
@@ -119,9 +133,11 @@ namespace Networking
             byte[] body = null,
             Dictionary<string, string> headers = null
         ) {
-            var www = new WWW(URL_API + query, body, AuthHeader(headers));
+            var www = new WWW(URL_API + query, body, GetRequestHeaders(headers));
             yield return www;
 
+            SetCookies(www);
+            
             if (string.IsNullOrEmpty(www.error))
             {
                 success(www.text);
@@ -132,7 +148,7 @@ namespace Networking
             }
         }
 
-        private Dictionary<string, string> AuthHeader(Dictionary<string, string> headers = null)
+        private Dictionary<string, string> GetRequestHeaders(Dictionary<string, string> headers = null)
         {
             if (headers == null)
             {
@@ -140,7 +156,12 @@ namespace Networking
             }
             if (!string.IsNullOrEmpty(token))
             {
-                headers[XAuthTokenHeaderKey] = token;        
+                headers[X_AUTH_TOKEN_HEADER_KEY] = token;        
+            }
+
+            if (!string.IsNullOrEmpty(cookies))
+            {
+                headers[COOKIE_KEY] = cookies;
             }
             return headers;
         }
