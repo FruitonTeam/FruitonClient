@@ -439,7 +439,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Enter email
+  m_Text: Enter email...
 --- !u!222 &65992939
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1482,7 +1482,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 78.999985, y: 70}
-  m_SizeDelta: {x: 160, y: 37}
+  m_SizeDelta: {x: 170, y: 37}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &393163076
 GameObject:
@@ -1616,7 +1616,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 78.999985, y: 20}
-  m_SizeDelta: {x: 160, y: 37}
+  m_SizeDelta: {x: 170, y: 37}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &431603721
 GameObject:
@@ -3808,7 +3808,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 82, y: 35}
-  m_SizeDelta: {x: 160, y: 37}
+  m_SizeDelta: {x: 170, y: 37}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &935166949
 MonoBehaviour:
@@ -8376,7 +8376,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Repeat password
+  m_Text: Repeat password..
 --- !u!222 &1777784857
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -8500,7 +8500,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 82, y: 83}
-  m_SizeDelta: {x: 160, y: 37}
+  m_SizeDelta: {x: 170, y: 37}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1782516247
 MonoBehaviour:
@@ -9105,7 +9105,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 79, y: 120}
-  m_SizeDelta: {x: 160, y: 37}
+  m_SizeDelta: {x: 170, y: 37}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1887473081
 GameObject:
@@ -9997,7 +9997,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Enter username
+  m_Text: Enter username...
 --- !u!222 &2052453491
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10376,5 +10376,5 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 78.999985, y: -30}
-  m_SizeDelta: {x: 160, y: 37}
+  m_SizeDelta: {x: 170, y: 37}
   m_Pivot: {x: 0.5, y: 0.5}
