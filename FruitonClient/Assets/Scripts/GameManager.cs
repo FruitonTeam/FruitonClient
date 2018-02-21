@@ -135,7 +135,14 @@ public class GameManager : IOnMessageListener
 
     public Fraction Fraction
     {
-        get { return loggedPlayerInfo.Fraction; }
+        get
+        {
+            if (loggedPlayerInfo == null)
+            {
+                return Fraction.None;
+            }
+            return loggedPlayerInfo.Fraction;
+        }
     }
     
     [Obsolete("Should be deleted, but first check if it does not harm anything.")]

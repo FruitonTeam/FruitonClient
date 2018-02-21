@@ -13,12 +13,15 @@ namespace UI.MainMenu
     public class UserBar : MonoBehaviour, ChatController.IOnFriendsChangedListener, IOnMessageListener
     {
         public Text PlayerNameText;
+        public Text FractionText;
         public Image PlayerAvatarImage;
         public Text MoneyText;
         public Text FriendsText;
         public Dropdown UserDropdown;
 
         private static readonly string TRIAL_PLAYER_NAME = "<anonymous>";
+        private static readonly string TRIAL_FRACTION_TEXT= "Trial mode";
+        private static readonly string OFFLINE_FRACTION_TEXT= "Offline mode";
 
         const int DROPDOWN_SHOW_PROFILE = 0;
         const int DROPDOWN_LOG_OUT = 1;
@@ -47,7 +50,16 @@ namespace UI.MainMenu
         
         private void Load()
         {
-            PlayerNameText.text = GameManager.Instance.IsOnline ? GameManager.Instance.UserName : TRIAL_PLAYER_NAME;
+            if (GameManager.Instance.IsInTrial)
+            {
+                PlayerNameText.text = TRIAL_PLAYER_NAME;
+                FractionText.text = TRIAL_FRACTION_TEXT;
+            }
+            else
+            {
+                PlayerNameText.text = GameManager.Instance.UserName;
+                FractionText.text = GameManager.Instance.IsOnline ? GameManager.Instance.Fraction.GetReadableName() : OFFLINE_FRACTION_TEXT;
+            }
 
             int money = GameManager.Instance.Money;
             MoneyText.text = money != -1 ? money.ToString() : "N/A";
