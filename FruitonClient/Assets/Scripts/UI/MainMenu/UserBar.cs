@@ -20,6 +20,7 @@ namespace UI.MainMenu
         public Dropdown UserDropdown;
 
         private static readonly string TRIAL_PLAYER_NAME = "<anonymous>";
+        private static readonly string TRIAL_FRACTION_TEXT= "Trial mode";
 
         const int DROPDOWN_SHOW_PROFILE = 0;
         const int DROPDOWN_LOG_OUT = 1;
@@ -48,8 +49,8 @@ namespace UI.MainMenu
         
         private void Load()
         {
-            PlayerNameText.text = GameManager.Instance.IsOnline ? GameManager.Instance.UserName : TRIAL_PLAYER_NAME;
-            FractionText.text = GameManager.Instance.Fraction.GetReadableName();
+            PlayerNameText.text = GameManager.Instance.IsInTrial ? TRIAL_PLAYER_NAME : GameManager.Instance.UserName;
+            FractionText.text = GameManager.Instance.IsInTrial ? TRIAL_FRACTION_TEXT : GameManager.Instance.Fraction.GetReadableName();
             int money = GameManager.Instance.Money;
             MoneyText.text = money != -1 ? money.ToString() : "N/A";
             PlayerAvatarImage.sprite = SpriteUtils.TextureToSprite(GameManager.Instance.Avatar);
