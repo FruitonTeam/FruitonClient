@@ -317,7 +317,7 @@ public class GameManager : IOnMessageListener
             }
             else
             {
-                AuthenticationHandler.Instance.LoginBasic(UserName, UserPassword);
+                AuthenticationHandler.Instance.LoginBasic(UserName, UserPassword, true);
             }
         }
 

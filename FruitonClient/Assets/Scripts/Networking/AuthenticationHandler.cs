@@ -73,7 +73,7 @@ namespace Networking
             panelManager.ShowInfoMessage("User " + login + " successfully registered!");
         }
 
-        public void LoginBasic(string login, string password)
+        public void LoginBasic(string login, string password, bool autoLogin = false)
         {
             var loginData = new LoginData
             {
@@ -83,9 +83,12 @@ namespace Networking
 
             LastPassword = password;
 
+            Action<string> loginOfflineWrapper = (_) => LoginOffline();
+            Action<string> errorAction = autoLogin ? loginOfflineWrapper : OnLoginError;            
+            
             StartCoroutine(ConnectionHandler.Instance.Post("login",
                 ProcessLoginResult,
-                OnLoginError,
+                errorAction,
                 ProtobufUtils.GetBinaryData(loginData),
                 NetworkUtils.GetRequestHeaders(true)));
         }
