@@ -3294,7 +3294,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: dfsdfsfdsfsdf
+  m_Text: Gemrot
 --- !u!222 &1281210386
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3397,7 +3397,7 @@ GameObject:
   - component: {fileID: 1288006245}
   - component: {fileID: 1288006246}
   m_Layer: 5
-  m_Name: GameObject (1)
+  m_Name: Wrapper_FractionName
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5073,7 +5073,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Tzatziki tzardom
+  m_Text: 'Fraction
+
+    name'
 --- !u!222 &1830116203
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5456,7 +5458,7 @@ GameObject:
   - component: {fileID: 2039455015}
   - component: {fileID: 2039455014}
   m_Layer: 5
-  m_Name: GameObject
+  m_Name: Wrapper_Username
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
