@@ -17,19 +17,19 @@ public class RegisterPanel : MainMenuPanel
             .SetInputs(
                 RegisterButton,
                 new FormControl("name", RegisterName,
-                    Validator.Required("Please enter name"),
+                    Validator.Required("Please enter\nname"),
                     Validator.Regex(@"^[a-zA-Z0-9]+$", "Only letters and\nnumbers are allowed"),
                     Validator.MinLength(4, "Must have at least\n4 characters")
                 ),
                 new FormControl("password", RegisterPassword,
-                    Validator.Required("Please enter password"),
+                    Validator.Required("Please enter\npassword"),
                     Validator.MinLength(6, "Must have at least\n6 characters")
                 ),
                 new FormControl("retypePassword", RegisterPasswordRetype,
                     Validator.Required("Please retype\nyour password")),
                 new FormControl("email", RegisterEmail,
-                    Validator.Required("Please enter email"),
-                    Validator.Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", "Invalid email address")
+                    Validator.Required("Please enter\nemail"),
+                    Validator.Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", "Invalid\nemail address")
                 ),
                 new FormControl(RegisterButton)
             )
@@ -37,7 +37,7 @@ public class RegisterPanel : MainMenuPanel
             {
                 if (values["password"] != values["retypePassword"])
                 {
-                    errors["retypePassword"] = "Passwords must match";
+                    errors["retypePassword"] = "Passwords\nmust match";
                 }
             });
     }
