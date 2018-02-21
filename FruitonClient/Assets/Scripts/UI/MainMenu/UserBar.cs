@@ -13,6 +13,7 @@ namespace UI.MainMenu
     public class UserBar : MonoBehaviour, ChatController.IOnFriendsChangedListener, IOnMessageListener
     {
         public Text PlayerNameText;
+        public Text FractionText;
         public Image PlayerAvatarImage;
         public Text MoneyText;
         public Text FriendsText;
@@ -48,7 +49,7 @@ namespace UI.MainMenu
         private void Load()
         {
             PlayerNameText.text = GameManager.Instance.IsOnline ? GameManager.Instance.UserName : TRIAL_PLAYER_NAME;
-
+            FractionText.text = GameManager.Instance.Fraction.GetReadableName();
             int money = GameManager.Instance.Money;
             MoneyText.text = money != -1 ? money.ToString() : "N/A";
             PlayerAvatarImage.sprite = SpriteUtils.TextureToSprite(GameManager.Instance.Avatar);
