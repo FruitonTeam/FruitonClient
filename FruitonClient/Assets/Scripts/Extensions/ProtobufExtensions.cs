@@ -6,12 +6,12 @@ public static class ProtobufExtensions
     {
         switch (fraction)
         {
-                case Fraction.CranberryCrusade:
-                    return "Cranberry Crusade";
-                case Fraction.TzatzikiTsardom:
-                    return "Tzatziki Tsardom";
-                case Fraction.GuacamoleGuerillas:
-                    return "Guacamole Guerrillas";
+            case Fraction.CranberryCrusade:
+                return "Cranberry Crusade";
+            case Fraction.TzatzikiTsardom:
+                return "Tzatziki Tsardom";
+            case Fraction.GuacamoleGuerillas:
+                return "Guacamole Guerrillas";
         }
         return fraction.ToString();
     }
