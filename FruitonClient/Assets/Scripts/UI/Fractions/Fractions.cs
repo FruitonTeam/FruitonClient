@@ -38,6 +38,7 @@ public class Fractions : MonoBehaviour
         };
 
         connectionHandler.SendWebsocketMessage(wrapperMessage);
+        GameManager.Instance.Fraction = chosenFractionName;
 
         Scenes.Load(Scenes.MAIN_MENU_SCENE);
     }
