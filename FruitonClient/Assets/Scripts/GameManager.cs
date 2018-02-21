@@ -143,6 +143,15 @@ public class GameManager : IOnMessageListener
             }
             return loggedPlayerInfo.Fraction;
         }
+        set
+        {
+            if (loggedPlayerInfo == null)
+            {
+                Debug.LogError("Cannot set fraction!");
+                return;
+            }
+            loggedPlayerInfo.Fraction = value;
+        }
     }
     
     [Obsolete("Should be deleted, but first check if it does not harm anything.")]
