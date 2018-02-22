@@ -524,7 +524,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -670,7 +670,7 @@ RectTransform:
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: -3}
   m_SizeDelta: {x: 0, y: 64}
   m_Pivot: {x: 0, y: 0}
@@ -713,8 +713,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1248092735}
   m_HandleRect: {fileID: 1248092734}
   m_Direction: 0
-  m_Value: 0
-  m_Size: 0.7282717
+  m_Value: 0.000000078382584
+  m_Size: 0.6110476
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1033,7 +1033,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 8, y: 9}
+  m_AnchoredPosition: {x: 3, y: 9}
   m_SizeDelta: {x: 24, y: 24}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &213788244
@@ -2034,7 +2034,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -8, y: 9}
+  m_AnchoredPosition: {x: -3, y: 9}
   m_SizeDelta: {x: 24, y: 24}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &400375673
@@ -3374,7 +3374,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -7.999999, y: -8}
+  m_SizeDelta: {x: -48, y: -8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &938115163
 MonoBehaviour:
@@ -3884,24 +3884,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ScrollRect: {fileID: 1770825808}
-  MyTeamGrid: {fileID: 1692503873}
-  EnemyTeamGrid: {fileID: 830300757}
-  DragAndDropBarrier: {fileID: 317955308}
-  FridgeFruitonTemplate: {fileID: 1202618533}
-  DragAndDropFruiton: {fileID: 284377870}
-  WrapperFruitons: {fileID: 672037437}
   PanelTooltip: {fileID: 1130875695}
-  Filters: {fileID: 391123873}
+  MyTeamGrid: {fileID: 1692503873}
   FruitonDetail: {fileID: 280949738}
-  ScrollContentRectTransform: {fileID: 532343534}
+  FridgeFruitonTemplate: {fileID: 1202618533}
+  WrapperFruitons: {fileID: 672037437}
   TooltipPanelPositions:
   - {fileID: 1950558010}
   - {fileID: 327530259}
   - {fileID: 773023702}
   - {fileID: 0}
-  ButtonSurrender: {fileID: 181468436}
-  WarningText: {fileID: 1004103687}
   FilterManager: {fileID: 391123875}
+  ScrollContentRectTransform: {fileID: 532343534}
+  DragAndDropBarrier: {fileID: 317955308}
+  DragAndDropFruiton: {fileID: 284377870}
+  WarningText: {fileID: 1004103687}
+  Filters: {fileID: 391123873}
+  EnemyTeamGrid: {fileID: 830300757}
+  ButtonSurrender: {fileID: 181468436}
   EnemyName: {fileID: 984734889}
   MyName: {fileID: 935231699}
   LoadingPanel: {fileID: 491467837}
@@ -4231,7 +4231,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1149153941
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4248,9 +4248,9 @@ RectTransform:
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: 0}
+  m_SizeDelta: {x: 20, y: -61}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1149153942
 MonoBehaviour:
@@ -5382,9 +5382,9 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 3, y: 0}
+  m_SizeDelta: {x: -6, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1519693845
 MonoBehaviour:
@@ -6098,8 +6098,8 @@ MonoBehaviour:
   m_Viewport: {fileID: 1519693844}
   m_HorizontalScrollbar: {fileID: 108946422}
   m_VerticalScrollbar: {fileID: 1149153942}
-  m_HorizontalScrollbarVisibility: 2
-  m_VerticalScrollbarVisibility: 2
+  m_HorizontalScrollbarVisibility: 1
+  m_VerticalScrollbarVisibility: 0
   m_HorizontalScrollbarSpacing: -3
   m_VerticalScrollbarSpacing: -3
   m_OnValueChanged:
