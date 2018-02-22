@@ -182,17 +182,6 @@ public class FruitonTeamsManager : TeamsManagerBase
                     return null;
                 })
         ).SetErrorFontSize(24);
-
-        // base class adds listener that invokes `ReindexFruitons`
-        FilterManager.OnFilterUpdated.RemoveAllListeners();
-        // we want to invoke `ReindexFruitons` only while in team edit mode
-        FilterManager.OnFilterUpdated.AddListener(() =>
-        {
-            if (viewMode == ViewMode.TeamEdit)
-            {
-                ReindexFruitons();
-            }
-        });
     }
 
     private void AIChooseStart()
@@ -559,6 +548,14 @@ public class FruitonTeamsManager : TeamsManagerBase
                 );
             }
             newIndex++;
+        }
+    }
+
+    protected override void ReindexFruitons()
+    {
+        if (viewMode == ViewMode.TeamEdit)
+        {
+            base.ReindexFruitons();
         }
     }
 
