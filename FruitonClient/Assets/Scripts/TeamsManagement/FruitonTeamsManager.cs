@@ -646,7 +646,7 @@ public class FruitonTeamsManager : TeamsManagerBase
                 ResizeScrollContent(teams.Count);
                 break;
             case ViewMode.TeamEdit:
-                ResizeScrollContent(GameManager.Instance.AvailableFruitons.Count);
+                ReindexFruitons();
                 break;
         }
     }
