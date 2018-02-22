@@ -125,7 +125,6 @@ public class FruitonTeamsManager : TeamsManagerBase
     {
         state = (TeamManagementState) Enum.Parse(typeof(TeamManagementState), Scenes.GetParam(Scenes.TEAM_MANAGEMENT_STATE));
         InitializeTeams(isInTeamManagement);
-        SwitchViewMode(viewMode);
 
         switch (state)
         {
@@ -182,6 +181,18 @@ public class FruitonTeamsManager : TeamsManagerBase
                     return null;
                 })
         ).SetErrorFontSize(24);
+
+        // base class adds listener that invokes `ReindexFruitons`
+        FilterManager.OnFilterUpdated.RemoveAllListeners();
+        // we want to invoke `ReindexFruitons` only while in team edit mode
+        FilterManager.OnFilterUpdated.AddListener(() =>
+        {
+            if (viewMode == ViewMode.TeamEdit)
+            {
+                ReindexFruitons();
+            }
+        });
+        SwitchViewMode(viewMode);
     }
 
     private void AIChooseStart()
@@ -635,7 +646,7 @@ public class FruitonTeamsManager : TeamsManagerBase
                 ResizeScrollContent(teams.Count);
                 break;
             case ViewMode.TeamEdit:
-                ResizeScrollContent(GameManager.Instance.AllPlayableFruitons.Count());
+                ReindexFruitons();
                 break;
         }
     }

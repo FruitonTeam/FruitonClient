@@ -241,7 +241,7 @@ public abstract class TeamsManagerBase : MonoBehaviour
         }
     }
 
-    private void ReindexFruitons()
+    protected void ReindexFruitons()
     {
         int newIndex = 0;
         foreach (var fruiton in fridgeFruitons)
@@ -273,7 +273,7 @@ public abstract class TeamsManagerBase : MonoBehaviour
             }
             newIndex++;
         }
-        ResizeScrollContent(newIndex + 1);
+        ResizeScrollContent(newIndex);
     }
 
     private void ShowDetail(FridgeFruiton fruiton)
