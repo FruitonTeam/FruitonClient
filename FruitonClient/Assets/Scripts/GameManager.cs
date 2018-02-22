@@ -118,6 +118,7 @@ public class GameManager : IOnMessageListener
         avatar = null;
         FruitonTeamList = null;
         StayLoggedIn = false;
+        Serializer.ClearPlayerLocalData();
     }
 
     public bool IsUserValid
@@ -427,7 +428,7 @@ public class GameManager : IOnMessageListener
             serverTeamDb.Add(serverTeam.Name, serverTeam);
         }
         var localTeamNames = new HashSet<string>(localTeams.Select(x => x.Name));
-        foreach (FruitonTeam localTeam in FruitonTeamList.FruitonTeams)
+        foreach (FruitonTeam localTeam in localTeams)
         {
             FruitonTeam serverTeam;
             bool areNamesSame = serverTeamDb.TryGetValue(localTeam.Name, out serverTeam);
