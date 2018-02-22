@@ -126,6 +126,7 @@ public class FruitonTeamsManager : TeamsManagerBase
         state = (TeamManagementState) Enum.Parse(typeof(TeamManagementState), Scenes.GetParam(Scenes.TEAM_MANAGEMENT_STATE));
         InitializeTeams(isInTeamManagement);
 
+        SwitchViewMode(viewMode);
         switch (state)
         {
             case TeamManagementState.ONLINE_CHOOSE:
@@ -192,7 +193,6 @@ public class FruitonTeamsManager : TeamsManagerBase
                 ReindexFruitons();
             }
         });
-        SwitchViewMode(viewMode);
     }
 
     private void AIChooseStart()
