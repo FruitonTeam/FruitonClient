@@ -76,7 +76,7 @@ public class GameResultsPanel : MessagePanel
         if (gotNewQuests)
         {
             QuestsTitleText.text = results.Quests.Count == 1 ? "Completed quest:" : "Completed quests:";
-            QuestsText.text = string.Join(Environment.NewLine, results.Quests.Select(q => q.Description).ToArray());
+            QuestsText.text = string.Join(Environment.NewLine, results.Quests.Select(q => q.Name).ToArray());
         }
 
         if (!GameManager.Instance.IsOnline) return;
