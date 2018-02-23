@@ -3,6 +3,7 @@ using Cz.Cuni.Mff.Fruiton.Dto;
 using fruiton.fruitDb;
 using System.Collections.Generic;
 using System.Linq;
+using Bazaar;
 using Google.Protobuf.Collections;
 using Networking;
 using UI.Chat;
@@ -224,9 +225,9 @@ public class GameManager : IOnMessageListener
         }
     }
 
-    public void AddMoney(int toAdd)
+    public void AdjustMoney(int amount)
     {
-        loggedPlayerInfo.Money = loggedPlayerInfo.Money + toAdd;
+        loggedPlayerInfo.Money = loggedPlayerInfo.Money + amount;
     }
 
     public RepeatedField<Quest> Quests
@@ -341,6 +342,7 @@ public class GameManager : IOnMessageListener
         {
             ChatController.Instance.Init();
         }
+        TradeBazaar.Instance.Init();
 
         Initialize();
         PersistIfStayLoggedIn();

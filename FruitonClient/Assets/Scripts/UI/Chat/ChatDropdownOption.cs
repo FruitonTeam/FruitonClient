@@ -8,13 +8,23 @@ using UnityEngine.UI;
 /// </summary>
 public class ChatDropdownOption : MonoBehaviour {
 
+    public const int SHOW_PROFILE = 0;
+    public const int CHALLENGE = 1;
+    public const int OFFER_FRUITON = 2;
+    public const int DELETE_FRIEND =  3;
+    public const int CANCEL = 4;
+    
 	void Start ()
     {
-        // if the option is "challenge" we enable it only if currently selected friend is in main menu
-        // we need to add +1 to sibling index, since on index 0 there's disabled item template game object
-        if (transform.GetSiblingIndex() == ChatController.DROPDOWN_CHALLENGE+1)
+        // we need to add -1 to sibling index, since on index 0 there's disabled item template game object
+        int optionIndex = transform.GetSiblingIndex() - 1;
+        if (optionIndex == CHALLENGE)
         {
             GetComponent<Toggle>().interactable = ChatController.Instance.IsSelectedPlayerInMenu;
+        } 
+        else if (optionIndex == OFFER_FRUITON)
+        {
+            GetComponent<Toggle>().interactable = ChatController.Instance.IsSelectedPlayerOnline;
         }
-	}
+    }
 }

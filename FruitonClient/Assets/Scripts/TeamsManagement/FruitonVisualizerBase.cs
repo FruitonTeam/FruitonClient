@@ -44,9 +44,10 @@ public abstract class FruitonVisualizerBase : MonoBehaviour
         FilterManager.AllFruitons = fridgeFruitons;
         FilterManager.OnFilterUpdated.AddListener(ReindexFruitons);
         FilterManager.UpdateAvailableFruitons(gameManager.AvailableFruitons);
+        
         if (gameManager.IsOnline)
         {
-            PlayerHelper.GetAvailableFruitons(FilterManager.UpdateAvailableFruitons, Debug.Log);
+            UpdateAvailableFruitons();
         }
     }
 
@@ -57,6 +58,11 @@ public abstract class FruitonVisualizerBase : MonoBehaviour
         fridgeFruitons.Add(fFruiton);
     }
 
+    protected virtual void UpdateAvailableFruitons()
+    {
+        PlayerHelper.GetAvailableFruitons(FilterManager.UpdateAvailableFruitons, Debug.Log);
+    }
+    
     protected void HideTooltip()
     {
         PanelTooltip.SetActive(false);

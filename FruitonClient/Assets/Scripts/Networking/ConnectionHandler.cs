@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Bazaar;
 using Cz.Cuni.Mff.Fruiton.Dto;
 using Google.Protobuf;
 using UI.Chat;
@@ -205,6 +206,9 @@ namespace Networking
                 RegisterListener(WrapperMessage.MessageOneofCase.Challenge, ChallengeController.Instance);
                 RegisterListener(WrapperMessage.MessageOneofCase.ChallengeResult, ChallengeController.Instance);
                 RegisterListener(WrapperMessage.MessageOneofCase.RevokeChallenge, ChallengeController.Instance);
+                RegisterListener(WrapperMessage.MessageOneofCase.TradeOffer, TradeBazaar.Instance);
+                RegisterListener(WrapperMessage.MessageOneofCase.BazaarOfferResolvedOnTheWeb, TradeBazaar.Instance);
+                RegisterListener(WrapperMessage.MessageOneofCase.BazaarOfferResult, Bazaar.Bazaar.Instance);
             }
         }
 
