@@ -21,6 +21,7 @@ namespace UI.Notification
         public FeedbackNotificationView View;
 
         public Texture2D ImageQuestion;
+        public Texture2D ImageFriend;
 
         private void Update()
         {
@@ -62,6 +63,10 @@ namespace UI.Notification
 
         private void ShowFriendRequest(string friendToAdd, Texture avatar)
         {
+            if (avatar == null)
+            {
+                avatar = ImageFriend;
+            }
             Show(avatar, FRIEND_REQUEST_TITLE, friendToAdd,
                 () =>
                 {

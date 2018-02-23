@@ -6856,6 +6856,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   View: {fileID: 1928628696}
   ImageQuestion: {fileID: 2800000, guid: 712183591fb27fd43b4c11071a56811e, type: 3}
+  ImageFriend: {fileID: 2800000, guid: 433112deefb8f9e45b674cfe2bbe1626, type: 3}
 --- !u!114 &1681182856
 MonoBehaviour:
   m_ObjectHideFlags: 0
