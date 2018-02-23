@@ -49,7 +49,7 @@ namespace Util
 
         public static string GetFruitonName(int id)
         {
-            return FruitonFactory.makeFruiton(id, GameManager.Instance.FruitonDatabase).name;
+            return GameManager.Instance.AllFruitons.First(fruiton => fruiton.dbId == id).name;
         }
     }
 }

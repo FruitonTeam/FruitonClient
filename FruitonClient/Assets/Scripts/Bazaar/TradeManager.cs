@@ -19,6 +19,7 @@ namespace Bazaar
         private string offeredPlayerLogin;
 
         private static readonly string HEADLINE_TEXT = "Choose a fruiton and a price that will be offered to <b>{0}</b>.";
+        private static readonly Color SELECTED_COLOR = new Color(251 / 255.0f, 255 / 255.0f, 189 / 255.0f);
 
         protected override void Start()
         {
@@ -41,8 +42,15 @@ namespace Bazaar
             }
             if (Input.GetMouseButton(0) && EventSystem.current.currentSelectedGameObject == null)
             {
-                selectedFruiton = null;
+                UnselectFruiton();
             }
+        }
+
+        private void UnselectFruiton()
+        {
+            if (selectedFruiton == null) return;
+            selectedFruiton.gameObject.GetComponent<Button>().GetComponent<Image>().color = Color.white;
+            selectedFruiton = null;
         }
 
         private char OnlyPositiveDigits(string text, int charIndex, char addedChar) {
@@ -64,10 +72,6 @@ namespace Bazaar
                 string body = string.Format("Select one by {0} it.", clickTap);
                 NotificationManager.Instance.Show(NoTexture, "No fruiton selected", body);
                 return;
-            }
-            else
-            {
-                selectedFruiton.gameObject.GetComponent<Selectable>().Select();
             }
 
             if (!ChatController.Instance.IsSelectedPlayerOnline)
@@ -99,9 +103,12 @@ namespace Bazaar
         protected override void InitializeFridgeFruiton(FridgeFruiton fFruiton, Fruiton kFruiton, int fridgeIndex)
         {
             base.InitializeFridgeFruiton(fFruiton, kFruiton, fridgeIndex);
-            fFruiton.GetComponent<Button>().onClick.AddListener(() =>
+            var button = fFruiton.GetComponent<Button>();
+            button.onClick.AddListener(() =>
             {
+                UnselectFruiton();
                 selectedFruiton = fFruiton;
+                button.GetComponent<Image>().color = SELECTED_COLOR;
                 ShowTooltip(kFruiton);
             });
         }
