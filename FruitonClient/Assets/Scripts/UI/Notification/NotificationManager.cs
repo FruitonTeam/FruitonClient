@@ -13,6 +13,10 @@ namespace UI.Notification
         private static readonly Queue<NotificationData> notificationQueue = new Queue<NotificationData>();
         
         public NotificationView View;
+
+        public Texture2D ImageInfo;
+        public Texture2D ImageSuccess;
+        public Texture2D ImageError;
         
         public void Show(Texture image, string header, string text)
         {
@@ -21,7 +25,17 @@ namespace UI.Notification
 
         public void Show(string header, string text)
         {
-            notificationQueue.Enqueue(new NotificationData(null, header, text)); // TODO: show default image
+            Show(ImageInfo, header, text);
+        }
+
+        public void ShowSuccess(string header, string text)
+        {
+            Show(ImageSuccess, header, text);
+        }
+
+        public void ShowError(string header, string text)
+        {
+            Show(ImageError, header, text);
         }
 
         private void Update()
