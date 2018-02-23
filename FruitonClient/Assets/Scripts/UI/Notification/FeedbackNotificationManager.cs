@@ -20,6 +20,8 @@ namespace UI.Notification
         
         public FeedbackNotificationView View;
 
+        public Texture2D ImageQuestion;
+
         private void Update()
         {
             if (notificationQueue.Count == 0 || !View.IsAnimationCompleted)
@@ -93,9 +95,7 @@ namespace UI.Notification
 
         public int Show(string title, string text, System.Action accept, System.Action decline)
         {
-            var notification = new FeedBackNotificationData(null, title, text, accept, decline);
-            notificationQueue.Enqueue(notification);
-            return notification.Id;
+            return Show(ImageQuestion, title, text, accept, decline);
         }
         
         public int Show(Texture image, string title, string text, System.Action accept, System.Action decline)

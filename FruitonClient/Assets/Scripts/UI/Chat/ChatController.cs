@@ -91,10 +91,6 @@ namespace UI.Chat
         public ScrollRect ScrollRect;
         public RectTransform ScrollContent;
 
-        public Texture2D NotificationIconYes;
-        public Texture2D NotificationIconNo;
-
-
         private readonly Dictionary<string, ChatRecord> chatRecords = new Dictionary<string, ChatRecord>();
 
         private readonly List<IOnFriendsChangedListener> onFriendsChangedListeners = new List<IOnFriendsChangedListener>();
@@ -294,7 +290,7 @@ namespace UI.Chat
 
             if (GameManager.Instance.UserName.Equals(friendToAdd))
             {
-                NotificationManager.Instance.Show(NotificationIconNo, "No.","You cannot add yourself as a friend!");
+                NotificationManager.Instance.ShowError("Invalid action","You cannot add yourself as a friend!");
                 return;
             }
 
@@ -303,16 +299,15 @@ namespace UI.Chat
                 if (exists)
                 {
                     SendFriendRequest(friendToAdd);
-                    NotificationManager.Instance.Show(NotificationIconYes, "Friend request sent!", friendToAdd + " will be notified about your request");
+                    NotificationManager.Instance.ShowSuccess("Friend request sent!", friendToAdd + " will be notified about your request");
                 }
                 else
                 {
-                    NotificationManager.Instance.Show(NotificationIconNo, "User not found!", "User with name " + friendToAdd + " does not exist!");
+                    NotificationManager.Instance.ShowError("User not found!", "User with name " + friendToAdd + " does not exist!");
                 }
             }, err =>
             {
-                NotificationManager.Instance.Show(NotificationIconNo, "User not found!",
-                    "Couldn't find user named " + friendToAdd + "!");
+                NotificationManager.Instance.ShowError("User not found!", "Couldn't find user named " + friendToAdd + "!");
             });
         }
 

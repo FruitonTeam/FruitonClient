@@ -190,7 +190,7 @@ namespace Networking
 
         private void OnConnected()
         {
-            RegisterListener(WrapperMessage.MessageOneofCase.ErrorMessage, this);
+            RegisterListener(WrapperMessage.MessageOneofCase.ErrorMessage, ErrorHandler.Instance);
             RegisterListener(WrapperMessage.MessageOneofCase.ChatMessage, ChatMessageNotifier.Instance);
             
             if (NotificationManager.Instance != null) // main menu was already created
