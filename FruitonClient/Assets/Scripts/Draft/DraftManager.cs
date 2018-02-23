@@ -18,7 +18,7 @@ public class DraftManager : TeamManagerBase
     public Text TimeToPickText;
     public Text TimeToPickLabel;
     public Text OpponetTurnToPickText;
-    public MessagePanel GameOverPanel;
+    public GameResultsPanel GameResultsPanel;
 
     private readonly float pickTimeFrame = 2.0f;
     private FruitonTeam myTeam;
@@ -52,6 +52,8 @@ public class DraftManager : TeamManagerBase
         // HACK for the scroll view to work - without it it is just empty and somehow broken
         ScrollRect.gameObject.SetActive(false);
         ScrollRect.gameObject.SetActive(true);
+
+        GameResultsPanel.gameObject.SetActive(false);
 
         TurnOffDrafting();
         if (!ChallengeController.Instance.IsChallengeActive)
@@ -256,6 +258,6 @@ public class DraftManager : TeamManagerBase
     {
         ButtonSurrender.interactable = false;
 
-        BattleUIUtil.ShowResults(GameOverPanel, gameOver);
+        GameResultsPanel.ShowResult(gameOver);
     }
 }

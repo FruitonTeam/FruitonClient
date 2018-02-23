@@ -43,11 +43,11 @@ public class BattleViewer : MonoBehaviour
     public Image MyAvatar;
     public Image OpponentAvatar;
     public GameObject Board;
-    public MessagePanel GameResultsPanel;
     public GameObject FruitonInfoPanel;
     public GameObject TutorialPanel;
     public GameObject MyPanel;
     public GameObject OpponentPanel;
+    public GameResultsPanel GameResultsPanel;
 
     private static readonly Color FOREST_DARK = new Color(25 / 255f, 39 / 255f, 13 / 255f);
     private static readonly Color FOREST_GREEN = new Color(37 / 255f, 89 / 255f, 31 / 255f);
@@ -74,6 +74,7 @@ public class BattleViewer : MonoBehaviour
 #if UNITY_ANDROID
         InfoAndroidButton.gameObject.SetActive(true);
 #endif
+        GameResultsPanel.gameObject.SetActive(false);
         GridLayoutManager = GridLayoutManager.Instance;
         FruitonsGrid = GridLayoutManager.MakeNewGrid();
 
@@ -621,7 +622,8 @@ public class BattleViewer : MonoBehaviour
 
     public void GameOver(GameOver gameOverMessage)
     {
-        BattleUIUtil.ShowResults(GameResultsPanel, gameOverMessage);
+        GameResultsPanel.ShowResult(gameOverMessage);
+
         GameResults results = gameOverMessage.Results;
         GameManager.Instance.CompleteQuests(results.Quests.Select(quest => quest.Name));
         Debug.Log("Game over, reason: " + gameOverMessage.Reason + ", result: " + results);
