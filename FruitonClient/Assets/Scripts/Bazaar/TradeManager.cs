@@ -2,6 +2,7 @@
 using UI.Chat;
 using UI.Notification;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Fruiton = fruiton.kernel.Fruiton;
 
@@ -38,6 +39,10 @@ namespace Bazaar
             {
                 MakeOffer();
             }
+            if (Input.GetMouseButton(0) && EventSystem.current.currentSelectedGameObject == null)
+            {
+                selectedFruiton = null;
+            }
         }
 
         private char OnlyPositiveDigits(string text, int charIndex, char addedChar) {
@@ -59,6 +64,10 @@ namespace Bazaar
                 string body = string.Format("Select one by {0} it.", clickTap);
                 NotificationManager.Instance.Show(NoTexture, "No fruiton selected", body);
                 return;
+            }
+            else
+            {
+                selectedFruiton.gameObject.GetComponent<Selectable>().Select();
             }
 
             if (!ChatController.Instance.IsSelectedPlayerOnline)
