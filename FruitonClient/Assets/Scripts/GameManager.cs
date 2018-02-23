@@ -11,7 +11,6 @@ using UnityEngine;
 using Util;
 using KFruiton = fruiton.kernel.Fruiton;
 
-public enum FractionNames { None, GuacamoleGuerrillas, CranberryCrusade, TzatzikiTsardom }
 public enum ConnectionMode { Offline, Trial, Online }
 
 public class PlayerOptions
@@ -108,7 +107,6 @@ public class GameManager : IOnMessageListener
             {
                 PlayerPrefs.SetString(PlayerPrefsKeys.USER_PASSWORD, "");
             }
-            IsUserValid = false;
         }
     }
 
@@ -120,19 +118,6 @@ public class GameManager : IOnMessageListener
         FruitonTeamList = null;
         StayLoggedIn = false;
         Serializer.ClearPlayerLocalData();
-    }
-
-    public bool IsUserValid
-    {
-        get
-        {
-            return PlayerPrefs.GetInt("ValidUser", 0) == 1;
-        }
-        set
-        {
-            UserFraction = FractionNames.None;
-            PlayerPrefs.SetInt("ValidUser", (value) ? 1 : 0);
-        }
     }
 
     public Fraction Fraction
@@ -153,19 +138,6 @@ public class GameManager : IOnMessageListener
                 return;
             }
             loggedPlayerInfo.Fraction = value;
-        }
-    }
-    
-    [Obsolete("Should be deleted, but first check if it does not harm anything.")]
-    public FractionNames UserFraction
-    {
-        get
-        {
-            return (FractionNames) PlayerPrefs.GetInt("Fraction", (int) FractionNames.None);
-        }
-        set
-        {
-            PlayerPrefs.SetInt("Fraction", (int) value);
         }
     }
 
