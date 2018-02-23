@@ -5,23 +5,17 @@ using Cz.Cuni.Mff.Fruiton.Dto;
 using UnityEngine.UI;
 using KFruiton = fruiton.kernel.Fruiton;
 
-public abstract class TeamsManagerBase : MonoBehaviour
+public abstract class TeamManagerBase : FruitonVisualizerBase
 {
     public ScrollRect ScrollRect;
-    public GameObject PanelTooltip;
+    
     public FridgeTeamGrid MyTeamGrid;
-    public FridgeFruitonDetail FruitonDetail;
-    public GameObject FridgeFruitonTemplate;
-    public GameObject WrapperFruitons;
-    public RectTransform[] TooltipPanelPositions;
-    public FridgeFilterManager FilterManager;
-    public RectTransform ScrollContentRectTransform;
+
     public Image DragAndDropBarrier;
     public FridgeDndFruiton DragAndDropFruiton;
     public Text WarningText;
     public GameObject Filters;
 
-    protected List<FridgeFruiton> fridgeFruitons;
     protected KFruiton draggedFruiton;
     protected Position teamDragGridPosition;
     protected bool isDragging;
@@ -38,7 +32,7 @@ public abstract class TeamsManagerBase : MonoBehaviour
         return dropGridPosition;
     }
 
-    protected  void InitializeFruitonDetailListeners()
+    protected void InitializeFruitonDetailListeners()
     {
         FruitonDetail.CloseButton.onClick.AddListener(HideDetail);
         FruitonDetail.Barrier.onClick.AddListener(HideDetail);
@@ -133,44 +127,6 @@ public abstract class TeamsManagerBase : MonoBehaviour
         }
     }
 
-    protected void InitializeAllFruitons()
-    {
-        GameManager gameManager = GameManager.Instance;
-        IEnumerable<KFruiton> allFruitons = gameManager.AllPlayableFruitons;
-        fridgeFruitons = new List<FridgeFruiton>();
-        var i = 0;
-        var templateRectTransform = FridgeFruitonTemplate.gameObject.GetComponent<RectTransform>();
-        foreach (KFruiton fruiton in allFruitons)
-        {
-            var fridgeFruiton = Instantiate(FridgeFruitonTemplate);
-            fridgeFruiton.transform.SetParent(WrapperFruitons.transform);
-            fridgeFruiton.transform.localScale = templateRectTransform.localScale;
-            fridgeFruiton.transform.localPosition = GetPositionOnScrollViewGrid(i);
-
-            var kFruiton = fruiton;
-            var fFruiton = fridgeFruiton.GetComponent<FridgeFruiton>();
-            fFruiton.OnBeginDrag.AddListener(() => BeginFruitonDrag(fFruiton));
-#if UNITY_STANDALONE || UNITY_EDITOR
-            fFruiton.OnMouseEnter.AddListener(() => ShowTooltip(kFruiton));
-            fFruiton.OnMouseExit.AddListener(HideTooltip);
-            fFruiton.OnRightClick.AddListener(() => ShowDetail(fFruiton));
-#endif
-            fFruiton.OnTap.AddListener(() => ShowDetail(fFruiton));
-            fFruiton.SetKernelFruiton(kFruiton);
-            fFruiton.FridgeIndex = i;
-            fridgeFruitons.Add(fFruiton);
-            i++;
-        }
-        FridgeFruitonTemplate.SetActive(false);
-        FilterManager.AllFruitons = fridgeFruitons;
-        FilterManager.OnFilterUpdated.AddListener(ReindexFruitons);
-        FilterManager.UpdateAvailableFruitons(gameManager.AvailableFruitons);
-        if (gameManager.IsOnline)
-        {
-            PlayerHelper.GetAvailableFruitons(FilterManager.UpdateAvailableFruitons, Debug.Log);
-        }
-    }
-
     private void BeginFruitonDrag(FridgeFruiton fruiton)
     {
         if (ShouldBeginDrag(fruiton))
@@ -222,103 +178,22 @@ public abstract class TeamsManagerBase : MonoBehaviour
         WarningText.transform.parent.gameObject.SetActive(true);
     }
 
-    protected void ResizeScrollContent(int objectCount)
+    protected override void InitializeFridgeFruiton(FridgeFruiton fFruiton, KFruiton kFruiton, int fridgeIndex)
     {
-        var contentSize = ScrollContentRectTransform.sizeDelta;
-        var helperIndex = objectCount + objectCount % 2;
-        var newWidth = GetPositionOnScrollViewGrid(helperIndex).x;
-        ScrollContentRectTransform.sizeDelta = new Vector2(newWidth, contentSize.y);
-        var scrollViewWidth = ScrollContentRectTransform.parent.parent.GetComponent<RectTransform>().rect.width;
-        if (newWidth < scrollViewWidth)
-        {
-            ScrollContentRectTransform.localPosition = Vector3.zero;
-            return;
-        }
-        var contentWidth = newWidth + ScrollContentRectTransform.localPosition.x;
-        if (contentWidth < scrollViewWidth)
-        {
-            ScrollContentRectTransform.localPosition = new Vector3(scrollViewWidth - newWidth, 0, 0);
-        }
+        base.InitializeFridgeFruiton(fFruiton, kFruiton, fridgeIndex);
+        fFruiton.OnBeginDrag.AddListener(() => BeginFruitonDrag(fFruiton));
+#if UNITY_STANDALONE || UNITY_EDITOR
+        fFruiton.OnMouseEnter.AddListener(() => ShowTooltip(kFruiton));
+        fFruiton.OnMouseExit.AddListener(HideTooltip);
+        fFruiton.OnRightClick.AddListener(() => ShowDetail(fFruiton));
+#endif
+        fFruiton.OnTap.AddListener(() => ShowDetail(fFruiton));
     }
 
-    protected virtual void ReindexFruitons()
-    {
-        int newIndex = 0;
-        foreach (var fruiton in fridgeFruitons)
-        {
-            var oldIndex = fruiton.FridgeIndex;
-            if (!fruiton.gameObject.activeSelf)
-            {
-                fruiton.FridgeIndex = -1;
-                continue;
-            }
-            fruiton.FridgeIndex = newIndex;
-            if (newIndex != oldIndex)
-            {
-                if (oldIndex < 0)
-                {
-                    fruiton.gameObject.transform.localPosition = GetPositionOnScrollViewGrid(newIndex);
-                }
-                else
-                {
-                    iTween.Stop(fruiton.gameObject);
-                    iTween.MoveTo(fruiton.gameObject, iTween.Hash(
-                            "position", GetPositionOnScrollViewGrid(newIndex),
-                            "islocal", true,
-                            "time", 1,
-                            "easetype", iTween.EaseType.easeOutExpo
-                        )
-                    );
-                }
-            }
-            newIndex++;
-        }
-        ResizeScrollContent(newIndex);
-    }
-
-    private void ShowDetail(FridgeFruiton fruiton)
+    protected override void ShowDetail(FridgeFruiton fruiton)
     {
         FruitonDetail.SetFruiton(fruiton, MyTeamGrid.GetAvailableSquares(fruiton.KernelFruiton).Count != 0);
-        FruitonDetail.TooltipText.text = TooltipUtil.GenerateTooltip(fruiton.KernelFruiton);
-        FruitonDetail.gameObject.SetActive(true);
+        base.ShowDetail(fruiton);
     }
 
-    public void HideDetail()
-    {
-        FruitonDetail.gameObject.SetActive(false);
-        FruitonDetail.Barrier.gameObject.SetActive(false);
-        HideTooltip();
-    }
-
-    protected void ShowTooltip(KFruiton fruiton, int positionIndex = 0)
-    {
-        RectTransform targetTransform = TooltipPanelPositions[positionIndex];
-        var tooltipTransform = PanelTooltip.GetComponent<RectTransform>();
-        PanelTooltip.SetActive(true);
-        PanelTooltip.transform.SetParent(targetTransform.parent);
-        tooltipTransform.pivot = targetTransform.pivot;
-        tooltipTransform.anchorMin = targetTransform.anchorMin;
-        tooltipTransform.anchorMax = targetTransform.anchorMax;
-        tooltipTransform.anchoredPosition = targetTransform.anchoredPosition;
-        PanelTooltip.GetComponentInChildren<Text>().text = TooltipUtil.GenerateTooltip(fruiton);
-    }
-
-    protected void HideTooltip()
-    {
-        PanelTooltip.SetActive(false);
-    }
-
-    /// <summary>
-    /// Calculates position of an object (fruiton or team) on the scroll view grid
-    /// </summary>
-    /// <param name="index">index of the object</param>
-    /// <returns>position of an object on the scroll view grid</returns>
-    protected static Vector3 GetPositionOnScrollViewGrid(int index)
-    {
-        return new Vector3(
-            27.5f + (index / 2) * 240,
-            -233 - (index % 2) * 231,
-            0
-        );
-    }
 }

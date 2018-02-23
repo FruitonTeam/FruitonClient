@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311992, g: 0.38074034, b: 0.35872713, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -3542,6 +3542,8 @@ MonoBehaviour:
       m_Image: {fileID: 0}
     - m_Text: Challenge
       m_Image: {fileID: 0}
+    - m_Text: Offer a fruiton
+      m_Image: {fileID: 0}
     - m_Text: Delete
       m_Image: {fileID: 0}
     - m_Text: Cancel
@@ -3889,11 +3891,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'frefre will be notified about your
-
-    asdsadasd
-
-    asdasd'
+  m_Text: 
 --- !u!222 &990119235
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3915,8 +3913,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 221, y: -68.8}
-  m_SizeDelta: {x: 242, y: 47.7}
+  m_AnchoredPosition: {x: 225, y: -66.4}
+  m_SizeDelta: {x: 250, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1016991653
 GameObject:
@@ -6250,7 +6248,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: -51.7, y: 2}
-  m_SizeDelta: {x: 103.4, y: 203}
+  m_SizeDelta: {x: 103.4, y: 253}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1624443617
 MonoBehaviour:

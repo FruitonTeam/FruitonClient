@@ -18,14 +18,14 @@ static class BattleUIUtil
 
         if (!GameManager.Instance.IsOnline) return;
 
-        GameManager.Instance.AddMoney(gameOver.Results.Money);
+        GameManager.Instance.AdjustMoney(gameOver.Results.Money);
         GameManager.Instance.UnlockFruitons(gameOver.Results.UnlockedFruitons);
 
         if (gameOver.Results.Quests != null)
         {
             foreach (Quest q in gameOver.Results.Quests)
             {
-                GameManager.Instance.AddMoney(q.Reward.Money);
+                GameManager.Instance.AdjustMoney(q.Reward.Money);
             }
         }
     }

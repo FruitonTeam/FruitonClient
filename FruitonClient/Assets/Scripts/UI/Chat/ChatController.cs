@@ -55,11 +55,6 @@ namespace UI.Chat
         static readonly string MESSAGE_COLOR_RECEIVED_OLD = "#333344";
         static readonly string MESSAGE_COLOR_RECEIVED_NEW = "#222266";
 
-        const int DROPDOWN_SHOW_PROFILE = 0;
-        public const int DROPDOWN_CHALLENGE = 1;
-        const int DROPDOWN_DELETE_FRIEND=  2;
-        const int DROPDOWN_CANCEL = 3;
-
         /// <summary>
         /// Time format for messages received on the same day as they were sent
         /// </summary>
@@ -74,6 +69,7 @@ namespace UI.Chat
         public string SelectedPlayerLogin { get; private set; }
         public bool IsSelectedPlayerFriend { get; private set; }
         public bool IsSelectedPlayerInMenu { get; private set; }
+        public bool IsSelectedPlayerOnline { get; private set; }
 
         public GameObject LoadingIndicator;
         public Text ChatTextTemplate;
@@ -323,16 +319,19 @@ namespace UI.Chat
         public void OnDropdownOption(int option)
         {
             // reset dropdown value to make it work like a button
-            FriendActionsDropdown.value = DROPDOWN_CANCEL;
+            FriendActionsDropdown.value = ChatDropdownOption.CANCEL;
             switch (option)
             {
-                case DROPDOWN_SHOW_PROFILE:
+                case ChatDropdownOption.SHOW_PROFILE:
                     ConnectionHandler.Instance.OpenUrlAuthorized("profile/" + Uri.EscapeDataString(FriendName.text));
                     break;
-                case DROPDOWN_CHALLENGE:
+                case ChatDropdownOption.CHALLENGE:
                     ChallengeController.Instance.Show();
                     break;
-                case DROPDOWN_DELETE_FRIEND:
+                case ChatDropdownOption.OFFER_FRUITON:
+                    Scenes.Load(Scenes.LOCAL_TRADE_SCENE, Scenes.OFFERED_PLAYER_LOGIN, SelectedPlayerLogin);
+                    break;
+                case ChatDropdownOption.DELETE_FRIEND:
                     FriendRemoval removalMessage = new FriendRemoval
                     {
                         Login = FriendName.text
@@ -345,7 +344,7 @@ namespace UI.Chat
                     ConnectionHandler.Instance.SendWebsocketMessage(ws);
                     OnFriendRemoval(removalMessage);
                     break;
-                case DROPDOWN_CANCEL:
+                case ChatDropdownOption.CANCEL:
                     return;
             }
         }
@@ -422,6 +421,7 @@ namespace UI.Chat
             SelectedPlayerLogin = login;
             IsSelectedPlayerFriend = chatRecords.ContainsKey(login);
             IsSelectedPlayerInMenu = friend.Status == Status.MainMenu;
+            IsSelectedPlayerOnline = friend.Status != Status.Offline;
 
             if (!IsSelectedPlayerFriend)
             {
@@ -556,6 +556,7 @@ namespace UI.Chat
             if (message.Login == SelectedPlayerLogin)
             {
                 IsSelectedPlayerInMenu = message.Status == Status.MainMenu;
+                IsSelectedPlayerOnline = message.Status != Status.Offline;
                 ChallengeController.Instance.Refresh();
             }
         }
@@ -788,11 +789,6 @@ namespace UI.Chat
             FriendActionsDropdown.Hide();
             yield return new WaitForSecondsRealtime(0.3f);
             ChatWindow.SetActive(false);
-        }
-
-        private void SetChallengeFriendOptionActive(bool value)
-        {
-            FriendActionsDropdown.GetComponentsInChildren<Toggle>(true)[DROPDOWN_CHALLENGE].interactable = value;
         }
 
         public void AddListener(IOnFriendsChangedListener listener)

@@ -32,3 +32,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Draft.unity
     guid: de7c515d030fa914c883fa24bf52bb00
+  - enabled: 1
+    path: Assets/Scenes/LocalTradeScene.unity
+    guid: f5a74fc8387811f43b2fbeda28dff38f

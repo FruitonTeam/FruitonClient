@@ -10,6 +10,7 @@ public class Scenes : MonoBehaviour
     public static readonly string BATTLE_SCENE = "BattleScene";
     public static readonly string FRACTION_SCENE = "FractionScene";
     public static readonly string DRAFT_SCENE = "Draft";
+    public static readonly string LOCAL_TRADE_SCENE = "LocalTradeScene";
 
     public static readonly string TEAM_MANAGEMENT_STATE = "teamManagementState";
     public static readonly string BATTLE_TYPE = "battleType";
@@ -18,6 +19,7 @@ public class Scenes : MonoBehaviour
     public static readonly string AI_TYPE = "aiType";
     public static readonly string GAME_READY_MSG = "gameReadyMsg";
     public static readonly string DISCONNECTED = "disconnected";
+    public static readonly string OFFERED_PLAYER_LOGIN = "offeredPlayerLogin";
 
     public static Dictionary<string, string> Parameters { get; private set; }
     public static Dictionary<string, object> ObjParams { get; private set; }

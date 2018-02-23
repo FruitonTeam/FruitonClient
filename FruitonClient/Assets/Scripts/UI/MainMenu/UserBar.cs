@@ -10,7 +10,8 @@ using Util;
 
 namespace UI.MainMenu
 {
-    public class UserBar : MonoBehaviour, ChatController.IOnFriendsChangedListener, IOnMessageListener
+    public class UserBar : MonoBehaviour, ChatController.IOnFriendsChangedListener, IOnMessageListener, 
+        Bazaar.Bazaar.IOnFruitonSoldListener
     {
         public Text PlayerNameText;
         public Text FractionText;
@@ -33,19 +34,16 @@ namespace UI.MainMenu
         public void OnEnable()
         {
             Load();
+            Bazaar.Bazaar.Instance.AddListener(this);
             ChatController.Instance.AddListener(this);
             ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.StatusChange, this);
         }
 
         private void OnDisable()
         {
+            Bazaar.Bazaar.Instance.RemoveListener(this);
             ChatController.Instance.RemoveListener(this);
             ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.StatusChange, this);
-        }
-
-        public void Refresh()
-        {
-            Load();
         }
         
         private void Load()
@@ -117,6 +115,12 @@ namespace UI.MainMenu
         private void RecountOnlineFriends()
         {
             FriendsText.text = GameManager.Instance.Friends.Count(f => f.Status != Status.Offline).ToString();
+        }
+
+        public void OnFruitonSold()
+        {
+            int money = GameManager.Instance.Money;
+            MoneyText.text = money != -1 ? money.ToString() : "N/A";
         }
     }
 }

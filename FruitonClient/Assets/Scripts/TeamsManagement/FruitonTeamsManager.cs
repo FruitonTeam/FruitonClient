@@ -19,7 +19,7 @@ public enum TeamManagementState
     CHALLENGE_CHOOSE
 }
 
-public class FruitonTeamsManager : TeamsManagerBase
+public class FruitonTeamsManager : TeamManagerBase
 {
     private class Option<TEnum>
     {

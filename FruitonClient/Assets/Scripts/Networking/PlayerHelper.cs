@@ -5,6 +5,7 @@ using System.Linq;
 using Cz.Cuni.Mff.Fruiton.Dto;
 using Newtonsoft.Json;
 using Util;
+using Action = System.Action;
 
 namespace Networking
 {
@@ -53,6 +54,21 @@ namespace Networking
                 )
             );
         }
+        
+        public static void GetFruitonsAvailableForSelling(Action<List<int>> success, Action<string> error)
+        {
+            ConnectionHandler.Instance.StartCoroutine(
+                ConnectionHandler.Instance.Get(
+                    "secured/player/fruitonsAvailableForSelling",
+                    jsonString =>
+                    {
+                        var fruitons = JsonConvert.DeserializeObject<List<int>>(jsonString);
+                        success(fruitons);
+                    },
+                    error
+                )
+            );
+        }
 
         public static void GetAllFruitonTeams(Action<FruitonTeamList> success, Action<string> error)
         {
@@ -61,7 +77,7 @@ namespace Networking
                     "secured/getAllFruitonTeams",
                     bytes =>
                     {
-                        FruitonTeamList fruitomTeamList = FruitonTeamList.Parser.ParseFrom(bytes);
+                        var fruitomTeamList = FruitonTeamList.Parser.ParseFrom(bytes);
                         success(fruitomTeamList);
                     },
                     error
@@ -123,6 +139,21 @@ namespace Networking
             );
         }
 
+        public static void GetBazaarOffers(Action<TradeOfferList> success, Action<string> error)
+        {
+            ConnectionHandler.Instance.StartCoroutine(
+                ConnectionHandler.Instance.Get(
+                    "secured/bazaar/getTradeOffers",
+                    bytes =>
+                    {
+                        var offers = TradeOfferList.Parser.ParseFrom(bytes);
+                        success(offers);
+                    },
+                    error
+                )
+            );
+        }
+
         public static void GetMessagesWith(string login, int page, Action<ChatMessages, int> success, 
             Action<string> error)
         {
@@ -131,7 +162,7 @@ namespace Networking
                     "secured/getAllMessagesWithUser?otherUserLogin=" + login + "&page=" + page,
                     bytes =>
                     {
-                        ChatMessages chatMessages = ChatMessages.Parser.ParseFrom(bytes);
+                        var chatMessages = ChatMessages.Parser.ParseFrom(bytes);
                         success(chatMessages, page);
                     },
                     error
@@ -147,7 +178,7 @@ namespace Networking
                     "secured/getAllMessagesBefore?messageId=" + messageId + "&page=" + page,
                     bytes =>
                     {
-                        ChatMessages chatMessages = ChatMessages.Parser.ParseFrom(bytes);
+                        var chatMessages = ChatMessages.Parser.ParseFrom(bytes);
                         success(chatMessages, page);
                     },
                     error
@@ -165,6 +196,17 @@ namespace Networking
                         Status status = (Status) int.Parse(text);
                         success(status);
                     },
+                    error
+                )
+            );
+        }
+
+        public static void ProvideOfferResult(string offerId, bool accepted, Action success, Action<string> error)
+        {
+            ConnectionHandler.Instance.StartCoroutine(
+                ConnectionHandler.Instance.Get(
+                    "secured/bazaar/provideResultForTradeOffer?offerId=" + offerId + "&accepted=" + accepted,
+                    (Action<string>)(_ => success()),
                     error
                 )
             );

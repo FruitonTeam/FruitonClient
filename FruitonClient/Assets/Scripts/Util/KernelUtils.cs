@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using fruiton.dataStructures;
+using fruiton.fruitDb.factories;
 using fruiton.kernel;
 using UnityEngine;
 
@@ -44,6 +45,11 @@ namespace Util
         public static Fruiton GetFruitonAt(Kernel kernel, Point position)
         {
             return kernel.currentState.field.get(position).fruiton;
+        }
+
+        public static string GetFruitonName(int id)
+        {
+            return GameManager.Instance.AllFruitons.First(fruiton => fruiton.dbId == id).name;
         }
     }
 }
