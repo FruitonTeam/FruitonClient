@@ -108,7 +108,7 @@ public abstract class FruitonVisualizerBase : MonoBehaviour
         PanelTooltip.GetComponentInChildren<Text>().text = TooltipUtil.GenerateTooltip(fruiton);
     }
 
-    private void ReindexFruitons()
+    protected virtual void ReindexFruitons()
     {
         int newIndex = 0;
         foreach (var fruiton in fridgeFruitons)
