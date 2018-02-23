@@ -385,7 +385,7 @@ public class FruitonTeamsManager : TeamManagerBase
         var gameModeDropdown = DropdownPanel.GetComponentInChildren<Dropdown>();
         GameMode gameMode = gameModes[gameModeDropdown.value].Type;
 
-        if (battleType == BattleType.OfflineBattle)
+        if (battleType == BattleType.LocalDuel)
             GameManager.Instance.PlayerOptions.LastSelectedLocalGameMode = gameModeDropdown.value;
         else if (battleType == BattleType.OnlineBattle)
             GameManager.Instance.PlayerOptions.LastSelectedGameMode = gameModeDropdown.value;

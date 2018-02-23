@@ -53,8 +53,6 @@ public class DraftManager : TeamManagerBase
         ScrollRect.gameObject.SetActive(false);
         ScrollRect.gameObject.SetActive(true);
 
-        GameResultsPanel.gameObject.SetActive(false);
-
         TurnOffDrafting();
         if (!ChallengeController.Instance.IsChallengeActive)
         {
@@ -240,6 +238,7 @@ public class DraftManager : TeamManagerBase
     {
         WrapperFruitons.SetActive(true);
         Filters.SetActive(true);
+        GameResultsPanel.gameObject.SetActive(false);
         MyTeamGrid.AllowEdit = false;
         ResizeScrollContent(GameManager.Instance.AllPlayableFruitons.Count());
     }

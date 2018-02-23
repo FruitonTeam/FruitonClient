@@ -1,29 +1,37 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using Cz.Cuni.Mff.Fruiton.Dto;
-using fruiton.fruitDb;
-using fruiton.fruitDb.factories;
 using UnityEngine;
 using UnityEngine.UI;
+using Util;
+using WebSocketSharp;
 
 public class GameResultsPanel : MessagePanel
 {
-    public Text RewardText;
     public Text ReasonText;
+    public GameObject RewardsWrapper;
     public GameObject RewardMoney;
     public GameObject RewardFrutions;
     public Text QuestsTitleText;
     public Text QuestsText;
 
-    public void ShowResult(GameOver gameOver)
+    public void ShowResult(GameOver gameOver, bool isLocalDuel = false)
     {
         OnClose(() => Scenes.Load(Scenes.MAIN_MENU_SCENE));
 
-        var results = gameOver.Results;
-        // TODO use name of the winner from protobufs once it is added there
-        if (results.Money > 0 || gameOver.Reason == GameOver.Types.Reason.Disconnect || gameOver.Reason == GameOver.Types.Reason.Surrender)
+        var rewards = gameOver.GameRewards;
+        if (isLocalDuel)
+        {
+            if (gameOver.WinnerLogin.IsNullOrEmpty())
+            {
+                ShowErrorMessage("Defeat");
+            }
+            else
+            {
+                ShowInfoMessage(gameOver.WinnerLogin + " wins!");
+            }
+        }
+        else if (gameOver.WinnerLogin == GameManager.Instance.UserName)
         {
             ShowInfoMessage("Victory");
         }
@@ -46,49 +54,45 @@ public class GameResultsPanel : MessagePanel
                 break;
         }
 
-        RewardMoney.SetActive(false);
-        RewardFrutions.SetActive(false);
-        if (results.UnlockedFruitons.Count == 0 && results.Money == 0)
+        RewardsWrapper.SetActive(rewards.UnlockedFruitons.Count > 0 || rewards.Money > 0);
+        if (rewards.Money > 0)
         {
-            RewardText.text = "No rewards";
+            RewardMoney.GetComponentInChildren<Text>().text = rewards.Money.ToString();
         }
         else
         {
-            RewardText.text = "Rewards:";
-            if (results.Money > 0)
-            {
-                RewardMoney.SetActive(true);
-                RewardMoney.GetComponentInChildren<Text>().text = results.Money.ToString();
-            }
-            if (results.UnlockedFruitons.Count > 0)
-            {
-                RewardFrutions.SetActive(true);
-                RewardFrutions.GetComponentInChildren<Text>().text = string.Join(", ",
-                    gameOver.Results.UnlockedFruitons.Select(id => FruitonFactory
-                            .makeFruiton(id, GameManager.Instance.FruitonDatabase).name)
-                        .ToArray());
-            }
+            RewardMoney.SetActive(false);
+        }
+        if (rewards.UnlockedFruitons.Count > 0)
+        {
+            RewardFrutions.GetComponentInChildren<Text>().text = string.Join(", ",
+                rewards.UnlockedFruitons.Select(KernelUtils.GetFruitonName)
+                    .ToArray());
+        }
+        else
+        {
+            RewardFrutions.SetActive(false);
         }
 
-        var gotNewQuests = results.Quests.Count > 0;
-        QuestsTitleText.gameObject.SetActive(gotNewQuests);
-        QuestsText.gameObject.SetActive(gotNewQuests);
-        if (gotNewQuests)
+        var completedAnyQuests = rewards.Quests.Count > 0;
+        QuestsTitleText.gameObject.SetActive(completedAnyQuests);
+        QuestsText.gameObject.SetActive(completedAnyQuests);
+        if (completedAnyQuests)
         {
-            QuestsTitleText.text = results.Quests.Count == 1 ? "Completed quest:" : "Completed quests:";
-            QuestsText.text = string.Join(Environment.NewLine, results.Quests.Select(q => q.Name).ToArray());
+            QuestsTitleText.text = rewards.Quests.Count == 1 ? "Completed quest:" : "Completed quests:";
+            QuestsText.text = string.Join(Environment.NewLine, rewards.Quests.Select(q => q.Name).ToArray());
         }
 
         if (!GameManager.Instance.IsOnline) return;
 
-        GameManager.Instance.AddMoney(results.Money);
-        GameManager.Instance.UnlockFruitons(results.UnlockedFruitons);
+        GameManager.Instance.AdjustMoney(rewards.Money);
+        GameManager.Instance.UnlockFruitons(rewards.UnlockedFruitons);
 
-        if (results.Quests != null)
+        if (rewards.Quests != null)
         {
-            foreach (Quest q in results.Quests)
+            foreach (Quest q in rewards.Quests)
             {
-                GameManager.Instance.AddMoney(q.Reward.Money);
+                GameManager.Instance.AdjustMoney(q.Reward.Money);
             }
         }
     }
