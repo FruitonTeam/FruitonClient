@@ -11,7 +11,6 @@ namespace UI.MainMenu
     public class MainPanel : MainMenuPanel
     {
         public Button ChatButton;
-        public Button MoneyButton;
         public Button PlayOnlineButton;
         public Button MarketButton;
         public Button TodoButton;
@@ -82,7 +81,7 @@ namespace UI.MainMenu
             Scenes.Load(Scenes.BATTLE_SCENE, param);
         }
 
-        public void Logout()
+        public static void Logout()
         {
             GameManager.Instance.Logout();
             ConnectionHandler.Instance.Logout();
@@ -104,7 +103,6 @@ namespace UI.MainMenu
         public void EnableOnlineFeatures()
         {
             ChatButton.interactable = true;
-            MoneyButton.interactable = true;
             PlayOnlineButton.interactable = true;
             MarketButton.interactable = true;
             TodoButton.interactable = true;
@@ -113,7 +111,6 @@ namespace UI.MainMenu
         public void DisableOnlineFeatures()
         {
             ChatButton.interactable = false;
-            MoneyButton.interactable = false;
             PlayOnlineButton.interactable = false;
             MarketButton.interactable = false;
             TodoButton.interactable = false;

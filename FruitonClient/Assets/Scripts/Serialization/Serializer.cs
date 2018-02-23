@@ -108,6 +108,22 @@ public static class Serializer {
         }
     }
 
+    public static void ClearPlayerLocalData()
+    {
+        if (File.Exists(PLAYER_SETTINGS_PATH))
+        {
+            File.Delete(PLAYER_SETTINGS_PATH);
+        }
+        if (File.Exists(FRUITON_TEAMS_PATH))
+        {
+            File.Delete(FRUITON_TEAMS_PATH);
+        }
+        if (File.Exists(AVAILABLE_FRUITONS_PATH))
+        {
+            File.Delete(AVAILABLE_FRUITONS_PATH);
+        }
+    }
+
     public static PlayerOptions LoadPlayerSettings()
     {
         if (GameManager.Instance.StayLoggedIn && File.Exists(PLAYER_SETTINGS_PATH))

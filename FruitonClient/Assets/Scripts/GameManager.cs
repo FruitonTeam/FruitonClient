@@ -119,6 +119,7 @@ public class GameManager : IOnMessageListener
         avatar = null;
         FruitonTeamList = null;
         StayLoggedIn = false;
+        Serializer.ClearPlayerLocalData();
     }
 
     public bool IsUserValid
@@ -136,7 +137,23 @@ public class GameManager : IOnMessageListener
 
     public Fraction Fraction
     {
-        get { return loggedPlayerInfo.Fraction; }
+        get
+        {
+            if (loggedPlayerInfo == null)
+            {
+                return Fraction.None;
+            }
+            return loggedPlayerInfo.Fraction;
+        }
+        set
+        {
+            if (loggedPlayerInfo == null)
+            {
+                Debug.LogError("Cannot set fraction!");
+                return;
+            }
+            loggedPlayerInfo.Fraction = value;
+        }
     }
     
     [Obsolete("Should be deleted, but first check if it does not harm anything.")]
@@ -311,7 +328,7 @@ public class GameManager : IOnMessageListener
             }
             else
             {
-                AuthenticationHandler.Instance.LoginBasic(UserName, UserPassword);
+                AuthenticationHandler.Instance.LoginBasic(UserName, UserPassword, true);
             }
         }
 
@@ -413,7 +430,7 @@ public class GameManager : IOnMessageListener
             serverTeamDb.Add(serverTeam.Name, serverTeam);
         }
         var localTeamNames = new HashSet<string>(localTeams.Select(x => x.Name));
-        foreach (FruitonTeam localTeam in FruitonTeamList.FruitonTeams)
+        foreach (FruitonTeam localTeam in localTeams)
         {
             FruitonTeam serverTeam;
             bool areNamesSame = serverTeamDb.TryGetValue(localTeam.Name, out serverTeam);

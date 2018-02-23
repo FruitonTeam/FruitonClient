@@ -16,8 +16,8 @@ public class LoginPanel : MainMenuPanel
     {
         form = gameObject.AddComponent<Form>().SetInputs(
             LoginButton,
-            new FormControl("name", LoginName, Validator.Required("Please enter name")),
-            new FormControl("password", LoginPassword, Validator.Required("Please enter password")),
+            new FormControl("name", LoginName, Validator.Required("Please enter\nname")),
+            new FormControl("password", LoginPassword, Validator.Required("Please enter\npassword")),
             new FormControl(LoginStayLoggedIn),
             new FormControl(LoginButton)
         );

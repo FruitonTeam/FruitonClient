@@ -8,9 +8,8 @@ using KFruiton = fruiton.kernel.Fruiton;
 public abstract class TeamManagerBase : FruitonVisualizerBase
 {
     public ScrollRect ScrollRect;
-
+    
     public FridgeTeamGrid MyTeamGrid;
-
 
     public Image DragAndDropBarrier;
     public FridgeDndFruiton DragAndDropFruiton;
@@ -196,4 +195,5 @@ public abstract class TeamManagerBase : FruitonVisualizerBase
         FruitonDetail.SetFruiton(fruiton, MyTeamGrid.GetAvailableSquares(fruiton.KernelFruiton).Count != 0);
         base.ShowDetail(fruiton);
     }
+
 }

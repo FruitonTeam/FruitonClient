@@ -162,7 +162,7 @@ namespace Networking
             }
             if (!string.IsNullOrEmpty(token))
             {
-                headers[X_AUTH_TOKEN_HEADER_KEY] = token;        
+                headers[X_AUTH_TOKEN_HEADER_KEY] = token;  
             }
 
             if (!string.IsNullOrEmpty(cookies))
@@ -242,6 +242,8 @@ namespace Networking
                 webSocket.Close();    
             }
             listeners = new Dictionary<WrapperMessage.MessageOneofCase, List<IOnMessageListener>>();
+            cookies = string.Empty;
+            token = string.Empty;
         }
 
         public void Logout()

@@ -125,8 +125,8 @@ public class FruitonTeamsManager : TeamManagerBase
     {
         state = (TeamManagementState) Enum.Parse(typeof(TeamManagementState), Scenes.GetParam(Scenes.TEAM_MANAGEMENT_STATE));
         InitializeTeams(isInTeamManagement);
-        SwitchViewMode(viewMode);
 
+        SwitchViewMode(viewMode);
         switch (state)
         {
             case TeamManagementState.ONLINE_CHOOSE:
@@ -551,6 +551,14 @@ public class FruitonTeamsManager : TeamManagerBase
         }
     }
 
+    protected override void ReindexFruitons()
+    {
+        if (viewMode == ViewMode.TeamEdit)
+        {
+            base.ReindexFruitons();
+        }
+    }
+
     /// <summary>
     /// Finds the next name for the fruiton team in the following way:
     /// "New Team N" where N is the smallest available positive integer,
@@ -635,7 +643,7 @@ public class FruitonTeamsManager : TeamManagerBase
                 ResizeScrollContent(teams.Count);
                 break;
             case ViewMode.TeamEdit:
-                ResizeScrollContent(GameManager.Instance.AllPlayableFruitons.Count());
+                ReindexFruitons();
                 break;
         }
     }
