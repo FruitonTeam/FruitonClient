@@ -45,7 +45,7 @@ namespace UI.MainMenu
 
         public void TeamSelectionContinueOffline()
         {
-            TeamSelectionContinue(BattleType.OfflineBattle, TeamManagementState.LOCAL_CHOOSE_FIRST);
+            TeamSelectionContinue(BattleType.LocalDuel, TeamManagementState.LOCAL_CHOOSE_FIRST);
         }
 
         public void TeamSelectionContinueAI()

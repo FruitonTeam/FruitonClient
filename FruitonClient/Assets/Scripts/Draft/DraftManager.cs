@@ -18,7 +18,7 @@ public class DraftManager : TeamManagerBase
     public Text TimeToPickText;
     public Text TimeToPickLabel;
     public Text OpponetTurnToPickText;
-    public MessagePanel GameOverPanel;
+    public GameResultsPanel GameResultsPanel;
 
     private readonly float pickTimeFrame = 2.0f;
     private FruitonTeam myTeam;
@@ -238,6 +238,7 @@ public class DraftManager : TeamManagerBase
     {
         WrapperFruitons.SetActive(true);
         Filters.SetActive(true);
+        GameResultsPanel.gameObject.SetActive(false);
         MyTeamGrid.AllowEdit = false;
         ResizeScrollContent(GameManager.Instance.AllPlayableFruitons.Count());
     }
@@ -256,6 +257,6 @@ public class DraftManager : TeamManagerBase
     {
         ButtonSurrender.interactable = false;
 
-        BattleUIUtil.ShowResults(GameOverPanel, gameOver);
+        GameResultsPanel.ShowResult(gameOver);
     }
 }

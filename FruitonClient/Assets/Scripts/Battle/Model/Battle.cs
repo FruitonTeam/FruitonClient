@@ -15,7 +15,7 @@ using KFruiton = fruiton.kernel.Fruiton;
 public enum BattleType
 {
     OnlineBattle,
-    OfflineBattle,
+    LocalDuel,
     AIBattle,
     TutorialBattle,
     ChallengeBattle

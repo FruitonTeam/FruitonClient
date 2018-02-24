@@ -43,11 +43,11 @@ public class BattleViewer : MonoBehaviour
     public Image MyAvatar;
     public Image OpponentAvatar;
     public GameObject Board;
-    public MessagePanel GameResultsPanel;
     public GameObject FruitonInfoPanel;
     public GameObject TutorialPanel;
     public GameObject MyPanel;
     public GameObject OpponentPanel;
+    public GameResultsPanel GameResultsPanel;
 
     private static readonly Color FOREST_DARK = new Color(25 / 255f, 39 / 255f, 13 / 255f);
     private static readonly Color FOREST_GREEN = new Color(37 / 255f, 89 / 255f, 31 / 255f);
@@ -58,6 +58,11 @@ public class BattleViewer : MonoBehaviour
     public GameObject[,] FruitonsGrid { get; set; }
 
     public GameMode GameMode { get; private set; }
+
+    public bool IsGameOffline
+    {
+        get { return !(battleType == BattleType.ChallengeBattle || battleType == BattleType.OnlineBattle); }
+    }
 
     public BattleViewer()
     {
@@ -74,6 +79,7 @@ public class BattleViewer : MonoBehaviour
 #if UNITY_ANDROID
         InfoAndroidButton.gameObject.SetActive(true);
 #endif
+        GameResultsPanel.gameObject.SetActive(false);
         GridLayoutManager = GridLayoutManager.Instance;
         FruitonsGrid = GridLayoutManager.MakeNewGrid();
 
@@ -92,7 +98,7 @@ public class BattleViewer : MonoBehaviour
                 battle = new OnlineBattle(this, !comeFromDraft);
                 PanelLoadingGame.SetActive(true);
                 break;
-            case BattleType.OfflineBattle:
+            case BattleType.LocalDuel:
                 battle = new OfflineBattle(this);
                 InitializeOfflineGame();
                 break;
@@ -167,7 +173,6 @@ public class BattleViewer : MonoBehaviour
         {
             DefaultUpdate();
         }
-
     }
 
     public void DefaultUpdate()
@@ -182,7 +187,6 @@ public class BattleViewer : MonoBehaviour
             HoverLogic();
 #endif
         }
-            
     }
 
     public void HandleLeftButtonUp()
@@ -195,7 +199,7 @@ public class BattleViewer : MonoBehaviour
         else
         {
             HoverLogic();
-        }  
+        }
 #else
 
         LeftButtonUpLogic();
@@ -237,7 +241,6 @@ public class BattleViewer : MonoBehaviour
                 texture => OpponentAvatar.sprite = SpriteUtils.TextureToSprite(texture),
                 Debug.Log);
         }
-
     }
 
     public void LeftButtonUpLogic(RaycastHit[] raycastHits = null)
@@ -494,15 +497,27 @@ public class BattleViewer : MonoBehaviour
 
     private void ProcessGameOverEvent(GameOverEvent gameOverEvent)
     {
+        if (!IsGameOffline)
+        {
+            return;
+        }
+
+        string winnerName = null;
+        var losers = gameOverEvent.losers.ToList();
+        if (!losers.Contains(battle.Player1.ID))
+        {
+            winnerName = battle.Player1.Name;
+        }
+        else if (!losers.Contains(battle.Player2.ID))
+        {
+            winnerName = battle.Player2.Name;
+        }
+
         var message = new GameOver
         {
             Reason = Cz.Cuni.Mff.Fruiton.Dto.GameOver.Types.Reason.Standard,
-            Results = new GameResults
-            {
-                Money = 0,
-                Quests = {},
-                UnlockedFruitons = {}
-            }
+            WinnerLogin = winnerName,
+            GameRewards = new GameRewards()
         };
         GameOver(message);
     }
@@ -610,7 +625,11 @@ public class BattleViewer : MonoBehaviour
     public void Surrender()
     {
         battle.SurrenderEvent();
-        Scenes.Load(Scenes.MAIN_MENU_SCENE);
+        GameOver(new GameOver
+        {
+            WinnerLogin = battleType == BattleType.LocalDuel ? battle.WaitingPlayer.Name : battle.Player2.Name,
+            GameRewards = new GameRewards()
+        });
     }
 
     public void CancelSearch()
@@ -621,10 +640,12 @@ public class BattleViewer : MonoBehaviour
 
     public void GameOver(GameOver gameOverMessage)
     {
-        BattleUIUtil.ShowResults(GameResultsPanel, gameOverMessage);
-        GameResults results = gameOverMessage.Results;
-        GameManager.Instance.CompleteQuests(results.Quests.Select(quest => quest.Name));
-        Debug.Log("Game over, reason: " + gameOverMessage.Reason + ", result: " + results);
+        GameResultsPanel.ShowResult(gameOverMessage, battleType == BattleType.LocalDuel);
+
+        var rewards = gameOverMessage.GameRewards;
+        GameManager.Instance.CompleteQuests(rewards.Quests.Select(quest => quest.Name));
+        Debug.Log("Game over, reason: " + gameOverMessage.Reason + ", "
+                  + gameOverMessage.WinnerLogin + " won, rewards: " + rewards);
     }
 
     public void EnableEndTurnButton()
