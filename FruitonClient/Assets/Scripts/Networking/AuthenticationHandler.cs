@@ -151,6 +151,7 @@ namespace Networking
             }
             else
             {
+                OnLoginError("Cannot log in via Google, please use ordinary registration/login");
                 googleLoginHttpListener = null; // allows multiple retries
             }
         }
