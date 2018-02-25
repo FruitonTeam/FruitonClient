@@ -93,13 +93,13 @@ class AIBattle : Battle
         {
             case AIType.Clowns:
                 teamIds = AITeams.Clowns;
-                return new AggroGreedyAIPlayer(battleViewer, kernelPlayer, battle);
+                return new AggroGreedyAIPlayer(battleViewer, kernelPlayer, battle, "Joker");
             case AIType.Santas:
                 teamIds = AITeams.Santas;
-                return new AggroGreedyAIPlayer(battleViewer, kernelPlayer, battle);
+                return new ValueAI(battleViewer, kernelPlayer, battle, "Santa");
             case AIType.SportsMen:
                 teamIds = AITeams.SportsMen;
-                return new AggroGreedyAIPlayer(battleViewer, kernelPlayer, battle);
+                return new ValueAI(battleViewer, kernelPlayer, battle, "Special One");
             case AIType.Tutorial:
                 teamIds = AITeams.Tutorial;
                 return new TutorialPlayer(battleViewer, kernelPlayer, battle);
