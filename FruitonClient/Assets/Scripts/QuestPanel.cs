@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class QuestPanel : MonoBehaviour
-{
+{   
     public GameObject QuestsButton;
     public Text[] QuestTexts;
     public Color PanelColor = new Color(250, 241, 181);

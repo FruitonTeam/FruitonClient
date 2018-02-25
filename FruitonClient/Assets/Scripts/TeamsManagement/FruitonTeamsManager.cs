@@ -121,8 +121,9 @@ public class FruitonTeamsManager : TeamManagerBase
     }
 
     // Use this for initialization
-    void Start()
+    protected override void Start()
     {
+        base.Start();
         state = (TeamManagementState) Enum.Parse(typeof(TeamManagementState), Scenes.GetParam(Scenes.TEAM_MANAGEMENT_STATE));
         InitializeTeams(isInTeamManagement);
 
@@ -429,7 +430,7 @@ public class FruitonTeamsManager : TeamManagerBase
 
     protected override bool ShouldBeginDrag(FridgeFruiton fruiton)
     {
-        return fruiton.IsOwned;
+        return fruiton.IsOwned && fruiton.Count > 0;
     }
 
     protected override void AddToTeamButtonListener()
@@ -472,7 +473,7 @@ public class FruitonTeamsManager : TeamManagerBase
         {
             AddFruitonToTeam(draggedFruiton, dropGridPosition);
         }
-        MyTeamGrid.LoadTeam(teams[selectedTeamIndex].KernelTeam);
+        MyTeamGrid.LoadTeam(teams[selectedTeamIndex].KernelTeam, dbFridgeMapping);
     }
 
     private void InitializeTeams(bool includeIncomplete)
@@ -501,6 +502,7 @@ public class FruitonTeamsManager : TeamManagerBase
 
     private void AddFruitonToTeam(KFruiton fruiton, Position position)
     {
+        FridgeFruiton fridgeFruiton = dbFridgeMapping[fruiton.dbId];
         var team = teams[selectedTeamIndex].KernelTeam;
         team.FruitonIDs.Add(fruiton.dbId);
         team.Positions.Add(position);
@@ -524,6 +526,8 @@ public class FruitonTeamsManager : TeamManagerBase
 
     private void RemoveTeamMember(Position position)
     {
+        FridgeFruiton removedFruiton = dbFridgeMapping[draggedFruiton.dbId];
+        removedFruiton.Count++;
         var team = teams[selectedTeamIndex].KernelTeam;
         var index = team.Positions.IndexOf(position);
         team.Positions.RemoveAt(index);
@@ -612,7 +616,12 @@ public class FruitonTeamsManager : TeamManagerBase
         var newTeam = teams[selectedTeamIndex].KernelTeam;
         InputTeamName.text = newTeam.Name;
         CurrentFruitonTeam = newTeam;
-        MyTeamGrid.LoadTeam(newTeam);
+        Dictionary<int, FridgeFruiton> passedDictionary = dbFridgeMapping;
+        if (state != TeamManagementState.TEAM_MANAGEMENT)
+        {
+            passedDictionary = null;
+        } 
+        MyTeamGrid.LoadTeam(newTeam, passedDictionary);
     }
 
     private bool IsValidTeamIndex(int index)

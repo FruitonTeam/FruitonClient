@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using fruiton.kernel;
 using Spine.Unity;
 using UnityEngine;
@@ -12,6 +13,7 @@ public class FridgeFruiton : MonoBehaviour, IPointerDownHandler, IPointerEnterHa
 {
     public Text TextAttack;
     public Text TextHealth;
+    public Text TextCount;
     public Image PanelName;
     public SkeletonGraphic SpineSkeleton;
     public Image[] TypeIcons;
@@ -27,6 +29,20 @@ public class FridgeFruiton : MonoBehaviour, IPointerDownHandler, IPointerEnterHa
             isOwned = value;
             backgroud.color = isOwned ? Color.white : Color.gray;
             SpineSkeleton.color = isOwned ? Color.white : Color.gray;
+        }
+    }
+
+    private int count;
+    public int Count
+    {
+        get
+        {
+            return count;
+        }
+        set
+        {
+            count = value;
+            TextCount.text = count.ToString();
         }
     }
 
@@ -102,6 +118,7 @@ public class FridgeFruiton : MonoBehaviour, IPointerDownHandler, IPointerEnterHa
         KernelFruiton = kFruiton;
         TextAttack.text = kFruiton.currentAttributes.damage.ToString();
         TextHealth.text = kFruiton.currentAttributes.hp.ToString();
+        Count = GameManager.Instance.AvailableFruitons.Count(id => id == kFruiton.dbId);
         textName.text = kFruiton.name;
         Color color;
         ColorUtility.TryParseHtmlString(TypeColors[kFruiton.type], out color);

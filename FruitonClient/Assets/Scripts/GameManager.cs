@@ -389,6 +389,7 @@ public class GameManager : IOnMessageListener
         if (IsOnline)
         {
             PlayerHelper.GetAllFruitonTeams(MergeTeamLists, Debug.Log);
+            PlayerHelper.GetAvailableFruitons((list) => Debug.Log("Available fruitons loaded from server."), Debug.Log);
         }
     }
 

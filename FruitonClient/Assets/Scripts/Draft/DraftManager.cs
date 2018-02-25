@@ -35,15 +35,17 @@ public class DraftManager : TeamManagerBase
         EnemyName.text = "Waiting for opponent";
     }
 
-    void Start()
+    protected override void Start()
     {
+        base.Start();
         myTeam = new FruitonTeam();
         enemyTeam = new FruitonTeam();
-        MyTeamGrid.LoadTeam(myTeam);
-        EnemyTeamGrid.LoadTeam(enemyTeam);
-        
-        SetupView();
         InitializeAllFruitons();
+        MyTeamGrid.LoadTeam(myTeam, dbFridgeMapping);
+        EnemyTeamGrid.LoadTeam(enemyTeam, null);
+
+        SetupView();
+
 
         InitializeTeamGridListeners();
         InitializeFruitonDetailListeners();
@@ -105,12 +107,12 @@ public class DraftManager : TeamManagerBase
     {
         if (dropGridPosition != null)
             AddFruitonToTeam(draggedFruiton, dropGridPosition, myTeam);
-        MyTeamGrid.LoadTeam(myTeam);
+        MyTeamGrid.LoadTeam(myTeam, dbFridgeMapping);
     }
 
     protected override bool ShouldBeginDrag(FridgeFruiton fruiton)
     {
-        return fruiton.IsOwned && isMyTurnToDraft;
+        return fruiton.IsOwned && isMyTurnToDraft && fruiton.Count > 0;
     }
 
     public void UpdateFruitonInMyTeam(DraftResult result)
@@ -121,13 +123,13 @@ public class DraftManager : TeamManagerBase
             // Just add it
             myTeam.FruitonIDs.Add(result.FruitonId);
             myTeam.Positions.Add(result.Position);
-            MyTeamGrid.LoadTeam(myTeam);
+            MyTeamGrid.LoadTeam(myTeam, dbFridgeMapping);
         }
         else if (myTeam.FruitonIDs[pos] != result.FruitonId)
         {
             // Update it
             myTeam.FruitonIDs[pos] = result.FruitonId;
-            MyTeamGrid.LoadTeam(myTeam);
+            MyTeamGrid.LoadTeam(myTeam, dbFridgeMapping);
         }
     }
 
@@ -135,7 +137,7 @@ public class DraftManager : TeamManagerBase
     {
         enemyTeam.Positions.Add(result.Position);
         enemyTeam.FruitonIDs.Add(result.FruitonId);
-        EnemyTeamGrid.LoadTeam(enemyTeam);
+        EnemyTeamGrid.LoadTeam(enemyTeam, null);
     }
 
     public void TurnOnDrafting(DraftRequest request)
