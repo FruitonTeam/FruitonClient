@@ -17,9 +17,9 @@ namespace Networking
 
         private static readonly string GOOGLE_CLIENT_SECRET = "NyYlQJICuxYX3AnzChou2X8i";
 
-        private static readonly int GOOGLE_REDIRECT_PORT = 9999;
+        private static readonly int[] GOOGLE_REDIRECT_PORTS = {9999, 34311, 44873};
 
-        private static readonly string GOOGLE_REDIRECT_URI = "http://127.0.0.1:" + GOOGLE_REDIRECT_PORT;
+        private static readonly string GOOGLE_REDIRECT_URI_TEMPLATE = "http://127.0.0.1:{0}";
         private static readonly string GOOGLE_TOKEN_URI = "https://www.googleapis.com/oauth2/v4/token";
 
         private static string googleLoginSuccessHtml;
@@ -30,6 +30,8 @@ namespace Networking
         public string LastPassword { get; private set; }
 
         private HttpListener googleLoginHttpListener;
+
+        private string googleRedirectUri;
         
         private AuthenticationHandler()
         {
@@ -120,18 +122,37 @@ namespace Networking
 
             if (!googleLoginHttpListener.IsListening) 
             {
-                googleLoginHttpListener.Prefixes.Add("http://*:" + GOOGLE_REDIRECT_PORT + "/");
-                googleLoginHttpListener.Start();
-                googleLoginHttpListener.BeginGetContext(ProcessGoogleResult, googleLoginHttpListener);
+                foreach (int redirectPort in GOOGLE_REDIRECT_PORTS)
+                {
+                    try
+                    {
+                        googleLoginHttpListener.Prefixes.Add("http://*:" + redirectPort + "/");
+                        googleLoginHttpListener.Start();
+                        googleLoginHttpListener.BeginGetContext(ProcessGoogleResult, googleLoginHttpListener);
+                        googleRedirectUri = string.Format(GOOGLE_REDIRECT_URI_TEMPLATE, redirectPort);
+                        break;
+                    }
+                    catch (Exception e) // can be thrown if some other process is listening on `redirectPort`
+                    {
+                        Debug.LogException(e);
+                    }     
+                }
             }
 
-            Application.OpenURL(
-                "https://accounts.google.com/o/oauth2/v2/auth"
-                + "?client_id=" + GOOGLE_ID
-                + "&redirect_uri=" + GOOGLE_REDIRECT_URI
-                + "&response_type=code"
-                + "&scope=email%20profile"
-            );
+            if (googleLoginHttpListener.IsListening)
+            {
+                Application.OpenURL(
+                    "https://accounts.google.com/o/oauth2/v2/auth"
+                    + "?client_id=" + GOOGLE_ID
+                    + "&redirect_uri=" + googleRedirectUri
+                    + "&response_type=code"
+                    + "&scope=email%20profile"
+                );
+            }
+            else
+            {
+                googleLoginHttpListener = null; // allows multiple retries
+            }
         }
 
         private void ProcessGoogleResult(IAsyncResult result)
@@ -189,7 +210,7 @@ namespace Networking
             form.AddField("code", authCode + "&");
             form.AddField("client_id", GOOGLE_ID);
             form.AddField("client_secret", GOOGLE_CLIENT_SECRET);
-            form.AddField("redirect_uri", GOOGLE_REDIRECT_URI);
+            form.AddField("redirect_uri", googleRedirectUri);
             form.AddField("grant_type", "authorization_code");
 
             var www = new WWW(GOOGLE_TOKEN_URI, form.data, headers);
