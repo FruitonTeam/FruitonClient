@@ -134,6 +134,7 @@ namespace Networking
                     }
                     catch (Exception e) // can be thrown if some other process is listening on `redirectPort`
                     {
+                        googleLoginHttpListener.Prefixes.Clear();
                         Debug.LogException(e);
                     }     
                 }
