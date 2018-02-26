@@ -23,7 +23,7 @@ public class TouchControl : MonoBehaviour
     #endregion
 
     private float stationaryTouchTime;
-    private static readonly float TRANSLATE_TIMEOUT = 0.5f;
+    private static readonly float TRANSLATE_TIMEOUT = 0.1f;
 
     private void Start()
     {
