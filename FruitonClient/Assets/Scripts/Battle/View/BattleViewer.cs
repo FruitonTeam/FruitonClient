@@ -525,7 +525,7 @@ public class BattleViewer : MonoBehaviour
     private void ShowFloatingText(Vector3 position, int amount)
     {
         GameObject floatingText = Instantiate(Resources.Load<GameObject>("Models/Battle/TextChange"));
-        if (battleType == BattleType.OnlineBattle && !((OnlineBattle)battle).IsLocalPlayerFirst)
+        if ((battleType == BattleType.OnlineBattle || battleType == BattleType.ChallengeBattle) && !((OnlineBattle)battle).IsLocalPlayerFirst)
         {
             Vector3 eulerAngles = floatingText.transform.eulerAngles;
             floatingText.transform.eulerAngles = new Vector3(eulerAngles.x, -eulerAngles.y, eulerAngles.z);
