@@ -1,4 +1,5 @@
-﻿using UI.Chat;
+﻿using System.Linq;
+using UI.Chat;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,11 +21,17 @@ public class ChatDropdownOption : MonoBehaviour {
         int optionIndex = transform.GetSiblingIndex() - 1;
         if (optionIndex == CHALLENGE)
         {
-            GetComponent<Toggle>().interactable = ChatController.Instance.IsSelectedPlayerInMenu;
+            GetComponent<Toggle>().interactable = ChatController.Instance.IsSelectedPlayerInMenu 
+                && !amIChallengedBy(ChatController.Instance.SelectedPlayerLogin);
         } 
         else if (optionIndex == OFFER_FRUITON)
         {
             GetComponent<Toggle>().interactable = ChatController.Instance.IsSelectedPlayerOnline;
         }
+    }
+
+    private bool amIChallengedBy(string login)
+    {
+        return ChallengeController.Instance.EnemyChallenges.Select(data => data.Challenge.ChallengeFrom).Contains(login);
     }
 }
