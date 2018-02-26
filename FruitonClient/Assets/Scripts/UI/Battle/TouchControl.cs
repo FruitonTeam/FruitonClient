@@ -79,6 +79,11 @@ public class TouchControl : MonoBehaviour
     /// <param name="touch"></param>
     private void SingleTouchLogic(Touch touch)
     {
+        if (GameManager.Instance.IsBattleViewerAnimating)
+        {
+            GameManager.Instance.IsInputBlocked = false;
+            return;
+        }
         switch (touch.phase)
         {
             case TouchPhase.Stationary:

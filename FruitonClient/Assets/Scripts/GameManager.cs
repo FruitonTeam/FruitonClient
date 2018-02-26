@@ -58,6 +58,15 @@ public class GameManager : IOnMessageListener
 
     private bool isInputBlocked;
 
+    public bool IsBattleViewerAnimating
+    {
+        get
+        {
+            if (CurrentBattleViewer == null) throw new ArgumentException("Battle viewer is not assigned.");
+            return !CurrentBattleViewer.IsInputEnabled;
+        }
+    }
+
     public bool IsInputBlocked
     {
         get
