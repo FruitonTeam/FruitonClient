@@ -6177,7 +6177,7 @@ MonoBehaviour:
   m_Content: {fileID: 1571329345}
   m_Horizontal: 0
   m_Vertical: 1
-  m_MovementType: 1
+  m_MovementType: 2
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
@@ -7246,6 +7246,11 @@ Prefab:
     - target: {fileID: 1913573020740856, guid: ff40b48c80c73490eb9dc187a2c9b8a3, type: 2}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114043822528140454, guid: ff40b48c80c73490eb9dc187a2c9b8a3,
+        type: 2}
+      propertyPath: m_MovementType
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ff40b48c80c73490eb9dc187a2c9b8a3, type: 2}
