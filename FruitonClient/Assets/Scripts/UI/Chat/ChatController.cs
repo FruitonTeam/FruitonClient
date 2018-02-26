@@ -281,9 +281,15 @@ namespace UI.Chat
             string friendToAdd = AddFriendInput.text.Trim();
             AddFriendInput.text = "";
 
-            if (friendToAdd == "")
+            if (friendToAdd.IsNullOrEmpty())
             {
-                return; // cannot add empty friend
+                return; // ignore
+            }
+
+            if (GameManager.Instance.Friends.Select(f => f.Login).Contains(friendToAdd))
+            {
+                NotificationManager.Instance.ShowError("Invalid action", friendToAdd + " is already your friend!");
+                return;
             }
 
             if (!ConnectionHandler.Instance.IsLogged())
@@ -293,7 +299,7 @@ namespace UI.Chat
 
             if (GameManager.Instance.UserName.Equals(friendToAdd))
             {
-                NotificationManager.Instance.ShowError("Invalid action","You cannot add yourself as a friend!");
+                NotificationManager.Instance.ShowError("Invalid action", "You cannot add yourself as a friend!");
                 return;
             }
 
