@@ -4,6 +4,7 @@ using KFruiton = fruiton.kernel.Fruiton;
 using fruiton.fruitDb.factories;
 using UnityEngine;
 using UnityEngine.Events;
+using System.Linq;
 
 class OnDragFromTeamEvent : UnityEvent<KFruiton, Position>
 {
@@ -73,14 +74,26 @@ public class FridgeTeamGrid : MonoBehaviour
         InitGridFruitons();
     }
 
-    public void LoadTeam(FruitonTeam team)
+    public void LoadTeam(FruitonTeam team, Dictionary<int, FridgeFruiton> dbFridgeMapping)
     {
         ClearFruitons();
+        if (dbFridgeMapping != null)
+        {
+            List<int> availableFruitons = GameManager.Instance.AvailableFruitons;
+            foreach (int dbId in availableFruitons)
+            {
+                dbFridgeMapping[dbId].Count = availableFruitons.Count(id => id == dbId);
+            }
+        }
         for (int i = 0; i < team.FruitonIDs.Count; i++)
         {
             var fruitonId = team.FruitonIDs[i];
             var pos = team.Positions[i];
             var kernelFruiton = FruitonFactory.makeFruiton(fruitonId, GameManager.Instance.FruitonDatabase);
+            if (dbFridgeMapping != null)
+            {
+                dbFridgeMapping[fruitonId].Count--;
+            }
             var x = IsMirrored ? 1 - pos.Y : pos.Y;
             var y = pos.X - 2;
             gridSquares[x, y].SetFruiton(kernelFruiton);

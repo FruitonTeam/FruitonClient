@@ -14,11 +14,12 @@ public abstract class FruitonVisualizerBase : MonoBehaviour
     public RectTransform ScrollContentRectTransform;
     public FridgeFruitonDetail FruitonDetail;
 
+    protected Dictionary<int, FridgeFruiton> dbFridgeMapping;
     protected List<FridgeFruiton> fridgeFruitons;
 
     protected virtual void Start()
     {
-        InitializeAllFruitons();
+        dbFridgeMapping = new Dictionary<int, FridgeFruiton>();
     }
 
     protected virtual void InitializeAllFruitons()
@@ -38,6 +39,7 @@ public abstract class FruitonVisualizerBase : MonoBehaviour
             var kFruiton = fruiton;
             var fFruiton = fridgeFruiton.GetComponent<FridgeFruiton>();
             InitializeFridgeFruiton(fFruiton, kFruiton, i);
+            dbFridgeMapping[kFruiton.dbId] = fFruiton;
             i++;
         }
         FridgeFruitonTemplate.SetActive(false);

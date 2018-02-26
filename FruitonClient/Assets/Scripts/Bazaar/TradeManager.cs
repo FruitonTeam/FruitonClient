@@ -1,4 +1,5 @@
 ﻿using Networking;
+using System;
 using UI.Chat;
 using UI.Notification;
 using UnityEngine;
@@ -26,7 +27,8 @@ namespace Bazaar
             base.Start();
             offeredPlayerLogin = Scenes.GetParam(Scenes.OFFERED_PLAYER_LOGIN);
             Headline.GetComponent<Text>().text = string.Format(HEADLINE_TEXT, offeredPlayerLogin);
-            InputPrice.onValidateInput += OnlyPositiveDigits;  
+            InputPrice.onValidateInput += OnlyPositiveDigits;
+            InitializeAllFruitons();
         }
 
         protected override void UpdateAvailableFruitons()
