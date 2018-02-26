@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TouchControl : MonoBehaviour {
+public class TouchControl : MonoBehaviour
+{
 
     #region All platforms fields
 
@@ -22,6 +23,7 @@ public class TouchControl : MonoBehaviour {
     #endregion
 
     private float stationaryTouchTime;
+    private static readonly float TRANSLATE_TIMEOUT = 0.5f;
 
     private void Start()
     {
@@ -81,17 +83,14 @@ public class TouchControl : MonoBehaviour {
         {
             case TouchPhase.Stationary:
                 stationaryTouchTime += Time.deltaTime;
-                if (!GameManager.Instance.IsInputBlocked && stationaryTouchTime > 1)
+                if (!GameManager.Instance.IsInputBlocked && stationaryTouchTime > TRANSLATE_TIMEOUT)
                 {
                     GameManager.Instance.IsInputBlocked = true;
-                    AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-                    AndroidJavaObject currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-                    AndroidJavaObject vibrator = currentActivity.Call<AndroidJavaObject>("getSystemService", "vibrator");
-                    vibrator.Call("vibrate", 200);
+                    Vibrator.Vibrate(100);
                 }
                 break;
             case TouchPhase.Moved:
-                if (stationaryTouchTime > 1)
+                if (stationaryTouchTime > TRANSLATE_TIMEOUT)
                 {
                     var ray = Camera.main.ScreenPointToRay(touch.position);
                     Vector3 endPoint = ray.origin + (ray.direction * Vector3.Distance(Camera.main.transform.position, Board.transform.position));
@@ -113,15 +112,6 @@ public class TouchControl : MonoBehaviour {
     /// </summary>
     private void DoubleTouchLogic(Touch touch1, Touch touch2)
     {
-        //// Translation
-        //if ((touch1.phase == TouchPhase.Moved && touch2.phase == TouchPhase.Stationary) ||
-        //    (touch2.phase == TouchPhase.Moved && touch1.phase == TouchPhase.Stationary))
-        //{
-        //    Vector3 delta = new Vector3(touch1.deltaPosition.x, 0, touch1.deltaPosition.y) + new Vector3(touch2.deltaPosition.x, 0, touch2.deltaPosition.y);
-        //    TranslateBoard(delta);
-        //}
-        // Scale (pinch scale)
-        //else 
         if (touch1.phase == TouchPhase.Moved || touch2.phase == TouchPhase.Moved)
         {
             float distance = Vector2.Distance(touch1.position, touch2.position);
