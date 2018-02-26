@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace UI.Chat
 {
@@ -9,6 +10,6 @@ namespace UI.Chat
         {
             ChatController.Show();   
         }
-        
+
     }
 }

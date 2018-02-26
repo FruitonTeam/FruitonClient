@@ -48,6 +48,7 @@ public class BattleViewer : MonoBehaviour
     public GameObject MyPanel;
     public GameObject OpponentPanel;
     public GameResultsPanel GameResultsPanel;
+    public Image TranslationArrow;
 
     private static readonly Color FOREST_DARK = new Color(25 / 255f, 39 / 255f, 13 / 255f);
     private static readonly Color FOREST_GREEN = new Color(37 / 255f, 89 / 255f, 31 / 255f);
@@ -76,6 +77,7 @@ public class BattleViewer : MonoBehaviour
 
     private void Start()
     {
+        GameManager.Instance.CurrentBattleViewer = this;
 #if UNITY_ANDROID
         InfoAndroidButton.gameObject.SetActive(true);
 #endif
@@ -169,7 +171,7 @@ public class BattleViewer : MonoBehaviour
         {
             tutorial.Update();
         }
-        else
+        else if (!GameManager.Instance.IsInputBlocked)
         {
             DefaultUpdate();
         }
@@ -187,6 +189,16 @@ public class BattleViewer : MonoBehaviour
             HoverLogic();
 #endif
         }
+    }
+
+    public void ShowTranslationArrow()
+    {
+        TranslationArrow.gameObject.SetActive(true);
+    }
+
+    public void HideTranslationArrow()
+    {
+        TranslationArrow.gameObject.SetActive(false);
     }
 
     public void HandleLeftButtonUp()

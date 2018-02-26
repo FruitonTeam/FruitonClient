@@ -54,6 +54,39 @@ public class GameManager : IOnMessageListener
 
     #region Properties
 
+    public BattleViewer CurrentBattleViewer { get; set; }
+
+    private bool isInputBlocked;
+
+    public bool IsBattleViewerAnimating
+    {
+        get
+        {
+            if (CurrentBattleViewer == null) throw new ArgumentException("Battle viewer is not assigned.");
+            return !CurrentBattleViewer.IsInputEnabled;
+        }
+    }
+
+    public bool IsInputBlocked
+    {
+        get
+        {
+            return isInputBlocked;
+        }
+        set
+        {
+            isInputBlocked = value;
+            if (isInputBlocked)
+            {
+                CurrentBattleViewer.ShowTranslationArrow();
+            }
+            else
+            {
+                CurrentBattleViewer.HideTranslationArrow();
+            }
+        }
+    }
+
     /// <summary>
     /// Gets or sets the current fruiton team. (To be used in the battle.)
     /// </summary>
