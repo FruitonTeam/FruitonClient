@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using UI.Chat;
 using UnityEngine;
 using UnityEngine.UI;
 using KFruiton = fruiton.kernel.Fruiton;
