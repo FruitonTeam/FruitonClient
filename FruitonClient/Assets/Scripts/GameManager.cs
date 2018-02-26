@@ -54,6 +54,8 @@ public class GameManager : IOnMessageListener
 
     #region Properties
 
+    public bool IsInputBlocked { get; set; }
+
     /// <summary>
     /// Gets or sets the current fruiton team. (To be used in the battle.)
     /// </summary>

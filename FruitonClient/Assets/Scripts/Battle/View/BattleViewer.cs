@@ -169,7 +169,7 @@ public class BattleViewer : MonoBehaviour
         {
             tutorial.Update();
         }
-        else
+        else if (!GameManager.Instance.IsInputBlocked)
         {
             DefaultUpdate();
         }

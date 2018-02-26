@@ -345,7 +345,7 @@ public class Tutorial
 
     private void WaitForLeftClick()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (!GameManager.Instance.IsInputBlocked && Input.GetMouseButtonDown(0))
         {
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit[] raycastHits = Physics.RaycastAll(ray);
