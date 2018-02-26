@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class Vibrator {
+public static class Vibrator
+{
 
     private static readonly AndroidJavaObject VIBRATOR =
     new AndroidJavaClass("com.unity3d.player.UnityPlayer")// Get the Unity Player.
-    .GetStatic<AndroidJavaObject>("currentActivity")// Get the Current Activity from the Unity Player.
-    .Call<AndroidJavaObject>("getSystemService", "vibrator");// Then get the Vibration Service from the Current Activity.
+        .GetStatic<AndroidJavaObject>("currentActivity")// Get the Current Activity from the Unity Player.
+        .Call<AndroidJavaObject>("getSystemService", "vibrator");// Then get the Vibration Service from the Current Activity.
 
     static Vibrator()
     {
