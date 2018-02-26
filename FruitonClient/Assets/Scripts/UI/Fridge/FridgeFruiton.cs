@@ -42,7 +42,7 @@ public class FridgeFruiton : MonoBehaviour, IPointerDownHandler, IPointerEnterHa
         set
         {
             count = value;
-            TextCount.text = count.ToString();
+            TextCount.text = count + "x";
         }
     }
 

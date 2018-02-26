@@ -142,7 +142,7 @@ public abstract class FruitonVisualizerBase : MonoBehaviour
             }
             newIndex++;
         }
-        ResizeScrollContent(newIndex + 1);
+        ResizeScrollContent(newIndex);
     }
 
     protected void ResizeScrollContent(int objectCount)
