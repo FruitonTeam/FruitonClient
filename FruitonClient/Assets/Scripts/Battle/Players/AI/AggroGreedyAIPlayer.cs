@@ -22,8 +22,8 @@ class AggroGreedyAIPlayer : AIPlayerBase
 
     private delegate bool IsBetterAction<in TAction>(TAction newAction, TAction previousAction, Kernel kernel);
 
-    public AggroGreedyAIPlayer(BattleViewer battleViewer, Player kernelPlayer, Battle battle) 
-        : base(battleViewer, kernelPlayer, battle, "Aggro greedy")
+    public AggroGreedyAIPlayer(BattleViewer battleViewer, Player kernelPlayer, Battle battle, string name) 
+        : base(battleViewer, kernelPlayer, battle, name)
     {
     }
 

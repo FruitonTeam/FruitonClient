@@ -1,8 +1,19 @@
 using System;
+using System.Collections.Generic;
 
 public class BoyFighterBattleAnimator : FruitonBattleAnimator
 {
-    private Action nextCompleteAction;
+    private Queue<Tuple<string, Action>> actionsQueue;
+    private Action nextCallback;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        actionsQueue = new Queue<Tuple<string,Action>>();
+        SkeletonAnim.AnimationState.Complete += delegate {
+            CompleteAction();
+        };
+    }
 
     public void Attack(Action completeAction = null)
     {
@@ -16,20 +27,32 @@ public class BoyFighterBattleAnimator : FruitonBattleAnimator
 
     private void PlayAnimationOnce(string name, Action completeAction)
     {
-        nextCompleteAction = completeAction;
-        SkeletonAnim.AnimationState.SetAnimation(5, name, false);
-        SkeletonAnim.AnimationState.Complete += delegate {
-            CompleteAction();
-        };
+        if (nextCallback == null)
+        {
+            SkeletonAnim.AnimationState.SetAnimation(5, name, false);
+            nextCallback = completeAction;
+        }
+        else
+        {
+            actionsQueue.Enqueue(Tuple.New(name, completeAction));
+        }
+        
     }
 
     private void CompleteAction()
     {
-        if (nextCompleteAction != null)
+        if (nextCallback == null) return;
+        nextCallback();
+        if (actionsQueue.Count != 0)
         {
+            Tuple<string, Action> next = actionsQueue.Dequeue();
+            SkeletonAnim.AnimationState.SetAnimation(5, next.First, false);
+            nextCallback = next.Second;
+        }
+        else
+        {
+            nextCallback = null;
             SkeletonAnim.AnimationState.SetAnimation(5, "01_Idle", true);
-            nextCompleteAction();
-            nextCompleteAction = null;
         }
     }
 }
