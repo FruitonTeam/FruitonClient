@@ -29,7 +29,7 @@ public class ValueAI : AIPlayerBase
 
     private void PerformNextActionImpl()
     {
-        Tuple<int, Action> bestAction = ShallowMinimax(battle.Kernel, null);
+        Tuple<int, Action> bestAction = ShallowMinimax(battle.Kernel.clone(), null);
         TaskManager.Instance.RunOnMainThread(() => { startedComputation = false; PerformAction(bestAction.Second); });
     }
 
@@ -91,17 +91,10 @@ public class ValueAI : AIPlayerBase
         Fruiton playerKing = kings.First(fruiton => fruiton.owner.id != ID);
         foreach (Fruiton fruiton in fruitons)
         {
-            Point enemyKingPosition;
+            
             bool isFruitonAi = fruiton.owner.id == ID;
-            int sign = (isFruitonAi) ? 1 : -1;
-            if (isFruitonAi)
-            {
-                enemyKingPosition = playerKing.position;
-            }
-            else
-            {
-                enemyKingPosition = aiKing.position;
-            }
+            int sign = isFruitonAi ? 1 : -1;
+            Point enemyKingPosition = isFruitonAi ? playerKing.position : aiKing.position;
             int xDiff = fruiton.position.x - enemyKingPosition.x;
             int yDiff = fruiton.position.y - enemyKingPosition.y;
             int distanceToEnemyKingSquared = xDiff * xDiff + yDiff * yDiff;
