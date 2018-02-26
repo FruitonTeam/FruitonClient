@@ -60,7 +60,6 @@ public class FruitonTeamsManager : TeamManagerBase
     private ViewMode viewMode;
     private List<FridgeFruitonTeam> teams;
     private int selectedTeamIndex;
-    private Color defaultTeamIconColor;
     private bool canPlayWithoutTeamSelected;
 
     private readonly List<Option<GameMode>> gameModes = new List<Option<GameMode>>
@@ -263,7 +262,7 @@ public class FruitonTeamsManager : TeamManagerBase
     {
         var newFruitonTeam = new FruitonTeam {Name = GetNextAvailableTeamName()};
         GameManager.Instance.FruitonTeamList.FruitonTeams.Add(newFruitonTeam);
-        AddTeamToScene(newFruitonTeam);
+        AddTeamToScene(newFruitonTeam, true);
         SelectTeam(teams.Count - 1);
         SwitchViewMode(ViewMode.TeamEdit);        
         ButtonNewTeam.interactable = teams.Count < MAX_TEAM_COUNT;
@@ -293,6 +292,7 @@ public class FruitonTeamsManager : TeamManagerBase
     {
         FridgeFruitonTeam team = teams[selectedTeamIndex];
         FruitonTeam kTeam = teams[selectedTeamIndex].KernelTeam;
+        team.Valid = !TeamContainsMissingFruitons(kTeam);
         var newName = InputTeamName.text;
         if (kTeam.Name != newName)
         {
@@ -408,13 +408,14 @@ public class FruitonTeamsManager : TeamManagerBase
         Scenes.Load(Scenes.MAIN_MENU_SCENE);
     }
 
-    private void AddTeamToScene(FruitonTeam team)
+    private void AddTeamToScene(FruitonTeam team, bool valid)
     {
         GameObject fruitonTeamObject = Instantiate(FridgeTeamTemplate);
         fruitonTeamObject.transform.SetParent(WrapperTeams.transform);
 
         var teamIndex = teams.Count;
         var fridgeFruitonTeam = fruitonTeamObject.GetComponent<FridgeFruitonTeam>();
+        fridgeFruitonTeam.Valid = valid;
         fridgeFruitonTeam.FridgeIndex = teamIndex;
         fridgeFruitonTeam.KernelTeam = team;
         teams.Add(fridgeFruitonTeam);
@@ -425,6 +426,7 @@ public class FruitonTeamsManager : TeamManagerBase
         fruitonTeamObject.transform.localPosition = GetPositionOnScrollViewGrid(teamIndex);
         fruitonTeamObject.GetComponentInChildren<Text>().text = GetTeamDescription(team);
         fruitonTeamObject.GetComponent<Button>().onClick.AddListener(() => SelectTeam(fridgeFruitonTeam.FridgeIndex));
+        fruitonTeamObject.GetComponent<Image>().color = valid ? FridgeFruitonTeam.COLOR_DEFAULT : FridgeFruitonTeam.COLOR_INVALID;
         fruitonTeamObject.SetActive(true);
     }
 
@@ -476,19 +478,19 @@ public class FruitonTeamsManager : TeamManagerBase
         MyTeamGrid.LoadTeam(teams[selectedTeamIndex].KernelTeam, dbFridgeMapping);
     }
 
-    private void InitializeTeams(bool includeIncomplete)
+    private void InitializeTeams(bool includeInvalid)
     {
         GameManager gameManager = GameManager.Instance;
         teams = new List<FridgeFruitonTeam>();
         FridgeTeamTemplate.SetActive(true);
         foreach (FruitonTeam fruitonTeam in gameManager.FruitonTeamList.FruitonTeams)
         {
-            if (includeIncomplete || IsTeamComplete(fruitonTeam))
+            bool containsMissingFruitons = TeamContainsMissingFruitons(fruitonTeam);
+            if (includeInvalid || (IsTeamComplete(fruitonTeam) && !containsMissingFruitons))
             {
-                AddTeamToScene(fruitonTeam);
+                AddTeamToScene(fruitonTeam, !containsMissingFruitons);
             }
         }
-        defaultTeamIconColor = FridgeTeamTemplate.GetComponent<Image>().color;
         FridgeTeamTemplate.SetActive(false);
     }
 
@@ -498,6 +500,28 @@ public class FruitonTeamsManager : TeamManagerBase
         team.FruitonIDs.CopyTo(fruitonIDsArray, 0);
         return FruitonTeamValidator
             .validateFruitonTeam(new haxe.root.Array<int>(fruitonIDsArray), GameManager.Instance.FruitonDatabase).complete;
+    }
+
+    private bool TeamContainsMissingFruitons(FruitonTeam team)
+    {
+        Dictionary<int, int> teamCounts = new Dictionary<int, int>();
+        foreach (var id in team.FruitonIDs)
+        {
+            if (!teamCounts.ContainsKey(id))
+            {
+                teamCounts[id] = 0;
+            }
+            teamCounts[id]++;
+        }
+        foreach (var r in teamCounts)
+        {
+            var teamFruitonId = r.Key;
+            if(r.Value > GameManager.Instance.AvailableFruitons.Count(id => id == teamFruitonId))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void AddFruitonToTeam(KFruiton fruiton, Position position)
@@ -584,6 +608,14 @@ public class FruitonTeamsManager : TeamManagerBase
 
     private string GetTeamDescription(FruitonTeam team)
     {
+        if (TeamContainsMissingFruitons(team))
+        {
+            return String.Format(
+                "{0}\n\n(INVALID)",
+                team.Name
+            );
+        }
+
         return String.Format(
             "{0}\n\n({1}/10)",
             team.Name,
@@ -609,10 +641,11 @@ public class FruitonTeamsManager : TeamManagerBase
 
         if (selectedTeamIndex >= 0)
         {
-            teams[selectedTeamIndex].gameObject.GetComponent<Image>().color = defaultTeamIconColor;
+            var lastSelectedTeam = teams[selectedTeamIndex];
+            lastSelectedTeam.gameObject.GetComponent<Image>().color = lastSelectedTeam.Valid ? FridgeFruitonTeam.COLOR_DEFAULT : FridgeFruitonTeam.COLOR_INVALID;
         }
 
-        teams[index].gameObject.GetComponent<Image>().color = new Color(0.55f, 0.85f, 1);
+        teams[index].gameObject.GetComponent<Image>().color = FridgeFruitonTeam.COLOR_SELECTED;
         selectedTeamIndex = index;
         var newTeam = teams[selectedTeamIndex].KernelTeam;
         InputTeamName.text = newTeam.Name;
