@@ -503,6 +503,7 @@ public class FruitonTeamsManager : TeamManagerBase
     private void AddFruitonToTeam(KFruiton fruiton, Position position)
     {
         FridgeFruiton fridgeFruiton = dbFridgeMapping[fruiton.dbId];
+        fridgeFruiton.Count--;
         var team = teams[selectedTeamIndex].KernelTeam;
         team.FruitonIDs.Add(fruiton.dbId);
         team.Positions.Add(position);

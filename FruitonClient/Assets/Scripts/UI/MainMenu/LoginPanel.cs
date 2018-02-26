@@ -60,7 +60,7 @@ public class LoginPanel : MainMenuPanel
         PanelManager panelManager = PanelManager.Instance;
 
         gameManager.StayLoggedIn = LoginStayLoggedIn.isOn;
-        string username = LoginName.text;
+        string username = LoginName.text.Trim();
         string password = LoginPassword.text;
         AuthenticationHandler.Instance.LoginBasic(username, password);
         panelManager.ShowLoadingIndicator();
