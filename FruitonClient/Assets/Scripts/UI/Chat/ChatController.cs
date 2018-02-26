@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Cz.Cuni.Mff.Fruiton.Dto;
+using Google.Protobuf.Collections;
 using Networking;
 using UI.Notification;
 using UnityEngine;
@@ -99,6 +100,8 @@ namespace UI.Chat
         /// </summary>
         private readonly List<Text> ChatTexts = new List<Text>();
         private readonly DateTime unixTimeStart = new DateTime(1970, 1, 1, 0, 0, 0, System.DateTimeKind.Utc);
+
+        private RepeatedField<string> playersOnSameNetwork;
 
 #if UNITY_ANDROID
         private RectTransform chatPanelRect;
@@ -538,6 +541,8 @@ namespace UI.Chat
             {
                 listener.OnFriendRemoved();
             }
+
+            UpdatePlayersOnSameNetwork();
         }
 
         private void OnStatusChange(StatusChange message)
@@ -558,7 +563,13 @@ namespace UI.Chat
 
         private void OnPlayersOnSameNetworkOnline(PlayersOnSameNetworkOnline message)
         {
-            foreach (var login in message.Logins)
+            playersOnSameNetwork = message.Logins;
+            UpdatePlayersOnSameNetwork();
+        }
+
+        private void UpdatePlayersOnSameNetwork()
+        {
+            foreach (var login in playersOnSameNetwork)
             {
                 if (!chatRecords.ContainsKey(login))
                 {
