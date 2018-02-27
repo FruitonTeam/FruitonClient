@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace UI.Chat
 {
+    /// <summary>
+    /// Handled incoming chat messages and displays notification when chat panel isn't active
+    /// </summary>
     public class ChatMessageNotifier : IOnMessageListener
     {
         private static Texture defaultAvatar;

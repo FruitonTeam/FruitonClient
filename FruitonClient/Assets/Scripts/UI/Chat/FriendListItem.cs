@@ -1,25 +1,13 @@
-﻿using System.Collections.Generic;
-using Cz.Cuni.Mff.Fruiton.Dto;
+﻿using Cz.Cuni.Mff.Fruiton.Dto;
+using Extensions;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace UI.Chat
 {
-    static class StatusExtensions
-    {
-        public static string GetDescription(this Status status)
-        {
-            switch (status)
-            {
-                case Status.Offline: return "Offline";
-                case Status.InBattle: return "In Battle";
-                case Status.InMatchmaking: return "Looking for an opponent";
-                case Status.MainMenu: return "Chilling in menu";
-            }
-            return status.ToString();
-        }
-    }
-
+    /// <summary>
+    /// Represents item in the friend list
+    /// </summary>
     public class FriendListItem : ListItemBase
     {
         private static readonly string NEARBY_PLAYER_IN_MENU = "Nearby player";
@@ -63,6 +51,10 @@ namespace UI.Chat
             }
         }
 
+        /// <summary>
+        /// Reloads user's information
+        /// </summary>
+        /// <param name="data">data to load from</param>
         public override void OnLoad(object data)
         {
             var itemData = (FriendItemData) data;
