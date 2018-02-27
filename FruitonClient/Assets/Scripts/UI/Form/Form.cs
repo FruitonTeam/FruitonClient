@@ -7,10 +7,12 @@ using UnityEngine.UI;
 
 namespace UI.Form
 {
+    /// <summary>
+    /// Handles form behaviour in game
+    /// </summary>
     public class Form : MonoBehaviour
     {
-        public Button SubmitButton;
-
+        private Button submitButton;
         private GameObject errorPanel;
         private Text errorTextComponent;
         private FormControl[] formControls;
@@ -19,19 +21,23 @@ namespace UI.Form
         private bool valid;
         private int errorFontSize;
 
-
+        /// <summary>
+        /// Sets form's inputs and submit button
+        /// </summary>
+        /// <param name="submitButton">button to be used for submitting</param>
+        /// <param name="formControls">list of form's controls</param>
         public Form SetInputs(Button submitButton, params FormControl[] formControls)
         {
-            SubmitButton = submitButton;
+            this.submitButton = submitButton;
             // disable persistent event listeners - ones that are set in editor
             // to block button's original funcionality while the form is not in valid state
-            for (int i = 0; i < SubmitButton.onClick.GetPersistentEventCount(); i++)
+            for (int i = 0; i < this.submitButton.onClick.GetPersistentEventCount(); i++)
             {
-                SubmitButton.onClick.SetPersistentListenerState(i, UnityEventCallState.Off);
+                this.submitButton.onClick.SetPersistentListenerState(i, UnityEventCallState.Off);
             }
             // add our own onClick listener - it triggers validation
             // and then invokes all persistent listeners if the form is valid
-            SubmitButton.onClick.AddListener(SubmitForm);
+            this.submitButton.onClick.AddListener(SubmitForm);
 
             globalValidators = new List<Validator.GlobalValidator>();
             this.formControls = formControls;
@@ -55,18 +61,29 @@ namespace UI.Form
             return this;
         }
 
+        /// <summary>
+        /// Adds global validator to the form
+        /// </summary>
+        /// <param name="globalValidator">global validator to add</param>
         public Form AddGlobalValidator(Validator.GlobalValidator globalValidator)
         {
             globalValidators.Add(globalValidator);
             return this;
         }
 
+        /// <summary>
+        /// Sets font size of form errors
+        /// </summary>
+        /// <param name="size">size to use for form errors</param>
         public Form SetErrorFontSize(int size)
         {
             errorFontSize = size;
             return this;
         }
 
+        /// <summary>
+        /// Clears all input fields and removes errors
+        /// </summary>
         public void ResetForm()
         {
             foreach (var control in formControls)
@@ -81,6 +98,11 @@ namespace UI.Form
             ValidateForm();
         }
 
+        /// <summary>
+        /// Sets value of a form control
+        /// </summary>
+        /// <param name="controlName">name of the control</param>
+        /// <param name="value">value to use</param>
         public void SetValue(string controlName, string value)
         {
             foreach (var control in formControls)
@@ -92,6 +114,9 @@ namespace UI.Form
             }
         }
 
+        /// <summary>
+        /// Validates inputs and submits the form
+        /// </summary>
         void SubmitForm()
         {
             foreach (var control in formControls)
@@ -104,17 +129,22 @@ namespace UI.Form
             if (valid)
             {
                 // invoke all persistent listeners
-                for (int i = 0; i < SubmitButton.onClick.GetPersistentEventCount(); i++)
+                for (int i = 0; i < submitButton.onClick.GetPersistentEventCount(); i++)
                 {
                     SendMessage(
-                        SubmitButton.onClick.GetPersistentMethodName(i),
-                        SubmitButton.onClick.GetPersistentTarget(i)
+                        submitButton.onClick.GetPersistentMethodName(i),
+                        submitButton.onClick.GetPersistentTarget(i)
                     );
                 }
             }
         }
 
-        bool ValidateForm(FormControl currentControl = null)
+        /// <summary>
+        /// Validates form inputs
+        /// </summary>
+        /// <param name="focusedControl">currently focused form control</param>
+        /// <returns>true if the form is valid</returns>
+        bool ValidateForm(FormControl focusedControl = null)
         {
             var values = new Dictionary<string, string>();
             var errors = new Dictionary<string, string>();
@@ -144,12 +174,12 @@ namespace UI.Form
                     string errorMessage = validator(values[control.Name]);
                     if (errorMessage != null)
                     {
-                        if (currentControl == control
-                            || (currentControl == null && errors[control.Name] == null))
+                        if (focusedControl == control
+                            || (focusedControl == null && errors[control.Name] == null))
                         {
                             errors[control.Name] = errorMessage;
                         }
-                        else if (currentControl != null)
+                        else if (focusedControl != null)
                         {
                             errors[control.Name] = "";
                         }
@@ -158,7 +188,7 @@ namespace UI.Form
                 }
             }
 
-            UpdateErrorPanel(errors, currentControl);
+            UpdateErrorPanel(errors, focusedControl);
 
             foreach (var rec in errors)
             {
@@ -170,7 +200,12 @@ namespace UI.Form
             return true;
         }
 
-        private void UpdateErrorPanel(Dictionary<string, string> errors, FormControl currentControl = null)
+        /// <summary>
+        /// Shows errors in form
+        /// </summary>
+        /// <param name="errors">mapping of control names to errors</param>
+        /// <param name="focusedControl">currently focused form control</param>
+        private void UpdateErrorPanel(Dictionary<string, string> errors, FormControl focusedControl = null)
         {
             if (errorPanel == null)
             {
@@ -203,12 +238,12 @@ namespace UI.Form
                     inputField.image.color = Color.red;
 
                     // show error panel if there's an error with text
-                    // error panel is shown only only for one error - error from currently selected control
+                    // error panel is shown only only for one error - error from currently focused control
                     // takes priority, if there's no such error we show panel for first error with text
 
                     if (error != ""
                         && (!errorPanel.activeInHierarchy
-                            || control == currentControl)
+                            || control == focusedControl)
                     )
                     {
                         errorPanel.SetActive(true);
@@ -243,6 +278,9 @@ namespace UI.Form
             }
         }
 
+        /// <summary>
+        /// Listens for enter, tab and shift + tab key presses, updates form focus according to them
+        /// </summary>
         void Update()
         {
             if (Input.GetKeyDown(KeyCode.Tab))
