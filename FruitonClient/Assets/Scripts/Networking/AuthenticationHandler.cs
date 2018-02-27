@@ -5,6 +5,8 @@ using System.IO;
 using System.Net;
 using System.Text;
 using Cz.Cuni.Mff.Fruiton.Dto;
+using UI.Form;
+using UI.MainMenu;
 using UnityEngine;
 using Util;
 

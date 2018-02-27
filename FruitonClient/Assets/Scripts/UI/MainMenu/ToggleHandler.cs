@@ -1,12 +1,15 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ToggleHandler : MonoBehaviour
+namespace UI.MainMenu
 {
-    public Button loginButton;
-
-    public void OnValueChanged(bool on)
+    public class ToggleHandler : MonoBehaviour
     {
-        loginButton.Select();
+        public Button loginButton;
+
+        public void OnValueChanged(bool on)
+        {
+            loginButton.Select();
+        }
     }
 }

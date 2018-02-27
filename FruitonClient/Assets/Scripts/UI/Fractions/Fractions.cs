@@ -1,60 +1,62 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Cz.Cuni.Mff.Fruiton.Dto;
+﻿using Cz.Cuni.Mff.Fruiton.Dto;
+using Extensions;
 using Networking;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Fractions : MonoBehaviour
+namespace UI.Fractions
 {
-    private Fraction chosenFractionName;
-    private Button[] fractionButtons;
-
-    public Button Fraction1Button;
-    public Button Fraction2Button;
-    public Button Fraction3Button;
-    public Button JoinButton;
-
-    private static readonly float lowAlpha = 0.4f;
-    private static readonly float highAlpha = 1;
-
-    private void Start()
+    public class Fractions : MonoBehaviour
     {
-        fractionButtons = new[] { Fraction1Button, Fraction2Button, Fraction3Button };
-    }
+        private Fraction chosenFractionName;
+        private Button[] fractionButtons;
 
-    public void JoinFraction()
-    {
-        ConnectionHandler connectionHandler = ConnectionHandler.Instance;
+        public Button Fraction1Button;
+        public Button Fraction2Button;
+        public Button Fraction3Button;
+        public Button JoinButton;
 
-        var setFractionMessage = new SetFraction
+        private static readonly float lowAlpha = 0.4f;
+        private static readonly float highAlpha = 1;
+
+        private void Start()
         {
-            Fraction = chosenFractionName
-        };
-
-        WrapperMessage wrapperMessage = new WrapperMessage
-        {
-            SetFraction = setFractionMessage
-        };
-
-        connectionHandler.SendWebsocketMessage(wrapperMessage);
-        GameManager.Instance.Fraction = chosenFractionName;
-
-        Scenes.Load(Scenes.MAIN_MENU_SCENE);
-    }
-
-    public void ChooseFraction(int fractionId)
-    {
-        foreach (Button button in fractionButtons)
-        {
-            button.ChangeAlphaChannel(lowAlpha);
+            fractionButtons = new[] { Fraction1Button, Fraction2Button, Fraction3Button };
         }
 
-        chosenFractionName = (Fraction) fractionId;
+        public void JoinFraction()
+        {
+            ConnectionHandler connectionHandler = ConnectionHandler.Instance;
 
-        Button clickedButton = fractionButtons[fractionId - 1];
-        clickedButton.ChangeAlphaChannel(highAlpha);
+            var setFractionMessage = new SetFraction
+            {
+                Fraction = chosenFractionName
+            };
 
-        JoinButton.interactable = true;
+            WrapperMessage wrapperMessage = new WrapperMessage
+            {
+                SetFraction = setFractionMessage
+            };
+
+            connectionHandler.SendWebsocketMessage(wrapperMessage);
+            GameManager.Instance.Fraction = chosenFractionName;
+
+            Scenes.Load(Scenes.MAIN_MENU_SCENE);
+        }
+
+        public void ChooseFraction(int fractionId)
+        {
+            foreach (Button button in fractionButtons)
+            {
+                button.ChangeAlphaChannel(lowAlpha);
+            }
+
+            chosenFractionName = (Fraction) fractionId;
+
+            Button clickedButton = fractionButtons[fractionId - 1];
+            clickedButton.ChangeAlphaChannel(highAlpha);
+
+            JoinButton.interactable = true;
+        }
     }
 }

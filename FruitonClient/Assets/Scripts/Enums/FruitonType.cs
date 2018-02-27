@@ -1,10 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿namespace Enums
+{
+    public enum FruitonType {
 
-public enum FruitonType {
-
-    KING = 1,
-    MAJOR = 2,
-    MINOR = 3
+        KING = 1,
+        MAJOR = 2,
+        MINOR = 3
+    }
 }

@@ -1,22 +1,23 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
-public class LazyDictionary<TKey, TValue> : Dictionary<TKey, TValue> where TValue : new()
+namespace DataStructures
 {
-    public new TValue this[TKey key]
+    public class LazyDictionary<TKey, TValue> : Dictionary<TKey, TValue> where TValue : new()
     {
-        get
+        public new TValue this[TKey key]
         {
-            if (!ContainsKey(key))
+            get
             {
-                this[key] = new TValue();
+                if (!ContainsKey(key))
+                {
+                    this[key] = new TValue();
+                }
+                return base[key];
             }
-            return base[key];
-        }
-        set
-        {
-            base[key] = value;
+            set
+            {
+                base[key] = value;
+            }
         }
     }
 }

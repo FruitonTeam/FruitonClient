@@ -1,18 +1,21 @@
 ﻿using Cz.Cuni.Mff.Fruiton.Dto;
 
-public static class ProtobufExtensions
+namespace Extensions
 {
-    public static string GetReadableName(this Fraction fraction)
+    public static class ProtobufExtensions
     {
-        switch (fraction)
+        public static string GetReadableName(this Fraction fraction)
         {
-            case Fraction.CranberryCrusade:
-                return "Cranberry Crusade";
-            case Fraction.TzatzikiTsardom:
-                return "Tzatziki Tsardom";
-            case Fraction.GuacamoleGuerillas:
-                return "Guacamole Guerrillas";
+            switch (fraction)
+            {
+                case Fraction.CranberryCrusade:
+                    return "Cranberry Crusade";
+                case Fraction.TzatzikiTsardom:
+                    return "Tzatziki Tsardom";
+                case Fraction.GuacamoleGuerillas:
+                    return "Guacamole Guerrillas";
+            }
+            return fraction.ToString();
         }
-        return fraction.ToString();
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cz.Cuni.Mff.Fruiton.Dto;
 using Newtonsoft.Json;
+using Serialization;
 using Util;
 using Action = System.Action;
 

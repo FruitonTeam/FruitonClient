@@ -1,22 +1,23 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Spine.Unity;
+﻿using Spine.Unity;
 using UnityEngine;
 
 // TODO remove when proper sprites are used
-public class TempColorBattleAnimator : FruitonBattleAnimator
+namespace SpineAnimatedGameObjects.Fruitons
 {
-    public Color FruitonColor;
-
-    protected void Start()
+    public class TempColorBattleAnimator : FruitonBattleAnimator
     {
-        SkeletonAnim.skeleton.SetColor(FruitonColor);
-    }
+        public Color FruitonColor;
 
-    protected override void ResetCharacter()
-    {
-        base.ResetCharacter();
-        SkeletonAnim.AnimationState.SetAnimation(1, "blackEyeOff", true);
-        SkeletonAnim.AnimationState.SetAnimation(4, "starRingOff", true);
+        protected void Start()
+        {
+            SkeletonAnim.skeleton.SetColor(FruitonColor);
+        }
+
+        protected override void ResetCharacter()
+        {
+            base.ResetCharacter();
+            SkeletonAnim.AnimationState.SetAnimation(1, "blackEyeOff", true);
+            SkeletonAnim.AnimationState.SetAnimation(4, "starRingOff", true);
+        }
     }
 }

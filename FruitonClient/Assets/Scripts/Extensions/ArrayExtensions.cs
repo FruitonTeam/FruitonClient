@@ -1,31 +1,34 @@
 ﻿using KVector2 = fruiton.dataStructures.Point;
 
-public static class ArrayExtensions
+namespace Extensions
 {
-    public static KVector2 GetIndices<T>(this T[,] array, T item)
+    public static class ArrayExtensions
     {
-        for (int i = 0; i < array.GetLength(0); i++)
+        public static KVector2 GetIndices<T>(this T[,] array, T item)
         {
-            for (int j = 0; j < array.GetLength(1); j++)
+            for (int i = 0; i < array.GetLength(0); i++)
             {
-                if (item.Equals(array[i, j]))
+                for (int j = 0; j < array.GetLength(1); j++)
                 {
-                    return new KVector2(i, j);
+                    if (item.Equals(array[i, j]))
+                    {
+                        return new KVector2(i, j);
+                    }
                 }
             }
+            return null;
         }
-        return null;
-    }
 
-    public static bool Contains<T>(this T[,] array, T item)
-    {
-        foreach (T member in array)
+        public static bool Contains<T>(this T[,] array, T item)
         {
-            if (member != null && member.Equals(item))
+            foreach (T member in array)
             {
-                return true;
+                if (member != null && member.Equals(item))
+                {
+                    return true;
+                }
             }
+            return false;
         }
-        return false;
     }
 }
