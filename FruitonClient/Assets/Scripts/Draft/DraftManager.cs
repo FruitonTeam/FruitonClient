@@ -53,14 +53,9 @@ namespace Draft
 
             SetupView();
 
-
             InitializeTeamGridListeners();
             InitializeFruitonDetailListeners();
             DragAndDropFruiton.gameObject.SetActive(false);
-
-            // HACK for the scroll view to work - without it it is just empty and somehow broken
-            ScrollRect.gameObject.SetActive(false);
-            ScrollRect.gameObject.SetActive(true);
 
             TurnOffDrafting();
             if (!ChallengeController.Instance.IsChallengeActive)
@@ -251,7 +246,7 @@ namespace Draft
             Filters.SetActive(true);
             GameResultsPanel.gameObject.SetActive(false);
             MyTeamGrid.AllowEdit = false;
-            ResizeScrollContent(GameManager.Instance.AllPlayableFruitons.Count());
+            ResizeScrollContent(new HashSet<int>(GameManager.Instance.AvailableFruitons).Count);
         }
 
         void OnEnable()
