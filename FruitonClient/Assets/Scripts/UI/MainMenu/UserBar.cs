@@ -121,6 +121,10 @@ namespace UI.MainMenu
         {
             int money = GameManager.Instance.Money;
             MoneyText.text = money != -1 ? money.ToString() : "N/A";
+            PlayerHelper.GetAvailableFruitons(
+                list => Debug.Log("Available fruitons updated after trade: " + list),
+                Debug.LogError
+                );
         }
     }
 }

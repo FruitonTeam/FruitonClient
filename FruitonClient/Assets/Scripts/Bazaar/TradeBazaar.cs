@@ -62,13 +62,13 @@ namespace Bazaar
                     PlayerHelper.ProvideOfferResult(offer.OfferId, true, () => {                    
                         GameManager.Instance.AdjustMoney(-(int) offer.Price);
                         Bazaar.Instance.NotifyListeners();
-                    }, s => NotificationManager.Instance.Show("Could not buy :(", s));
+                    }, s => NotificationManager.Instance.ShowError("Could not buy :(", s));
                 },
                 () =>
                 {
                     PlayerHelper.ProvideOfferResult(offer.OfferId, false, () => {                    
                         // ignore - everything is ok
-                    }, s => NotificationManager.Instance.Show("Unknown error", s));
+                    }, s => NotificationManager.Instance.ShowError("Unknown error", s));
                 });
 
             offerToNotificationMap[offer.OfferId] = notifId;

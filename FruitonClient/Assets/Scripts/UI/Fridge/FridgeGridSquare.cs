@@ -56,6 +56,11 @@ public class FridgeGridSquare : MonoBehaviour, IPointerDownHandler, IPointerEnte
             defaultBackgroundColor = primaryBgColor;
     }
 
+    public void SetSecondaryBgColorAsDefault()
+    {
+        defaultBackgroundColor = SecondaryBgColor;
+    }
+
     public void ResetDefaultBgColor()
     {
         defaultBackgroundColor = primaryBgColor;

@@ -80,8 +80,9 @@ public class FridgeTeamGrid : MonoBehaviour
         if (dbFridgeMapping != null)
         {
             List<int> availableFruitons = GameManager.Instance.AvailableFruitons;
-            foreach (int dbId in availableFruitons)
+            foreach (var fruiton in GameManager.Instance.AllPlayableFruitons)
             {
+                var dbId = fruiton.dbId;
                 dbFridgeMapping[dbId].Count = availableFruitons.Count(id => id == dbId);
             }
         }
@@ -90,12 +91,20 @@ public class FridgeTeamGrid : MonoBehaviour
             var fruitonId = team.FruitonIDs[i];
             var pos = team.Positions[i];
             var kernelFruiton = FruitonFactory.makeFruiton(fruitonId, GameManager.Instance.FruitonDatabase);
-            if (dbFridgeMapping != null)
-            {
-                dbFridgeMapping[fruitonId].Count--;
-            }
             var x = IsMirrored ? 1 - pos.Y : pos.Y;
             var y = pos.X - 2;
+            if (dbFridgeMapping != null)
+            {
+                if (--dbFridgeMapping[fruitonId].Count < 0)
+                {
+                    gridSquares[x, y].SetSecondaryBgColorAsDefault();
+                }
+                else
+                {
+                    gridSquares[x,y].ResetDefaultBgColor();
+                }
+            }
+            gridSquares[x, y].CancelHighlight();
             gridSquares[x, y].SetFruiton(kernelFruiton);
         }
     }
@@ -111,9 +120,7 @@ public class FridgeTeamGrid : MonoBehaviour
         {
             foreach (Position pos in AvailablePositions)
             {
-                Debug.Log("BattlePos: " + pos.X + " " + pos.Y);
                 Position gridPos = GetGridPositionFromBattlePosition(pos.X, pos.Y);
-                Debug.Log("GridPos: " + gridPos.X + " " + gridPos.Y);
                 gridSquares[gridPos.X, gridPos.Y].Highlight(Color.blue);
             }
         }
@@ -230,11 +237,13 @@ public class FridgeTeamGrid : MonoBehaviour
                     if (AllowEdit)
                     {
                         OnBeginDragFromTeam.Invoke(square.KernelFruiton, GetBattlePositionFromGridPosition(xLoc, yLoc));
+                        square.ResetDefaultBgColor();
                         square.ClearFruiton();
                     }
                 });
                 square.OnMouseEnter.AddListener(() => OnMouseEnterSquare.Invoke(square));
                 square.OnMouseExit.AddListener(() => OnMouseExitSquare.Invoke(square));
+                square.SecondaryBgColor = Color.red;
 
                 gridSquares[x, y] = square;
             }

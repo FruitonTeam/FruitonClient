@@ -230,6 +230,8 @@ public class DraftManager : TeamManagerBase
     {
         if (isMyTurnToDraft)
         {
+            FridgeFruiton fridgeFruiton = dbFridgeMapping[fruiton.dbId];
+            fridgeFruiton.Count--;
             team.FruitonIDs.Add(fruiton.dbId);
             team.Positions.Add(position);
             MyTeamGrid.AddFruitonAt(fruiton, position);
