@@ -14,7 +14,9 @@ public static class Vibrator
     {
         // Trick Unity into giving the App vibration permission when it builds.
         // This check will always be false, but the compiler doesn't know that.
+#if UNITY_ANDROID
         if (Application.isEditor) Handheld.Vibrate();
+#endif
     }
 
     public static void Vibrate(long milliseconds)
