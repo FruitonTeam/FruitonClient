@@ -660,6 +660,7 @@ namespace Battle.View
 
         public void GameOver(GameOver gameOverMessage)
         {
+            IsInputEnabled = false;
             GameResultsPanel.ShowResult(gameOverMessage, battleType == BattleType.LocalDuel);
 
             var rewards = gameOverMessage.GameRewards;
