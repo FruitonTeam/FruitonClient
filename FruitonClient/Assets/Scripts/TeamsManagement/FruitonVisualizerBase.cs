@@ -130,14 +130,15 @@ public abstract class FruitonVisualizerBase : MonoBehaviour
                 }
                 else
                 {
-                    iTween.Stop(fruiton.gameObject);
-                    iTween.MoveTo(fruiton.gameObject, iTween.Hash(
-                            "position", GetPositionOnScrollViewGrid(newIndex),
-                            "islocal", true,
-                            "time", 1,
-                            "easetype", iTween.EaseType.easeOutExpo
-                        )
-                    );
+                    //iTween.Stop(fruiton.gameObject);
+                    //iTween.MoveTo(fruiton.gameObject, iTween.Hash(
+                    //        "position", GetPositionOnScrollViewGrid(newIndex),
+                    //        "islocal", true,
+                    //        "time", 1,
+                    //        "easetype", iTween.EaseType.easeOutExpo
+                    //    )
+                    //);
+                    fruiton.gameObject.transform.localPosition = GetPositionOnScrollViewGrid(newIndex);     
                 }
             }
             newIndex++;
