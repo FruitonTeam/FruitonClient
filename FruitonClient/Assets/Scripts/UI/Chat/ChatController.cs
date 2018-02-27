@@ -13,6 +13,9 @@ using WebSocketSharp;
 
 namespace UI.Chat
 {
+    /// <summary>
+    /// Handles chat panel, friend list, chat messaging and friend requests
+    /// </summary>
     public class ChatController : MonoBehaviour, IOnItemSelectedListener, IOnMessageListener
     {
         /// <summary>
@@ -175,7 +178,6 @@ namespace UI.Chat
 
         /// <summary>
         /// Checks for enter key presses when an input field is focus
-        /// 
         /// </summary>
         private void Update()
         {
@@ -347,7 +349,7 @@ namespace UI.Chat
         /// <summary>
         /// Handles selecting option from dropdown in chat window
         /// </summary>
-        /// <param name="option"></param>
+        /// <param name="option">id of selected option</param>
         public void OnDropdownOption(int option)
         {
             // reset dropdown value to make it work like a button

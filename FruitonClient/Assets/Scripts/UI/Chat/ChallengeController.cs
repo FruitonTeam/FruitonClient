@@ -12,11 +12,23 @@ using UnityEngine.UI;
 
 namespace UI.Chat
 {
+    /// <summary>
+    /// Handles challenge window and challenge request logic
+    /// </summary>
     public class ChallengeController : MonoBehaviour, IOnMessageListener
     {
+        /// <summary>
+        /// Stores information about incoming challenges
+        /// </summary>
         public class ChallengeData
         {
+            /// <summary>
+            /// Incoming challenge object
+            /// </summary>
             public readonly Challenge Challenge;
+            /// <summary>
+            /// Id of notification informing player about the challenge
+            /// </summary>
             public readonly int NotificationId;
 
             public ChallengeData(Challenge challenge, int notificationId)
@@ -37,6 +49,9 @@ namespace UI.Chat
 
         public static ChallengeController Instance { get; private set; }
 
+        /// <summary>
+        /// True if player is currently in the process of initiating challenge
+        /// </summary>
         public bool IsChallengeActive { get; private set; }
 
         public GameObject ChallengePanel;
@@ -44,9 +59,17 @@ namespace UI.Chat
         public Texture2D ChallengeImage;
         public Text ChallengeText;
 
+        /// <summary>
+        /// Outgoing challenge object
+        /// </summary>
         private Challenge myChallenge;
+        /// <summary>
+        /// Incoming challenge object that player agreed to
+        /// </summary>
         private Challenge currentEnemyChallenge;
-
+        /// <summary>
+        /// List of incoming challenges
+        /// </summary>
         public readonly List<ChallengeData> EnemyChallenges = new List<ChallengeData>();
 
         private void Awake()
@@ -67,6 +90,9 @@ namespace UI.Chat
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
 
+        /// <summary>
+        /// Shows challenge window, enables or disables buttons based on selected player status
+        /// </summary>
         public void Show()
         {
             ChallengePanel.SetActive(true);
@@ -87,11 +113,17 @@ namespace UI.Chat
                 ChatController.Instance.SelectedPlayerLogin);
         }
 
+        /// <summary>
+        /// Hides challenge window
+        /// </summary>
         public void Hide()
         {
             ChallengePanel.SetActive(false);
         }
 
+        /// <summary>
+        /// Updates challenge window to display current information for selected player
+        /// </summary>
         public void Refresh()
         {
             if (ChallengePanel.activeInHierarchy)
@@ -104,6 +136,10 @@ namespace UI.Chat
             }
         }
 
+        /// <summary>
+        /// Initiates challenge in selected mode
+        /// </summary>
+        /// <param name="modeId">id of selected mode</param>
         public void OnChallengeModeChosen(int modeId)
         {
             switch (modeId)
@@ -141,6 +177,9 @@ namespace UI.Chat
             }
         }
 
+        /// <summary>
+        /// Removes all pending challenges from notifications and sends rejection message to server
+        /// </summary>
         private void CancelAllChallengeNotifications()
         {
             FeedbackNotificationManager.Instance.RemoveNotifications(EnemyChallenges.Select(cd => cd.NotificationId).ToArray());
@@ -151,6 +190,11 @@ namespace UI.Chat
             EnemyChallenges.Clear();
         }
 
+        /// <summary>
+        /// Loads scene and sends challenge requests based on game and pick mode
+        /// </summary>
+        /// <param name="gameMode">game mode of challenge to be initiated</param>
+        /// <param name="pickMode">pick mode of challenge to be initiated</param>
         private void InitiateChallenge(GameMode gameMode, PickMode pickMode)
         {
             IsChallengeActive = true;
@@ -180,6 +224,10 @@ namespace UI.Chat
             }
         }
 
+        /// <summary>
+        /// Creates new challenge notification, stores incoming challenge
+        /// </summary>
+        /// <param name="challenge">incoming challenge object</param>
         private void OnChallengeRequest(Challenge challenge)
         {
             var notificationId =FeedbackNotificationManager.Instance.Show(
@@ -219,6 +267,10 @@ namespace UI.Chat
             EnemyChallenges.Add(new ChallengeData(challenge, notificationId));
         }
 
+        /// <summary>
+        /// Returns player to main menu if challenge was rejected
+        /// </summary>
+        /// <param name="challengeResult">response of enemy player to challenge</param>
         private void OnChallengeResult(ChallengeResult challengeResult)
         {
             if (!challengeResult.ChallengeAccepted)
@@ -229,6 +281,10 @@ namespace UI.Chat
             }
         }
 
+        /// <summary>
+        /// Removes challenge request from notifications
+        /// </summary>
+        /// <param name="revokeChallenge">information about revoked challenge</param>
         private void OnChallengeRevoked(RevokeChallenge revokeChallenge)
         {
             int index = EnemyChallenges.FindIndex(cd => cd.Challenge.ChallengeFrom == revokeChallenge.ChallengeFrom);
@@ -239,6 +295,11 @@ namespace UI.Chat
             EnemyChallenges.RemoveAt(index);
         }
 
+        /// <summary>
+        /// Handles challenge logic after new scene was loaded
+        /// </summary>
+        /// <param name="scene">loaded scene</param>
+        /// <param name="mode">loaded scene mode</param>
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             ChatController.Instance.Hide();
@@ -295,6 +356,12 @@ namespace UI.Chat
             }
         }
 
+        /// <summary>
+        /// Send response to incoming challenge request to the server
+        /// </summary>
+        /// <param name="enemyLogin">username of challenging player</param>
+        /// <param name="accepted">true if challenge was accepted</param>
+        /// <param name="fruitonTeam">team to use in challenge, null if pick mode is draft</param>
         private void SendChallengeResult(string enemyLogin, bool accepted, FruitonTeam fruitonTeam = null)
         {
             var challengeResult = new ChallengeResult
@@ -310,6 +377,9 @@ namespace UI.Chat
             ConnectionHandler.Instance.SendWebsocketMessage(wsMessage);
         }
 
+        /// <summary>
+        /// Sends own challenge to the server
+        /// </summary>
         private void SendChallengeRequest()
         {
             var wsMessage = new WrapperMessage
@@ -319,6 +389,9 @@ namespace UI.Chat
             ConnectionHandler.Instance.SendWebsocketMessage(wsMessage);
         }
 
+        /// <summary>
+        /// Send revocation of outgoing challenge to the server
+        /// </summary>
         private void SendRevokeChallenge()
         {
             var wsMessage = new WrapperMessage
@@ -328,11 +401,19 @@ namespace UI.Chat
             ConnectionHandler.Instance.SendWebsocketMessage(wsMessage);
         }
 
+        /// <summary>
+        /// True if player has sent a challenge request to an enemy
+        /// </summary>
+        /// <returns></returns>
         private bool AmIChallenging()
         {
             return myChallenge != null;
         }
 
+        /// <summary>
+        /// True if player has accepted an incoming challenge request and is currently picking a team
+        /// </summary>
+        /// <returns></returns>
         private bool AmIBeingChallenged()
         {
             return currentEnemyChallenge != null;
