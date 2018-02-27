@@ -362,7 +362,7 @@ public class GameManager : IOnMessageListener
         loggedPlayerInfo = playerInfo;
         if (ChatController.Instance != null)
         {
-            ChatController.Instance.Init();
+            ChatController.Instance.Initialize();
         }
         TradeBazaar.Instance.Init();
 

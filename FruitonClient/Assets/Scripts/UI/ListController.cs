@@ -34,7 +34,7 @@ namespace UI
 
             selectedIndex = selectedItem.Index;
 
-            listener.OnItemSelected(selectedIndex);
+            listener.OnContactSelected(selectedIndex);
         }
 
         protected void HandleOnItemLoadedHandler(ListItemBase item)

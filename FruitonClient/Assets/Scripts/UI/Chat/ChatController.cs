@@ -75,7 +75,6 @@ namespace UI.Chat
         public GameObject LoadingIndicator;
         public Text ChatTextTemplate;
         public InputField MessageInput;
-
         public InputField AddFriendInput;
 
         public FriendListController FriendListController;
@@ -106,7 +105,10 @@ namespace UI.Chat
 #if UNITY_ANDROID
         private RectTransform chatPanelRect;
 #endif
-        public void Init()
+        /// <summary>
+        /// Initializes friend list and shows friend reuquest notifications
+        /// </summary>
+        public void Initialize()
         {
             foreach (Friend f in GameManager.Instance.Friends)
             {
@@ -154,7 +156,7 @@ namespace UI.Chat
 
             if (GameManager.Instance.IsOnline)
             {
-                Init();
+                Initialize();
             }
         }
 
@@ -171,6 +173,10 @@ namespace UI.Chat
             }
         }
 
+        /// <summary>
+        /// Checks for enter key presses when an input field is focus
+        /// 
+        /// </summary>
         private void Update()
         {
             if (!ChatPanel.activeInHierarchy)
@@ -194,6 +200,8 @@ namespace UI.Chat
             }
 
 #if UNITY_ANDROID
+            // if android on screen keyboard is active make the chat panel smaller
+            // so user can see most recent messages
             if (TouchScreenKeyboard.visible)
             {
                 chatPanelRect.offsetMin = new Vector2(chatPanelRect.offsetMin.x, GetKeyboardSize());
@@ -205,6 +213,10 @@ namespace UI.Chat
 #endif
         }
 
+        /// <summary>
+        /// Clears friend list
+        /// Used when user is logged out
+        /// </summary>
         public void Clear()
         {
             FriendName.text = "";
@@ -216,6 +228,9 @@ namespace UI.Chat
             FriendListController.SetOnItemSelectedListener(this);
         }
 
+        /// <summary>
+        /// Shows chat panel
+        /// </summary>
         public static void Show()
         {
             if (GameManager.Instance.IsOnline)
@@ -233,11 +248,17 @@ namespace UI.Chat
             ChallengeController.Instance.Hide();
         }
 
+        /// <summary>
+        /// Hides chat panel
+        /// </summary>
         public void Hide()
         {
             ChatPanel.SetActive(false);
         }
 
+        /// <summary>
+        /// Sends chat message from message input to server and resets the input
+        /// </summary>
         public void OnSendClick()
         {
             if (!MessageInput.IsActive())
@@ -276,6 +297,9 @@ namespace UI.Chat
             MessageInput.Select();
         }
 
+        /// <summary>
+        /// Checks if username in add friend input is valid, sends friend requests to the server, displays notification
+        /// </summary>
         public void OnAddFriendClick()
         {
             string friendToAdd = AddFriendInput.text.Trim();
@@ -320,6 +344,10 @@ namespace UI.Chat
             });
         }
 
+        /// <summary>
+        /// Handles selecting option from dropdown in chat window
+        /// </summary>
+        /// <param name="option"></param>
         public void OnDropdownOption(int option)
         {
             // reset dropdown value to make it work like a button
@@ -367,6 +395,10 @@ namespace UI.Chat
             ConnectionHandler.Instance.SendWebsocketMessage(ws);
         }
 
+        /// <summary>
+        /// Loads user's status from server and adds them to the friend list
+        /// </summary>
+        /// <param name="friendToAdd">username of user to add to the friend list</param>
         public void AddFriend(string friendToAdd)
         {
             PlayerHelper.GetPlayerStatus(friendToAdd,
@@ -378,6 +410,11 @@ namespace UI.Chat
                 });
         }
 
+        /// <summary>
+        /// Add a user to the friend list
+        /// </summary>
+        /// <param name="friendToAdd">username of user to add to the friend list</param>
+        /// <param name="status">status of user to add</param>
         public void AddFriend(string friendToAdd, Status status)
         {
             AddContactToList(friendToAdd, status);
@@ -417,7 +454,11 @@ namespace UI.Chat
             FriendListController.RemoveItem(login);
         }
 
-        public void OnItemSelected(int index)
+        /// <summary>
+        /// Opens chat or challenge window for selected contact, loads stored chat messages
+        /// </summary>
+        /// <param name="index">index of selected contact</param>
+        public void OnContactSelected(int index)
         {
             var friend = FriendListController.GetFriend(index);
             var login = friend.Name;
@@ -592,6 +633,11 @@ namespace UI.Chat
             }
         }
 
+        /// <summary>
+        /// Adds chat message to chat records and chat window
+        /// (if chat with given user is currently selected) 
+        /// </summary>
+        /// <param name="msg"></param>
         private void AppendNewMessage(ChatMessage msg)
         {
             var sender = msg.Sender;
@@ -655,11 +701,11 @@ namespace UI.Chat
         }
 
         /// <summary>
-        /// Creates new text gameObject for chat messages
+        /// Creates new text game object for chat messages
         /// </summary>
         /// <param name="messages">messages to insert to the gameObject</param>
         /// <param name="old">true if messages were loaded from previous sessions</param>
-        /// <returns></returns>
+        /// <returns>Text component of the created game object</returns>
         private Text CreateNewChatText(string messages = "", bool old = false)
         {
             var newTextBlock = Instantiate(ChatTextTemplate);
@@ -706,6 +752,13 @@ namespace UI.Chat
             }
         }
 
+        /// <summary>
+        /// Splits loaded messages in smaller parts to fit maximum text limit
+        /// and adds them to the chat records and chat window
+        /// </summary>
+        /// <param name="friendName">username of user that chat messages belong to</param>
+        /// <param name="msgs">list of loaded chat messages</param>
+        /// <param name="initialLoad">true if the sroll bar in chat window should be moved to the bottom</param>
         private void OnLoadMessagesSuccess(string friendName, ChatMessages msgs, bool initialLoad = false)
         {
             chatRecords[friendName].Loading = false;
@@ -767,6 +820,12 @@ namespace UI.Chat
             LoadingIndicator.SetActive(chatRecords[FriendName.text].Loading);
         }
 
+        /// <summary>
+        /// Adds username, time and color to the chat message
+        /// </summary>
+        /// <param name="msg">chat message to format</param>
+        /// <param name="old">true if message is from previous session</param>
+        /// <returns></returns>
         private StringBuilder FormatChatMessage(ChatMessage msg, bool old=false)
         {
             string color;
@@ -795,6 +854,10 @@ namespace UI.Chat
                 .Append("</color>");
         }
 
+        /// <summary>
+        /// Closes chat dropdown and then chat window after a small delay
+        /// Used as workaround for unity issue #892913
+        /// </summary>
         private IEnumerator CloseChatWindowWithDelay()
         {
             yield return 1;
@@ -803,11 +866,19 @@ namespace UI.Chat
             ChatWindow.SetActive(false);
         }
 
+        /// <summary>
+        /// Registers new listener for friend count changed event
+        /// </summary>
+        /// <param name="listener">listener object to register</param>
         public void AddListener(IOnFriendsChangedListener listener)
         {
             onFriendsChangedListeners.Add(listener);
         }
 
+        /// <summary>
+        /// Removes listener from listening on friend count changed event
+        /// </summary>
+        /// <param name="listener">listener object to remove</param>
         public void RemoveListener(IOnFriendsChangedListener listener)
         {
             onFriendsChangedListeners.Remove(listener);
@@ -818,11 +889,14 @@ namespace UI.Chat
             void OnFriendAdded();
             void OnFriendRemoved();
         }
-        
+
 
 
 #if UNITY_ANDROID
-
+        /// <summary>
+        /// Calculates size of android on screen keyboard
+        /// </summary>
+        /// <returns>size of android on screen keyboard</returns>
         private int GetKeyboardSize()
         {
             using (AndroidJavaClass UnityClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))

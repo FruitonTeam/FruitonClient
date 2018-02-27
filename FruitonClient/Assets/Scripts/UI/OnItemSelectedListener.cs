@@ -3,7 +3,7 @@
     public interface IOnItemSelectedListener
     {
 
-        void OnItemSelected(int index);
+        void OnContactSelected(int index);
 
     }
 }
