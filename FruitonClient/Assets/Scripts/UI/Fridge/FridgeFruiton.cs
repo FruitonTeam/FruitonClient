@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Linq;
 using fruiton.kernel;
 using Spine.Unity;
 using UnityEngine;
