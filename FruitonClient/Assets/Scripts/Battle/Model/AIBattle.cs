@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using Battle.Players;
 using Battle.Players.AI;
 using Battle.View;
@@ -11,7 +10,6 @@ using fruiton.kernel.gameModes;
 using Fruitons;
 using Google.Protobuf.Collections;
 using haxe.root;
-using TeamsManagement;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -57,7 +55,7 @@ namespace Battle.Model
             {
                 int[] humanTeamIDs = {2, 5, 15, 14, 12, 17, 21, 21, 30, 25};
                 humanTeam = ClientFruitonFactory.CreateClientFruitonTeam(humanTeamIDs, battleViewer.Board);
-                coords = FruitonTeamsManager.CreatePositionsForArtificialTeam(humanTeam.Select(gameObject =>
+                coords = Tutorial.CreatePositionsForArtificialTeam(humanTeam.Select(gameObject =>
                     gameObject.GetComponent<ClientFruiton>().KernelFruiton));
             }
             else
