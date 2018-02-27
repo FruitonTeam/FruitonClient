@@ -1,21 +1,24 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class MainMenuPanel : MonoBehaviour
+namespace UI.MainMenu
 {
-    public MenuPanel Name;
-    public bool Mobile = false;
-    public Button ConnectButton;
-
-    public virtual void SetPanelActive(bool toggle)
+    public class MainMenuPanel : MonoBehaviour
     {
-        if (toggle)
+        public MenuPanel Name;
+        public bool Mobile = false;
+        public Button ConnectButton;
+
+        public virtual void SetPanelActive(bool toggle)
         {
-            gameObject.SetActive(true);
-        }
-        else
-        {
-            gameObject.SetActive(false);
+            if (toggle)
+            {
+                gameObject.SetActive(true);
+            }
+            else
+            {
+                gameObject.SetActive(false);
+            }
         }
     }
 }

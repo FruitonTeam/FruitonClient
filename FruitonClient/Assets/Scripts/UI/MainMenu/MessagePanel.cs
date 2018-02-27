@@ -2,69 +2,72 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MessagePanel : MonoBehaviour
+namespace UI.MainMenu
 {
-    public GameObject SuccessImage;
-    public GameObject ErrorImage;
-
-    private Text textComponent;
-    private Button button;
-
-    private Action onCloseAction;
-
-    public void ShowInfoMessage(string text)
+    public class MessagePanel : MonoBehaviour
     {
-        Activate();
-        SuccessImage.SetActive(true);
-        ErrorImage.SetActive(false);
-        textComponent.text = text;
-        button.Select();
-    }
+        public GameObject SuccessImage;
+        public GameObject ErrorImage;
 
-    public void ShowErrorMessage(string text)
-    {
-        Activate();
-        SuccessImage.SetActive(false);
-        ErrorImage.SetActive(true);
-        textComponent.text = text;
-        button.Select();
-    }
+        private Text textComponent;
+        private Button button;
 
-    public void HideMessage()
-    {
-        gameObject.SetActive(false);
-    }
+        private Action onCloseAction;
 
-    private void Activate()
-    {
-        if (textComponent == null)
+        public void ShowInfoMessage(string text)
         {
-            textComponent = GetComponentInChildren<Text>(true);
+            Activate();
+            SuccessImage.SetActive(true);
+            ErrorImage.SetActive(false);
+            textComponent.text = text;
+            button.Select();
         }
-        if (button == null)
-        {
-            button = GetComponentInChildren<Button>(true);
-        }
-        gameObject.SetActive(true);
-    }
 
-    public void OnClose(Action a)
-    {
-        onCloseAction = a;
-        if (button == null)
+        public void ShowErrorMessage(string text)
         {
-            button = GetComponentInChildren<Button>(true);
+            Activate();
+            SuccessImage.SetActive(false);
+            ErrorImage.SetActive(true);
+            textComponent.text = text;
+            button.Select();
         }
-        button.onClick.AddListener(PerformOnCloseAction);
-    }
 
-    private void PerformOnCloseAction()
-    {
-        if (onCloseAction != null)
+        public void HideMessage()
         {
-            onCloseAction();
+            gameObject.SetActive(false);
         }
-        onCloseAction = null;
-    }
 
+        private void Activate()
+        {
+            if (textComponent == null)
+            {
+                textComponent = GetComponentInChildren<Text>(true);
+            }
+            if (button == null)
+            {
+                button = GetComponentInChildren<Button>(true);
+            }
+            gameObject.SetActive(true);
+        }
+
+        public void OnClose(Action a)
+        {
+            onCloseAction = a;
+            if (button == null)
+            {
+                button = GetComponentInChildren<Button>(true);
+            }
+            button.onClick.AddListener(PerformOnCloseAction);
+        }
+
+        private void PerformOnCloseAction()
+        {
+            if (onCloseAction != null)
+            {
+                onCloseAction();
+            }
+            onCloseAction = null;
+        }
+
+    }
 }

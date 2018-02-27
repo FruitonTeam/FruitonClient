@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Battle.Model;
 using Cz.Cuni.Mff.Fruiton.Dto;
 using Networking;
+using TeamsManagement;
 using UI.Notification;
 using UnityEngine;
 using UnityEngine.SceneManagement;

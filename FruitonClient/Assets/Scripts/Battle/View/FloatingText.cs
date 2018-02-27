@@ -1,20 +1,21 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class FloatingText : MonoBehaviour
+namespace Battle.View
 {
-    private float timeToDestroy = 5;
-    private static readonly float SPEED = 5;
-
-	void Update ()
+    public class FloatingText : MonoBehaviour
     {
-        float deltaTime = Time.deltaTime;
-        timeToDestroy -= deltaTime;
-        transform.position += SPEED * deltaTime * Vector3.up;
-        if (timeToDestroy < 0)
+        private float timeToDestroy = 5;
+        private static readonly float SPEED = 5;
+
+        void Update ()
         {
-            Destroy(gameObject);
+            float deltaTime = Time.deltaTime;
+            timeToDestroy -= deltaTime;
+            transform.position += SPEED * deltaTime * Vector3.up;
+            if (timeToDestroy < 0)
+            {
+                Destroy(gameObject);
+            }
         }
-	}
+    }
 }

@@ -1,27 +1,27 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine.UI;
 
-public class FormControl
+namespace UI.Form
 {
-    public bool Touched;
-    public string Name;
-    public InputField InputField;
-    public Selectable Selectable;
-    public Validator.ValidatorFunc[] Validators;
-
-
-    public FormControl(string name, InputField inputField, params Validator.ValidatorFunc[] validators)
+    public class FormControl
     {
-        Name = name;
-        InputField = inputField;
-        Selectable = inputField;
-        Validators = validators;
-    }
+        public bool Touched;
+        public string Name;
+        public InputField InputField;
+        public Selectable Selectable;
+        public Validator.ValidatorFunc[] Validators;
 
-    public FormControl(Selectable selectable)
-    {
-        Selectable = selectable;
+
+        public FormControl(string name, InputField inputField, params Validator.ValidatorFunc[] validators)
+        {
+            Name = name;
+            InputField = inputField;
+            Selectable = inputField;
+            Validators = validators;
+        }
+
+        public FormControl(Selectable selectable)
+        {
+            Selectable = selectable;
+        }
     }
 }

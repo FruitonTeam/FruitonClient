@@ -1,18 +1,19 @@
-﻿using Cz.Cuni.Mff.Fruiton.Dto;
+﻿using System.Collections.Generic;
+using Cz.Cuni.Mff.Fruiton.Dto;
 using Google.Protobuf.Collections;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
-public static class BattleHelper
+namespace Battle
 {
-    public static RepeatedField<Position> FlipCoordinates(IEnumerable<Position> positions, int width, int height)
+    public static class BattleHelper
     {
-        var result = new RepeatedField<Position>();
-        foreach (var position in positions)
+        public static RepeatedField<Position> FlipCoordinates(IEnumerable<Position> positions, int width, int height)
         {
-            result.Add(new Position { X = width - 1 - position.X, Y = height - 1 - position.Y });
+            var result = new RepeatedField<Position>();
+            foreach (var position in positions)
+            {
+                result.Add(new Position { X = width - 1 - position.X, Y = height - 1 - position.Y });
+            }
+            return result;
         }
-        return result;
     }
 }

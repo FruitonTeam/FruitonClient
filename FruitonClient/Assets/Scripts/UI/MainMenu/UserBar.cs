@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Cz.Cuni.Mff.Fruiton.Dto;
+using Extensions;
 using Networking;
 using UI.Chat;
 using UI.Notification;

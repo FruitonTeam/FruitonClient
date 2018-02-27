@@ -1,48 +1,52 @@
-﻿using fruiton.kernel;
+﻿using Battle.View;
+using fruiton.kernel;
 using fruiton.kernel.actions;
 using UnityEngine;
 using KAction = fruiton.kernel.actions.Action;
 
-public abstract class AIPlayerBase : ClientPlayerBase
+namespace Battle.Players.AI
 {
-    protected readonly BattleViewer battleViewer;
-
-    protected AIPlayerBase(BattleViewer battleViewer, Player kernelPlayer, Battle battle, string name) 
-        : base(kernelPlayer, battle, name)
+    public abstract class AIPlayerBase : ClientPlayerBase
     {
-        this.battleViewer = battleViewer;
-    }
+        protected readonly BattleViewer battleViewer;
 
-    public override void ProcessOpponentAction(EndTurnAction action)
-    {
-    }
-
-    public override void ProcessOpponentAction(TargetableAction action)
-    {
-    }
-
-    public void Update()
-    {
-        if (battle.ActivePlayer.ID == ID && battleViewer.IsInputEnabled)
+        protected AIPlayerBase(BattleViewer battleViewer, Player kernelPlayer, Model.Battle battle, string name) 
+            : base(kernelPlayer, battle, name)
         {
-            PerformNextAction();
+            this.battleViewer = battleViewer;
         }
-    }
 
-    protected abstract void PerformNextAction();
-
-    protected void PerformAction(KAction action)
-    {
-        Debug.Log(Name + ": " + action.toString());
-
-        var targetableAction = action as TargetableAction;
-        if (targetableAction != null)
+        public override void ProcessOpponentAction(EndTurnAction action)
         {
-            battle.PerformAction(targetableAction.getContext().source, targetableAction.getContext().target, action.getId());
         }
-        else
+
+        public override void ProcessOpponentAction(TargetableAction action)
         {
-            battle.PerformAction(null, null, action.getId());
+        }
+
+        public void Update()
+        {
+            if (battle.ActivePlayer.ID == ID && battleViewer.IsInputEnabled)
+            {
+                PerformNextAction();
+            }
+        }
+
+        protected abstract void PerformNextAction();
+
+        protected void PerformAction(KAction action)
+        {
+            Debug.Log(Name + ": " + action.toString());
+
+            var targetableAction = action as TargetableAction;
+            if (targetableAction != null)
+            {
+                battle.PerformAction(targetableAction.getContext().source, targetableAction.getContext().target, action.getId());
+            }
+            else
+            {
+                battle.PerformAction(null, null, action.getId());
+            }
         }
     }
 }

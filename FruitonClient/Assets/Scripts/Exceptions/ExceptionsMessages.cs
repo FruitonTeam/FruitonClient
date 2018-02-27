@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿namespace Exceptions
+{
+    public static class ExceptionsMessages {
 
-public static class ExceptionsMessages {
-
-    public const string UNEXPECTED_FRUITON_TYPE = "Unexpected fruiton type.";
+        public const string UNEXPECTED_FRUITON_TYPE = "Unexpected fruiton type.";
+    }
 }

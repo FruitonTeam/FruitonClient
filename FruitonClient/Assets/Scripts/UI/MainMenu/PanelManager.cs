@@ -1,129 +1,131 @@
 ﻿using System;
 using System.Collections.Generic;
 using Networking;
-using UI.MainMenu;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public enum MenuPanel
+namespace UI.MainMenu
 {
-    Login,
-    Fraction,
-    Main,
-    Fridge,
-    Online,
-    Offline,
-    FarmersMarket,
-    Register
-}
-
-public class PanelManager : MonoBehaviour
-{
-    public static PanelManager Instance { get; private set; }
-
-    public Dictionary<MenuPanel, MainMenuPanel> Panels = new Dictionary<MenuPanel, MainMenuPanel>();
-    public MenuPanel CurrentPanel;
-    public GameObject LoadingIndicator;
-    public MessagePanel MessagePanel;
-
-    void Awake()
+    public enum MenuPanel
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            FillPanelDictionary();
-        }
-        else if (Instance != this)
-        {
-            Destroy(gameObject);
-        }
+        Login,
+        Fraction,
+        Main,
+        Fridge,
+        Online,
+        Offline,
+        FarmersMarket,
+        Register
     }
 
-    //fill Panels with panels in the scene
-    private void FillPanelDictionary()
+    public class PanelManager : MonoBehaviour
     {
-        Panels = new Dictionary<MenuPanel, MainMenuPanel>();
-        bool mobileView = false;
-#if UNITY_ANDROID
-        mobileView = true;
-#endif
-        MainMenuPanel[] panelComponents = GetComponentsInChildren<MainMenuPanel>(true);
+        public static PanelManager Instance { get; private set; }
 
-        foreach (MainMenuPanel panel in panelComponents)
+        public Dictionary<MenuPanel, MainMenuPanel> Panels = new Dictionary<MenuPanel, MainMenuPanel>();
+        public MenuPanel CurrentPanel;
+        public GameObject LoadingIndicator;
+        public MessagePanel MessagePanel;
+
+        void Awake()
         {
-            panel.gameObject.SetActive(false);
-            if (!Panels.ContainsKey(panel.Name) || (mobileView && panel.Mobile))
+            if (Instance == null)
             {
-                Panels[panel.Name] = panel;
+                Instance = this;
+                FillPanelDictionary();
+            }
+            else if (Instance != this)
+            {
+                Destroy(gameObject);
             }
         }
 
-
-        if (Scenes.IsActive(Scenes.MAIN_MENU_SCENE))
+        //fill Panels with panels in the scene
+        private void FillPanelDictionary()
         {
-            CurrentPanel = MenuPanel.Main;
-            if (ConnectionHandler.Instance.IsLogged())
+            Panels = new Dictionary<MenuPanel, MainMenuPanel>();
+            bool mobileView = false;
+#if UNITY_ANDROID
+            mobileView = true;
+#endif
+            MainMenuPanel[] panelComponents = GetComponentsInChildren<MainMenuPanel>(true);
+
+            foreach (MainMenuPanel panel in panelComponents)
             {
-                ((MainPanel)Panels[MenuPanel.Main]).EnableOnlineFeatures();
+                panel.gameObject.SetActive(false);
+                if (!Panels.ContainsKey(panel.Name) || (mobileView && panel.Mobile))
+                {
+                    Panels[panel.Name] = panel;
+                }
+            }
+
+
+            if (Scenes.IsActive(Scenes.MAIN_MENU_SCENE))
+            {
+                CurrentPanel = MenuPanel.Main;
+                if (ConnectionHandler.Instance.IsLogged())
+                {
+                    ((MainPanel)Panels[MenuPanel.Main]).EnableOnlineFeatures();
+                }
+                else
+                {
+                    ((MainPanel)Panels[MenuPanel.Main]).DisableOnlineFeatures();
+                }
+            }
+            else if (Scenes.IsActive(Scenes.LOGIN_SCENE))
+            {
+                CurrentPanel = MenuPanel.Login;
             }
             else
             {
-                ((MainPanel)Panels[MenuPanel.Main]).DisableOnlineFeatures();
+                throw new NotSupportedException("Panel manager is not supported in scene " + Scenes.GetActive());
             }
-        }
-        else if (Scenes.IsActive(Scenes.LOGIN_SCENE))
-        {
-            CurrentPanel = MenuPanel.Login;
-        }
-        else
-        {
-            throw new NotSupportedException("Panel manager is not supported in scene " + Scenes.GetActive());
+
+            SwitchPanels(CurrentPanel);
         }
 
-        SwitchPanels(CurrentPanel);
-    }
-
-    public void SwitchPanels(MenuPanel panel)
-    {
-        HideLoadingIndicator();
-        if (Panels.ContainsKey(panel))
+        public void SwitchPanels(MenuPanel panel)
         {
-            if (Panels.ContainsKey(CurrentPanel))
+            HideLoadingIndicator();
+            if (Panels.ContainsKey(panel))
             {
-                Panels[CurrentPanel].SetPanelActive(false);
+                if (Panels.ContainsKey(CurrentPanel))
+                {
+                    Panels[CurrentPanel].SetPanelActive(false);
+                }
+
+                Panels[panel].SetPanelActive(true);
+                CurrentPanel = panel;
             }
-
-            Panels[panel].SetPanelActive(true);
-            CurrentPanel = panel;
+            else
+            {
+                throw new InvalidOperationException("Scene " + Scenes.GetActive() + " does not contain panel " + panel);
+            }
         }
-        else
+
+        public void ShowLoadingIndicator()
         {
-            throw new InvalidOperationException("Scene " + Scenes.GetActive() + " does not contain panel " + panel);
+            LoadingIndicator.SetActive(true);
         }
-    }
 
-    public void ShowLoadingIndicator()
-    {
-        LoadingIndicator.SetActive(true);
-    }
-
-    public void HideLoadingIndicator()
-    {
-        LoadingIndicator.SetActive(false);
-    }
-
-    public void ShowInfoMessage(string text)
-    {
-        MessagePanel.ShowInfoMessage(text);
-    }
-
-    public void ShowErrorMessage(string text)
-    {
-        if (string.IsNullOrEmpty(text))
+        public void HideLoadingIndicator()
         {
-            text = "Unknown error.";
+            LoadingIndicator.SetActive(false);
         }
-        MessagePanel.ShowErrorMessage(text);
-    }
+
+        public void ShowInfoMessage(string text)
+        {
+            MessagePanel.ShowInfoMessage(text);
+        }
+
+        public void ShowErrorMessage(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                text = "Unknown error.";
+            }
+            MessagePanel.ShowErrorMessage(text);
+        }
     
+    }
 }

@@ -1,36 +1,37 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Spine.Unity;
+﻿using Spine.Unity;
 using UnityEngine;
 
-public class FruitonBattleAnimator : MonoBehaviour
+namespace SpineAnimatedGameObjects.Fruitons
 {
-    protected static readonly int USUAL_TRACK = 5;
-
-    public SkeletonAnimation SkeletonAnim { get; private set; }
-
-    public virtual void StartWalking()
+    public class FruitonBattleAnimator : MonoBehaviour
     {
-        SkeletonAnim.AnimationState.SetAnimation(USUAL_TRACK, "02_walk", true);
-    }
+        protected static readonly int USUAL_TRACK = 5;
 
-    public virtual void StopWalking()
-    {
-        SkeletonAnim.AnimationState.SetEmptyAnimation(USUAL_TRACK, 0.0f);
-    }
+        public SkeletonAnimation SkeletonAnim { get; private set; }
 
-    protected virtual void ResetCharacter()
-    {
-    }
+        public virtual void StartWalking()
+        {
+            SkeletonAnim.AnimationState.SetAnimation(USUAL_TRACK, "02_walk", true);
+        }
 
-    public virtual void Initialize()
-    {
-        ResetCharacter();
-        transform.Rotate(0, -90, 0);
-    }
+        public virtual void StopWalking()
+        {
+            SkeletonAnim.AnimationState.SetEmptyAnimation(USUAL_TRACK, 0.0f);
+        }
 
-    protected virtual void Awake()
-    {
-        SkeletonAnim = GetComponent<SkeletonAnimation>();
+        protected virtual void ResetCharacter()
+        {
+        }
+
+        public virtual void Initialize()
+        {
+            ResetCharacter();
+            transform.Rotate(0, -90, 0);
+        }
+
+        protected virtual void Awake()
+        {
+            SkeletonAnim = GetComponent<SkeletonAnimation>();
+        }
     }
 }
