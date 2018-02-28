@@ -78,6 +78,7 @@ namespace UI.Notification
         /// </summary>
         public void Hide()
         {
+            iTween.Stop(gameObject);
             iTween.MoveTo(gameObject, iTween.Hash(
                 "position", originalPosition,
                 "oncomplete", "OnAnimationComplete",
