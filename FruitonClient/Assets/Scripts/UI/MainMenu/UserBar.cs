@@ -11,6 +11,9 @@ using Util;
 
 namespace UI.MainMenu
 {
+    /// <summary>
+    /// Handles displaying information about user in the top bar in main menu.
+    /// </summary>
     public class UserBar : MonoBehaviour, ChatController.IOnFriendsChangedListener, IOnMessageListener, 
         Bazaar.Bazaar.IOnFruitonSoldListener
     {
@@ -32,6 +35,9 @@ namespace UI.MainMenu
 
         private int onlineFriendsCount;
 
+        /// <summary>
+        /// Loads current data and registers as a listener on user info related events.
+        /// </summary>
         public void OnEnable()
         {
             Load();
@@ -40,6 +46,9 @@ namespace UI.MainMenu
             ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.StatusChange, this);
         }
 
+        /// <summary>
+        /// Stops listening on user info related events.
+        /// </summary>
         private void OnDisable()
         {
             Bazaar.Bazaar.Instance.RemoveListener(this);
@@ -47,6 +56,9 @@ namespace UI.MainMenu
             ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.StatusChange, this);
         }
         
+        /// <summary>
+        /// Loads data of currently logged in user and displays them.
+        /// </summary>
         private void Load()
         {
             if (GameManager.Instance.IsInTrial)
@@ -66,6 +78,10 @@ namespace UI.MainMenu
             RecountOnlineFriends();
         }
 
+        /// <summary>
+        /// Handles selecting option from dropdown in user bar.
+        /// </summary>
+        /// <param name="option">id of selected option</param>
         public void OnDropdownOption(int option)
         {
             // reset dropdown value to make it work like a button
@@ -98,26 +114,41 @@ namespace UI.MainMenu
             }
         }
 
+        /// <summary>
+        /// Updates displayed friend count
+        /// </summary>
         public void OnFriendAdded()
         {
             RecountOnlineFriends();
         }
 
+        /// <summary>
+        /// Updates displayed friend count
+        /// </summary>
         public void OnFriendRemoved()
         {
             RecountOnlineFriends();
         }
 
+        /// <summary>
+        /// Updates displayed friend count
+        /// </summary>
         public void OnMessage(WrapperMessage message)
         {
             RecountOnlineFriends();
         }
 
+        /// <summary>
+        /// Counts number of player's friends that are online and displays it.
+        /// </summary>
         private void RecountOnlineFriends()
         {
             FriendsText.text = GameManager.Instance.Friends.Count(f => f.Status != Status.Offline).ToString();
         }
 
+        /// <summary>
+        /// Updates player's money information.
+        /// </summary>
         public void OnFruitonSold()
         {
             int money = GameManager.Instance.Money;

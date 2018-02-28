@@ -14,6 +14,9 @@ namespace UI.MainMenu
 
         private Form.Form form;
 
+        /// <summary>
+        /// Sets up registration form.
+        /// </summary>
         private void Awake()
         {
             form = gameObject.AddComponent<Form.Form>()
@@ -48,11 +51,17 @@ namespace UI.MainMenu
                 });
         }
 
+        /// <summary>
+        /// Resets form data.
+        /// </summary>
         private void OnEnable()
         {
             form.ResetForm();
         }
 
+        /// <summary>
+        /// Sends registation data to server.
+        /// </summary>
         public void Register()
         {
             string login = RegisterName.text;
@@ -63,6 +72,9 @@ namespace UI.MainMenu
             AuthenticationHandler.Instance.Register(login, password, email);
         }
 
+        /// <summary>
+        /// Switches to login panel.
+        /// </summary>
         public void BackToLogin()
         {
             PanelManager.Instance.SwitchPanels(MenuPanel.Login);

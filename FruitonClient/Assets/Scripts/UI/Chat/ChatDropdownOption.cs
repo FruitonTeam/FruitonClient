@@ -6,7 +6,7 @@ namespace UI.Chat
 {
     /// <summary>
     /// Script attached to dropdown options in chat
-    /// used for disabling "challenge" option when selected friend isn't in main menu
+    /// used for disabling "challenge" option when selected friend isn't in main menu.
     /// </summary>
     public class ChatDropdownOption : MonoBehaviour {
 
