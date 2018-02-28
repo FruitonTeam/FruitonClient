@@ -34,9 +34,14 @@ namespace UI.MainMenu
         private void Start()
         {
             bool disconnected;
+            bool serverDisconnect;
             if (Scenes.TryGetGenericParam(Scenes.DISCONNECTED, out disconnected) && disconnected)
             {
                 PanelManager.Instance.ShowErrorMessage("Internet connection lost. Reconnect or continue offline.");
+            }
+            else if (Scenes.TryGetGenericParam(Scenes.SERVER_DISCONNECT, out serverDisconnect) && serverDisconnect)
+            {
+                PanelManager.Instance.ShowErrorMessage("Disconnected from the server.");
             }
             else
             {
