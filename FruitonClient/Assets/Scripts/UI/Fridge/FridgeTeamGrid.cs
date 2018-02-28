@@ -88,6 +88,17 @@ namespace UI.Fridge
                     dbFridgeMapping[dbId].Count = availableFruitons.Count(id => id == dbId);
                 }
             }
+
+            // reset background color of every square
+            for (var x = 0; x < gridSquares.GetLength(0); x++)
+            {
+                for (var y = 0; y < gridSquares.GetLength(1); y++)
+                {
+                    gridSquares[x, y].ResetDefaultBgColor();
+                    gridSquares[x, y].CancelHighlight();
+                }
+            }
+
             for (int i = 0; i < team.FruitonIDs.Count; i++)
             {
                 var fruitonId = team.FruitonIDs[i];
@@ -95,18 +106,12 @@ namespace UI.Fridge
                 var kernelFruiton = FruitonFactory.makeFruiton(fruitonId, GameManager.Instance.FruitonDatabase);
                 var x = IsMirrored ? 1 - pos.Y : pos.Y;
                 var y = pos.X - 2;
-                if (dbFridgeMapping != null)
+                if (dbFridgeMapping != null && --dbFridgeMapping[fruitonId].Count < 0)
                 {
-                    if (--dbFridgeMapping[fruitonId].Count < 0)
-                    {
+                        // set background color of squares containing not owned fruitons to red
                         gridSquares[x, y].SetSecondaryBgColorAsDefault();
-                    }
-                    else
-                    {
-                        gridSquares[x,y].ResetDefaultBgColor();
-                    }
+                        gridSquares[x, y].CancelHighlight();
                 }
-                gridSquares[x, y].CancelHighlight();
                 gridSquares[x, y].SetFruiton(kernelFruiton);
             }
         }
