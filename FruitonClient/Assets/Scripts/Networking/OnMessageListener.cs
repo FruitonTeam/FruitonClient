@@ -2,6 +2,9 @@
 
 namespace Networking
 {
+    /// <summary>
+    /// Interface for websocket message listeners
+    /// </summary>
     public interface IOnMessageListener
     {
 

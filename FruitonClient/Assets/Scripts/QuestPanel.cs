@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Handles displaying information about player's quests.
+/// </summary>
 public class QuestPanel : MonoBehaviour
 {   
     public GameObject QuestsButton;
@@ -18,6 +21,9 @@ public class QuestPanel : MonoBehaviour
     private Vector2 questsButtonSize;
     private RectTransform questsButtonRectTransform;
 
+    /// <summary>
+    /// Loads player's quests data.
+    /// </summary>
     public void Start()
     {
         UpdateQuestCount();
@@ -50,6 +56,10 @@ public class QuestPanel : MonoBehaviour
         UpdateQuestCount();
     }
 
+    /// <summary>
+    /// Counts number of player's quests and displays it.
+    /// </summary>
+    /// <returns>player's quests count</returns>
     public int UpdateQuestCount()
     {
         var questCount = GameManager.Instance.Quests.Count;
@@ -66,6 +76,9 @@ public class QuestPanel : MonoBehaviour
         return questCount;
     }
 
+    /// <summary>
+    /// Opens quests panel and displays quests data.
+    /// </summary>
     public void OpenPanel()
     {
         var quests = GameManager.Instance.Quests;
@@ -123,6 +136,9 @@ public class QuestPanel : MonoBehaviour
         );
     }
 
+    /// <summary>
+    /// Closes quest panel.
+    /// </summary>
     public void ClosePanel()
     {
         image.color = new Color(0, 0, 0, 0);
@@ -148,17 +164,19 @@ public class QuestPanel : MonoBehaviour
         );
     }
 
-    void OnOpenUpdate(Vector2 sizeDelta)
+    #region iTween callbacks
+
+    private void OnOpenUpdate(Vector2 sizeDelta)
     {
         questsButtonRectTransform.sizeDelta = sizeDelta;
     }
 
-    void OnOpenUpdateColor(Color color)
+    private void OnOpenUpdateColor(Color color)
     {
         image.color = color;
     }
 
-    void OnOpenComplete()
+    private void OnOpenComplete()
     {
         image.raycastTarget = true;
 
@@ -168,17 +186,17 @@ public class QuestPanel : MonoBehaviour
         }
     }
 
-    void OnOpenCompleteColor()
+    private void OnOpenCompleteColor()
     {
         QuestsButton.SetActive(false);
     }
 
-    void OnCloseUpdate(Vector2 sizeDelta)
+    private void OnCloseUpdate(Vector2 sizeDelta)
     {
         questsButtonRectTransform.sizeDelta = sizeDelta;
     }
 
-    void OnCloseComplete()
+    private void OnCloseComplete()
     {
         foreach (var child in questsButtonChildren)
         {
@@ -186,4 +204,6 @@ public class QuestPanel : MonoBehaviour
         }
         UpdateQuestCount();
     }
+
+    #endregion
 }

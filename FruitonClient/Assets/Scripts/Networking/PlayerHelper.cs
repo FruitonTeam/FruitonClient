@@ -10,8 +10,17 @@ using Action = System.Action;
 
 namespace Networking
 {
+    /// <summary>
+    /// Contains helper methods for player related http requests to server
+    /// </summary>
     public static class PlayerHelper
     {
+        /// <summary>
+        /// Creates http request to checks if player with given username exists
+        /// </summary>
+        /// <param name="player">username to check</param>
+        /// <param name="success">action to invoke when the request succeeds</param>
+        /// <param name="error">action to invoke when the request fails</param>
         public static void Exists(string player, Action<bool> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
@@ -23,6 +32,12 @@ namespace Networking
             );
         }
 
+        /// <summary>
+        /// Creates http request to get avatar of a player
+        /// </summary>
+        /// <param name="player">username of the player</param>
+        /// <param name="success">action to invoke when the request succeeds</param>
+        /// <param name="error">action to invoke when the request fails</param>
         public static void GetAvatar(string player, Action<Texture2D> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
@@ -39,6 +54,12 @@ namespace Networking
             );
         }
 
+        /// <summary>
+        /// Creates http request to get logged player's available fruitons.
+        /// Stores loaded fruitons in game manager.
+        /// </summary>
+        /// <param name="success">action to invoke when the request succeeds</param>
+        /// <param name="error">action to invoke when the request fails</param>
         public static void GetAvailableFruitons(Action<List<int>> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
@@ -55,7 +76,12 @@ namespace Networking
                 )
             );
         }
-        
+
+        /// <summary>
+        /// Creates http request to get logged player's fruitons that are available for selling.
+        /// </summary>
+        /// <param name="success">action to invoke when the request succeeds</param>
+        /// <param name="error">action to invoke when the request fails</param>
         public static void GetFruitonsAvailableForSelling(Action<List<int>> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
@@ -71,6 +97,12 @@ namespace Networking
             );
         }
 
+        /// <summary>
+        /// Creates http request to get logged player's teams.
+        /// Stores loaded teams in game manager.
+        /// </summary>
+        /// <param name="success">action to invoke when the request succeeds</param>
+        /// <param name="error">action to invoke when the request fails</param>
         public static void GetAllFruitonTeams(Action<FruitonTeamList> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
@@ -86,6 +118,12 @@ namespace Networking
             );
         }
 
+        /// <summary>
+        /// Creates http request to save logged player's team on the server.
+        /// </summary>
+        /// <param name="fruitonTeam">team to be saved</param>
+        /// <param name="success">action to invoke when the request succeeds</param>
+        /// <param name="error">action to invoke when the request fails</param>
         public static void UploadFruitonTeam(FruitonTeam fruitonTeam, Action<string> success, Action<string> error)
         {
             if (GameManager.Instance.IsInTrial) return;
@@ -101,6 +139,12 @@ namespace Networking
             );
         }
 
+        /// <summary>
+        /// Creates http request to remove logged player's team on the server.
+        /// </summary>
+        /// <param name="teamName">name of the team to be removed</param>
+        /// <param name="success">action to invoke when the request succeeds</param>
+        /// <param name="error">action to invoke when the request fails</param>
         public static void RemoveFruitonTeam(string teamName, Action<string> success, Action<string> error)
         {
             teamName = Uri.EscapeUriString(teamName);
@@ -114,6 +158,12 @@ namespace Networking
             );
         }
 
+        /// <summary>
+        /// Creates http request to check whether a user is online.
+        /// </summary>
+        /// <param name="login">username of the user to check</param>
+        /// <param name="success">action to invoke when the request succeeds</param>
+        /// <param name="error">action to invoke when the request fails</param>
         public static void IsOnline(string login, Action<bool> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
@@ -125,6 +175,11 @@ namespace Networking
             );
         }
 
+        /// <summary>
+        /// Creates http request to get logged player's incoming friend requests.
+        /// </summary>
+        /// <param name="success">action to invoke when the request succeeds</param>
+        /// <param name="error">action to invoke when the request fails</param>
         public static void GetFriendRequests(Action<List<string>> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
@@ -140,6 +195,11 @@ namespace Networking
             );
         }
 
+        /// <summary>
+        /// Creates http request to get logged player's bazaar offers.
+        /// </summary>
+        /// <param name="success">action to invoke when the request succeeds</param>
+        /// <param name="error">action to invoke when the request fails</param>
         public static void GetBazaarOffers(Action<TradeOfferList> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
@@ -155,6 +215,12 @@ namespace Networking
             );
         }
 
+        /// <summary>
+        /// Creates http request to get logged player's most recent chat messages with another user.
+        /// </summary>
+        /// <param name="login">username of the other user</param>
+        /// <param name="success">action to invoke when the request succeeds</param>
+        /// <param name="error">action to invoke when the request fails</param>
         public static void GetMessagesWith(string login, int page, Action<ChatMessages, int> success, 
             Action<string> error)
         {
@@ -171,6 +237,12 @@ namespace Networking
             );
         }
 
+        /// <summary>
+        /// Creates http request to get logged player's older chat messages with another user.
+        /// </summary>
+        /// <param name="messageId">id of the latest chat message to be loaded</param>
+        /// <param name="success">action to invoke when the request succeeds</param>
+        /// <param name="error">action to invoke when the request fails</param>
         public static void GetMessagesBefore(string messageId, int page, Action<ChatMessages, int> success,
             Action<string> error)
         {
@@ -187,6 +259,12 @@ namespace Networking
             );
         }
 
+        /// <summary>
+        /// Creates http request to get status of a user.
+        /// </summary>
+        /// <param name="login">username of the user to check</param>
+        /// <param name="success">action to invoke when the request succeeds</param>
+        /// <param name="error">action to invoke when the request fails</param>
         public static void GetPlayerStatus(string login, Action<Status> success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(
@@ -202,6 +280,13 @@ namespace Networking
             );
         }
 
+        /// <summary>
+        /// Creates http request to send response to trade offer.
+        /// </summary>
+        /// <param name="offerId">if of the offer to respond to</param>
+        /// <param name="accepted">true if player accepts the offer</param>
+        /// <param name="success">action to invoke when the request succeeds</param>
+        /// <param name="error">action to invoke when the request fails</param>
         public static void ProvideOfferResult(string offerId, bool accepted, Action success, Action<string> error)
         {
             ConnectionHandler.Instance.StartCoroutine(

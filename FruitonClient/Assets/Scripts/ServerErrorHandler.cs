@@ -5,9 +5,12 @@ using UI.Notification;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class ErrorHandler : MonoBehaviour, IOnMessageListener
+/// <summary>
+/// Handles errors from server and displays them to player.
+/// </summary>
+public class ServerErrorHandler : MonoBehaviour, IOnMessageListener
 {
-    public static ErrorHandler Instance { get; private set; }
+    public static ServerErrorHandler Instance { get; private set; }
 
     private void Awake()
     {
