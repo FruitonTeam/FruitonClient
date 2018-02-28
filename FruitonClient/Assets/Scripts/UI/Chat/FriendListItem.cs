@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace UI.Chat
 {
     /// <summary>
-    /// Represents item in the friend list
+    /// Represents item in the friend list.
     /// </summary>
     public class FriendListItem : ListItemBase
     {
@@ -52,7 +52,7 @@ namespace UI.Chat
         }
 
         /// <summary>
-        /// Reloads user's information
+        /// Reloads user's information.
         /// </summary>
         /// <param name="data">data to load from</param>
         public override void OnLoad(object data)

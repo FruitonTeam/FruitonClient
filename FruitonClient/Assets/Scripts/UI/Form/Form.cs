@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace UI.Form
 {
     /// <summary>
-    /// Handles form behaviour in game
+    /// Handles form behaviour in game.
     /// </summary>
     public class Form : MonoBehaviour
     {
@@ -22,7 +22,7 @@ namespace UI.Form
         private int errorFontSize;
 
         /// <summary>
-        /// Sets form's inputs and submit button
+        /// Sets form's inputs and submit button.
         /// </summary>
         /// <param name="submitButton">button to be used for submitting</param>
         /// <param name="formControls">list of form's controls</param>
@@ -62,7 +62,7 @@ namespace UI.Form
         }
 
         /// <summary>
-        /// Adds global validator to the form
+        /// Adds global validator to the form.
         /// </summary>
         /// <param name="globalValidator">global validator to add</param>
         public Form AddGlobalValidator(Validator.GlobalValidator globalValidator)
@@ -72,7 +72,7 @@ namespace UI.Form
         }
 
         /// <summary>
-        /// Sets font size of form errors
+        /// Sets font size of form errors.
         /// </summary>
         /// <param name="size">size to use for form errors</param>
         public Form SetErrorFontSize(int size)
@@ -82,7 +82,7 @@ namespace UI.Form
         }
 
         /// <summary>
-        /// Clears all input fields and removes errors
+        /// Clears all input fields and removes errors.
         /// </summary>
         public void ResetForm()
         {
@@ -99,7 +99,7 @@ namespace UI.Form
         }
 
         /// <summary>
-        /// Sets value of a form control
+        /// Sets value of a form control.
         /// </summary>
         /// <param name="controlName">name of the control</param>
         /// <param name="value">value to use</param>
@@ -115,7 +115,7 @@ namespace UI.Form
         }
 
         /// <summary>
-        /// Validates inputs and submits the form
+        /// Validates inputs and submits the form.
         /// </summary>
         void SubmitForm()
         {
@@ -140,7 +140,7 @@ namespace UI.Form
         }
 
         /// <summary>
-        /// Validates form inputs
+        /// Validates form inputs.
         /// </summary>
         /// <param name="focusedControl">currently focused form control</param>
         /// <returns>true if the form is valid</returns>
@@ -201,7 +201,7 @@ namespace UI.Form
         }
 
         /// <summary>
-        /// Shows errors in form
+        /// Shows errors in form.
         /// </summary>
         /// <param name="errors">mapping of control names to errors</param>
         /// <param name="focusedControl">currently focused form control</param>
@@ -279,7 +279,7 @@ namespace UI.Form
         }
 
         /// <summary>
-        /// Listens for enter, tab and shift + tab key presses, updates form focus according to them
+        /// Listens for enter, tab and shift + tab key presses, updates form focus according to them.
         /// </summary>
         void Update()
         {

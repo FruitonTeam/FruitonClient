@@ -7,7 +7,7 @@ using UnityEngine;
 namespace UI.Chat
 {
     /// <summary>
-    /// Handles friend list in chat panel
+    /// Handles friend list in chat panel.
     /// </summary>
     public class FriendListController : ListController<FriendListItem.FriendItemData>
     {
@@ -22,7 +22,7 @@ namespace UI.Chat
         }
 
         /// <summary>
-        /// Adds new user to the list
+        /// Adds new user to the list.
         /// </summary>
         /// <param name="friendName">username of the added user</param>
         /// <param name="status">added user's status</param>
@@ -71,7 +71,7 @@ namespace UI.Chat
         }
 
         /// <summary>
-        /// Removes a user from the list
+        /// Removes a user from the list.
         /// </summary>
         /// <param name="nameToRemove">username of the user to remove</param>
         public void RemoveItem(string nameToRemove)
@@ -113,7 +113,7 @@ namespace UI.Chat
         }
 
         /// <summary>
-        /// Set's avatar for a user in the list
+        /// Set's avatar for a user in the list.
         /// </summary>
         /// <param name="friend">username of the user we want to set avatar to</param>
         /// <param name="avatar">avatar to set</param>
@@ -131,7 +131,7 @@ namespace UI.Chat
         }
 
         /// <summary>
-        /// Change status of a user in the list
+        /// Change status of a user in the list.
         /// </summary>
         /// <param name="friend">username of the user we want to change status</param>
         /// <param name="newStatus">new status of the user</param>
@@ -177,7 +177,7 @@ namespace UI.Chat
         }
 
         /// <summary>
-        /// Removes every user from the list
+        /// Removes every user from the list.
         /// </summary>
         public void Clear()
         {

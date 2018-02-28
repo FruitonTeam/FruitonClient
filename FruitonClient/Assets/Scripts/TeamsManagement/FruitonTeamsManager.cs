@@ -28,7 +28,7 @@ namespace TeamsManagement
     }
 
     /// <summary>
-    /// Handles team management logic
+    /// Handles team management logic.
     /// </summary>
     public class FruitonTeamsManager : TeamManagerBase
     {
@@ -74,7 +74,7 @@ namespace TeamsManagement
         private bool canPlayWithoutTeamSelected;
 
         /// <summary>
-        /// List of game modes for online play
+        /// List of game modes for online play.
         /// </summary>
         private readonly List<Option<GameMode>> gameModes = new List<Option<GameMode>>
         {
@@ -84,7 +84,7 @@ namespace TeamsManagement
         };
 
         /// <summary>
-        /// List of game modes for local play
+        /// List of game modes for local play.
         /// </summary>
         private readonly List<Option<GameMode>> localGameModes = new List<Option<GameMode>>
         {
@@ -93,7 +93,7 @@ namespace TeamsManagement
         };
 
         /// <summary>
-        /// List of game modes for playing vs AI
+        /// List of game modes for playing vs AI.
         /// </summary>
         private readonly List<Option<AIType>> aiModes = new List<Option<AIType>>
         {
@@ -109,7 +109,7 @@ namespace TeamsManagement
         private static readonly string CHOOSE_CHALLENGE_TEAM_TITLE = "Select a team to use in challenge";
 
 
-        /// <summary> true if player is actually editing teams, false if only viewing/picking </summary>
+        /// <returns>true if player is actually editing teams, false if only viewing/picking</returns>
         private bool isInTeamManagement
         {
             get { return state == TeamManagementState.TEAM_MANAGEMENT; }
@@ -140,7 +140,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Initializes scene based on game mode
+        /// Initializes scene based on game mode.
         /// </summary>
         protected override void Start()
         {
@@ -207,7 +207,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Initializes scene for game vs AI
+        /// Initializes scene for game vs AI.
         /// </summary>
         private void AIChooseStart()
         {
@@ -217,7 +217,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Initializes scene for online play
+        /// Initializes scene for online play.
         /// </summary>
         private void OnlineChooseStart()
         {
@@ -231,7 +231,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Sets up scene for second player in local duel
+        /// Sets up scene for second player in local duel.
         /// </summary>
         private void LocalChooseSecondStart()
         {
@@ -243,7 +243,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Initializes scene for local duel
+        /// Initializes scene for local duel.
         /// </summary>
         private void LocalChooseStart()
         {
@@ -255,7 +255,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Initializes scene for challenge battle
+        /// Initializes scene for challenge battle.
         /// </summary>
         private void ChallengeChooseStart()
         {
@@ -266,7 +266,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Initializes scene for team management
+        /// Initializes scene for team management.
         /// </summary>
         private void TeamManagementStart()
         {
@@ -278,7 +278,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Deactivates team management buttons
+        /// Deactivates team management buttons.
         /// </summary>
         private void CommonChooseStart()
         {
@@ -288,7 +288,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Activates dropdown and sets dropdown options
+        /// Activates dropdown and sets dropdown options.
         /// </summary>
         private void SetupModeDropdown<TEnum>(IList<Option<TEnum>> options, int selectedIdx)
         {
@@ -305,7 +305,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Creates new team, switches to team edit mode and selects it
+        /// Creates new team, switches to team edit mode and selects it.
         /// </summary>
         public void CreateNewTeam()
         {
@@ -318,7 +318,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Deletes currently selected team
+        /// Deletes currently selected team.
         /// </summary>
         public void DeleteTeam()
         {
@@ -336,7 +336,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Switches view mode to team edit
+        /// Switches view mode to team edit.
         /// </summary>
         public void StartTeamEdit()
         {
@@ -344,7 +344,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Saves team that is currently being edited and switches to team select mode
+        /// Saves team that is currently being edited and switches to team select mode.
         /// </summary>
         public void EndTeamEdit()
         {
@@ -373,7 +373,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Starts battle based on selected game mode 
+        /// Starts battle based on selected game mode.
         /// </summary>
         public void LoadBattle()
         {
@@ -396,7 +396,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Reloads scene to allow second player pick their team for local duel
+        /// Reloads scene to allow second player pick their team for local duel.
         /// </summary>
         private void ReloadForSecondTeam()
         {
@@ -460,7 +460,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Stores all teams and returns to menu
+        /// Stores all teams and returns to menu.
         /// </summary>
         public void ReturnToMenu()
         {
@@ -476,7 +476,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Creates team game object in a scene
+        /// Creates team game object in a scene.
         /// </summary>
         /// <param name="team">team object</param>
         /// <param name="valid">true if team is valid</param>
@@ -503,7 +503,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Evaluates whether fruiton can be drag and dropped
+        /// Evaluates whether fruiton can be drag and dropped.
         /// </summary>
         /// <param name="fruiton">fruiton to drag</param>
         /// <returns>true if given fruiton can be dragged</returns>
@@ -513,7 +513,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Hides fruiton detail, adds selected fruiton to the team
+        /// Hides fruiton detail, adds selected fruiton to the team.
         /// </summary>
         protected override void AddToTeamButtonListener()
         {
@@ -531,7 +531,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Initializes fruiton drag from the team grid if player is in team edit view mode
+        /// Initializes fruiton drag from the team grid if player is in team edit view mode.
         /// </summary>
         /// <param name="fruiton">fruiton to be draged</param>
         /// <param name="position">position in team from which fruiton is dragged</param>
@@ -544,7 +544,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Cancels drag and drop, moves fruiton to gived position or removes it from the team
+        /// Cancels drag and drop, moves fruiton to gived position or removes it from the team.
         /// </summary>
         /// <param name="dropGridPosition">position in team grid where fruiton was dropped,
         /// null if fruiton was dropped outside of the team grid</param>
@@ -569,7 +569,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Processes player's teams and adds them to the scene
+        /// Processes player's teams and adds them to the scene.
         /// </summary>
         /// <param name="includeInvalid">if true, even teams that aren't valid will be added</param>
         private void InitializeTeams(bool includeInvalid)
@@ -589,7 +589,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Checks if the team is missing any fruiton
+        /// Checks if the team is missing any fruiton.
         /// </summary>
         /// <param name="team">team to check</param>
         /// <returns>true if the team is complete</returns>
@@ -602,7 +602,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Checks if the team contains any fruitons that are no longer owned by the player
+        /// Checks if the team contains any fruitons that are no longer owned by the player.
         /// </summary>
         /// <param name="team">team to check</param>
         /// <returns>true if the team contains fruitons that are no longer owned by the player</returns>
@@ -629,7 +629,7 @@ namespace TeamsManagement
         }
         
         /// <summary>
-        /// Add a fruiton to currently selected team
+        /// Add a fruiton to currently selected team.
         /// </summary>
         /// <param name="fruiton">fruiton to add</param>
         /// <param name="position">position in team where the fruiton should be added</param>
@@ -644,10 +644,10 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Swaps two positions in currently selected team
+        /// Swaps two positions in currently selected team.
         /// </summary>
         /// <param name="pos1">1st position to be swapped</param>
-        /// <param name="pos2">1nd position to be swapped</param>
+        /// <param name="pos2">2nd position to be swapped</param>
         private void SwapTeamMembers(Position pos1, Position pos2)
         {
             var team = teams[selectedTeamIndex].KernelTeam;
@@ -664,7 +664,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Removes fruiton from currently selected team
+        /// Removes fruiton from currently selected team.
         /// </summary>
         /// <param name="position">position in team from which fruiton should be removed</param>
         private void RemoveTeamMember(Position position)
@@ -678,7 +678,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Calculates index of each team, set them to correct position by index and resizes the scroll view
+        /// Calculates index of each team, set them to correct position by index and resizes the scroll view.
         /// </summary>
         private void ReindexTeams()
         {
@@ -702,7 +702,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Reindexes fruitons if view mode is team edit
+        /// Reindexes fruitons if view mode is team edit.
         /// </summary>
         protected override void ReindexFruitons()
         {
@@ -750,7 +750,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Selects and loads fruiton team to team grid
+        /// Selects and loads fruiton team to team grid.
         /// </summary>
         /// <param name="index">index of selected team</param>
         private void SelectTeam(int index)
@@ -794,7 +794,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Switches view mode, disabled and enables corresponding buttons
+        /// Switches view mode, disabled and enables corresponding buttons.
         /// </summary>
         /// <param name="viewMode">view mode to switch to</param>
         private void SwitchViewMode(ViewMode viewMode)
@@ -826,7 +826,7 @@ namespace TeamsManagement
         }
 
         /// <summary>
-        /// Enables or disables play button based on selected mode in dropdown
+        /// Enables or disables play button based on selected mode in dropdown.
         /// </summary>
         /// <param name="newSelection">index of selected dropdown mode</param>
         private void ModeDropDownChanged(int newSelection)
