@@ -211,7 +211,6 @@ namespace Networking
                 RegisterListener(WrapperMessage.MessageOneofCase.TradeOffer, TradeBazaar.Instance);
                 RegisterListener(WrapperMessage.MessageOneofCase.BazaarOfferResolvedOnTheWeb, TradeBazaar.Instance);
                 RegisterListener(WrapperMessage.MessageOneofCase.BazaarOfferResult, Bazaar.Bazaar.Instance);
-                RegisterListener(WrapperMessage.MessageOneofCase.Disconnected, this);
             }
         }
 
@@ -289,7 +288,7 @@ namespace Networking
             var wrapperMsg = WrapperMessage.Parser.ParseFrom(message);
             Debug.Log("Received message: " + wrapperMsg);
 
-            // Only connection handler may handle disconnect message
+            // Only connection handler may handle a disconnect message
             if (wrapperMsg.MessageCase == WrapperMessage.MessageOneofCase.Disconnected)
             {
                 Logout();
@@ -307,8 +306,8 @@ namespace Networking
         public void RegisterListener(WrapperMessage.MessageOneofCase msgCase, IOnMessageListener listener)
         {
             Debug.Assert(
-                msgCase != WrapperMessage.MessageOneofCase.Disconnected || ReferenceEquals(listener, this),
-                "Only connection handler may handle disconnect message"
+                msgCase != WrapperMessage.MessageOneofCase.Disconnected,
+                "Disconnect message is handled directly by the connection handler."
             );
 
             if (!listeners.ContainsKey(msgCase))
