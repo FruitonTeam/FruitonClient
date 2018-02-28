@@ -312,10 +312,12 @@ namespace Networking
         }
 
         /// <summary>
-        /// Closes websocket connection, removes all websocket message listeners, clears cookies and authorization token.
+        /// Hides all notifications, closes websocket connection, removes all websocket message listeners, clears cookies and authorization token.
         /// </summary>
         public void Disconnect()
         {
+            NotificationManager.Instance.Clear();
+            FeedbackNotificationManager.Instance.Clear();
             if (webSocket != null)
             {
                 webSocket.Close();    
