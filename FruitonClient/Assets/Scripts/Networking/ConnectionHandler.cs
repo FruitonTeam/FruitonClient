@@ -14,7 +14,7 @@ using Util;
 namespace Networking
 {
     /// <summary>
-    /// Singleton used for handling a connection with the server.
+    /// Singleton used for handling http requests and websocket connection with the server.   
     /// </summary>
     public class ConnectionHandler : MonoBehaviour, IOnMessageListener
     {
@@ -37,15 +37,31 @@ namespace Networking
 
         private static readonly string SERVER_DOWN_MESSAGE = "Server unreachable. Please check your internet connection and try again later.";
 
-        // When reconnecting, wait for ping for this amount of seconds only.
-        private float pingTimer = 5;
+        /// <summary>
+        /// Time (in seconds) to wait for ping when reconnecting.
+        /// </summary>
+        private static readonly float PING_TIMEOUT = 5;
+
+        /// <summary>
+        /// Time (in seconds) remaining for server to respond to ping.
+        /// </summary>
+        private float pingTimer = PING_TIMEOUT;
 
         public WebSocket webSocket;
 
+        /// <summary>
+        /// Authorization token for current session.
+        /// </summary>
         private string token;
 
+        /// <summary>
+        /// Cookies for current session.
+        /// </summary>
         private string cookies;
 
+        /// <summary>
+        /// Dictionary of registered websocket message listeners.
+        /// </summary>
         private Dictionary<WrapperMessage.MessageOneofCase, List<IOnMessageListener>> listeners =
             new Dictionary<WrapperMessage.MessageOneofCase, List<IOnMessageListener>>();
 
@@ -54,8 +70,10 @@ namespace Networking
         private ConnectionHandler()
         {
         }
-        
-        // Check if connection is alive.
+
+        /// <summary>
+        /// Checks if the connection is alive.
+        /// </summary>
         public void CheckConnection()
         {
             // Not connected yet.
@@ -71,6 +89,9 @@ namespace Networking
             }
         }
 
+        /// <summary>
+        /// Pings the server then tries to reconnect if the ping is successful.
+        /// </summary>
         private IEnumerator PingServer()
         {
             Ping ping = new Ping(SERVER_IP);
@@ -79,7 +100,7 @@ namespace Networking
                 pingTimer -= Time.deltaTime;
                 yield return null;
             }
-            pingTimer = 5;
+            pingTimer = PING_TIMEOUT;
             if (ping.isDone)
             {
                 Reconnect();
@@ -90,21 +111,43 @@ namespace Networking
             }
         }
 
-        public void OpenUrlAuthorized(string pageName)
+        /// <summary>
+        /// Opens page on fruiton website in browser authorized with current session token.
+        /// </summary>
+        /// <param name="pagePath">path of the page to open</param>
+        public void OpenUrlAuthorized(string pagePath)
         {
-            Application.OpenURL(URL_WEB + pageName + "?" + X_AUTH_TOKEN_HEADER_KEY + "=" + token);
+            Application.OpenURL(URL_WEB + pagePath + "?" + X_AUTH_TOKEN_HEADER_KEY + "=" + token);
         }
-        
+
+        /// <summary>
+        /// Sends `GET` request to server.
+        /// </summary>
+        /// <param name="query">request url</param>
+        /// <param name="success">action to perform when request succeeds</param>
+        /// <param name="error">action to perform when request fails</param>
         public IEnumerator Get(string query, Action<string> success, Action<string> error)
         {
             return Get(query, www => success(www.text), error);
         }
-        
+
+        /// <summary>
+        /// Sends `GET` request to server.
+        /// </summary>
+        /// <param name="query">request url</param>
+        /// <param name="success">action to perform when request succeeds</param>
+        /// <param name="error">action to perform when request fails</param>
         public IEnumerator Get(string query, Action<byte[]> success, Action<string> error)
         {
             return Get(query, www => success(www.bytes), error);
         }
 
+        /// <summary>
+        /// Sends `GET` request to server.
+        /// </summary>
+        /// <param name="query">request url</param>
+        /// <param name="success">action to perform when request succeeds</param>
+        /// <param name="error">action to perform when request fails</param>
         private IEnumerator Get(string query, Action<WWW> success, Action<string> error)
         {
             var www = new WWW(URL_API + query, null, GetRequestHeaders());
@@ -123,6 +166,10 @@ namespace Networking
             }
         }
 
+        /// <summary>
+        /// Sets current cookies.
+        /// </summary>
+        /// <param name="www">www object to take cookies from</param>
         private void SetCookies(WWW www)
         {
             if (www.responseHeaders.ContainsKey(SET_COOKIE_KEY))
@@ -131,6 +178,15 @@ namespace Networking
             }
         }
 
+        /// <summary>
+        ///  Sends `POST` request to server.
+        /// </summary>
+        /// <param name="query">request url</param>
+        /// <param name="success">action to perform when request succeeds</param>
+        /// <param name="error">action to perform when request fails</param>
+        /// <param name="body">request body</param>
+        /// <param name="headers">request headers</param>
+        /// <returns></returns>
         public IEnumerator Post(
             string query,
             Action<string> success,
@@ -156,6 +212,11 @@ namespace Networking
             }
         }
 
+        /// <summary>
+        /// Creates dictionary containing token and cookies.
+        /// </summary>
+        /// <param name="headers">preexisting headers dictionary to add token and cookies to</param>
+        /// <returns>headers dictionary containing token and cookies</returns>
         private Dictionary<string, string> GetRequestHeaders(Dictionary<string, string> headers = null)
         {
             if (headers == null)
@@ -174,6 +235,10 @@ namespace Networking
             return headers;
         }
 
+        /// <summary>
+        /// Sends websocket message to server.
+        /// </summary>
+        /// <param name="message">websocket message to send</param>
         public void SendWebsocketMessage(IMessage message)
         {
             if (!IsLogged())
@@ -183,6 +248,10 @@ namespace Networking
             webSocket.Send(ProtobufUtils.GetBinaryData(message));
         }
 
+        /// <summary>
+        /// Creates websocket connection to server.
+        /// </summary>
+        /// <param name="token">authorization token</param>
         public void Connect(string token)
         {
             this.token = token;
@@ -190,9 +259,12 @@ namespace Networking
             StartCoroutine(webSocket.Connect(OnConnected));
         }
 
+        /// <summary>
+        /// Registers websocket message listeners.
+        /// </summary>
         private void OnConnected()
         {
-            RegisterListener(WrapperMessage.MessageOneofCase.ErrorMessage, ErrorHandler.Instance);
+            RegisterListener(WrapperMessage.MessageOneofCase.ErrorMessage, ServerErrorHandler.Instance);
             RegisterListener(WrapperMessage.MessageOneofCase.ChatMessage, ChatMessageNotifier.Instance);
             
             if (NotificationManager.Instance != null) // main menu was already created
@@ -227,16 +299,21 @@ namespace Networking
             }
         }
 
+        /// <returns>true if websocket connection is active</returns>
         public bool IsLogged()
         {
             return webSocket != null;
         }
 
+        /// <returns>true if websocket connection to server is alive</returns>
         public bool IsConnectionAlive()
         {
             return webSocket.IsAlive();
         }
 
+        /// <summary>
+        /// Closes websocket connection, removes all websocket message listeners, clears cookies and authorization token.
+        /// </summary>
         public void Disconnect()
         {
             if (webSocket != null)
@@ -248,22 +325,34 @@ namespace Networking
             token = string.Empty;
         }
 
+        /// <summary>
+        /// Disconnects from server and destroys websocket connection.
+        /// </summary>
         public void Logout()
         {
             Disconnect();
             webSocket = null;
         }
 
+        /// <summary>
+        /// Tries to reconnect to server
+        /// </summary>
         public void Reconnect()
         {
             StartCoroutine(webSocket.Connect(OnConnected, UnableToReconnect));
         }
 
+        /// <summary>
+        /// Loads login scene.
+        /// </summary>
         private void UnableToReconnect()
         {
             Scenes.Load(Scenes.LOGIN_SCENE, Scenes.DISCONNECTED, true);
         }
 
+        /// <summary>
+        /// Checks if any websocket message was received from the server and alerts listeners
+        /// </summary>
         private void Update()
         {
             if (!IsLogged())
@@ -283,6 +372,10 @@ namespace Networking
             }
         }
 
+        /// <summary>
+        /// Parses websocket message from incoming byte array and alerts corresponding listeners.
+        /// </summary>
+        /// <param name="message">byte array to parse</param>
         private void OnMessage(byte[] message)
         {
             var wrapperMsg = WrapperMessage.Parser.ParseFrom(message);
@@ -303,6 +396,11 @@ namespace Networking
             }
         }
 
+        /// <summary>
+        /// Registers new websocket message listener.
+        /// </summary>
+        /// <param name="msgCase">message type for listener to listen to</param>
+        /// <param name="listener">listener object</param>
         public void RegisterListener(WrapperMessage.MessageOneofCase msgCase, IOnMessageListener listener)
         {
             Debug.Assert(
@@ -321,6 +419,11 @@ namespace Networking
             listeners[msgCase].Add(listener);
         }
 
+        /// <summary>
+        /// Removes registered websocket message listener.
+        /// </summary>
+        /// <param name="msgCase">message type to stop lisitening for</param>
+        /// <param name="listener">listener object</param>
         public void UnregisterListener(WrapperMessage.MessageOneofCase msgCase, IOnMessageListener listener)
         {
             if (listeners.ContainsKey(msgCase))
@@ -334,6 +437,9 @@ namespace Networking
             Debug.LogError(message.ErrorMessage.Message);
         }
 
+        /// <summary>
+        /// Disconnects from the server.
+        /// </summary>
         private void OnApplicationQuit()
         {
             Disconnect(); // explicitly close the connection so the server does not have to wait for timeout

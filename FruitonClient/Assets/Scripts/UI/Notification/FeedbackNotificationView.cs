@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 namespace UI.Notification
 {
+    /// <summary>
+    /// Handles animation of feedback notifications.
+    /// </summary>
     public class FeedbackNotificationView : MonoBehaviour
     {
         private static readonly float SHOW_ANIMATION_TIME = 1.0f;
@@ -18,6 +21,9 @@ namespace UI.Notification
         private Action acceptAction;
         private Action declineAction;
 
+        /// <summary>
+        /// True if no notification is currently being displayed.
+        /// </summary>
         public bool IsAnimationCompleted { get; private set; }
 
         public FeedbackNotificationView()
@@ -25,6 +31,10 @@ namespace UI.Notification
             IsAnimationCompleted = true;
         }
 
+        /// <summary>
+        /// Sets data of currently displayed notification.
+        /// </summary>
+        /// <param name="data">notification data to set</param>
         public void SetData(FeedbackNotificationManager.FeedBackNotificationData data)
         {
             Image.texture = data.Image;
@@ -34,6 +44,9 @@ namespace UI.Notification
             declineAction = data.Decline;
         }
 
+        /// <summary>
+        /// Starts the notification animation.
+        /// </summary>
         public void StartAnimation()
         {
             IsAnimationCompleted = false;
@@ -60,6 +73,9 @@ namespace UI.Notification
             originalPosition = gameObject.transform.position;
         }
 
+        /// <summary>
+        /// Hides the currently displayed notification.
+        /// </summary>
         public void Hide()
         {
             iTween.MoveTo(gameObject, iTween.Hash(
@@ -69,6 +85,9 @@ namespace UI.Notification
             ));
         }
 
+        /// <summary>
+        /// Invokes current notification's accept action if there is any.
+        /// </summary>
         public void Accept()
         {
             if (acceptAction != null)
@@ -78,6 +97,9 @@ namespace UI.Notification
             Hide();
         }
 
+        /// <summary>
+        /// Invokes current notification's decline action if there is any.
+        /// </summary>
         public void Decline()
         {
             if (declineAction != null)

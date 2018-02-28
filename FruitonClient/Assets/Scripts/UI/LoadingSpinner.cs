@@ -2,6 +2,9 @@
 
 namespace UI
 {
+    /// <summary>
+    /// Rotates object it's attached to. Used for loading spinner animation.
+    /// </summary>
     public class LoadingSpinner : MonoBehaviour {
 
         void Update ()

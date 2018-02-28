@@ -25,36 +25,38 @@ namespace UI.MainMenu
             }
         }
 
-        public void OnlineContinue()
-        {
-            PanelManager.Instance.SwitchPanels(MenuPanel.Online);
-        }
-
-        public void FarmersMarketContinue()
-        {
-            PanelManager.Instance.SwitchPanels(MenuPanel.FarmersMarket);
-        }
-
         public void TeamManagementContinue()
         {
             Scenes.Load(Scenes.TEAMS_MANAGEMENT_SCENE, Scenes.TEAM_MANAGEMENT_STATE, TeamManagementState.TEAM_MANAGEMENT.ToString());
         }
 
+        /// <summary>
+        /// Switch to team management scene with team select mode for online play.
+        /// </summary>
         public void TeamSelectionContinueOnline()
         {
             TeamSelectionContinue(BattleType.OnlineBattle, TeamManagementState.ONLINE_CHOOSE);
         }
 
+        /// <summary>
+        /// Switch to team management scene with team select mode for local duel.
+        /// </summary>
         public void TeamSelectionContinueOffline()
         {
             TeamSelectionContinue(BattleType.LocalDuel, TeamManagementState.LOCAL_CHOOSE_FIRST);
         }
 
+        /// <summary>
+        /// Switch to team management scene with team select mode for game vs AI.
+        /// </summary>
         public void TeamSelectionContinueAI()
         {
             TeamSelectionContinue(BattleType.AIBattle, TeamManagementState.AI_CHOOSE);
         }
 
+        /// <summary>
+        /// Switch to team management scene with team management mode.
+        /// </summary>
         private void TeamSelectionContinue(BattleType battleType, TeamManagementState state)
         {
             var parameters = new Dictionary<string, string>
@@ -65,14 +67,9 @@ namespace UI.MainMenu
             Scenes.Load(Scenes.TEAMS_MANAGEMENT_SCENE, parameters);
         }
 
-        public void LoadBattle()
-        {
-            if (GameManager.Instance.CurrentFruitonTeam != null)
-            {
-                Scenes.Load(Scenes.BATTLE_SCENE, Scenes.BATTLE_TYPE, Scenes.GetParam(Scenes.BATTLE_TYPE));
-            }
-        }
-
+        /// <summary>
+        /// Loads battle scene in tutorial mode.
+        /// </summary>
         public void LoadTutorial()
         {
             var param = new Dictionary<string, string>

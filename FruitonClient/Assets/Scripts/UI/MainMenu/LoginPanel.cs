@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 namespace UI.MainMenu
 {
+    /// <summary>
+    /// Handles login panel in login scene.
+    /// </summary>
     public class LoginPanel : MainMenuPanel
     {
         public InputField LoginName;
@@ -15,6 +18,9 @@ namespace UI.MainMenu
 
         private Form.Form form;
 
+        /// <summary>
+        /// Sets up login form.
+        /// </summary>
         private void Awake()
         {
             form = gameObject.AddComponent<Form.Form>().SetInputs(
@@ -26,6 +32,9 @@ namespace UI.MainMenu
             );
         }
 
+        /// <summary>
+        /// Resets login form.
+        /// </summary>
         private void OnEnable()
         { 
             form.ResetForm();
@@ -50,12 +59,17 @@ namespace UI.MainMenu
         
         }
 
+        /// <summary>
+        /// Initializes google login proccess.
+        /// </summary>
         public void LoginGoogle()
         {
             AuthenticationHandler.Instance.LoginGoogle();
         }
 
-        // called after pressing Login Button
+        /// <summary>
+        /// Sends login data to server.
+        /// </summary>
         public void LoginContinue()
         {
             if (Application.internetReachability == NetworkReachability.NotReachable)
@@ -74,12 +88,17 @@ namespace UI.MainMenu
             panelManager.ShowLoadingIndicator();
         }
 
-        // called after pressing Registration Button
+        /// <summary>
+        /// Switches to registration panel.
+        /// </summary>
         public void RegistrationContinue()
         {
             PanelManager.Instance.SwitchPanels(MenuPanel.Register);
         }
 
+        /// <summary>
+        /// Continues to main menu in offline mode.
+        /// </summary>
         public void LoginOffline()
         {
             AuthenticationHandler.Instance.LoginOffline();

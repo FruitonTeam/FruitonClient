@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 namespace UI.MainMenu
 {
+    /// <summary>
+    /// Handles message panel, used for showing messages to player in a window.
+    /// </summary>
     public class MessagePanel : MonoBehaviour
     {
         public GameObject SuccessImage;
@@ -12,8 +15,15 @@ namespace UI.MainMenu
         private Text textComponent;
         private Button button;
 
+        /// <summary>
+        /// Action to be performed when the message window is closed.
+        /// </summary>
         private Action onCloseAction;
 
+        /// <summary>
+        /// Show message with an info icon. Overwrites previously displayed message.
+        /// </summary>
+        /// <param name="text">text of the message</param>
         public void ShowInfoMessage(string text)
         {
             Activate();
@@ -23,6 +33,10 @@ namespace UI.MainMenu
             button.Select();
         }
 
+        /// <summary>
+        /// Shows message with an error icon. Overwrites previously displayed message.
+        /// </summary>
+        /// <param name="text">text of the message</param>
         public void ShowErrorMessage(string text)
         {
             Activate();
@@ -32,11 +46,17 @@ namespace UI.MainMenu
             button.Select();
         }
 
+        /// <summary>
+        /// Hides currently displayed message.
+        /// </summary>
         public void HideMessage()
         {
             gameObject.SetActive(false);
         }
 
+        /// <summary>
+        /// Loads text and button components of the window, activates the window.
+        /// </summary>
         private void Activate()
         {
             if (textComponent == null)
@@ -50,9 +70,13 @@ namespace UI.MainMenu
             gameObject.SetActive(true);
         }
 
-        public void OnClose(Action a)
+        /// <summary>
+        /// Sets the action to perform when the window is closed.
+        /// </summary>
+        /// <param name="action">action to perform</param>
+        public void OnClose(Action action)
         {
-            onCloseAction = a;
+            onCloseAction = action;
             if (button == null)
             {
                 button = GetComponentInChildren<Button>(true);

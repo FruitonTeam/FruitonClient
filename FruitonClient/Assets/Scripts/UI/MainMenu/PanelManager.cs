@@ -9,22 +9,32 @@ namespace UI.MainMenu
     public enum MenuPanel
     {
         Login,
-        Fraction,
-        Main,
-        Fridge,
-        Online,
-        Offline,
-        FarmersMarket,
-        Register
+        Register,
+        Main
     }
 
+    /// <summary>
+    /// Handles menu panel switching in login and main menu scenes
+    /// </summary>
     public class PanelManager : MonoBehaviour
     {
         public static PanelManager Instance { get; private set; }
 
+        /// <summary>
+        /// Maps menu panel enums corresponding menu panels.
+        /// </summary>
         public Dictionary<MenuPanel, MainMenuPanel> Panels = new Dictionary<MenuPanel, MainMenuPanel>();
+        /// <summary>
+        /// Currently active menu panel.
+        /// </summary>
         public MenuPanel CurrentPanel;
+        /// <summary>
+        /// Game object that indicates that an important operation is in progress and user has to wait until it is completed.
+        /// </summary>
         public GameObject LoadingIndicator;
+        /// <summary>
+        /// Panel used for displaying messages for user.
+        /// </summary>
         public MessagePanel MessagePanel;
 
         void Awake()
@@ -40,7 +50,9 @@ namespace UI.MainMenu
             }
         }
 
-        //fill Panels with panels in the scene
+        /// <summary>
+        /// Finds menu panels in the scene and adds them to the <see cref="Panels"/> dictionary
+        /// </summary>
         private void FillPanelDictionary()
         {
             Panels = new Dictionary<MenuPanel, MainMenuPanel>();
@@ -84,6 +96,10 @@ namespace UI.MainMenu
             SwitchPanels(CurrentPanel);
         }
 
+        /// <summary>
+        /// Switches currently active panel
+        /// </summary>
+        /// <param name="panel">panel to switch to</param>
         public void SwitchPanels(MenuPanel panel)
         {
             HideLoadingIndicator();
@@ -103,21 +119,35 @@ namespace UI.MainMenu
             }
         }
 
+        /// <summary>
+        /// Displays loading indicator.
+        /// </summary>
         public void ShowLoadingIndicator()
         {
             LoadingIndicator.SetActive(true);
         }
 
+        /// <summary>
+        /// Hides loading indicator.
+        /// </summary>
         public void HideLoadingIndicator()
         {
             LoadingIndicator.SetActive(false);
         }
 
+        /// <summary>
+        /// Displays message in a message window.
+        /// </summary>
+        /// <param name="text">text of the message</param>
         public void ShowInfoMessage(string text)
         {
             MessagePanel.ShowInfoMessage(text);
         }
 
+        /// <summary>
+        /// Displays error message in a message window.
+        /// </summary>
+        /// <param name="text">text of the message</param>
         public void ShowErrorMessage(string text)
         {
             if (string.IsNullOrEmpty(text))

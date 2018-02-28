@@ -3,6 +3,9 @@ using UnityEngine.UI;
 
 namespace UI.MainMenu
 {
+    /// <summary>
+    /// Handles moving clouds in the menu background.
+    /// </summary>
     public class Background : MonoBehaviour
     {
 
