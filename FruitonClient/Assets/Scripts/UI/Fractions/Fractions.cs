@@ -28,7 +28,7 @@ namespace UI.Fractions
         }
 
         /// <summary>
-        /// Joins player to the currently selected fraction, send data to server.
+        /// Joins the player to the currently selected fraction and sends the selection to server.
         /// </summary>
         public void JoinFraction()
         {

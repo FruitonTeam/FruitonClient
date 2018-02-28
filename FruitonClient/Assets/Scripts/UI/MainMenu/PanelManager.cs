@@ -51,7 +51,7 @@ namespace UI.MainMenu
         }
 
         /// <summary>
-        /// Finds menu panels in the scene and add them to panels dictionary
+        /// Finds menu panels in the scene and adds them to the <see cref="Panels"/> dictionary
         /// </summary>
         private void FillPanelDictionary()
         {

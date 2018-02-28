@@ -43,24 +43,24 @@ namespace Networking
         private static readonly float PING_TIMEOUT = 5;
 
         /// <summary>
-        /// Time (in seconds) remaining for server to respond to ping
+        /// Time (in seconds) remaining for server to respond to ping.
         /// </summary>
         private float pingTimer = PING_TIMEOUT;
 
         public WebSocket webSocket;
 
         /// <summary>
-        /// Authorization token for current session
+        /// Authorization token for current session.
         /// </summary>
         private string token;
 
         /// <summary>
-        /// Cookies for current session
+        /// Cookies for current session.
         /// </summary>
         private string cookies;
 
         /// <summary>
-        /// Dictionary of registered websocket message listeners
+        /// Dictionary of registered websocket message listeners.
         /// </summary>
         private Dictionary<WrapperMessage.MessageOneofCase, List<IOnMessageListener>> listeners =
             new Dictionary<WrapperMessage.MessageOneofCase, List<IOnMessageListener>>();
@@ -90,7 +90,7 @@ namespace Networking
         }
 
         /// <summary>
-        /// Pings the server,
+        /// Pings the server then tries to reconnect if the ping is successful.
         /// </summary>
         private IEnumerator PingServer()
         {
@@ -112,16 +112,16 @@ namespace Networking
         }
 
         /// <summary>
-        /// Opens url in browser authorized with current session token
+        /// Opens page on fruiton website in browser authorized with current session token.
         /// </summary>
-        /// <param name="pageName"></param>
-        public void OpenUrlAuthorized(string pageName)
+        /// <param name="pagePath">path of the page to open</param>
+        public void OpenUrlAuthorized(string pagePath)
         {
-            Application.OpenURL(URL_WEB + pageName + "?" + X_AUTH_TOKEN_HEADER_KEY + "=" + token);
+            Application.OpenURL(URL_WEB + pagePath + "?" + X_AUTH_TOKEN_HEADER_KEY + "=" + token);
         }
 
         /// <summary>
-        /// Sends `GET` request to server
+        /// Sends `GET` request to server.
         /// </summary>
         /// <param name="query">request url</param>
         /// <param name="success">action to perform when request succeeds</param>
@@ -132,7 +132,7 @@ namespace Networking
         }
 
         /// <summary>
-        /// Sends `GET` request to server
+        /// Sends `GET` request to server.
         /// </summary>
         /// <param name="query">request url</param>
         /// <param name="success">action to perform when request succeeds</param>
@@ -143,7 +143,7 @@ namespace Networking
         }
 
         /// <summary>
-        /// Sends `GET` request to server
+        /// Sends `GET` request to server.
         /// </summary>
         /// <param name="query">request url</param>
         /// <param name="success">action to perform when request succeeds</param>
@@ -167,7 +167,7 @@ namespace Networking
         }
 
         /// <summary>
-        /// Sets current cookies
+        /// Sets current cookies.
         /// </summary>
         /// <param name="www">www object to take cookies from</param>
         private void SetCookies(WWW www)
@@ -179,7 +179,7 @@ namespace Networking
         }
 
         /// <summary>
-        ///  Sends `POST` request to server
+        ///  Sends `POST` request to server.
         /// </summary>
         /// <param name="query">request url</param>
         /// <param name="success">action to perform when request succeeds</param>
@@ -213,7 +213,7 @@ namespace Networking
         }
 
         /// <summary>
-        /// Creates dictionary containing token and cookies
+        /// Creates dictionary containing token and cookies.
         /// </summary>
         /// <param name="headers">preexisting headers dictionary to add token and cookies to</param>
         /// <returns>headers dictionary containing token and cookies</returns>
@@ -236,7 +236,7 @@ namespace Networking
         }
 
         /// <summary>
-        /// Sends websocket message to server
+        /// Sends websocket message to server.
         /// </summary>
         /// <param name="message">websocket message to send</param>
         public void SendWebsocketMessage(IMessage message)
@@ -249,7 +249,7 @@ namespace Networking
         }
 
         /// <summary>
-        /// Creates websocket connection to server
+        /// Creates websocket connection to server.
         /// </summary>
         /// <param name="token">authorization token</param>
         public void Connect(string token)
@@ -260,7 +260,7 @@ namespace Networking
         }
 
         /// <summary>
-        /// Registers weboscket message listeners
+        /// Registers websocket message listeners.
         /// </summary>
         private void OnConnected()
         {
@@ -312,7 +312,7 @@ namespace Networking
         }
 
         /// <summary>
-        /// Closes websocket connection, removes all websocket message listeners, clears cookies and authorization token
+        /// Closes websocket connection, removes all websocket message listeners, clears cookies and authorization token.
         /// </summary>
         public void Disconnect()
         {
@@ -326,7 +326,7 @@ namespace Networking
         }
 
         /// <summary>
-        /// Disconnects from server and destroys websocket connection
+        /// Disconnects from server and destroys websocket connection.
         /// </summary>
         public void Logout()
         {
@@ -373,9 +373,9 @@ namespace Networking
         }
 
         /// <summary>
-        /// Parsers incoming websocket messages and alerts corresponding listeners
+        /// Parses websocket message from incoming byte array and alerts corresponding listeners.
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="message">byte array to parse</param>
         private void OnMessage(byte[] message)
         {
             var wrapperMsg = WrapperMessage.Parser.ParseFrom(message);

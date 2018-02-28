@@ -75,7 +75,7 @@ namespace UI.Notification
         }
 
         /// <summary>
-        /// Waits for a while then hides the notification.
+        /// Waits for a while (<see cref="SHOW_TIME"/>) then hides the notification.
         /// </summary>
         private void OnNotificationShown()
         {

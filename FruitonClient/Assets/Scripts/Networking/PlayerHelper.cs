@@ -16,7 +16,7 @@ namespace Networking
     public static class PlayerHelper
     {
         /// <summary>
-        /// Creates http request to checks if player with given username exists
+        /// Creates http request to check if player with given username exists.
         /// </summary>
         /// <param name="player">username to check</param>
         /// <param name="success">action to invoke when the request succeeds</param>
@@ -33,7 +33,7 @@ namespace Networking
         }
 
         /// <summary>
-        /// Creates http request to get avatar of a player
+        /// Creates http request to get avatar of a player.
         /// </summary>
         /// <param name="player">username of the player</param>
         /// <param name="success">action to invoke when the request succeeds</param>
