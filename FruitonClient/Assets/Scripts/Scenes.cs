@@ -19,6 +19,7 @@ public class Scenes : MonoBehaviour
     public static readonly string AI_TYPE = "aiType";
     public static readonly string GAME_READY_MSG = "gameReadyMsg";
     public static readonly string DISCONNECTED = "disconnected";
+    public static readonly string SERVER_DISCONNECT = "serverDisconnect";
     public static readonly string OFFERED_PLAYER_LOGIN = "offeredPlayerLogin";
 
     public static Dictionary<string, string> Parameters { get; private set; }

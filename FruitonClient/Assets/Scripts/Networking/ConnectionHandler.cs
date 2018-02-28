@@ -211,6 +211,7 @@ namespace Networking
                 RegisterListener(WrapperMessage.MessageOneofCase.TradeOffer, TradeBazaar.Instance);
                 RegisterListener(WrapperMessage.MessageOneofCase.BazaarOfferResolvedOnTheWeb, TradeBazaar.Instance);
                 RegisterListener(WrapperMessage.MessageOneofCase.BazaarOfferResult, Bazaar.Bazaar.Instance);
+                RegisterListener(WrapperMessage.MessageOneofCase.Disconnected, this);
             }
         }
 
@@ -275,6 +276,10 @@ namespace Networking
             while (message != null) // process every received message
             {
                 OnMessage(message);
+
+                if (!IsLogged())
+                    break;
+
                 message = webSocket.Recv();
             }
         }
@@ -284,7 +289,13 @@ namespace Networking
             var wrapperMsg = WrapperMessage.Parser.ParseFrom(message);
             Debug.Log("Received message: " + wrapperMsg);
 
-            if (listeners.ContainsKey(wrapperMsg.MessageCase))
+            // Only connection handler may handle disconnect message
+            if (wrapperMsg.MessageCase == WrapperMessage.MessageOneofCase.Disconnected)
+            {
+                Logout();
+                Scenes.Load(Scenes.LOGIN_SCENE, Scenes.SERVER_DISCONNECT, true);
+            }
+            else if (listeners.ContainsKey(wrapperMsg.MessageCase))
             {
                 foreach (IOnMessageListener listener in listeners[wrapperMsg.MessageCase])
                 {
@@ -295,6 +306,11 @@ namespace Networking
 
         public void RegisterListener(WrapperMessage.MessageOneofCase msgCase, IOnMessageListener listener)
         {
+            Debug.Assert(
+                msgCase != WrapperMessage.MessageOneofCase.Disconnected || ReferenceEquals(listener, this),
+                "Only connection handler may handle disconnect message"
+            );
+
             if (!listeners.ContainsKey(msgCase))
             {
                 listeners[msgCase] = new List<IOnMessageListener>();
