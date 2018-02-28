@@ -27,6 +27,9 @@ namespace TeamsManagement
         CHALLENGE_CHOOSE
     }
 
+    /// <summary>
+    /// Handles team management logic.
+    /// </summary>
     public class FruitonTeamsManager : TeamManagerBase
     {
         private class Option<TEnum>
@@ -70,6 +73,9 @@ namespace TeamsManagement
         private int selectedTeamIndex;
         private bool canPlayWithoutTeamSelected;
 
+        /// <summary>
+        /// List of game modes for online play.
+        /// </summary>
         private readonly List<Option<GameMode>> gameModes = new List<Option<GameMode>>
         {
             new Option<GameMode>("Standard", GameMode.Standard),
@@ -77,12 +83,18 @@ namespace TeamsManagement
             new Option<GameMode>("Draft", GameMode.Standard, PickMode.Draft)
         };
 
+        /// <summary>
+        /// List of game modes for local play.
+        /// </summary>
         private readonly List<Option<GameMode>> localGameModes = new List<Option<GameMode>>
         {
             new Option<GameMode>("Standard", GameMode.Standard),
             new Option<GameMode>("Last man standing", GameMode.LastManStanding)
         };
 
+        /// <summary>
+        /// List of game modes for playing vs AI.
+        /// </summary>
         private readonly List<Option<AIType>> aiModes = new List<Option<AIType>>
         {
             new Option<AIType>("Fruiton Bowl", AIType.SportsMen),
@@ -97,7 +109,7 @@ namespace TeamsManagement
         private static readonly string CHOOSE_CHALLENGE_TEAM_TITLE = "Select a team to use in challenge";
 
 
-        /// <summary> true if player is actually editing teams, false if only viewing/picking </summary>
+        /// <returns>true if player is actually editing teams, false if only viewing/picking</returns>
         private bool isInTeamManagement
         {
             get { return state == TeamManagementState.TEAM_MANAGEMENT; }
@@ -127,7 +139,9 @@ namespace TeamsManagement
             }
         }
 
-        // Use this for initialization
+        /// <summary>
+        /// Initializes scene based on game mode.
+        /// </summary>
         protected override void Start()
         {
             base.Start();
@@ -192,6 +206,9 @@ namespace TeamsManagement
             ).SetErrorFontSize(24);
         }
 
+        /// <summary>
+        /// Initializes scene for game vs AI.
+        /// </summary>
         private void AIChooseStart()
         {
             CommonChooseStart();
@@ -199,6 +216,9 @@ namespace TeamsManagement
             SetupModeDropdown(aiModes, playerOptions.LastSelectedAIMode);
         }
 
+        /// <summary>
+        /// Initializes scene for online play.
+        /// </summary>
         private void OnlineChooseStart()
         {
             PlayerOptions playerOptions = GameManager.Instance.PlayerOptions;
@@ -210,6 +230,9 @@ namespace TeamsManagement
             CommonChooseStart();
         }
 
+        /// <summary>
+        /// Sets up scene for second player in local duel.
+        /// </summary>
         private void LocalChooseSecondStart()
         {
             ButtonPlay.GetComponentInChildren<Text>().text = "Play";
@@ -219,6 +242,9 @@ namespace TeamsManagement
             LocalDuelHeadline.text = String.Format(CHOOSE_OFFLINE_TEAM_TITLE, 2);
         }
 
+        /// <summary>
+        /// Initializes scene for local duel.
+        /// </summary>
         private void LocalChooseStart()
         {
             ButtonPlay.GetComponentInChildren<Text>().text = "Next";
@@ -228,6 +254,9 @@ namespace TeamsManagement
             LocalDuelHeadline.text = String.Format(CHOOSE_OFFLINE_TEAM_TITLE, 1);
         }
 
+        /// <summary>
+        /// Initializes scene for challenge battle.
+        /// </summary>
         private void ChallengeChooseStart()
         {
             ButtonPlay.GetComponentInChildren<Text>().text = "Select";
@@ -236,6 +265,9 @@ namespace TeamsManagement
             LocalDuelHeadline.text = CHOOSE_CHALLENGE_TEAM_TITLE;
         }
 
+        /// <summary>
+        /// Initializes scene for team management.
+        /// </summary>
         private void TeamManagementStart()
         {
             LocalDuelHeadline.gameObject.SetActive(false);
@@ -245,6 +277,9 @@ namespace TeamsManagement
             ButtonBack.GetComponentInChildren<Text>().text = "Back";
         }
 
+        /// <summary>
+        /// Deactivates team management buttons.
+        /// </summary>
         private void CommonChooseStart()
         {
             ButtonNewTeam.gameObject.SetActive(false);
@@ -252,6 +287,9 @@ namespace TeamsManagement
             ButtonDelete.gameObject.SetActive(false);
         }
 
+        /// <summary>
+        /// Activates dropdown and sets dropdown options.
+        /// </summary>
         private void SetupModeDropdown<TEnum>(IList<Option<TEnum>> options, int selectedIdx)
         {
             DropdownPanel.SetActive(true);
@@ -266,6 +304,9 @@ namespace TeamsManagement
             dropdown.captionText.text = options[dropdown.value].Name;
         }
 
+        /// <summary>
+        /// Creates new team, switches to team edit mode and selects it.
+        /// </summary>
         public void CreateNewTeam()
         {
             var newFruitonTeam = new FruitonTeam {Name = GetNextAvailableTeamName()};
@@ -276,6 +317,9 @@ namespace TeamsManagement
             ButtonNewTeam.interactable = teams.Count < MAX_TEAM_COUNT;
         }
 
+        /// <summary>
+        /// Deletes currently selected team.
+        /// </summary>
         public void DeleteTeam()
         {
             var deleteIndex = selectedTeamIndex;
@@ -291,11 +335,17 @@ namespace TeamsManagement
             ButtonNewTeam.interactable = teams.Count < MAX_TEAM_COUNT;
         }
 
+        /// <summary>
+        /// Switches view mode to team edit.
+        /// </summary>
         public void StartTeamEdit()
         {
             SwitchViewMode(ViewMode.TeamEdit);
         }
 
+        /// <summary>
+        /// Saves team that is currently being edited and switches to team select mode.
+        /// </summary>
         public void EndTeamEdit()
         {
             FridgeFruitonTeam team = teams[selectedTeamIndex];
@@ -322,6 +372,9 @@ namespace TeamsManagement
             SwitchViewMode(ViewMode.TeamSelect);
         }
 
+        /// <summary>
+        /// Starts battle based on selected game mode.
+        /// </summary>
         public void LoadBattle()
         {
             switch (state)
@@ -342,6 +395,9 @@ namespace TeamsManagement
             }
         }
 
+        /// <summary>
+        /// Reloads scene to allow second player pick their team for local duel.
+        /// </summary>
         private void ReloadForSecondTeam()
         {
             var battleType = (BattleType)Enum.Parse(typeof (BattleType), Scenes.GetParam(Scenes.BATTLE_TYPE));
@@ -403,6 +459,9 @@ namespace TeamsManagement
             return gameMode;
         }
 
+        /// <summary>
+        /// Stores all teams and returns to menu.
+        /// </summary>
         public void ReturnToMenu()
         {
             if (isInTeamManagement)
@@ -416,6 +475,11 @@ namespace TeamsManagement
             Scenes.Load(Scenes.MAIN_MENU_SCENE);
         }
 
+        /// <summary>
+        /// Creates team game object in a scene.
+        /// </summary>
+        /// <param name="team">team object</param>
+        /// <param name="valid">true if team is valid</param>
         private void AddTeamToScene(FruitonTeam team, bool valid)
         {
             GameObject fruitonTeamObject = Instantiate(FridgeTeamTemplate);
@@ -438,11 +502,19 @@ namespace TeamsManagement
             fruitonTeamObject.SetActive(true);
         }
 
+        /// <summary>
+        /// Evaluates whether fruiton can be drag and dropped.
+        /// </summary>
+        /// <param name="fruiton">fruiton to drag</param>
+        /// <returns>true if given fruiton can be dragged</returns>
         protected override bool ShouldBeginDrag(FridgeFruiton fruiton)
         {
             return fruiton.IsOwned && fruiton.Count > 0;
         }
 
+        /// <summary>
+        /// Hides fruiton detail, adds selected fruiton to the team.
+        /// </summary>
         protected override void AddToTeamButtonListener()
         {
             HideDetail();
@@ -458,6 +530,11 @@ namespace TeamsManagement
             }
         }
 
+        /// <summary>
+        /// Initializes fruiton drag from the team grid if player is in team edit view mode.
+        /// </summary>
+        /// <param name="fruiton">fruiton to be draged</param>
+        /// <param name="position">position in team from which fruiton is dragged</param>
         protected override void OnBeginDragFromTeamListener(Fruiton fruiton, Position position)
         {
             if (viewMode == ViewMode.TeamEdit)
@@ -466,6 +543,11 @@ namespace TeamsManagement
             }
         }
 
+        /// <summary>
+        /// Cancels drag and drop, moves fruiton to gived position or removes it from the team.
+        /// </summary>
+        /// <param name="dropGridPosition">position in team grid where fruiton was dropped,
+        /// null if fruiton was dropped outside of the team grid</param>
         protected override void ProcessStopDrag(Position dropGridPosition)
         {
             if (isDraggingFromTeam)
@@ -486,6 +568,10 @@ namespace TeamsManagement
             MyTeamGrid.LoadTeam(teams[selectedTeamIndex].KernelTeam, dbFridgeMapping);
         }
 
+        /// <summary>
+        /// Processes player's teams and adds them to the scene.
+        /// </summary>
+        /// <param name="includeInvalid">if true, even teams that aren't valid will be added</param>
         private void InitializeTeams(bool includeInvalid)
         {
             GameManager gameManager = GameManager.Instance;
@@ -502,6 +588,11 @@ namespace TeamsManagement
             FridgeTeamTemplate.SetActive(false);
         }
 
+        /// <summary>
+        /// Checks if the team is missing any fruiton.
+        /// </summary>
+        /// <param name="team">team to check</param>
+        /// <returns>true if the team is complete</returns>
         private bool IsTeamComplete(FruitonTeam team)
         {
             int[] fruitonIDsArray = new int[team.FruitonIDs.Count];
@@ -510,6 +601,11 @@ namespace TeamsManagement
                 .validateFruitonTeam(new haxe.root.Array<int>(fruitonIDsArray), GameManager.Instance.FruitonDatabase).complete;
         }
 
+        /// <summary>
+        /// Checks if the team contains any fruitons that are no longer owned by the player.
+        /// </summary>
+        /// <param name="team">team to check</param>
+        /// <returns>true if the team contains fruitons that are no longer owned by the player</returns>
         private bool TeamContainsMissingFruitons(FruitonTeam team)
         {
             Dictionary<int, int> teamCounts = new Dictionary<int, int>();
@@ -531,7 +627,12 @@ namespace TeamsManagement
             }
             return false;
         }
-
+        
+        /// <summary>
+        /// Add a fruiton to currently selected team.
+        /// </summary>
+        /// <param name="fruiton">fruiton to add</param>
+        /// <param name="position">position in team where the fruiton should be added</param>
         private void AddFruitonToTeam(Fruiton fruiton, Position position)
         {
             FridgeFruiton fridgeFruiton = dbFridgeMapping[fruiton.dbId];
@@ -542,6 +643,11 @@ namespace TeamsManagement
             MyTeamGrid.AddFruitonAt(fruiton, position);
         }
 
+        /// <summary>
+        /// Swaps two positions in currently selected team.
+        /// </summary>
+        /// <param name="pos1">1st position to be swapped</param>
+        /// <param name="pos2">2nd position to be swapped</param>
         private void SwapTeamMembers(Position pos1, Position pos2)
         {
             var team = teams[selectedTeamIndex].KernelTeam;
@@ -557,6 +663,10 @@ namespace TeamsManagement
             }
         }
 
+        /// <summary>
+        /// Removes fruiton from currently selected team.
+        /// </summary>
+        /// <param name="position">position in team from which fruiton should be removed</param>
         private void RemoveTeamMember(Position position)
         {
             FridgeFruiton removedFruiton = dbFridgeMapping[draggedFruiton.dbId];
@@ -567,6 +677,9 @@ namespace TeamsManagement
             team.FruitonIDs.RemoveAt(index);
         }
 
+        /// <summary>
+        /// Calculates index of each team, set them to correct position by index and resizes the scroll view.
+        /// </summary>
         private void ReindexTeams()
         {
             int newIndex = 0;
@@ -588,6 +701,9 @@ namespace TeamsManagement
             }
         }
 
+        /// <summary>
+        /// Reindexes fruitons if view mode is team edit.
+        /// </summary>
         protected override void ReindexFruitons()
         {
             if (viewMode == ViewMode.TeamEdit)
@@ -601,7 +717,7 @@ namespace TeamsManagement
         /// "New Team N" where N is the smallest available positive integer,
         /// whilst by available is meant that no other fruiton team has the same name.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>next available team name</returns>
         private string GetNextAvailableTeamName()
         {
             for (int i = 1;; i++)
@@ -614,6 +730,8 @@ namespace TeamsManagement
             }
         }
 
+        /// <param name="team">team to get description of</param>
+        /// <returns>text to be displayed on team game object</returns>
         private string GetTeamDescription(FruitonTeam team)
         {
             if (TeamContainsMissingFruitons(team))
@@ -631,6 +749,10 @@ namespace TeamsManagement
             );
         }
 
+        /// <summary>
+        /// Selects and loads fruiton team to team grid.
+        /// </summary>
+        /// <param name="index">index of selected team</param>
         private void SelectTeam(int index)
         {
             var isValidTeamIndex = IsValidTeamIndex(index);
@@ -671,6 +793,10 @@ namespace TeamsManagement
             return index >= 0 && index < teams.Count;
         }
 
+        /// <summary>
+        /// Switches view mode, disabled and enables corresponding buttons.
+        /// </summary>
+        /// <param name="viewMode">view mode to switch to</param>
         private void SwitchViewMode(ViewMode viewMode)
         {
             this.viewMode = viewMode;
@@ -699,48 +825,10 @@ namespace TeamsManagement
             }
         }
 
-        public static IEnumerable<Position> CreatePositionsForArtificialTeam(IEnumerable<Fruiton> fruitons)
-        {
-            var result = new List<Position>();
-            int i, j;
-            int majorRow = 0;
-            int minorRow = 1;
-            int majorCounter = 2;
-            int minorCounter = 2;
-            foreach (Fruiton kernelFruiton in fruitons)
-            {
-                switch ((FruitonType)kernelFruiton.type)
-                {
-                    case FruitonType.KING:
-                    {
-                        i = GameState.WIDTH / 2;
-                        j = majorRow;
-                    }
-                        break;
-                    case FruitonType.MAJOR:
-                    {
-                        i = GameState.WIDTH / 2 - majorCounter;
-                        j = majorRow;
-                        if (--majorCounter == 0) --majorCounter;
-                    }
-                        break;
-                    case FruitonType.MINOR:
-                    {
-                        i = GameState.WIDTH / 2 - minorCounter;
-                        j = minorRow;
-                        --minorCounter;
-                    }
-                        break;
-                    default:
-                    {
-                        throw new UndefinedFruitonTypeException();
-                    }
-                }
-                result.Add(new Position { X = i, Y = j });
-            }
-            return result;
-        }
-
+        /// <summary>
+        /// Enables or disables play button based on selected mode in dropdown.
+        /// </summary>
+        /// <param name="newSelection">index of selected dropdown mode</param>
         private void ModeDropDownChanged(int newSelection)
         {
             var dropdown = DropdownPanel.GetComponentInChildren<Dropdown>();

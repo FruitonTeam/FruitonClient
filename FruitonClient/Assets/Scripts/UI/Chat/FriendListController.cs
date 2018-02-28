@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace UI.Chat
 {
+    /// <summary>
+    /// Handles friend list in chat panel.
+    /// </summary>
     public class FriendListController : ListController<FriendListItem.FriendItemData>
     {
         public ListItemBase ListItem;
@@ -18,6 +21,12 @@ namespace UI.Chat
             RecyclableList.gameObject.SetActive(true);
         }
 
+        /// <summary>
+        /// Adds new user to the list.
+        /// </summary>
+        /// <param name="friendName">username of the added user</param>
+        /// <param name="status">added user's status</param>
+        /// <param name="isFriend">true if the added user is friend</param>
         public void AddItem(string friendName, Status status, bool isFriend = true)
         {
             var itemData = new FriendListItem.FriendItemData
@@ -61,6 +70,10 @@ namespace UI.Chat
             }
         }
 
+        /// <summary>
+        /// Removes a user from the list.
+        /// </summary>
+        /// <param name="nameToRemove">username of the user to remove</param>
         public void RemoveItem(string nameToRemove)
         {
             int index = Data.FindIndex(data => data.Name == nameToRemove);
@@ -73,11 +86,14 @@ namespace UI.Chat
             RecyclableList.RemoveItemAt(index);
         }
 
+        /// <param name="index">index of a user to get</param>
+        /// <returns>user's data</returns>
         public FriendListItem.FriendItemData GetFriend(int index)
         {
             return Data[index];
         }
 
+        /// <returns>List of usernames from the friend list</returns>
         public List<string> GetAllFriends()
         {
             return Data.Select(friendData => friendData.Name).ToList();
@@ -96,6 +112,11 @@ namespace UI.Chat
             RecyclableList.NotifyDataChanged();
         }
 
+        /// <summary>
+        /// Set's avatar for a user in the list.
+        /// </summary>
+        /// <param name="friend">username of the user we want to set avatar to</param>
+        /// <param name="avatar">avatar to set</param>
         public void SetAvatar(string friend, Texture avatar)
         {
             foreach (FriendListItem.FriendItemData friendData in Data)
@@ -109,6 +130,11 @@ namespace UI.Chat
             RecyclableList.NotifyDataChanged();
         }
 
+        /// <summary>
+        /// Change status of a user in the list.
+        /// </summary>
+        /// <param name="friend">username of the user we want to change status</param>
+        /// <param name="newStatus">new status of the user</param>
         public void ChangeStatus(string friend, Status newStatus)
         {
             int index = Data.FindIndex(data => data.Name == friend);
@@ -150,6 +176,9 @@ namespace UI.Chat
             RecyclableList.NotifyDataChanged();
         }
 
+        /// <summary>
+        /// Removes every user from the list.
+        /// </summary>
         public void Clear()
         {
             Data = new List<FriendListItem.FriendItemData>();

@@ -13,28 +13,31 @@ using WebSocketSharp;
 
 namespace UI.Chat
 {
+    /// <summary>
+    /// Handles chat panel, friend list, chat messaging and friend requests.
+    /// </summary>
     public class ChatController : MonoBehaviour, IOnItemSelectedListener, IOnMessageListener
     {
         /// <summary>
-        /// Stores chat history with a friend and additional chat status information
+        /// Stores chat history with a friend and additional chat status information.
         /// </summary>
         class ChatRecord
         {
             /// <summary>
             /// List of previous chat messages
-            /// One entry may contain more than one message, up to the character limit of single unity text gameObject
+            /// One entry may contain more than one message, up to the character limit of single unity text gameObject.
             /// </summary>
             public List<string> Messages = new List<string>();
             /// <summary>
-            /// ID of oldest chat message that was loaded from server
+            /// ID of oldest chat message that was loaded from server.
             /// </summary>
             public string LastMessageId;
             /// <summary>
-            /// Indicates whether the game is currently loading older messages for given friend
+            /// Indicates whether the game is currently loading older messages for given friend.
             /// </summary>
             public bool Loading;
             /// <summary>
-            /// True if every chat message was already loaded from the server
+            /// True if every chat message was already loaded from the server.
             /// </summary>
             public bool LoadedEveryMessage;
 
@@ -57,11 +60,11 @@ namespace UI.Chat
         static readonly string MESSAGE_COLOR_RECEIVED_NEW = "#222266";
 
         /// <summary>
-        /// Time format for messages received on the same day as they were sent
+        /// Time format for messages received on the same day as they were sent.
         /// </summary>
         private static readonly string TIME_FORMAT_TODAY = "HH:mm";
         /// <summary>
-        /// Time format for messages that were sent day before or earlier
+        /// Time format for messages that were sent day before or earlier.
         /// </summary>
         private static readonly string TIME_FORMAT_OLDER = "dd.MM.yyyy HH:mm";
 
@@ -95,7 +98,7 @@ namespace UI.Chat
 
         private readonly List<IOnFriendsChangedListener> onFriendsChangedListeners = new List<IOnFriendsChangedListener>();
         /// <summary>
-        /// List of text gameObjects that are used to display chat messages
+        /// List of text gameObjects that are used to display chat messages.
         /// </summary>
         private readonly List<Text> ChatTexts = new List<Text>();
         private readonly DateTime unixTimeStart = new DateTime(1970, 1, 1, 0, 0, 0, System.DateTimeKind.Utc);
@@ -106,7 +109,7 @@ namespace UI.Chat
         private RectTransform chatPanelRect;
 #endif
         /// <summary>
-        /// Initializes friend list and shows friend reuquest notifications
+        /// Initializes friend list and shows friend reuquest notifications.
         /// </summary>
         public void Initialize()
         {
@@ -174,8 +177,7 @@ namespace UI.Chat
         }
 
         /// <summary>
-        /// Checks for enter key presses when an input field is focus
-        /// 
+        /// Checks for enter key presses when an input field is focus.
         /// </summary>
         private void Update()
         {
@@ -214,8 +216,7 @@ namespace UI.Chat
         }
 
         /// <summary>
-        /// Clears friend list
-        /// Used when user is logged out
+        /// Clears friend list (used when user is logged out).
         /// </summary>
         public void Clear()
         {
@@ -229,7 +230,7 @@ namespace UI.Chat
         }
 
         /// <summary>
-        /// Shows chat panel
+        /// Shows chat panel.
         /// </summary>
         public static void Show()
         {
@@ -249,7 +250,7 @@ namespace UI.Chat
         }
 
         /// <summary>
-        /// Hides chat panel
+        /// Hides chat panel.
         /// </summary>
         public void Hide()
         {
@@ -257,7 +258,7 @@ namespace UI.Chat
         }
 
         /// <summary>
-        /// Sends chat message from message input to server and resets the input
+        /// Sends chat message from message input to server and resets the input.
         /// </summary>
         public void OnSendClick()
         {
@@ -298,7 +299,7 @@ namespace UI.Chat
         }
 
         /// <summary>
-        /// Checks if username in add friend input is valid, sends friend requests to the server, displays notification
+        /// Checks if username in add friend input is valid, sends friend requests to the server, displays notification.
         /// </summary>
         public void OnAddFriendClick()
         {
@@ -345,9 +346,9 @@ namespace UI.Chat
         }
 
         /// <summary>
-        /// Handles selecting option from dropdown in chat window
+        /// Handles selecting option from dropdown in chat window.
         /// </summary>
-        /// <param name="option"></param>
+        /// <param name="option">id of selected option</param>
         public void OnDropdownOption(int option)
         {
             // reset dropdown value to make it work like a button
@@ -396,7 +397,7 @@ namespace UI.Chat
         }
 
         /// <summary>
-        /// Loads user's status from server and adds them to the friend list
+        /// Loads user's status from server and adds them to the friend list.
         /// </summary>
         /// <param name="friendToAdd">username of user to add to the friend list</param>
         public void AddFriend(string friendToAdd)
@@ -411,7 +412,7 @@ namespace UI.Chat
         }
 
         /// <summary>
-        /// Add a user to the friend list
+        /// Add a user to the friend list.
         /// </summary>
         /// <param name="friendToAdd">username of user to add to the friend list</param>
         /// <param name="status">status of user to add</param>
@@ -432,6 +433,12 @@ namespace UI.Chat
             }
         }
 
+        /// <summary>
+        /// Adds new contact to friend list.
+        /// </summary>
+        /// <param name="login">username of the contact to be added</param>
+        /// <param name="status">status of the contact to be added</param>
+        /// <param name="isFriend">true if the contact is friend of the player</param>
         private void AddContactToList(string login, Status status, bool isFriend = true)
         {
             PlayerHelper.GetAvatar(login,
@@ -455,7 +462,7 @@ namespace UI.Chat
         }
 
         /// <summary>
-        /// Opens chat or challenge window for selected contact, loads stored chat messages
+        /// Opens chat or challenge window for selected contact, loads stored chat messages.
         /// </summary>
         /// <param name="index">index of selected contact</param>
         public void OnContactSelected(int index)
@@ -635,7 +642,7 @@ namespace UI.Chat
 
         /// <summary>
         /// Adds chat message to chat records and chat window
-        /// (if chat with given user is currently selected) 
+        /// (if chat with given user is currently selected).
         /// </summary>
         /// <param name="msg"></param>
         private void AppendNewMessage(ChatMessage msg)
@@ -682,7 +689,7 @@ namespace UI.Chat
         }
 
         /// <summary>
-        /// Adds messages to the beggining of chat
+        /// Adds messages to the beggining of chat.
         /// </summary>
         /// <param name="friendName">friend that messages belong to</param>
         /// <param name="messages">text messages to add</param>
@@ -701,7 +708,7 @@ namespace UI.Chat
         }
 
         /// <summary>
-        /// Creates new text game object for chat messages
+        /// Creates new text game object for chat messages.
         /// </summary>
         /// <param name="messages">messages to insert to the gameObject</param>
         /// <param name="old">true if messages were loaded from previous sessions</param>
@@ -726,7 +733,7 @@ namespace UI.Chat
         }
 
         /// <summary>
-        /// Load messages from previous session with a friend
+        /// Load messages from previous session with a friend.
         /// </summary>
         private void LoadPreviousMessages(string friendName)
         {
@@ -754,7 +761,7 @@ namespace UI.Chat
 
         /// <summary>
         /// Splits loaded messages in smaller parts to fit maximum text limit
-        /// and adds them to the chat records and chat window
+        /// and adds them to the chat records and chat window.
         /// </summary>
         /// <param name="friendName">username of user that chat messages belong to</param>
         /// <param name="msgs">list of loaded chat messages</param>
@@ -813,7 +820,7 @@ namespace UI.Chat
         }
 
         /// <summary>
-        /// Shows or hides loading indicator based on the status of current conversation
+        /// Shows or hides loading indicator based on the status of current conversation.
         /// </summary>
         private void RefreshLoadingIndicator()
         {
@@ -821,7 +828,7 @@ namespace UI.Chat
         }
 
         /// <summary>
-        /// Adds username, time and color to the chat message
+        /// Adds username, time and color to the chat message.
         /// </summary>
         /// <param name="msg">chat message to format</param>
         /// <param name="old">true if message is from previous session</param>
@@ -856,7 +863,7 @@ namespace UI.Chat
 
         /// <summary>
         /// Closes chat dropdown and then chat window after a small delay
-        /// Used as workaround for unity issue #892913
+        /// (used as workaround for unity issue #892913).
         /// </summary>
         private IEnumerator CloseChatWindowWithDelay()
         {
@@ -867,7 +874,7 @@ namespace UI.Chat
         }
 
         /// <summary>
-        /// Registers new listener for friend count changed event
+        /// Registers new listener for friend count changed event.
         /// </summary>
         /// <param name="listener">listener object to register</param>
         public void AddListener(IOnFriendsChangedListener listener)
@@ -876,7 +883,7 @@ namespace UI.Chat
         }
 
         /// <summary>
-        /// Removes listener from listening on friend count changed event
+        /// Removes listener from listening on friend count changed event.
         /// </summary>
         /// <param name="listener">listener object to remove</param>
         public void RemoveListener(IOnFriendsChangedListener listener)
@@ -894,7 +901,7 @@ namespace UI.Chat
 
 #if UNITY_ANDROID
         /// <summary>
-        /// Calculates size of android on screen keyboard
+        /// Calculates size of android on screen keyboard.
         /// </summary>
         /// <returns>size of android on screen keyboard</returns>
         private int GetKeyboardSize()

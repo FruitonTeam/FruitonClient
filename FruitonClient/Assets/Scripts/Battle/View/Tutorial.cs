@@ -5,11 +5,14 @@ using System.Text;
 using Battle.Model;
 using Battle.Players.AI;
 using Cz.Cuni.Mff.Fruiton.Dto;
+using Exceptions;
 using fruiton.dataStructures;
+using fruiton.kernel;
 using Fruitons;
 using UnityEngine;
 using UnityEngine.UI;
 using Action = System.Action;
+using KFruiton = fruiton.kernel.Fruiton;
 using FruitonType = Enums.FruitonType;
 
 namespace Battle.View
@@ -434,7 +437,47 @@ namespace Battle.View
             }
         }
 
-    
+        public static IEnumerable<Position> CreatePositionsForArtificialTeam(IEnumerable<KFruiton> fruitons)
+        {
+            var result = new List<Position>();
+            int i, j;
+            int majorRow = 0;
+            int minorRow = 1;
+            int majorCounter = 2;
+            int minorCounter = 2;
+            foreach (var kernelFruiton in fruitons)
+            {
+                switch ((FruitonType)kernelFruiton.type)
+                {
+                    case FruitonType.KING:
+                    {
+                        i = GameState.WIDTH / 2;
+                        j = majorRow;
+                    }
+                        break;
+                    case FruitonType.MAJOR:
+                    {
+                        i = GameState.WIDTH / 2 - majorCounter;
+                        j = majorRow;
+                        if (--majorCounter == 0) --majorCounter;
+                    }
+                        break;
+                    case FruitonType.MINOR:
+                    {
+                        i = GameState.WIDTH / 2 - minorCounter;
+                        j = minorRow;
+                        --minorCounter;
+                    }
+                        break;
+                    default:
+                    {
+                        throw new UndefinedFruitonTypeException();
+                    }
+                }
+                result.Add(new Position { X = i, Y = j });
+            }
+            return result;
+        }
 
     }
 }

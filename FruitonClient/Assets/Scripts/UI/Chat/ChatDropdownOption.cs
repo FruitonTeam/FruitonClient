@@ -23,7 +23,7 @@ namespace UI.Chat
             if (optionIndex == CHALLENGE)
             {
                 GetComponent<Toggle>().interactable = ChatController.Instance.IsSelectedPlayerInMenu 
-                                                      && !amIChallengedBy(ChatController.Instance.SelectedPlayerLogin);
+                                                      && !AmIChallengedBy(ChatController.Instance.SelectedPlayerLogin);
             } 
             else if (optionIndex == OFFER_FRUITON)
             {
@@ -31,7 +31,7 @@ namespace UI.Chat
             }
         }
 
-        private bool amIChallengedBy(string login)
+        private bool AmIChallengedBy(string login)
         {
             return ChallengeController.Instance.EnemyChallenges.Select(data => data.Challenge.ChallengeFrom).Contains(login);
         }

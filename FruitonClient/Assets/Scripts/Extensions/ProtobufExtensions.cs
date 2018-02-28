@@ -17,5 +17,17 @@ namespace Extensions
             }
             return fraction.ToString();
         }
+
+        public static string GetDescription(this Status status)
+        {
+            switch (status)
+            {
+                case Status.Offline: return "Offline";
+                case Status.InBattle: return "In Battle";
+                case Status.InMatchmaking: return "Looking for an opponent";
+                case Status.MainMenu: return "Chilling in menu";
+            }
+            return status.ToString();
+        }
     }
 }
