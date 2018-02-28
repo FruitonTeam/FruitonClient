@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 namespace UI.Notification
 {
+    /// <summary>
+    /// Handles animation of simple notifications.
+    /// </summary>
     public class NotificationView : MonoBehaviour
     {
         private static readonly float SHOW_ANIMATION_TIME = 1.0f;
@@ -18,6 +21,9 @@ namespace UI.Notification
         private Vector3 originalPosition;
         private Coroutine showingCoroutine;
 
+        /// <summary>
+        /// True if no notification is currently being displayed.
+        /// </summary>
         public bool IsAnimationCompleted { get; private set; }
 
         public NotificationView()
@@ -25,13 +31,20 @@ namespace UI.Notification
             IsAnimationCompleted = true;
         }
 
+        /// <summary>
+        /// Sets data of currently displayed notification.
+        /// </summary>
+        /// <param name="data">notification data to set</param>
         public void SetData(NotificationManager.NotificationData data)
         {
             Image.texture = data.Image;
             Header.text = data.Header;
             Text.text = data.Text;
         }
-        
+
+        /// <summary>
+        /// Starts the notification animation.
+        /// </summary>
         public void StartAnimation()
         {
             IsAnimationCompleted = false;
@@ -47,6 +60,9 @@ namespace UI.Notification
             ));
         }
 
+        /// <summary>
+        /// Hides the currently displayed notification.
+        /// </summary>
         public void Hide()
         {
             StopCoroutine(showingCoroutine);
@@ -58,6 +74,9 @@ namespace UI.Notification
             ));
         }
 
+        /// <summary>
+        /// Waits for a while then hides the notification.
+        /// </summary>
         private void OnNotificationShown()
         {
             showingCoroutine = StartCoroutine(WaitWhileShowing(SHOW_TIME));

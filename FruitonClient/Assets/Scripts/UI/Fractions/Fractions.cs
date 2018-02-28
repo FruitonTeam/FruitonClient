@@ -6,6 +6,9 @@ using UnityEngine.UI;
 
 namespace UI.Fractions
 {
+    /// <summary>
+    /// Handles fraction scene
+    /// </summary>
     public class Fractions : MonoBehaviour
     {
         private Fraction chosenFractionName;
@@ -24,6 +27,9 @@ namespace UI.Fractions
             fractionButtons = new[] { Fraction1Button, Fraction2Button, Fraction3Button };
         }
 
+        /// <summary>
+        /// Joins player to the currently selected fraction, send data to server.
+        /// </summary>
         public void JoinFraction()
         {
             ConnectionHandler connectionHandler = ConnectionHandler.Instance;
@@ -44,6 +50,10 @@ namespace UI.Fractions
             Scenes.Load(Scenes.MAIN_MENU_SCENE);
         }
 
+        /// <summary>
+        /// Selects a fraction. Doesn't make player join it yet.
+        /// </summary>
+        /// <param name="fractionId">id of selected fraction</param>
         public void ChooseFraction(int fractionId)
         {
             foreach (Button button in fractionButtons)
