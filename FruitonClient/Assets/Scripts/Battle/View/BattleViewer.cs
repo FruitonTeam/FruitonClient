@@ -510,8 +510,7 @@ namespace Battle.View
             GameObject movedObject = FruitonsGrid[from.x, from.y];
             FruitonsGrid[to.x, to.y] = movedObject;
             FruitonsGrid[from.x, from.y] = null;
-            Vector3 toPosition = GridLayoutManager.GetCellPosition(to.x, to.y);
-            moveCoroutine = StartCoroutine(MoveCoroutine(movedObject.transform.position, toPosition, movedObject));
+            moveCoroutine = StartCoroutine(MoveCoroutine(movedObject.transform.position, to, movedObject));
             GridLayoutManager.ResetHighlights();
         }
 
@@ -559,34 +558,34 @@ namespace Battle.View
             textMesh.color = heal ? Color.green : Color.red;
         }
 
-        private IEnumerator MoveCoroutine(Vector3 from, Vector3 to, GameObject movedObject)
+        private IEnumerator MoveCoroutine(Vector3 from, KVector2 toCoordinates, GameObject movedObject)
         {
             var anim = movedObject.GetComponentInChildren<FruitonBattleAnimator>();
+            Vector3 toGlobal = GridLayoutManager.GetCellPosition(toCoordinates.x, toCoordinates.y);
+            Vector3 toLocal = movedObject.transform.parent.transform.InverseTransformPoint(toGlobal);
 
             bool isFlipped = false;
-            if ((anim.SkeletonAnim.Skeleton.FlipX && from.z > to.z ||
-                 !anim.SkeletonAnim.Skeleton.FlipX && from.z < to.z))
+            if ((anim.SkeletonAnim.Skeleton.FlipX && from.z > toGlobal.z ||
+                 !anim.SkeletonAnim.Skeleton.FlipX && from.z < toGlobal.z))
             {
                 isFlipped = true;
                 anim.SkeletonAnim.Skeleton.FlipX = !anim.SkeletonAnim.Skeleton.FlipX;
             }
-
-            float currentTime = 0.0f;
-            Vector3 direction = to - from;
+            
+            Vector3 direction = toGlobal - from;
+            Vector3 moveVector = 5 * direction.normalized;
             anim.StartWalking();
 
             float distance, previousDistance = float.MaxValue;
-            while ((distance = Vector3.Distance(movedObject.transform.position, to)) > 0.05f &&
+            while ((distance = Vector3.Distance(movedObject.transform.localPosition, toLocal)) > 0.05f &&
                    distance <= previousDistance) // Are we still going closer?
             {
                 previousDistance = distance;
-                currentTime += Time.deltaTime;
-                Vector3 moveVector = direction * currentTime;
-                movedObject.transform.position = from + moveVector;
+                movedObject.transform.localPosition += moveVector * Time.deltaTime;
                 yield return null;
             }
-
-            movedObject.transform.position = to; // Always make sure we made it exactly there
+            
+            movedObject.transform.localPosition = toLocal; // Always make sure we made it exactly there
             anim.StopWalking();
             if (isFlipped)
                 anim.SkeletonAnim.Skeleton.FlipX = !anim.SkeletonAnim.Skeleton.FlipX;
@@ -601,7 +600,6 @@ namespace Battle.View
             {
                 var moveAction = (MoveAction) action;
                 var target = ((MoveActionContext) moveAction.actionContext).target;
-                //Debug.Log("Highlight x=" + target.x + " y=" + target.y);
                 GridLayoutManager.HighlightCell(target.x, target.y, Color.blue);
                 VisualizePossibleAttacks(target, kernelFruiton);
             }
