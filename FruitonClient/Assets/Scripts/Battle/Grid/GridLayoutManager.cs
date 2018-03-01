@@ -17,7 +17,7 @@ namespace Battle.Grid
         public List<GameObject> Obstacles;
 
         private float CELL_SIZE = 1f;
-        private float transparencyLevel = 235f / 255f;
+        private float transparencyLevel = 180f / 255f;
 
         public static GridLayoutManager Instance { get; private set; }
 
@@ -62,6 +62,7 @@ namespace Battle.Grid
                     SpawnedGridType[i, j] = GridCellType.New;
                 }
             }
+            ResetHighlights();
 
         }
 	
