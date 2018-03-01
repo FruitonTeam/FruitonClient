@@ -21,8 +21,6 @@ namespace Networking
     {
         private static readonly string X_AUTH_TOKEN_HEADER_KEY = "x-auth-token";
 
-        private static readonly string SET_COOKIE_KEY = "SET-COOKIE";
-
         private static readonly string COOKIE_KEY = "Cookie";
 
 #if LOCAL_SERVER
