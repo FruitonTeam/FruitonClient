@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
+using WebSocketSharp.Net;
 
 namespace Networking
 {
@@ -100,6 +102,15 @@ namespace Networking
         {
             return socket.IsAlive;
         }
+
+        public IEnumerable<Cookie> GetCookies()
+        {
+            if (socket != null)
+            {
+                return socket.Cookies;
+            }
+            return Enumerable.Empty<Cookie>();
+        } 
         
     }
 }

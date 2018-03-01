@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Bazaar;
 using Cz.Cuni.Mff.Fruiton.Dto;
 using Google.Protobuf;
@@ -53,11 +54,6 @@ namespace Networking
         /// Authorization token for current session.
         /// </summary>
         private string token;
-
-        /// <summary>
-        /// Cookies for current session.
-        /// </summary>
-        private string cookies;
 
         /// <summary>
         /// Dictionary of registered websocket message listeners.
@@ -154,8 +150,6 @@ namespace Networking
             Debug.Log("www: " + URL_API + query);
             yield return www;
 
-            SetCookies(www);
-
             if (string.IsNullOrEmpty(www.error))
             {
                 success(www);
@@ -163,18 +157,6 @@ namespace Networking
             else
             {
                 error(www.text);
-            }
-        }
-
-        /// <summary>
-        /// Sets current cookies.
-        /// </summary>
-        /// <param name="www">www object to take cookies from</param>
-        private void SetCookies(WWW www)
-        {
-            if (www.responseHeaders.ContainsKey(SET_COOKIE_KEY))
-            {
-                cookies = www.responseHeaders[SET_COOKIE_KEY];
             }
         }
 
@@ -196,8 +178,6 @@ namespace Networking
         ) {
             var www = new WWW(URL_API + query, body, GetRequestHeaders(headers));
             yield return www;
-
-            SetCookies(www);
             
             if (string.IsNullOrEmpty(www.error))
             {
@@ -228,10 +208,12 @@ namespace Networking
                 headers[X_AUTH_TOKEN_HEADER_KEY] = token;  
             }
 
-            if (!string.IsNullOrEmpty(cookies))
+            if (webSocket != null)
             {
-                headers[COOKIE_KEY] = cookies;
+                headers[COOKIE_KEY] = string.Join(";",
+                    webSocket.GetCookies().Select(cookie => cookie.Name + "=" + cookie.Value).ToArray());
             }
+            
             return headers;
         }
 
@@ -312,7 +294,7 @@ namespace Networking
         }
 
         /// <summary>
-        /// Hides all notifications, closes websocket connection, removes all websocket message listeners, clears cookies and authorization token.
+        /// Hides all notifications, closes websocket connection, removes all websocket message listeners and clears authorization token.
         /// </summary>
         public void Disconnect()
         {
@@ -323,7 +305,6 @@ namespace Networking
                 webSocket.Close();    
             }
             listeners = new Dictionary<WrapperMessage.MessageOneofCase, List<IOnMessageListener>>();
-            cookies = string.Empty;
             token = string.Empty;
         }
 
