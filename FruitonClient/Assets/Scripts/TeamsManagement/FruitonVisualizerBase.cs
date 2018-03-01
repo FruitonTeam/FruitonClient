@@ -13,12 +13,15 @@ namespace TeamsManagement
         public GameObject FridgeFruitonTemplate;
         public GameObject WrapperFruitons;
         public FridgeFilterManager FilterManager;
+        /// <summary> Positions on which a tooltip can be displayed. </summary>
         public RectTransform[] TooltipPanelPositions;
         public GameObject PanelTooltip;
         public RectTransform ScrollContentRectTransform;
         public FridgeFruitonDetail FruitonDetail;
 
+        /// <summary> Maps fruiton ids to corresponding fridge fruiton game objects </summary>
         protected Dictionary<int, FridgeFruiton> dbFridgeMapping;
+        /// <summary> List of the fridge fruiton game objects </summary>
         protected List<FridgeFruiton> fridgeFruitons;
 
         protected virtual void Start()
@@ -26,6 +29,9 @@ namespace TeamsManagement
             dbFridgeMapping = new Dictionary<int, FridgeFruiton>();
         }
 
+        /// <summary>
+        /// Creates game object for every playable fruiton and adds it to the scene.
+        /// </summary>
         protected virtual void InitializeAllFruitons()
         {
             GameManager gameManager = GameManager.Instance;
@@ -57,6 +63,12 @@ namespace TeamsManagement
             }
         }
 
+        /// <summary>
+        /// Initializes fridge fruiton game object data.
+        /// </summary>
+        /// <param name="fFruiton">game object to initialize</param>
+        /// <param name="kFruiton">kernel fruiton to load data from</param>
+        /// <param name="fridgeIndex">index of the fridge fruiton in the scene</param>
         protected virtual void InitializeFridgeFruiton(FridgeFruiton fFruiton, KFruiton kFruiton, int fridgeIndex)
         {
             fFruiton.SetKernelFruiton(kFruiton);
@@ -64,16 +76,25 @@ namespace TeamsManagement
             fridgeFruitons.Add(fFruiton);
         }
 
+        /// <summary>
+        /// Loads available fruitons from the server then updates displayed information.
+        /// </summary>
         protected virtual void UpdateAvailableFruitons()
         {
             PlayerHelper.GetAvailableFruitons(FilterManager.UpdateAvailableFruitons, Debug.Log);
         }
     
+        /// <summary>
+        /// Hides currently displayed fruiton tooltip.
+        /// </summary>
         protected void HideTooltip()
         {
             PanelTooltip.SetActive(false);
         }
 
+        /// <summary>
+        /// Closes fruiton detail window.
+        /// </summary>
         public void HideDetail()
         {
             FruitonDetail.gameObject.SetActive(false);
@@ -81,6 +102,10 @@ namespace TeamsManagement
             HideTooltip();
         }
 
+        /// <summary>
+        /// Opens fruiton detail window.
+        /// </summary>
+        /// <param name="fruiton">fruiton to show in the deail window</param>
         protected virtual void ShowDetail(FridgeFruiton fruiton)
         {
             FruitonDetail.TooltipText.text = TooltipUtil.GenerateTooltip(fruiton.KernelFruiton);
@@ -101,6 +126,11 @@ namespace TeamsManagement
             );
         }
 
+        /// <summary>
+        /// Shows fruiton tooltip on a given position.
+        /// </summary>
+        /// <param name="fruiton">fruiton to show tooltip of</param>
+        /// <param name="positionIndex">index of the position in <see cref="TooltipPanelPositions"/></param>
         protected void ShowTooltip(KFruiton fruiton, int positionIndex = 0)
         {
             RectTransform targetTransform = TooltipPanelPositions[positionIndex];
@@ -114,6 +144,9 @@ namespace TeamsManagement
             PanelTooltip.GetComponentInChildren<Text>().text = TooltipUtil.GenerateTooltip(fruiton);
         }
 
+        /// <summary>
+        /// Assigns indices to active fruitons and changes their positions according to them.
+        /// </summary>
         protected virtual void ReindexFruitons()
         {
             int newIndex = 0;
@@ -150,6 +183,10 @@ namespace TeamsManagement
             ResizeScrollContent(newIndex);
         }
 
+        /// <summary>
+        /// Resizes scroll view content to fit a number of objects.
+        /// </summary>
+        /// <param name="objectCount">number of objects to fit in</param>
         protected void ResizeScrollContent(int objectCount)
         {
             var contentSize = ScrollContentRectTransform.sizeDelta;

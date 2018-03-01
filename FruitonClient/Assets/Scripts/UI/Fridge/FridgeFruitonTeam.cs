@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace UI.Fridge
 {
+    /// <summary>
+    /// Represents fruiton team game object in fridge scenes.
+    /// </summary>
     public class FridgeFruitonTeam : MonoBehaviour
     {
         public static readonly Color COLOR_DEFAULT = new Color(1, 1, 1);

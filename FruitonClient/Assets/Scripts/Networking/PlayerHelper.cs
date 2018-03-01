@@ -134,7 +134,7 @@ namespace Networking
                     success,
                     error,
                     body,
-                    NetworkUtils.GetRequestHeaders(true)
+                    NetworkUtils.CreateRequestHeaders(true)
                 )
             );
         }

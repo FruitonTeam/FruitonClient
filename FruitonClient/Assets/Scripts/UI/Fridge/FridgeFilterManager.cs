@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 namespace UI.Fridge
 {
+    /// <summary>
+    /// Handles fruiton filtering in fridge scenes.
+    /// </summary>
     public class FridgeFilterManager : MonoBehaviour
     {
         public InputField FilterInput;
@@ -34,9 +37,12 @@ namespace UI.Fridge
             }
         }
 
+        /// <summary>
+        /// Updates <see cref="FridgeFruiton.IsOwned"/> flag on all fruitons, reapplies filters.
+        /// </summary>
+        /// <param name="availableIds"></param>
         public void UpdateAvailableFruitons(List<int> availableIds)
         {
-            Debug.Log("updating available fruitons");
             var idSet = new HashSet<int>(availableIds);
 
             foreach (var fruiton in AllFruitons)
@@ -46,6 +52,9 @@ namespace UI.Fridge
             ApplyFilters();
         }
 
+        /// <summary>
+        /// Activates or deactivates fridge fruiton based on the currently active filters
+        /// </summary>
         private void ApplyFilters()
         {
             var fireUpdate = false;

@@ -65,7 +65,7 @@ namespace Networking
                     PanelManager.Instance.ShowErrorMessage(error);
                 }, 
                 ProtobufUtils.GetBinaryData(newUser),
-                NetworkUtils.GetRequestHeaders(true)));
+                NetworkUtils.CreateRequestHeaders(true)));
         }
 
         private void OnSuccessfulRegistration(string login)
@@ -94,7 +94,7 @@ namespace Networking
                 ProcessLoginResult,
                 errorAction,
                 ProtobufUtils.GetBinaryData(loginData),
-                NetworkUtils.GetRequestHeaders(true)));
+                NetworkUtils.CreateRequestHeaders(true)));
         }
         
         private void ProcessLoginResult(string token)

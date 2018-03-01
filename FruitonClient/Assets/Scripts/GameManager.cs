@@ -26,6 +26,9 @@ public class PlayerOptions
     public int LastSelectedLocalGameMode { get; set; }
 }
 
+/// <summary>
+/// Stores and handles information about logged player.
+/// </summary>
 public class GameManager : IOnMessageListener
 {
     private static GameManager instance;
@@ -52,6 +55,7 @@ public class GameManager : IOnMessageListener
     private LoggedPlayerInfo loggedPlayerInfo;
     
     private string userPassword;
+    /// <summary>True if logged player checked the "stay logged in" checkbox when logging in.</summary>
     private bool? stayLoggedIn = null;
     /// <summary> The list of the Fruiton Teams of the current user. </summary>
     private FruitonTeamList fruitonTeamList;
@@ -98,6 +102,9 @@ public class GameManager : IOnMessageListener
     /// </summary>
     public FruitonTeam CurrentFruitonTeam { get; set; }
 
+    /// <summary>
+    /// Gets or sets the fruiton team selected by local opponent (player 2).
+    /// </summary>
     public FruitonTeam OfflineOpponentTeam { get; set; }
 
     public bool StayLoggedIn
@@ -113,7 +120,9 @@ public class GameManager : IOnMessageListener
         }
     }
 
-    // getters and setters for UserData, currently saved via PlayerPrefs
+    /// <summary>
+    /// Gets logged's players name. Uses name stored in player prefs if in offline mode.
+    /// </summary>
     public string UserName {
         get
         {
@@ -125,6 +134,9 @@ public class GameManager : IOnMessageListener
         }
     }
 
+    /// <summary>
+    /// Gets and sets (and stores to player prefs) logged player's password.
+    /// </summary>
     public string UserPassword
     {
         get
@@ -149,6 +161,9 @@ public class GameManager : IOnMessageListener
         }
     }
 
+    /// <summary>
+    /// Clears logged player's locally stored data.
+    /// </summary>
     public void Logout()
     {
         loggedPlayerInfo = null;
@@ -159,6 +174,9 @@ public class GameManager : IOnMessageListener
         Serializer.ClearPlayerLocalData();
     }
 
+    /// <summary>
+    /// Fraction logged player belongs to.
+    /// </summary>
     public Fraction Fraction
     {
         get
@@ -180,8 +198,14 @@ public class GameManager : IOnMessageListener
         }
     }
 
+    /// <summary>
+    /// List of all fruitons that are in the game (includes fruitons used by AI that are not available to players).
+    /// </summary>
     public IEnumerable<KFruiton> AllFruitons { get; private set; }
 
+    /// <summary>
+    /// List of all fruitons that players can use in the game.
+    /// </summary>
     public IEnumerable<KFruiton> AllPlayableFruitons
     {
         get
@@ -190,6 +214,9 @@ public class GameManager : IOnMessageListener
         }
     }
 
+    /// <summary>
+    /// List of logged player's fruiton teams.
+    /// </summary>
     public FruitonTeamList FruitonTeamList
     {
         get
@@ -204,8 +231,15 @@ public class GameManager : IOnMessageListener
 
     public FruitonDatabase FruitonDatabase { get; set; }
 
+    /// <summary>
+    /// List of ids of all fruitons that logged player owns.
+    /// </summary>
     public List<int> AvailableFruitons { get; set; }
 
+    /// <summary>
+    /// Makes fruitons available to use for logged player.
+    /// </summary>
+    /// <param name="unlockedFruitons">list of ids of fruitons to be unlocked</param>
     public void UnlockFruitons(IEnumerable<int> unlockedFruitons)
     {
         if (unlockedFruitons != null)
@@ -221,6 +255,9 @@ public class GameManager : IOnMessageListener
         }
     }
 
+    /// <summary>
+    /// Logged player's avatar.
+    /// </summary>
     public Texture2D Avatar
     {
         get
@@ -241,6 +278,9 @@ public class GameManager : IOnMessageListener
         }
     }
 
+    /// <summary>
+    /// Amount of logged player's money.
+    /// </summary>
     public int Money
     {
         get
@@ -253,11 +293,18 @@ public class GameManager : IOnMessageListener
         }
     }
 
+    /// <summary>
+    /// Adjusts logged player's money by an amount.
+    /// </summary>
+    /// <param name="amount">amount to adjust by</param>
     public void AdjustMoney(int amount)
     {
         loggedPlayerInfo.Money = loggedPlayerInfo.Money + amount;
     }
 
+    /// <summary>
+    /// List of logged player's currently active quests.
+    /// </summary>
     public RepeatedField<Quest> Quests
     {
         get
@@ -270,6 +317,9 @@ public class GameManager : IOnMessageListener
         }
     }
 
+    /// <summary>
+    /// List of logged player's friends.
+    /// </summary>
     public RepeatedField<Friend> Friends
     {
         get
@@ -282,6 +332,9 @@ public class GameManager : IOnMessageListener
         }
     }
 
+    /// <summary>
+    /// True if player is logged in and is in online mode.
+    /// </summary>
     public bool IsOnline
     {
         get
@@ -289,9 +342,13 @@ public class GameManager : IOnMessageListener
             return connectionMode == ConnectionMode.Online;
         }
     }
+
     public ConnectionMode connectionMode;
 
     private PlayerOptions playerOptions = new PlayerOptions();
+    /// <summary>
+    /// Logged player's last selected game modes.
+    /// </summary>
     public PlayerOptions PlayerOptions
     {
         get
@@ -304,6 +361,9 @@ public class GameManager : IOnMessageListener
         }
     }
 
+    /// <summary>
+    /// True if player isn't logged in.
+    /// </summary>
     public bool IsInTrial
     {
         get
@@ -323,11 +383,15 @@ public class GameManager : IOnMessageListener
         Friends.Single(f => f.Login == onlineStatusChange.Login).Status = onlineStatusChange.Status;
     }
 
+    /// <returns>true if the game remembers player's login data from their last session</returns>
     public bool HasRememberedUser()
     {
         return UserName != "" && UserPassword != "";
     }
 
+    /// <summary>
+    /// Logs player in if game remembers their login data and player checked "stay logged in" checkmark last time they logged in.
+    /// </summary>
     public void AutomaticLogin()
     {
         if (StayLoggedIn && HasRememberedUser())
@@ -345,6 +409,9 @@ public class GameManager : IOnMessageListener
 
     }
 
+    /// <summary>
+    /// Initializes either offline mode or trial mode depending on whether the game remembers player's login data from last session.
+    /// </summary>
     public void LoginOffline()
     {
         if (HasRememberedUser())
@@ -359,6 +426,10 @@ public class GameManager : IOnMessageListener
         Scenes.Load(Scenes.MAIN_MENU_SCENE);
     }
 
+    /// <summary>
+    /// Removes any cached data from previous player, stores data of new player, loads main menu scene.
+    /// </summary>
+    /// <param name="playerInfo">info of newly logged player</param>
     public void OnLoggedIn(LoggedPlayerInfo playerInfo)
     {
         connectionMode = ConnectionMode.Online;
@@ -390,16 +461,27 @@ public class GameManager : IOnMessageListener
         }
     }
 
+    /// <summary>
+    /// Add new friend to game manager's <see cref="Friends"/> list.
+    /// </summary>
+    /// <param name="friend">username of the friend to add</param>
     public void AddFriend(Friend friend)
     {
         Friends.Add(friend);
     }
 
+    /// <summary>
+    /// Removes a friend from game manager's <see cref="Friends"/> list.
+    /// </summary>
+    /// <param name="friend">username of the friend to remove</param>
     public void RemoveFriend(string friend)
     {
         Friends.Remove(Friends.First(f => f.Login == friend));
     }
 
+    /// <summary>
+    /// Stores logged player's data to file.
+    /// </summary>
     public void SavePlayerSettings()
     {
         Serializer.SavePlayerSettings(PlayerOptions);
@@ -407,6 +489,9 @@ public class GameManager : IOnMessageListener
 
     #endregion
     
+    /// <summary>
+    /// Loads last saved player's data from local cache and server, sets up fruiton database.
+    /// </summary>
     private void Initialize()
     {
         FruitonDatabase = new FruitonDatabase(KernelUtils.LoadTextResource(FRUITON_DB_FILE));
@@ -432,6 +517,10 @@ public class GameManager : IOnMessageListener
         }
     }
 
+    /// <summary>
+    /// Compares locally stored list of teams is different from the one loaded from the server and merges them together.
+    /// </summary>
+    /// <param name="serverTeamList">list of teams loaded from the server</param>
     private void MergeTeamLists(FruitonTeamList serverTeamList)
     {
         RepeatedField<FruitonTeam> serverTeams = serverTeamList.FruitonTeams;
@@ -455,7 +544,7 @@ public class GameManager : IOnMessageListener
             // Name clash, different teams
             if (areNamesSame)
             {
-                localTeam.Name = GenerateNewName(localTeam.Name, localTeamNames, serverTeamDb);
+                localTeam.Name = GenerateNewTeamName(localTeam.Name, localTeamNames, serverTeamDb);
             }
 
             // Upload changes
@@ -468,7 +557,14 @@ public class GameManager : IOnMessageListener
         Serializer.SerializeFruitonTeams();
     }
 
-    private static string GenerateNewName(
+    /// <summary>
+    /// Generates a new unique name for a team. 
+    /// </summary>
+    /// <param name="oldName">old name of the team</param>
+    /// <param name="localNames">list of names of locally stored teams</param>
+    /// <param name="serverNames">list of names of teams loaded from the server</param>
+    /// <returns></returns>
+    private static string GenerateNewTeamName(
         string oldName, 
         ICollection<string> localNames, 
         IDictionary<string, FruitonTeam> serverNames
@@ -483,6 +579,9 @@ public class GameManager : IOnMessageListener
         throw new IndexOutOfRangeException("Could not find suitable team name");
     }
 
+    /// <param name="a">1st team to compare</param>
+    /// <param name="b">2nd team to compare</param>
+    /// <returns>true if given teams have same fruitons on same positions</returns>
     private static bool AreTeamsEqual(FruitonTeam a, FruitonTeam b)
     {
         if (a.FruitonIDs.Count != b.FruitonIDs.Count
@@ -512,7 +611,10 @@ public class GameManager : IOnMessageListener
     {
         avatar = null;
     }
-    
+
+    /// <summary>
+    /// Stores logged player's data to unity player prefs if they checked "stay loggen in" checkbox when logging in.
+    /// </summary>
     private void PersistIfStayLoggedIn()
     {
         if (StayLoggedIn)
@@ -521,12 +623,19 @@ public class GameManager : IOnMessageListener
         }
     }
 
+    /// <summary>
+    /// Stores logged player's data to unity player prefs.
+    /// </summary>
     private void Persist()
     {
         PlayerPrefs.SetString(PlayerPrefsKeys.USER_NAME, UserName);
         PlayerPrefs.SetString(PlayerPrefsKeys.USER_PASSWORD, AuthenticationHandler.Instance.LastPassword);
     }
 
+    /// <summary>
+    /// Removes a quest from game manager's <see cref="Quests"/> list
+    /// </summary>
+    /// <param name="completedQuestName">name of the quest to remove</param>
     private void CompleteQuest(string completedQuestName)
     {
         Quest completedQuest = Quests.FirstOrDefault(quest => quest.Name == completedQuestName);
@@ -541,6 +650,10 @@ public class GameManager : IOnMessageListener
         }
     }
 
+    /// <summary>
+    /// Removes quests from game manager's <see cref="Quests"/> list
+    /// </summary>
+    /// <param name="completedQuestName">list of names of the quests to remove</param>
     public void CompleteQuests(IEnumerable<string> completedQuestsNames)
     {
         foreach (string questName in completedQuestsNames)

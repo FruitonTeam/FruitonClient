@@ -9,6 +9,9 @@ using UnityEngine.UI;
 
 namespace UI.Fridge
 {
+    /// <summary>
+    /// Represents fruiton game object in scroll view in fridge scenes.
+    /// </summary>
     public class FridgeFruiton : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
     {
         public Text TextAttack;
@@ -21,6 +24,9 @@ namespace UI.Fridge
 
         public Fruiton KernelFruiton { get; private set; }
 
+        /// <summary>
+        /// True if logged player owns this fruiton.
+        /// </summary>
         public bool IsOwned
         {
             get { return isOwned; }
@@ -33,6 +39,9 @@ namespace UI.Fridge
         }
 
         private int count;
+        /// <summary>
+        /// Number of fruitons that are available to be added to a team.
+        /// </summary>
         public int Count
         {
             get
@@ -58,6 +67,11 @@ namespace UI.Fridge
 #if UNITY_ANDROID
         private Coroutine pointerDownCoroutine;
         private Vector2 dragBeginPosition;
+
+        /// <summary> Time (in seconds) for which user has to keep finger on the game object to trigger drag and drop. </summary>
+        private static readonly float TOUCH_DRAG_DELAY = 0.25f;
+        /// <summary> Maximum distance player can move their finger while touching the game object to still trigger drag and drop. </summary>
+        private static readonly int TOUCH_DRAG_MAX_OFFSET = 100;
 #endif
 
         public UnityEvent OnBeginDrag { get; private set; }
@@ -113,6 +127,10 @@ namespace UI.Fridge
             OnMouseExit.Invoke();
         }
 
+        /// <summary>
+        /// Loads data from kernel fruiton and displays them on the game object.
+        /// </summary>
+        /// <param name="kFruiton">kernel fruiton to load</param>
         public void SetKernelFruiton(Fruiton kFruiton)
         {
             KernelFruiton = kFruiton;
@@ -131,29 +149,33 @@ namespace UI.Fridge
         }
 
 #if UNITY_ANDROID && !UNITY_EDITOR
-    void Update()
-    {
-        if (pointerDownCoroutine != null)
+        /// <summary>
+        /// Checks if player touched the game object check for shorter than <see cref="TOUCH_DRAG_DELAY"/> to trigger tap event,
+        /// if user was touching the object for that amount of time and didn't move their finger for more than <see cref="TOUCH_DRAG_MAX_OFFSET"/> triggers drag and drop.
+        /// </summary>
+        void Update()
         {
-            if (Input.touchCount > 0 && Vector2.Distance(Input.GetTouch(0).position, dragBeginPosition) > 100)
+            if (pointerDownCoroutine != null)
             {
-                StopCoroutine(pointerDownCoroutine);
-                pointerDownCoroutine = null;
-            } else if (Input.touchCount == 0)
-            {
-                StopCoroutine(pointerDownCoroutine);
-                pointerDownCoroutine = null;
-                OnTap.Invoke();
+                if (Input.touchCount > 0 && Vector2.Distance(Input.GetTouch(0).position, dragBeginPosition) > TOUCH_DRAG_MAX_OFFSET)
+                {
+                    StopCoroutine(pointerDownCoroutine);
+                    pointerDownCoroutine = null;
+                } else if (Input.touchCount == 0)
+                {
+                    StopCoroutine(pointerDownCoroutine);
+                    pointerDownCoroutine = null;
+                    OnTap.Invoke();
+                }
             }
         }
-    }
 
-    IEnumerator PointerDownTimer()
-    {
-        yield return new WaitForSecondsRealtime(0.25f);
-        pointerDownCoroutine = null;
-        OnBeginDrag.Invoke();
-    }
+        IEnumerator PointerDownTimer()
+        {
+            yield return new WaitForSecondsRealtime(TOUCH_DRAG_DELAY);
+            pointerDownCoroutine = null;
+            OnBeginDrag.Invoke();
+        }
 #endif
     }
 }
