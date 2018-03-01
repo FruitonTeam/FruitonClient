@@ -20,9 +20,18 @@ namespace UI.Fridge
     {
     }
 
+    /// <summary>
+    /// Handles team grid in fridge scenes.
+    /// </summary>
     public class FridgeTeamGrid : MonoBehaviour
     {
+        /// <summary>
+        /// True if the team can be edited.
+        /// </summary>
         public bool AllowEdit;
+        /// <summary>
+        /// True if the team should be facing left instead right.
+        /// </summary>
         public bool IsMirrored;
         public FridgeGridSquare GridSquareTemplate;
         public UnityEvent<Fruiton, Position> OnBeginDragFromTeam { get; private set; }
@@ -58,12 +67,9 @@ namespace UI.Fridge
             }
         }
 
-
         private int squareSize;
         private RectTransform rectTransform;
         private FridgeGridSquare[,] gridSquares;
-    
-
 
         void Awake()
         {
@@ -76,6 +82,11 @@ namespace UI.Fridge
             InitGridFruitons();
         }
 
+        /// <summary>
+        /// Loads fruiton team and displays it on the grid.
+        /// </summary>
+        /// <param name="team">team to load</param>
+        /// <param name="dbFridgeMapping">fruiton id to fridge fruiton game object map</param>
         public void LoadTeam(FruitonTeam team, Dictionary<int, FridgeFruiton> dbFridgeMapping)
         {
             ClearFruitons();
@@ -116,11 +127,17 @@ namespace UI.Fridge
             }
         }
 
+        /// <summary>
+        /// Removes all fruitons from the grid.
+        /// </summary>
         public void ResetTeam()
         {
             ClearFruitons();
         }
 
+        /// <summary>
+        /// Highlights positions on the grid where a fruiton can be placed.
+        /// </summary>
         public void HighlightAvailable()
         {
             if (AvailablePositions != null)
@@ -133,6 +150,12 @@ namespace UI.Fridge
             }
         }
 
+        /// <summary>
+        /// Highlights position on the grid where a fruiton of given type can be placed.
+        /// </summary>
+        /// <param name="fruitonType">type of the fruiton</param>
+        /// <param name="swapping">true if fruiton is being swapped in the team</param>
+        /// <returns>true if there's at least one position when a fruiton can be placed</returns>
         public bool HighlightAvailableSquares(int fruitonType, bool swapping = false)
         {
             bool isAnySquareAvailable = false;
@@ -161,6 +184,8 @@ namespace UI.Fridge
             return isAnySquareAvailable;
         }
 
+        /// <param name="fruiton">fruiton to place in the team</param>
+        /// <returns>List of available position on the grid where a fruiton can be placed</returns>
         public List<Position> GetAvailableSquares(Fruiton fruiton)
         {
             var result = new List<Position>();
@@ -179,6 +204,9 @@ namespace UI.Fridge
             return result;
         }
 
+        /// <summary>
+        /// Cancels highlight of every grid square
+        /// </summary>
         public void CancelHighlights()
         {
             foreach (var square in gridSquares)
@@ -187,6 +215,13 @@ namespace UI.Fridge
             }
         }
 
+        /// <summary>
+        /// Calculates the position of the square grid that the pointer (mouse or finger) is over, displays a fruiton on that position with lower opacity.
+        /// </summary>
+        /// <param name="pointerPosition">position of the pointer</param>
+        /// <param name="fruiton">fruiton to display on the square</param>
+        /// <param name="swapPosition">true if given fruiton is being swapped in the team</param>
+        /// <returns>position of the square grid that pointer is over, null if pointer isn't ovet the grid</returns>
         public Position SuggestFruitonAtMousePosition(Vector3 pointerPosition, Fruiton fruiton,
             Position swapPosition = null)
         {
@@ -215,11 +250,19 @@ namespace UI.Fridge
             return null;
         }
 
+        /// <summary>
+        /// Adds a fruiton to a grid square.
+        /// </summary>
+        /// <param name="fruiton">fruiton to add</param>
+        /// <param name="position">position of a square grid to add fruiton to</param>
         public void AddFruitonAt(Fruiton fruiton, Position position)
         {
             gridSquares[position.Y, position.X - 2].SetFruiton(fruiton);
         }
 
+        /// <summary>
+        /// Initializes grid squares.
+        /// </summary>
         private void InitGridFruitons()
         {
             for (int x = 0; x < 2; x++)
@@ -258,6 +301,9 @@ namespace UI.Fridge
             GridSquareTemplate.gameObject.SetActive(false);
         }
 
+        /// <summary>
+        /// Removes fruitons from every grid square.
+        /// </summary>
         private void ClearFruitons()
         {
             foreach (var square in gridSquares)

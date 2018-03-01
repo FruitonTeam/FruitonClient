@@ -4,7 +4,12 @@ namespace Util
 {
     public static class NetworkUtils
     {
-        public static Dictionary<string, string> GetRequestHeaders(bool useProtobuf)
+        /// <summary>
+        /// Creates headers dictionary with `Content-Type` key.
+        /// </summary>
+        /// <param name="useProtobuf">true for protobuf content type, false for json</param>
+        /// <returns>created headers dictionary</returns>
+        public static Dictionary<string, string> CreateRequestHeaders(bool useProtobuf)
         {
             Dictionary<string, string> headers = new Dictionary<string, string>();
             if (useProtobuf)

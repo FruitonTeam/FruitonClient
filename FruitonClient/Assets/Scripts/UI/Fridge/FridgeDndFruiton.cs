@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 namespace UI.Fridge
 {
+    /// <summary>
+    /// Handles appearance of fruiton object that's shown when dragging a fruiton.
+    /// </summary>
     public class FridgeDndFruiton : MonoBehaviour
     {
         public enum DropStatus
@@ -18,6 +21,9 @@ namespace UI.Fridge
         private Image dropStatusIcon;
         private Sprite[] dropStatusSprites;
 
+        /// <summary>
+        /// Loads drop status icons.
+        /// </summary>
         void Awake()
         {
             spineSkeletonGraphic = GetComponent<SkeletonGraphic>();
@@ -30,6 +36,10 @@ namespace UI.Fridge
             }
         }
 
+        /// <summary>
+        /// Sets icon indicating an action that would happen if the dragged fruiton was dropped.
+        /// </summary>
+        /// <param name="status">drop status</param>
         public void SetDropStatus(DropStatus status)
         {
             Color statusColor = Color.white;
@@ -50,6 +60,10 @@ namespace UI.Fridge
             dropStatusIcon.color = statusColor;
         }
 
+        /// <summary>
+        /// Sets skin of the dragged fruiton.
+        /// </summary>
+        /// <param name="skin">skin to set</param>
         public void SetSkin(string skin)
         {
             spineSkeletonGraphic.Skeleton.SetSkin(skin);

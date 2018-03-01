@@ -69,13 +69,14 @@ namespace TeamsManagement
         public Text LocalDuelHeadline;
 
         private ViewMode viewMode;
+        /// <summary> List of  <summary>
         private List<FridgeFruitonTeam> teams;
+        /// <summary> Index of currently selected team, -1 if no team is selected. </summary>
         private int selectedTeamIndex;
+        /// <summary> True if player can start the game without selecting a team (e.g. draft) </summary>
         private bool canPlayWithoutTeamSelected;
 
-        /// <summary>
-        /// List of game modes for online play.
-        /// </summary>
+        /// <summary> List of game modes for online play </summary>
         private readonly List<Option<GameMode>> gameModes = new List<Option<GameMode>>
         {
             new Option<GameMode>("Standard", GameMode.Standard),
@@ -83,18 +84,14 @@ namespace TeamsManagement
             new Option<GameMode>("Draft", GameMode.Standard, PickMode.Draft)
         };
 
-        /// <summary>
-        /// List of game modes for local play.
-        /// </summary>
+        /// <summary> List of game modes for local play </summary>
         private readonly List<Option<GameMode>> localGameModes = new List<Option<GameMode>>
         {
             new Option<GameMode>("Standard", GameMode.Standard),
             new Option<GameMode>("Last man standing", GameMode.LastManStanding)
         };
 
-        /// <summary>
-        /// List of game modes for playing vs AI.
-        /// </summary>
+        /// <summary> List of game modes for playing vs AI. </summary>
         private readonly List<Option<AIType>> aiModes = new List<Option<AIType>>
         {
             new Option<AIType>("Fruiton Bowl", AIType.SportsMen),

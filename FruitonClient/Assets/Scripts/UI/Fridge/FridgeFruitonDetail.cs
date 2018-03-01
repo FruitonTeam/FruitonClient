@@ -8,6 +8,9 @@ using Random = UnityEngine.Random;
 
 namespace UI.Fridge
 {
+    /// <summary>
+    /// Handles fruiton detail windows in fridge scenes.
+    /// </summary>
     public class FridgeFruitonDetail : MonoBehaviour
     {
 
@@ -32,6 +35,9 @@ namespace UI.Fridge
         private static readonly string TIP_ANDROID_DND = "<b>TIP</b>: Tap and hold fruiton in the fridge to add it to the team";
 #endif
 
+        /// <summary>
+        /// Updates displayed fruiton animation.
+        /// </summary>
         void Update()
         {
             // we need to check Skeleton for null because sometimes it doesn't get initialized in time (more investigation required)
@@ -50,6 +56,11 @@ namespace UI.Fridge
             Barrier.gameObject.SetActive(true);
         }
 
+        /// <summary>
+        /// Load fruiton data to display in the window.
+        /// </summary>
+        /// <param name="fruiton">fruiton to load</param>
+        /// <param name="isFreeSquareInTeam">true if given fruiton can be added to the team</param>
         public void SetFruiton(FridgeFruiton fruiton, bool isFreeSquareInTeam)
         {
             var kFruiton = fruiton.KernelFruiton;
