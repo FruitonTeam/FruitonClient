@@ -155,7 +155,7 @@ namespace UI.Fridge
         /// </summary>
         /// <param name="fruitonType">type of the fruiton</param>
         /// <param name="swapping">true if fruiton is being swapped in the team</param>
-        /// <returns>true if there's at least one position when a fruiton can be placed</returns>
+        /// <returns>true if there's at least one position where a fruiton can be placed</returns>
         public bool HighlightAvailableSquares(int fruitonType, bool swapping = false)
         {
             bool isAnySquareAvailable = false;

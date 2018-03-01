@@ -69,7 +69,7 @@ namespace TeamsManagement
         public Text LocalDuelHeadline;
 
         private ViewMode viewMode;
-        /// <summary> List of  <summary>
+        /// <summary> List of fridge fruiton teams game objects in the scroll view. <summary>
         private List<FridgeFruitonTeam> teams;
         /// <summary> Index of currently selected team, -1 if no team is selected. </summary>
         private int selectedTeamIndex;

@@ -27,7 +27,7 @@ public class PlayerOptions
 }
 
 /// <summary>
-/// 
+/// Stores and handles information about logged player.
 /// </summary>
 public class GameManager : IOnMessageListener
 {
@@ -120,7 +120,9 @@ public class GameManager : IOnMessageListener
         }
     }
 
-    // getters and setters for UserData, currently saved via PlayerPrefs
+    /// <summary>
+    /// Gets logged's players name. Uses name stored in player prefs if in offline mode.
+    /// </summary>
     public string UserName {
         get
         {
@@ -132,6 +134,9 @@ public class GameManager : IOnMessageListener
         }
     }
 
+    /// <summary>
+    /// Gets and sets (and stores to player prefs) logged player's password.
+    /// </summary>
     public string UserPassword
     {
         get
@@ -328,7 +333,7 @@ public class GameManager : IOnMessageListener
     }
 
     /// <summary>
-    /// True if player is logged in and in online mode.
+    /// True if player is logged in and is in online mode.
     /// </summary>
     public bool IsOnline
     {
@@ -405,7 +410,7 @@ public class GameManager : IOnMessageListener
     }
 
     /// <summary>
-    /// Initializes either offline mode or trial mode depending on whether the game remeber's player's login data from last session.
+    /// Initializes either offline mode or trial mode depending on whether the game remembers player's login data from last session.
     /// </summary>
     public void LoginOffline()
     {
@@ -539,7 +544,7 @@ public class GameManager : IOnMessageListener
             // Name clash, different teams
             if (areNamesSame)
             {
-                localTeam.Name = GenerateNewName(localTeam.Name, localTeamNames, serverTeamDb);
+                localTeam.Name = GenerateNewTeamName(localTeam.Name, localTeamNames, serverTeamDb);
             }
 
             // Upload changes
@@ -559,7 +564,7 @@ public class GameManager : IOnMessageListener
     /// <param name="localNames">list of names of locally stored teams</param>
     /// <param name="serverNames">list of names of teams loaded from the server</param>
     /// <returns></returns>
-    private static string GenerateNewName(
+    private static string GenerateNewTeamName(
         string oldName, 
         ICollection<string> localNames, 
         IDictionary<string, FruitonTeam> serverNames
@@ -608,7 +613,7 @@ public class GameManager : IOnMessageListener
     }
 
     /// <summary>
-    /// Stores logged player's data to unity player prefs if they checked "stay loggen in" checkbocks when logging in.
+    /// Stores logged player's data to unity player prefs if they checked "stay loggen in" checkbox when logging in.
     /// </summary>
     private void PersistIfStayLoggedIn()
     {

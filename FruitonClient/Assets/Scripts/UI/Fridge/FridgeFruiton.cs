@@ -148,7 +148,7 @@ namespace UI.Fridge
             SpineSkeleton.Skeleton.SetSkin(kFruiton.model);
         }
 
-#if UNITY_ANDROID && UNITY_EDITOR
+#if UNITY_ANDROID && !UNITY_EDITOR
         /// <summary>
         /// Checks if player touched the game object check for shorter than <see cref="TOUCH_DRAG_DELAY"/> to trigger tap event,
         /// if user was touching the object for that amount of time and didn't move their finger for more than <see cref="TOUCH_DRAG_MAX_OFFSET"/> triggers drag and drop.
