@@ -20,6 +20,8 @@ namespace Networking
         private bool isConnected;
         private string error;
 
+        private bool isConnecting;
+
         public WebSocket(Uri url, string loginToken)
         {
             this.url = url;
@@ -34,11 +36,18 @@ namespace Networking
 
         public IEnumerator Connect(Action onSucessAction = null, Action onErrorAction = null)
         {
+            if (socket != null && (socket.IsAlive || isConnecting))
+            {
+                yield break;
+            }
+
+            isConnecting = true;
             socket = new WebSocketSharp.WebSocket(url.ToString());
             socket.AddRequestHeader(XAuthTokenHeaderKey, loginToken);
             socket.OnMessage += (sender, e) => messages.Enqueue(e.RawData);
             socket.OnOpen += (sender, e) =>
             {
+                isConnecting = false;
                 Debug.Log("Opened WebSocket connection");
                 isConnected = true;
                 if (onSucessAction != null)
@@ -48,6 +57,7 @@ namespace Networking
             };
             socket.OnError += (sender, e) =>
             {
+                isConnecting = false;
                 Debug.LogError("WebSocket: " + e.Message);
                 error = e.Message;
                 if (onErrorAction != null)

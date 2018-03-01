@@ -25,14 +25,14 @@ namespace Networking
 
         private static readonly string COOKIE_KEY = "Cookie";
 
-        private static readonly string SERVER_IP = "195.113.20.59";
-
 #if LOCAL_SERVER
         private static readonly string URL_WEB = "http://localhost:8050/";
         private static readonly string URL_WS = "ws://localhost:8050/socket";
+        private static readonly string SERVER_IP = "127.0.0.1";
 #else
         private static readonly string URL_WEB = "http://prak.mff.cuni.cz:8050/fruiton/";
         private static readonly string URL_WS = "ws://prak.mff.cuni.cz:8050/fruiton/socket";
+        private static readonly string SERVER_IP = "195.113.20.59";
 #endif
         private static readonly string URL_API = URL_WEB + "api/";
 
