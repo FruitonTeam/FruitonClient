@@ -204,7 +204,7 @@ namespace UI.Chat
 #if UNITY_ANDROID
             // if android on screen keyboard is active make the chat panel smaller
             // so user can see most recent messages
-            if (TouchScreenKeyboard.visible)
+            if (TouchScreenKeyboard.visible && MessageInput.isFocused)
             {
                 chatPanelRect.offsetMin = new Vector2(chatPanelRect.offsetMin.x, GetKeyboardSize());
             }
