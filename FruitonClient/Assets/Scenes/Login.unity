@@ -4312,7 +4312,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90e6beded80e8c34ca7cb4babcace872, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Name: 7
+  Name: 1
   Mobile: 1
   ConnectButton: {fileID: 0}
   RegisterName: {fileID: 1505833787}
@@ -5432,7 +5432,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90e6beded80e8c34ca7cb4babcace872, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Name: 7
+  Name: 1
   Mobile: 0
   ConnectButton: {fileID: 0}
   RegisterName: {fileID: 1863740420}
