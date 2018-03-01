@@ -349,6 +349,7 @@ namespace Networking
         /// </summary>
         private void UnableToReconnect()
         {
+            Logout();
             Scenes.Load(Scenes.LOGIN_SCENE, Scenes.DISCONNECTED, true);
         }
 
