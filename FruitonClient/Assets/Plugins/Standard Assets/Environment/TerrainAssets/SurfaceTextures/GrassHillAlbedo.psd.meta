@@ -58,14 +58,14 @@ TextureImporter:
     overridden: 0
   - buildTarget: iPhone
     maxTextureSize: 128
-    textureFormat: -1
+    textureFormat: 32
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 1
   - buildTarget: Android
-    maxTextureSize: 1024
+    maxTextureSize: 128
     textureFormat: 34
     textureCompression: 1
     compressionQuality: 50
