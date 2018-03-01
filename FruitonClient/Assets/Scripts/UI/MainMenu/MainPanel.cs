@@ -89,7 +89,6 @@ namespace UI.MainMenu
             PlayerPrefs.SetInt("stayloggedin", 0);
             
             ChatController.Instance.Clear();
-            FeedbackNotificationManager.Instance.Clear();
             
             Scenes.Load(Scenes.LOGIN_SCENE);
         }

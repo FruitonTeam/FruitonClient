@@ -65,7 +65,10 @@ namespace UI.Notification
         /// </summary>
         public void Hide()
         {
-            StopCoroutine(showingCoroutine);
+            if (showingCoroutine != null)
+            {
+                StopCoroutine(showingCoroutine);
+            }
             iTween.Stop(gameObject);
             iTween.MoveTo(gameObject, iTween.Hash(
                 "position", originalPosition,

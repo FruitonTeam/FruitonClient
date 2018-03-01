@@ -75,6 +75,15 @@ namespace UI.Notification
         }
 
         /// <summary>
+        /// Removes all notifications from the queue.
+        /// </summary>
+        public void Clear()
+        {
+            notificationQueue.Clear();
+            View.Hide();
+        }
+
+        /// <summary>
         /// Checks whether next notification can be displayed (if there is any).
         /// </summary>
         private void Update()
