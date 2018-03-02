@@ -2,6 +2,9 @@
 
 namespace Util
 {
+    /// <summary>
+    /// Contains sprite related helper methods.
+    /// </summary>
     public static class SpriteUtils
     {
         public static Sprite TextureToSprite(Texture2D texture)

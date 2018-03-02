@@ -10,7 +10,9 @@ namespace TeamsManagement
 {
     public abstract class FruitonVisualizerBase : MonoBehaviour
     {
+        /// <summary> Template of a fruiton game object to be displayed in the scroll view. </summary>
         public GameObject FridgeFruitonTemplate;
+        /// <summary> Game object containing all of the fridge fruiton game objects. </summary>
         public GameObject WrapperFruitons;
         public FridgeFilterManager FilterManager;
         /// <summary> Positions on which a tooltip can be displayed. </summary>

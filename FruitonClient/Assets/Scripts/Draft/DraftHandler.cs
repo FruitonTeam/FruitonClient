@@ -3,6 +3,9 @@ using Networking;
 
 namespace Draft
 {
+    /// <summary>
+    /// Handles communication with the server during drafting.
+    /// </summary>
     public class DraftHandler : IOnMessageListener
     {
         private readonly DraftManager draftManager;
@@ -12,6 +15,9 @@ namespace Draft
             this.draftManager = draftManager;
         }
 
+        /// <summary>
+        /// Registers listeners for draft related messages.
+        /// </summary>
         public void StartListening()
         {
             ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.DraftRequest, this);
@@ -20,6 +26,9 @@ namespace Draft
             ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.GameReady, this);
             ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.GameOver, this);
         }
+        /// <summary>
+        /// Removes listeners for draft related messages.
+        /// </summary>
         public void StopListening()
         {
             ConnectionHandler.Instance.UnregisterListener(WrapperMessage.MessageOneofCase.DraftRequest, this);
@@ -84,6 +93,10 @@ namespace Draft
             draftManager.TurnOffDrafting();
         }
 
+        /// <summary>
+        /// Sends message about player's draft choice to server.
+        /// </summary>
+        /// <param name="fruitonId">if of chosen fruiton</param>
         public void SendDraftResponse(int fruitonId)
         {
             var draftResponse = new DraftResponse
@@ -97,6 +110,9 @@ namespace Draft
             ConnectionHandler.Instance.SendWebsocketMessage(wrapperMessage);
         }
 
+        /// <summary>
+        /// Sends surrender message to the server.
+        /// </summary>
         public void SendSurrender()
         {
             var draftSurrender = new DraftSurrenderMessage();
@@ -108,6 +124,9 @@ namespace Draft
                 ConnectionHandler.Instance.SendWebsocketMessage(wrapperMessage);
         }
 
+        /// <summary>
+        /// Sends message to server to cancel matchmaking.
+        /// </summary>
         public void CancelSearch()
         {
             var cancelMessage = new CancelFindingGame();

@@ -6,6 +6,9 @@ using KFruiton = fruiton.kernel.Fruiton;
 
 namespace TeamsManagement
 {
+    /// <summary>
+    /// Handles creation and editation of fruiton teams.
+    /// </summary>
     public abstract class TeamManagerBase : FruitonVisualizerBase
     {
         public ScrollRect ScrollRect;
@@ -17,15 +20,28 @@ namespace TeamsManagement
         public Text WarningText;
         public GameObject Filters;
 
+        /// <summary> Fruiton that is currently being dragged, null if drag and drop isn't active. </summary>
         protected KFruiton draggedFruiton;
+        /// <summary> Position in a fruiton team from which is fruiton being dragged, null if there's no such fruiton. </summary>
         protected Position teamDragGridPosition;
+        /// <summary> True if player is currently dragging a fruiton using drag and drop feature. </summary>
         protected bool isDragging;
+        /// <summary> True if a fruiton from the team grid is currently being dragged.</summary>
         protected bool isDraggingFromTeam;
+        /// <summary> True if a fruiton is being added to the team from the fruiton detail window. </summary>
         protected bool isAddingFromDetail;
 
+        /// <param name="fruiton">fruiton to drag</param>
+        /// <returns>true if given fruiton can be drag and dropped</returns>
         protected abstract bool ShouldBeginDrag(FridgeFruiton fruiton);
+        /// <summary> Invoked when an "add to team" button in fruiton detail window is pressed. </summary>
         protected abstract void AddToTeamButtonListener();
+        /// <summary> Invoked whenever drag and drop is initiated on a fruiton from the team grid. </summary>
+        /// <param name="fruiton">fruiton being dragged</param>
+        /// <param name="position">position in a team from which the fruiton is dragged</param>
         protected abstract void OnBeginDragFromTeamListener(KFruiton fruiton, Position position);
+        /// <summary> Invoked whenever player drops  a fruiton after dragging. </summary>
+        /// <param name="dropGridPosition">position in a team over which was fruiton dropped, null if fruiton wasn't dropped over the team grid</param>
         protected abstract void ProcessStopDrag(Position dropGridPosition);
 
         protected virtual Position ProcessDropGridPosition(Position dropGridPosition)
@@ -47,6 +63,9 @@ namespace TeamsManagement
             MyTeamGrid.OnMouseExitSquare.AddListener(CancelHighlightSquare);
         }
 
+        /// <summary>
+        /// Handles drag and drop logic.
+        /// </summary>
         protected virtual void Update()
         {
             // drag and drop (or adding from fruiton detail window) logic
@@ -107,6 +126,10 @@ namespace TeamsManagement
             }
         }
 
+        /// <summary>
+        /// Highlights a square in the team grid.
+        /// </summary>
+        /// <param name="square">square to highlight</param>
         protected void HighlightSquare(FridgeGridSquare square)
         {
             if (!isDragging)
@@ -119,6 +142,10 @@ namespace TeamsManagement
             }
         }
 
+        /// <summary>
+        /// Cancels highlight of a square in the team grid.
+        /// </summary>
+        /// <param name="square">square to stop highlighting</param>
         protected void CancelHighlightSquare(FridgeGridSquare square)
         {
             if (!isDragging)
@@ -136,6 +163,11 @@ namespace TeamsManagement
             }
         }
 
+        /// <summary>
+        /// Initializes drag and drop mode, displays info to user.
+        /// </summary>
+        /// <param name="fruiton">fruiton that is being dragged</param>
+        /// <param name="teamPosition">position in a team grid from the fruiton is being dragged, null if fruiton isn't being dragged from the team</param>
         protected void BeginFruitonDrag(KFruiton fruiton, Position teamPosition = null)
         {
             draggedFruiton = fruiton;
@@ -179,6 +211,9 @@ namespace TeamsManagement
             WarningText.transform.parent.gameObject.SetActive(true);
         }
 
+        /// <summary>
+        /// Sets up fridge fruiton event listeners
+        /// </summary>
         protected override void InitializeFridgeFruiton(FridgeFruiton fFruiton, KFruiton kFruiton, int fridgeIndex)
         {
             base.InitializeFridgeFruiton(fFruiton, kFruiton, fridgeIndex);
@@ -191,6 +226,10 @@ namespace TeamsManagement
             fFruiton.OnTap.AddListener(() => ShowDetail(fFruiton));
         }
 
+        /// <summary>
+        /// Displays fruiton detail window.
+        /// </summary>
+        /// <param name="fruiton"></param>
         protected override void ShowDetail(FridgeFruiton fruiton)
         {
             FruitonDetail.SetFruiton(fruiton, MyTeamGrid.GetAvailableSquares(fruiton.KernelFruiton).Count != 0);

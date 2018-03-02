@@ -9,6 +9,9 @@ using UnityEngine;
 
 namespace Util
 {
+    /// <summary>
+    /// Contains kernel related helper methods and shortcuts.
+    /// </summary>
     public static class KernelUtils
     {
         private static readonly string KERNEL_DLL_NAME_PREFIX = "kernel";
