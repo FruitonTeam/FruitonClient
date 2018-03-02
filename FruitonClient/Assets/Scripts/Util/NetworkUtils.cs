@@ -2,6 +2,9 @@
 
 namespace Util
 {
+    /// <summary>
+    /// Contains networking related helper methods.
+    /// </summary>
     public static class NetworkUtils
     {
         /// <summary>

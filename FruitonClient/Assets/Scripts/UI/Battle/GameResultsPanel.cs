@@ -9,6 +9,9 @@ using WebSocketSharp;
 
 namespace UI.Battle
 {
+    /// <summary>
+    /// Handles panel that shows result of the game and received rewards.
+    /// </summary>
     public class GameResultsPanel : MessagePanel
     {
         public Text ReasonText;
@@ -18,6 +21,11 @@ namespace UI.Battle
         public Text QuestsTitleText;
         public Text QuestsText;
 
+        /// <summary>
+        /// Displays panel with game result and received rewards.
+        /// </summary>
+        /// <param name="gameOver">game over protobuf object</param>
+        /// <param name="isLocalDuel">true if the game mode of the finished game is local duel</param>
         public void ShowResult(GameOver gameOver, bool isLocalDuel = false)
         {
             OnClose(() => Scenes.Load(Scenes.MAIN_MENU_SCENE));
