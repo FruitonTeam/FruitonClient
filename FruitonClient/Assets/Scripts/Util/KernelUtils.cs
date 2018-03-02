@@ -10,7 +10,7 @@ using UnityEngine;
 namespace Util
 {
     /// <summary>
-    /// Contains kernel related helper methods and shortcuts.
+    /// Contains kernel related helper methods.
     /// </summary>
     public static class KernelUtils
     {

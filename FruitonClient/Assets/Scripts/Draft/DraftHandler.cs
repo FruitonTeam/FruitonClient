@@ -26,6 +26,7 @@ namespace Draft
             ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.GameReady, this);
             ConnectionHandler.Instance.RegisterListener(WrapperMessage.MessageOneofCase.GameOver, this);
         }
+
         /// <summary>
         /// Removes listeners for draft related messages.
         /// </summary>
@@ -96,7 +97,7 @@ namespace Draft
         /// <summary>
         /// Sends message about player's draft choice to server.
         /// </summary>
-        /// <param name="fruitonId">if of chosen fruiton</param>
+        /// <param name="fruitonId">id of chosen fruiton</param>
         public void SendDraftResponse(int fruitonId)
         {
             var draftResponse = new DraftResponse

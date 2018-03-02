@@ -7,7 +7,7 @@ using KFruiton = fruiton.kernel.Fruiton;
 namespace TeamsManagement
 {
     /// <summary>
-    /// Handles creation and editation of fruiton teams.
+    /// Handles creation and editing of fruiton teams.
     /// </summary>
     public abstract class TeamManagerBase : FruitonVisualizerBase
     {
@@ -229,7 +229,7 @@ namespace TeamsManagement
         /// <summary>
         /// Displays fruiton detail window.
         /// </summary>
-        /// <param name="fruiton"></param>
+        /// <param name="fruiton">fruiton to be displayed in the window</param>
         protected override void ShowDetail(FridgeFruiton fruiton)
         {
             FruitonDetail.SetFruiton(fruiton, MyTeamGrid.GetAvailableSquares(fruiton.KernelFruiton).Count != 0);
