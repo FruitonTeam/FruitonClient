@@ -278,7 +278,7 @@ namespace Battle.View
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                Scenes.Load(Scenes.FRACTION_SCENE);
+                FinishTutorial();
             }
             if (!isInitialized)
             {
