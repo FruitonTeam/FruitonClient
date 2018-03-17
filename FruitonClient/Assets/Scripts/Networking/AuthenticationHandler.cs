@@ -17,13 +17,13 @@ namespace Networking
         private static readonly string GOOGLE_ID =
             "827606142557-f63cu712orq80s6do9n6aa8s3eu3h7ag.apps.googleusercontent.com";
 
-        private static readonly string GOOGLE_CLIENT_SECRET = "NyYlQJICuxYX3AnzChou2X8i";
-
         private static readonly int[] GOOGLE_REDIRECT_PORTS = {9999, 34311, 44873};
 
         private static readonly string GOOGLE_REDIRECT_URI_TEMPLATE = "http://127.0.0.1:{0}";
         private static readonly string GOOGLE_TOKEN_URI = "https://www.googleapis.com/oauth2/v4/token";
 
+        private string googleClientSecret;
+        
         private static string googleLoginSuccessHtml;
         private static string googleLoginErrorHtml;
         
@@ -117,6 +117,12 @@ namespace Networking
         
         public void LoginGoogle()
         {
+            if (googleClientSecret == null)
+            {
+                OnLoginError("Cannot use Google Sign In because of missing data");
+                return;
+            }
+
             if (googleLoginHttpListener == null)
             {
                 googleLoginHttpListener = new HttpListener();
@@ -213,7 +219,7 @@ namespace Networking
 
             form.AddField("code", authCode + "&");
             form.AddField("client_id", GOOGLE_ID);
-            form.AddField("client_secret", GOOGLE_CLIENT_SECRET);
+            form.AddField("client_secret", googleClientSecret);
             form.AddField("redirect_uri", googleRedirectUri);
             form.AddField("grant_type", "authorization_code");
 
@@ -261,6 +267,15 @@ namespace Networking
         
         private void Start()
         {
+            TextAsset googleClientSecretResource = Resources.Load<TextAsset>("Google/google_client_secret");
+            if (googleClientSecretResource != null)
+            {
+                googleClientSecret = googleClientSecretResource.text.Trim();
+            }
+            else
+            {
+                Debug.LogWarning("Google Sign In won't work: cannot find Google Client Secret");
+            }
             googleLoginSuccessHtml = Resources.Load<TextAsset>("Html/google_login_success").text;
             googleLoginErrorHtml = Resources.Load<TextAsset>("Html/google_login_error").text;
         }
