@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Google Secret
+if [ -n "$FRUITON_GOOGLE_SECRET" ]; then
+	echo "$FRUITON_GOOGLE_SECRET" > FruitonClient/Assets/Resources/Google/google_client_secret.txt
+else
+	echo "Build failed: No Google secret specified!"
+	exit 1
+fi
+
 ./clean.sh
 
 . pom.properties
